@@ -1,0 +1,1736 @@
+{
+  "version": "2026-09-27.1",
+  "book": {
+    "title": "Introduction to Classical Mechanics",
+    "author": "David Morin",
+    "publisher": "Cambridge University Press, 2008",
+    "pdf_offset": 18
+  },
+  "class_now": {},
+  "chapters": [
+    {
+      "n": 1,
+      "title": "Strategies for solving problems",
+      "page": 1,
+      "problems_page": 14,
+      "sections": [
+        {
+          "id": "1.1",
+          "title": "General strategies",
+          "page": 1
+        },
+        {
+          "id": "1.2",
+          "title": "Units, dimensional analysis",
+          "page": 4
+        },
+        {
+          "id": "1.3",
+          "title": "Approximations, limiting cases",
+          "page": 7
+        },
+        {
+          "id": "1.4",
+          "title": "Solving differential equations numerically",
+          "page": 11
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Statics",
+      "page": 22,
+      "problems_page": 30,
+      "sections": [
+        {
+          "id": "2.1",
+          "title": "Balancing forces",
+          "page": 22
+        },
+        {
+          "id": "2.2",
+          "title": "Balancing torques",
+          "page": 27
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "title": "Using F = ma",
+      "page": 51,
+      "problems_page": 70,
+      "sections": [
+        {
+          "id": "3.1",
+          "title": "Newton's laws",
+          "page": 51
+        },
+        {
+          "id": "3.2",
+          "title": "Free-body diagrams",
+          "page": 55
+        },
+        {
+          "id": "3.3",
+          "title": "Solving differential equations",
+          "page": 60
+        },
+        {
+          "id": "3.4",
+          "title": "Projectile motion",
+          "page": 65
+        },
+        {
+          "id": "3.5",
+          "title": "Motion in a plane, polar coordinates",
+          "page": 68
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Oscillations",
+      "page": 101,
+      "problems_page": 120,
+      "sections": [
+        {
+          "id": "4.1",
+          "title": "Linear differential equations",
+          "page": 101
+        },
+        {
+          "id": "4.2",
+          "title": "Simple harmonic motion",
+          "page": 105
+        },
+        {
+          "id": "4.3",
+          "title": "Damped harmonic motion",
+          "page": 107
+        },
+        {
+          "id": "4.4",
+          "title": "Driven (and damped) harmonic motion",
+          "page": 109
+        },
+        {
+          "id": "4.5",
+          "title": "Coupled oscillators",
+          "page": 115
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Conservation of energy and momentum",
+      "page": 138,
+      "problems_page": 173,
+      "sections": [
+        {
+          "id": "5.1",
+          "title": "Conservation of energy in one dimension",
+          "page": 138
+        },
+        {
+          "id": "5.2",
+          "title": "Small oscillations",
+          "page": 147
+        },
+        {
+          "id": "5.3",
+          "title": "Conservation of energy in three dimensions",
+          "page": 148
+        },
+        {
+          "id": "5.4",
+          "title": "Gravity",
+          "page": 152
+        },
+        {
+          "id": "5.5",
+          "title": "Momentum",
+          "page": 156
+        },
+        {
+          "id": "5.6",
+          "title": "The center of mass frame",
+          "page": 161
+        },
+        {
+          "id": "5.7",
+          "title": "Collisions",
+          "page": 164
+        },
+        {
+          "id": "5.8",
+          "title": "Inherently inelastic processes",
+          "page": 167
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "title": "The Lagrangian method",
+      "page": 218,
+      "problems_page": 246,
+      "sections": [
+        {
+          "id": "6.1",
+          "title": "The Euler–Lagrange equations",
+          "page": 218
+        },
+        {
+          "id": "6.2",
+          "title": "The principle of stationary action",
+          "page": 221
+        },
+        {
+          "id": "6.3",
+          "title": "Forces of constraint",
+          "page": 227
+        },
+        {
+          "id": "6.4",
+          "title": "Change of coordinates",
+          "page": 229
+        },
+        {
+          "id": "6.5",
+          "title": "Conservation laws",
+          "page": 232
+        },
+        {
+          "id": "6.6",
+          "title": "Noether's theorem",
+          "page": 236
+        },
+        {
+          "id": "6.7",
+          "title": "Small oscillations",
+          "page": 239
+        },
+        {
+          "id": "6.8",
+          "title": "Other applications",
+          "page": 242
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "title": "Central forces",
+      "page": 281,
+      "problems_page": 296,
+      "sections": [
+        {
+          "id": "7.1",
+          "title": "Conservation of angular momentum",
+          "page": 281
+        },
+        {
+          "id": "7.2",
+          "title": "The effective potential",
+          "page": 283
+        },
+        {
+          "id": "7.3",
+          "title": "Solving the equations of motion",
+          "page": 285
+        },
+        {
+          "id": "7.4",
+          "title": "Gravity, Kepler's laws",
+          "page": 287
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "title": "Angular momentum, Part I (constant L̂)",
+      "page": 309,
+      "problems_page": 333,
+      "sections": [
+        {
+          "id": "8.1",
+          "title": "Pancake object in x-y plane",
+          "page": 310
+        },
+        {
+          "id": "8.2",
+          "title": "Nonplanar objects",
+          "page": 316
+        },
+        {
+          "id": "8.3",
+          "title": "Calculating moments of inertia",
+          "page": 318
+        },
+        {
+          "id": "8.4",
+          "title": "Torque",
+          "page": 322
+        },
+        {
+          "id": "8.5",
+          "title": "Collisions",
+          "page": 328
+        },
+        {
+          "id": "8.6",
+          "title": "Angular impulse",
+          "page": 331
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "title": "Angular momentum, Part II (general L̂)",
+      "page": 371,
+      "problems_page": 415,
+      "sections": [
+        {
+          "id": "9.1",
+          "title": "Preliminaries concerning rotations",
+          "page": 371
+        },
+        {
+          "id": "9.2",
+          "title": "The inertia tensor",
+          "page": 376
+        },
+        {
+          "id": "9.3",
+          "title": "Principal axes",
+          "page": 383
+        },
+        {
+          "id": "9.4",
+          "title": "Two basic types of problems",
+          "page": 388
+        },
+        {
+          "id": "9.5",
+          "title": "Euler's equations",
+          "page": 393
+        },
+        {
+          "id": "9.6",
+          "title": "Free symmetric top",
+          "page": 396
+        },
+        {
+          "id": "9.7",
+          "title": "Heavy symmetric top",
+          "page": 399
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "title": "Accelerating frames of reference",
+      "page": 457,
+      "problems_page": 477,
+      "sections": [
+        {
+          "id": "10.1",
+          "title": "Relating the coordinates",
+          "page": 458
+        },
+        {
+          "id": "10.2",
+          "title": "The fictitious forces",
+          "page": 460
+        },
+        {
+          "id": "10.3",
+          "title": "Tides",
+          "page": 471
+        }
+      ]
+    },
+    {
+      "n": 11,
+      "title": "Relativity (Kinematics)",
+      "page": 501,
+      "problems_page": 549,
+      "sections": [
+        {
+          "id": "11.1",
+          "title": "Motivation",
+          "page": 502
+        },
+        {
+          "id": "11.2",
+          "title": "The postulates",
+          "page": 509
+        },
+        {
+          "id": "11.3",
+          "title": "The fundamental effects",
+          "page": 511
+        },
+        {
+          "id": "11.4",
+          "title": "The Lorentz transformations",
+          "page": 523
+        },
+        {
+          "id": "11.5",
+          "title": "Velocity addition",
+          "page": 529
+        },
+        {
+          "id": "11.6",
+          "title": "The invariant interval",
+          "page": 533
+        },
+        {
+          "id": "11.7",
+          "title": "Minkowski diagrams",
+          "page": 536
+        },
+        {
+          "id": "11.8",
+          "title": "The Doppler effect",
+          "page": 539
+        },
+        {
+          "id": "11.9",
+          "title": "Rapidity",
+          "page": 543
+        },
+        {
+          "id": "11.10",
+          "title": "Relativity without c",
+          "page": 546
+        }
+      ]
+    },
+    {
+      "n": 12,
+      "title": "Relativity (Dynamics)",
+      "page": 584,
+      "problems_page": 611,
+      "sections": [
+        {
+          "id": "12.1",
+          "title": "Energy and momentum",
+          "page": 584
+        },
+        {
+          "id": "12.2",
+          "title": "Transformations of E and p",
+          "page": 594
+        },
+        {
+          "id": "12.3",
+          "title": "Collisions and decays",
+          "page": 596
+        },
+        {
+          "id": "12.4",
+          "title": "Particle-physics units",
+          "page": 600
+        },
+        {
+          "id": "12.5",
+          "title": "Force",
+          "page": 601
+        },
+        {
+          "id": "12.6",
+          "title": "Rocket motion",
+          "page": 606
+        },
+        {
+          "id": "12.7",
+          "title": "Relativistic strings",
+          "page": 609
+        }
+      ]
+    },
+    {
+      "n": 13,
+      "title": "4-vectors",
+      "page": 634,
+      "problems_page": 645,
+      "sections": [
+        {
+          "id": "13.1",
+          "title": "Definition of 4-vectors",
+          "page": 634
+        },
+        {
+          "id": "13.2",
+          "title": "Examples of 4-vectors",
+          "page": 635
+        },
+        {
+          "id": "13.3",
+          "title": "Properties of 4-vectors",
+          "page": 637
+        },
+        {
+          "id": "13.4",
+          "title": "Energy, momentum",
+          "page": 639
+        },
+        {
+          "id": "13.5",
+          "title": "Force and acceleration",
+          "page": 640
+        },
+        {
+          "id": "13.6",
+          "title": "The form of physical laws",
+          "page": 643
+        }
+      ]
+    },
+    {
+      "n": 14,
+      "title": "General Relativity",
+      "page": 649,
+      "problems_page": 660,
+      "sections": [
+        {
+          "id": "14.1",
+          "title": "The Equivalence Principle",
+          "page": 649
+        },
+        {
+          "id": "14.2",
+          "title": "Time dilation",
+          "page": 650
+        },
+        {
+          "id": "14.3",
+          "title": "Uniformly accelerating frame",
+          "page": 653
+        },
+        {
+          "id": "14.4",
+          "title": "Maximal-proper-time principle",
+          "page": 656
+        },
+        {
+          "id": "14.5",
+          "title": "Twin paradox revisited",
+          "page": 658
+        }
+      ]
+    },
+    {
+      "n": "M",
+      "title": "Math used in physics",
+      "page": 675,
+      "sections": [
+        {
+          "id": "M.vec",
+          "title": "Vectors: components, dot and cross products",
+          "page": 675,
+          "ref": "Appendix A; used from ch. 2 on"
+        },
+        {
+          "id": "M.calc",
+          "title": "Derivatives and integrals",
+          "page": 675,
+          "ref": "Appendix A; mass integrals in 8.3"
+        },
+        {
+          "id": "M.series",
+          "title": "Series and approximations",
+          "page": 7,
+          "ref": "1.3, Appendix A"
+        },
+        {
+          "id": "M.ode",
+          "title": "Differential equations",
+          "page": 60,
+          "ref": "3.3, 4.1"
+        },
+        {
+          "id": "M.coords",
+          "title": "Polar, cylindrical and spherical coordinates",
+          "page": 68,
+          "ref": "3.5, Appendix B"
+        },
+        {
+          "id": "M.lin",
+          "title": "Matrices and eigenvectors",
+          "page": 693,
+          "ref": "9.2-9.3, Appendices D and E"
+        },
+        {
+          "id": "M.vcalc",
+          "title": "Multivariable and vector calculus",
+          "page": 679,
+          "ref": "Appendix B"
+        },
+        {
+          "id": "M.complex",
+          "title": "Complex numbers",
+          "page": 101,
+          "ref": "4.1-4.4"
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "M.vec.components",
+      "sec": "M.vec",
+      "title": "Vector components and unit vectors",
+      "task": "Resolve a vector into components along given unit vectors, and find its magnitude and direction.",
+      "prereqs": []
+    },
+    {
+      "id": "M.vec.dot",
+      "sec": "M.vec",
+      "title": "Dot product and projections",
+      "task": "Compute $\\vec a\\cdot\\vec b$ from components or from $|a||b|\\cos\\theta$, and use it to project a vector onto a direction.",
+      "prereqs": [
+        [
+          "M.vec.components",
+          "n",
+          "Components are what the dot product combines."
+        ]
+      ]
+    },
+    {
+      "id": "M.vec.cross",
+      "sec": "M.vec",
+      "title": "Cross product and the right-hand rule",
+      "task": "Compute $\\vec a\\times\\vec b$ from components, give its direction by the right-hand rule and its size $|a||b|\\sin\\theta$.",
+      "prereqs": [
+        [
+          "M.vec.components",
+          "n",
+          "The component formula needs components."
+        ]
+      ]
+    },
+    {
+      "id": "M.vec.rotating",
+      "sec": "M.vec",
+      "title": "A vector turning at a steady rate: dA/dt = Ω × A",
+      "task": "For a vector of fixed length turning about an axis at angular velocity $\\vec\\Omega$, write $d\\vec A/dt=\\vec\\Omega\\times\\vec A$ and see that only the part of $\\vec A$ perpendicular to $\\vec\\Omega$ changes.",
+      "prereqs": [
+        [
+          "M.vec.cross",
+          "n",
+          "The rate of change is a cross product."
+        ],
+        [
+          "M.calc.derivative",
+          "n",
+          "It is a time derivative of a vector."
+        ]
+      ]
+    },
+    {
+      "id": "M.calc.derivative",
+      "sec": "M.calc",
+      "title": "Derivatives and the chain rule",
+      "task": "Differentiate products and compositions, including time derivatives of functions of $\\theta(t)$.",
+      "prereqs": []
+    },
+    {
+      "id": "M.calc.integral",
+      "sec": "M.calc",
+      "title": "Basic integrals",
+      "task": "Evaluate polynomial and simple trigonometric integrals, including by substitution.",
+      "prereqs": []
+    },
+    {
+      "id": "M.calc.mass-integral",
+      "sec": "M.calc",
+      "title": "Integrals over a body: dm = λ dx, σ dA, ρ dV",
+      "task": "Set up an integral over a rod, a disk or a solid by choosing a mass element and its limits (slices, rings, shells).",
+      "prereqs": [
+        [
+          "M.calc.integral",
+          "n",
+          "It ends in an ordinary integral."
+        ],
+        [
+          "M.coords.polar",
+          "h",
+          "Rings and shells use polar or spherical elements."
+        ]
+      ]
+    },
+    {
+      "id": "M.series.small",
+      "sec": "M.series",
+      "title": "Small-angle and first-order approximations",
+      "task": "Use $\\sin\\theta\\approx\\theta$, $\\cos\\theta\\approx1-\\theta^2/2$ and $(1+x)^n\\approx1+nx$ to simplify an answer or an equation of motion.",
+      "prereqs": [
+        [
+          "M.calc.derivative",
+          "h",
+          "These are the first terms of Taylor series."
+        ]
+      ]
+    },
+    {
+      "id": "M.ode.harmonic",
+      "sec": "M.ode",
+      "title": "The harmonic equation ẍ + ω²x = 0",
+      "task": "Recognize $\\ddot x=-\\omega^2x$ (after rewriting an equation of motion) and read off the angular frequency $\\omega$; know the solution $A\\cos(\\omega t+\\phi)$.",
+      "prereqs": [
+        [
+          "M.calc.derivative",
+          "n",
+          "The solution is checked by differentiating twice."
+        ]
+      ]
+    },
+    {
+      "id": "M.coords.polar",
+      "sec": "M.coords",
+      "title": "Polar and cylindrical unit vectors r̂, φ̂, ẑ",
+      "task": "Use $\\hat r$, $\\hat\\phi$ (and $\\hat z$): express them in Cartesian components and know that $\\hat r\\times\\hat\\phi=\\hat z$, $\\hat z\\times\\hat r=\\hat\\phi$.",
+      "prereqs": [
+        [
+          "M.vec.components",
+          "n",
+          "Unit vectors are defined by their components."
+        ],
+        [
+          "M.vec.cross",
+          "h",
+          "The handedness relations are cross products."
+        ]
+      ]
+    },
+    {
+      "id": "M.lin.matrix-vector",
+      "sec": "M.lin",
+      "title": "Matrix times vector; symmetric matrices",
+      "task": "Multiply a 3×3 matrix by a column vector, and recognize a symmetric matrix.",
+      "prereqs": [
+        [
+          "M.vec.components",
+          "n",
+          "The vector is handled through its components."
+        ]
+      ]
+    },
+    {
+      "id": "M.lin.change-basis",
+      "sec": "M.lin",
+      "title": "Components in a rotated set of axes",
+      "task": "Write a vector's components along a tilted pair of perpendicular unit vectors, e.g. $\\hat x=\\cos\\theta\\,\\hat e_3-\\sin\\theta\\,\\hat e_2$.",
+      "prereqs": [
+        [
+          "M.vec.dot",
+          "n",
+          "A component is a dot product with a unit vector."
+        ]
+      ]
+    },
+    {
+      "id": "M.lin.eigen",
+      "sec": "M.lin",
+      "title": "Eigenvalues and eigenvectors of a symmetric matrix",
+      "task": "Find eigenvalues from $\\det(A-\\lambda I)=0$ and eigenvectors for a 2×2 or simple 3×3 symmetric matrix; know that its eigenvectors can be chosen orthogonal.",
+      "prereqs": [
+        [
+          "M.lin.matrix-vector",
+          "n",
+          "The eigen-equation is a matrix acting on a vector."
+        ]
+      ]
+    },
+    {
+      "id": "1.2.dimensions",
+      "sec": "1.2",
+      "title": "Checking units and dimensions",
+      "task": "Check that every term of an answer has the right units, and use dimensional analysis to reject a wrong formula.",
+      "prereqs": []
+    },
+    {
+      "id": "1.3.limits",
+      "sec": "1.3",
+      "title": "Checking limiting cases",
+      "task": "Test an answer by sending a parameter to 0 or ∞ (or θ to 0 or 90°) and comparing with the case you already understand.",
+      "prereqs": []
+    },
+    {
+      "id": "3.1.newton",
+      "sec": "3.1",
+      "title": "Newton's second and third laws",
+      "task": "Apply $\\vec F_{net}=m\\vec a$ to one particle, and pair action–reaction forces correctly.",
+      "prereqs": [
+        [
+          "M.vec.components",
+          "n",
+          "F = ma is applied component by component."
+        ]
+      ]
+    },
+    {
+      "id": "3.2.fbd",
+      "sec": "3.2",
+      "title": "Free-body diagrams",
+      "task": "Draw every force acting on each object (gravity, normal, friction, tension, pivot forces), and nothing else.",
+      "prereqs": [
+        [
+          "3.1.newton",
+          "n",
+          "A diagram is the input to F = ma."
+        ]
+      ]
+    },
+    {
+      "id": "3.5.circular",
+      "sec": "3.5",
+      "title": "Circular motion: a = v²/r = rω² toward the center",
+      "task": "Give the centripetal acceleration of a point moving in a circle of radius $r$ at speed $v$ or angular speed $\\omega$, and the net inward force it needs.",
+      "prereqs": [
+        [
+          "3.1.newton",
+          "n",
+          "The inward force comes from F = ma."
+        ],
+        [
+          "M.coords.polar",
+          "h",
+          "The acceleration points along −r̂."
+        ]
+      ]
+    },
+    {
+      "id": "5.5.momentum",
+      "sec": "5.5",
+      "title": "Momentum and F_ext = dP/dt",
+      "task": "Use total momentum and $\\vec F_{ext}=d\\vec P/dt=M\\vec a_{CM}$ for a system; conserve momentum when the external force vanishes.",
+      "prereqs": [
+        [
+          "3.1.newton",
+          "n",
+          "It follows from summing F = ma over particles."
+        ]
+      ]
+    },
+    {
+      "id": "5.6.cm",
+      "sec": "5.6",
+      "title": "Center of mass and the CM frame",
+      "task": "Locate the center of mass, and split kinetic energy as $\\tfrac12MV_{CM}^2$ plus the energy relative to the CM.",
+      "prereqs": [
+        [
+          "5.5.momentum",
+          "n",
+          "The CM moves with P/M."
+        ]
+      ]
+    },
+    {
+      "id": "6.1.euler-lagrange",
+      "sec": "6.1",
+      "title": "Writing a Lagrangian and its E–L equations",
+      "task": "Write $L=T-V$ in convenient coordinates and apply $\\frac{d}{dt}\\frac{\\partial L}{\\partial\\dot q}=\\frac{\\partial L}{\\partial q}$.",
+      "prereqs": [
+        [
+          "M.calc.derivative",
+          "n",
+          "The equations are built from derivatives."
+        ],
+        [
+          "3.1.newton",
+          "h",
+          "Compare with the F = ma result."
+        ]
+      ]
+    },
+    {
+      "id": "6.5.cyclic",
+      "sec": "6.5",
+      "title": "Cyclic coordinates give conserved momenta",
+      "task": "Spot a coordinate that does not appear in $L$ and use the conserved $\\partial L/\\partial\\dot q$.",
+      "prereqs": [
+        [
+          "6.1.euler-lagrange",
+          "n",
+          "It is read off the E–L equation."
+        ]
+      ]
+    },
+    {
+      "id": "7.1.L-particle",
+      "sec": "7.1",
+      "title": "Angular momentum of a particle: L = r × p",
+      "task": "Compute $\\vec L=\\vec r\\times m\\vec v$ about a chosen origin, and know it is conserved when the force on the particle is central about that origin.",
+      "prereqs": [
+        [
+          "M.vec.cross",
+          "n",
+          "L is a cross product."
+        ],
+        [
+          "5.5.momentum",
+          "h",
+          "p = mv is the quantity being crossed."
+        ]
+      ]
+    },
+    {
+      "id": "8.1.L-pancake",
+      "sec": "8.1",
+      "title": "L_z = Iω for a flat body rotating about the z axis",
+      "task": "Write $L_z=I\\omega$ with $I=\\int r^2\\,dm$ about the rotation axis for a pancake-shaped body.",
+      "prereqs": [
+        [
+          "7.1.L-particle",
+          "n",
+          "It is the sum of the particles' r × p."
+        ],
+        [
+          "M.calc.mass-integral",
+          "h",
+          "I is an integral over the body."
+        ]
+      ]
+    },
+    {
+      "id": "8.1.ke-rot",
+      "sec": "8.1",
+      "title": "Rotational kinetic energy ½Iω²",
+      "task": "Use $KE=\\tfrac12I\\omega^2$ for rotation about a fixed axis.",
+      "prereqs": [
+        [
+          "8.1.L-pancake",
+          "n",
+          "It uses the same I."
+        ]
+      ]
+    },
+    {
+      "id": "8.1.plane-motion",
+      "sec": "8.1",
+      "title": "General plane motion: CM part plus rotation about the CM",
+      "task": "Split $L=\\vec R_{CM}\\times M\\vec V_{CM}+I_{CM}\\omega\\,\\hat z$ and $KE=\\tfrac12MV_{CM}^2+\\tfrac12I_{CM}\\omega^2$.",
+      "prereqs": [
+        [
+          "8.1.L-pancake",
+          "n",
+          "The spin part is I_CM ω."
+        ],
+        [
+          "5.6.cm",
+          "n",
+          "The split is about the CM."
+        ]
+      ]
+    },
+    {
+      "id": "8.1.parallel-axis",
+      "sec": "8.1",
+      "title": "Parallel-axis theorem",
+      "task": "Use $I=I_{CM}+Md^2$ for an axis a distance $d$ from a parallel axis through the CM.",
+      "prereqs": [
+        [
+          "8.1.L-pancake",
+          "n",
+          "It relates two moments of inertia."
+        ],
+        [
+          "5.6.cm",
+          "h",
+          "The derivation uses the CM."
+        ]
+      ]
+    },
+    {
+      "id": "8.1.perp-axis",
+      "sec": "8.1",
+      "title": "Perpendicular-axis theorem (flat objects)",
+      "task": "Use $I_z=I_x+I_y$ for a flat object in the x-y plane, e.g. a disk about a diameter is $\\tfrac14MR^2$.",
+      "prereqs": [
+        [
+          "8.1.L-pancake",
+          "n",
+          "It relates moments of a flat body."
+        ]
+      ]
+    },
+    {
+      "id": "8.2.L-3d-fixed-axis",
+      "sec": "8.2",
+      "title": "L_z = I_z ω for 3D objects on a fixed axis",
+      "task": "For any rigid body rotating about the z axis, $L_z=I_z\\omega$ with $I_z=\\int(x^2+y^2)dm$; the other components of L need not vanish.",
+      "prereqs": [
+        [
+          "8.1.L-pancake",
+          "n",
+          "It generalizes the flat case."
+        ]
+      ]
+    },
+    {
+      "id": "8.3.standard",
+      "sec": "8.3",
+      "title": "Standard moments of inertia",
+      "task": "Recall I for a rod (center, end), ring, disk, solid sphere and spherical shell, and when to use which.",
+      "prereqs": [
+        [
+          "8.1.L-pancake",
+          "n",
+          "These are values of the same integral."
+        ]
+      ]
+    },
+    {
+      "id": "8.3.integrate",
+      "sec": "8.3",
+      "title": "Computing I by integration",
+      "task": "Compute a moment of inertia by slicing a body into rods, rings, disks or shells and integrating.",
+      "prereqs": [
+        [
+          "8.1.L-pancake",
+          "n",
+          "The definition of I is the integral."
+        ],
+        [
+          "M.calc.mass-integral",
+          "n",
+          "Choosing dm and the limits."
+        ]
+      ]
+    },
+    {
+      "id": "8.3.composite",
+      "sec": "8.3",
+      "title": "Moments of inertia of composite bodies",
+      "task": "Add the moments of the parts about one axis, moving each part with the parallel-axis theorem.",
+      "prereqs": [
+        [
+          "8.3.standard",
+          "n",
+          "Parts use the standard values."
+        ],
+        [
+          "8.1.parallel-axis",
+          "n",
+          "Parts are shifted to the common axis."
+        ]
+      ]
+    },
+    {
+      "id": "8.4.torque",
+      "sec": "8.4",
+      "title": "Torque τ = r × F about a chosen origin",
+      "task": "Compute a torque as $\\vec r\\times\\vec F$ (or lever arm × force), with its direction, about a stated origin.",
+      "prereqs": [
+        [
+          "M.vec.cross",
+          "n",
+          "Torque is a cross product."
+        ]
+      ]
+    },
+    {
+      "id": "8.4.tau-dLdt",
+      "sec": "8.4",
+      "title": "τ = dL/dt about a fixed point or the CM",
+      "task": "Apply $\\vec\\tau=d\\vec L/dt$ about a fixed origin or about the CM (even if it accelerates), and not about other accelerating points.",
+      "prereqs": [
+        [
+          "8.4.torque",
+          "n",
+          "The left side is a torque."
+        ],
+        [
+          "7.1.L-particle",
+          "n",
+          "The right side is the change of L."
+        ],
+        [
+          "8.1.plane-motion",
+          "h",
+          "The CM version uses the CM split."
+        ]
+      ]
+    },
+    {
+      "id": "8.4.rolling",
+      "sec": "8.4",
+      "title": "Rolling without slipping: v = ωR",
+      "task": "Use $v_{CM}=\\omega R$ and $a=\\alpha R$, the contact point at rest, and static friction of either direction.",
+      "prereqs": [
+        [
+          "3.2.fbd",
+          "n",
+          "Friction and normal forces must be drawn."
+        ],
+        [
+          "8.1.L-pancake",
+          "h",
+          "ω and I enter the dynamics."
+        ]
+      ]
+    },
+    {
+      "id": "8.4.incline",
+      "sec": "8.4",
+      "title": "Rolling down an incline",
+      "task": "Derive $a=\\dfrac{g\\sin\\theta}{1+I/MR^2}$ from F = ma plus τ = Iα (or from energy), and rank rolling objects.",
+      "prereqs": [
+        [
+          "8.4.rolling",
+          "n",
+          "The constraint links a and α."
+        ],
+        [
+          "8.4.tau-dLdt",
+          "n",
+          "τ = Iα about the CM."
+        ],
+        [
+          "8.3.standard",
+          "h",
+          "Needs I for the object."
+        ]
+      ]
+    },
+    {
+      "id": "8.4.physical-pendulum",
+      "sec": "8.4",
+      "title": "Physical pendulum frequency",
+      "task": "Show $\\omega=\\sqrt{Mgd/I_{pivot}}$ for small oscillations about a pivot a distance d from the CM.",
+      "prereqs": [
+        [
+          "8.4.tau-dLdt",
+          "n",
+          "Torque about the pivot drives it."
+        ],
+        [
+          "M.series.small",
+          "n",
+          "sin θ ≈ θ."
+        ],
+        [
+          "M.ode.harmonic",
+          "n",
+          "Read ω from the harmonic equation."
+        ],
+        [
+          "8.1.parallel-axis",
+          "h",
+          "I about the pivot."
+        ]
+      ]
+    },
+    {
+      "id": "8.5.L-collisions",
+      "sec": "8.5",
+      "title": "Angular momentum conservation in collisions",
+      "task": "Conserve L about a pivot (or any point where the unknown impulsive forces act) through a collision, while linear momentum may not be conserved.",
+      "prereqs": [
+        [
+          "8.4.tau-dLdt",
+          "n",
+          "No external torque about that point."
+        ],
+        [
+          "5.5.momentum",
+          "h",
+          "Contrast with momentum conservation."
+        ]
+      ]
+    },
+    {
+      "id": "8.6.impulse",
+      "sec": "8.6",
+      "title": "Angular impulse from a blow",
+      "task": "For a blow $J$ at distance $d$ from the CM of a free body: $\\Delta V_{CM}=J/M$ and $\\Delta\\omega=Jd/I_{CM}$.",
+      "prereqs": [
+        [
+          "8.4.tau-dLdt",
+          "n",
+          "Angular impulse is ∫τ dt = ΔL."
+        ],
+        [
+          "5.5.momentum",
+          "n",
+          "Impulse changes momentum."
+        ]
+      ]
+    },
+    {
+      "id": "8.6.percussion",
+      "sec": "8.6",
+      "title": "Center of percussion (sweet spot)",
+      "task": "Find where to strike a pivoted or held stick so the pivot feels no impulse (2L/3 for a uniform stick held at one end).",
+      "prereqs": [
+        [
+          "8.6.impulse",
+          "n",
+          "It balances ΔV_CM against ω × distance."
+        ]
+      ]
+    },
+    {
+      "id": "9.1.general-motion",
+      "sec": "9.1",
+      "title": "General motion: translation plus rotation",
+      "task": "Describe any rigid-body motion as the motion of one point plus a rotation about an axis through that point.",
+      "prereqs": [
+        [
+          "8.1.plane-motion",
+          "h",
+          "The planar version of the same idea."
+        ]
+      ]
+    },
+    {
+      "id": "9.1.omega-vector",
+      "sec": "9.1",
+      "title": "The angular velocity vector; v = ω × r",
+      "task": "Give $\\vec\\omega$'s direction by the right-hand rule, and compute a point's velocity as $\\vec v=\\vec\\omega\\times\\vec r$ (plus the reference point's velocity).",
+      "prereqs": [
+        [
+          "M.vec.cross",
+          "n",
+          "v = ω × r."
+        ],
+        [
+          "9.1.general-motion",
+          "n",
+          "ω describes the rotation part."
+        ]
+      ]
+    },
+    {
+      "id": "9.1.omega-add",
+      "sec": "9.1",
+      "title": "Angular velocities add as vectors",
+      "task": "Add angular velocities, e.g. $\\vec\\omega=\\vec\\Omega+\\omega'\\hat e_3$ for a body spinning at ω′ relative to a frame that turns at Ω.",
+      "prereqs": [
+        [
+          "9.1.omega-vector",
+          "n",
+          "They are vectors of this kind."
+        ]
+      ]
+    },
+    {
+      "id": "9.1.instant-axis",
+      "sec": "9.1",
+      "title": "The instantaneous axis passes through points at rest",
+      "task": "Find the direction of $\\vec\\omega$ from two points of the body that are momentarily at rest (e.g. a pivot and a contact point).",
+      "prereqs": [
+        [
+          "9.1.omega-vector",
+          "n",
+          "Points on the axis have v = ω × r = 0."
+        ]
+      ]
+    },
+    {
+      "id": "9.1.rolling-3d",
+      "sec": "9.1",
+      "title": "Rolling without slipping in 3D (cones, wheels on axles)",
+      "task": "Relate spin and precession rates of a rolling cone or wheel-and-axle using the contact point at rest, e.g. $\\omega'=(R/r)\\,\\Omega$.",
+      "prereqs": [
+        [
+          "9.1.instant-axis",
+          "n",
+          "The contact point is at rest."
+        ],
+        [
+          "9.1.omega-add",
+          "n",
+          "ω = Ω + ω′ is split into precession and spin."
+        ],
+        [
+          "8.4.rolling",
+          "h",
+          "The planar rolling condition."
+        ]
+      ]
+    },
+    {
+      "id": "9.2.L-tensor",
+      "sec": "9.2",
+      "title": "L = I ω with the inertia tensor",
+      "task": "For rotation about an axis through the origin, compute $\\vec L=\\mathbf I\\vec\\omega$, and see that $\\vec L$ need not be parallel to $\\vec\\omega$.",
+      "prereqs": [
+        [
+          "9.1.omega-vector",
+          "n",
+          "The input is the vector ω."
+        ],
+        [
+          "7.1.L-particle",
+          "n",
+          "L sums r × m v with v = ω × r."
+        ],
+        [
+          "M.lin.matrix-vector",
+          "n",
+          "I acts on ω as a matrix."
+        ]
+      ]
+    },
+    {
+      "id": "9.2.tensor-compute",
+      "sec": "9.2",
+      "title": "Computing inertia-tensor components",
+      "task": "Compute $I_{xx}=\\int(y^2+z^2)dm$ and $I_{xy}=-\\int xy\\,dm$ for point masses or simple bodies about a given origin.",
+      "prereqs": [
+        [
+          "9.2.L-tensor",
+          "n",
+          "These are its entries."
+        ],
+        [
+          "M.calc.mass-integral",
+          "n",
+          "The entries are body integrals."
+        ]
+      ]
+    },
+    {
+      "id": "9.2.ke-tensor",
+      "sec": "9.2",
+      "title": "Kinetic energy: ½ ω·L",
+      "task": "Compute rotational kinetic energy as $\\tfrac12\\vec\\omega\\cdot\\vec L=\\tfrac12\\vec\\omega^T\\mathbf I\\vec\\omega$.",
+      "prereqs": [
+        [
+          "9.2.L-tensor",
+          "n",
+          "Uses L = Iω."
+        ],
+        [
+          "M.vec.dot",
+          "n",
+          "It is a dot product."
+        ]
+      ]
+    },
+    {
+      "id": "9.2.general-L",
+      "sec": "9.2",
+      "title": "L of a moving body: CM part plus L about the CM",
+      "task": "For a body that translates and rotates, write $\\vec L=\\vec R\\times M\\vec V+\\mathbf I_{CM}\\vec\\omega$.",
+      "prereqs": [
+        [
+          "9.2.L-tensor",
+          "n",
+          "The spin part uses the tensor about the CM."
+        ],
+        [
+          "8.1.plane-motion",
+          "n",
+          "The same split in 2D."
+        ]
+      ]
+    },
+    {
+      "id": "9.2.parallel-axis-tensor",
+      "sec": "9.2",
+      "title": "Parallel-axis theorem for the inertia tensor",
+      "task": "Shift the tensor from the CM to another point: $I_{ij}=I^{CM}_{ij}+M(R^2\\delta_{ij}-R_iR_j)$; for an axis this reduces to $+Md^2$.",
+      "prereqs": [
+        [
+          "9.2.tensor-compute",
+          "n",
+          "It relates tensor entries."
+        ],
+        [
+          "8.1.parallel-axis",
+          "n",
+          "The scalar version."
+        ]
+      ]
+    },
+    {
+      "id": "9.3.definition",
+      "sec": "9.3",
+      "title": "Principal axes: where L is parallel to ω",
+      "task": "State that a principal axis is one where $\\mathbf I\\vec\\omega=\\lambda\\vec\\omega$, that every body has three orthogonal ones about any point, and that I is diagonal in that basis.",
+      "prereqs": [
+        [
+          "9.2.L-tensor",
+          "n",
+          "It is a property of L = Iω."
+        ],
+        [
+          "M.lin.eigen",
+          "n",
+          "Principal axes are eigenvectors."
+        ]
+      ]
+    },
+    {
+      "id": "9.3.symmetry",
+      "sec": "9.3",
+      "title": "Principal axes from symmetry",
+      "task": "Name the principal axes of a symmetric body about a point on its symmetry axis: the symmetry axis and every axis perpendicular to it (equal moments).",
+      "prereqs": [
+        [
+          "9.3.definition",
+          "n",
+          "What makes an axis principal."
+        ]
+      ]
+    },
+    {
+      "id": "9.3.eigen-method",
+      "sec": "9.3",
+      "title": "Principal axes by solving the eigenvalue problem",
+      "task": "Find principal moments and axes of a given inertia tensor by solving $\\det(\\mathbf I-\\lambda)=0$.",
+      "prereqs": [
+        [
+          "9.3.definition",
+          "n",
+          "Principal axes are the eigenvectors."
+        ],
+        [
+          "M.lin.eigen",
+          "n",
+          "The calculation itself."
+        ]
+      ]
+    },
+    {
+      "id": "9.3.L-components",
+      "sec": "9.3",
+      "title": "Writing L along principal axes",
+      "task": "Split $\\vec\\omega$ along the principal axes, then $\\vec L=I_1\\omega_1\\hat e_1+I_2\\omega_2\\hat e_2+I_3\\omega_3\\hat e_3$ (using the total ω, not a relative spin).",
+      "prereqs": [
+        [
+          "9.3.definition",
+          "n",
+          "Uses the principal basis."
+        ],
+        [
+          "M.lin.change-basis",
+          "n",
+          "ω must be resolved along tilted axes."
+        ],
+        [
+          "9.3.symmetry",
+          "h",
+          "Usually how the axes are found."
+        ]
+      ]
+    },
+    {
+      "id": "9.4.blow",
+      "sec": "9.4",
+      "title": "Motion right after an impulsive blow",
+      "task": "Get $\\vec L$ from the angular impulse, then solve $\\mathbf I\\vec\\omega=\\vec L$ for $\\vec\\omega$ using principal axes.",
+      "prereqs": [
+        [
+          "8.6.impulse",
+          "n",
+          "The blow sets L."
+        ],
+        [
+          "9.3.L-components",
+          "n",
+          "L to ω through the principal moments."
+        ]
+      ]
+    },
+    {
+      "id": "9.4.steady-precession",
+      "sec": "9.4",
+      "title": "Steady precession: τ = dL/dt",
+      "task": "For L of fixed size and tilt turning at rate Ω, use $d\\vec L/dt=\\vec\\Omega\\times\\vec L$ (only the part perpendicular to Ω changes) and equate it to the torque about a point where unknown forces drop out.",
+      "prereqs": [
+        [
+          "9.3.L-components",
+          "n",
+          "L must be written correctly first."
+        ],
+        [
+          "M.vec.rotating",
+          "n",
+          "dL/dt = Ω × L."
+        ],
+        [
+          "8.4.tau-dLdt",
+          "n",
+          "Torque about a fixed point or the CM."
+        ],
+        [
+          "8.4.torque",
+          "n",
+          "Torques of gravity and contact forces."
+        ]
+      ]
+    },
+    {
+      "id": "9.5.euler",
+      "sec": "9.5",
+      "title": "Euler's equations",
+      "task": "Write $I_1\\dot\\omega_1+(I_3-I_2)\\omega_2\\omega_3=\\tau_1$ (and cyclic) in the principal body frame and use them for a body with a torque-free or simple torque.",
+      "prereqs": [
+        [
+          "9.3.L-components",
+          "n",
+          "They are τ = dL/dt in the principal basis."
+        ],
+        [
+          "M.vec.rotating",
+          "n",
+          "The body axes rotate."
+        ]
+      ]
+    },
+    {
+      "id": "9.5.stability",
+      "sec": "9.5",
+      "title": "Stability about principal axes (tennis racket)",
+      "task": "Show rotation about the largest or smallest principal axis is stable and about the intermediate one unstable.",
+      "prereqs": [
+        [
+          "9.5.euler",
+          "n",
+          "Linearize Euler's equations."
+        ],
+        [
+          "M.ode.harmonic",
+          "n",
+          "Stable ↔ oscillating solution."
+        ]
+      ]
+    },
+    {
+      "id": "9.6.body-frame",
+      "sec": "9.6",
+      "title": "Free symmetric top, body frame: Ω_b = (I₃−I)ω₃/I",
+      "task": "For a torque-free symmetric top, show ω₃ is constant and ω precesses around the symmetry axis at $(I_3-I)\\omega_3/I$ as seen in the body.",
+      "prereqs": [
+        [
+          "9.5.euler",
+          "n",
+          "Solved from Euler's equations."
+        ]
+      ]
+    },
+    {
+      "id": "9.6.fixed-frame",
+      "sec": "9.6",
+      "title": "Free symmetric top, fixed frame: Ω_s = L/I",
+      "task": "Seen from the fixed frame, L is constant and the symmetry axis and ω precess around it at $L/I$; ω, L and ê₃ lie in one plane.",
+      "prereqs": [
+        [
+          "9.6.body-frame",
+          "n",
+          "Same motion, other frame."
+        ],
+        [
+          "9.3.L-components",
+          "n",
+          "Uses L in principal components."
+        ]
+      ]
+    },
+    {
+      "id": "9.7.euler-angles",
+      "sec": "9.7",
+      "title": "Euler angles φ, θ, ψ",
+      "task": "Describe a top's orientation by precession φ, tilt θ and spin ψ, and picture each rotation.",
+      "prereqs": [
+        [
+          "9.1.omega-add",
+          "n",
+          "The three rotation rates add."
+        ],
+        [
+          "M.lin.change-basis",
+          "h",
+          "Relates the frames."
+        ]
+      ]
+    },
+    {
+      "id": "9.7.omega-euler",
+      "sec": "9.7",
+      "title": "ω in Euler angles; ω₃ = ψ̇ + φ̇ cos θ",
+      "task": "Write $\\vec\\omega=\\dot\\phi\\hat z+\\dot\\theta\\hat n+\\dot\\psi\\hat e_3$ and its components along the principal axes, e.g. $\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta$ with θ from the vertical.",
+      "prereqs": [
+        [
+          "9.7.euler-angles",
+          "n",
+          "The angles being differentiated."
+        ],
+        [
+          "M.lin.change-basis",
+          "n",
+          "ẑ resolved along ê₃ and the perpendicular."
+        ]
+      ]
+    },
+    {
+      "id": "9.7.steady-top",
+      "sec": "9.7",
+      "title": "Heavy top in steady precession",
+      "task": "Derive $Mg\\ell=\\Omega(I_3\\omega_3-I\\Omega\\cos\\theta)$ with the torque method, I about a perpendicular axis through the pivot.",
+      "prereqs": [
+        [
+          "9.4.steady-precession",
+          "n",
+          "Same τ = dL/dt method."
+        ],
+        [
+          "9.7.omega-euler",
+          "n",
+          "Needs ω₃ and the perpendicular part."
+        ],
+        [
+          "9.2.parallel-axis-tensor",
+          "h",
+          "I about the pivot."
+        ]
+      ]
+    },
+    {
+      "id": "9.7.fast-top",
+      "sec": "9.7",
+      "title": "Fast top: Ω ≈ Mgℓ/(I₃ω₃)",
+      "task": "Pick the slow precession root and approximate it for a fast top; explain why faster spin means slower precession.",
+      "prereqs": [
+        [
+          "9.7.steady-top",
+          "n",
+          "It approximates that equation."
+        ],
+        [
+          "M.series.small",
+          "n",
+          "Drop the small term."
+        ]
+      ]
+    },
+    {
+      "id": "9.7.lagrangian-top",
+      "sec": "9.7",
+      "title": "Heavy top by the Lagrangian method",
+      "task": "Write the top's Lagrangian in Euler angles and use the two conserved momenta (from φ and ψ being cyclic) plus energy.",
+      "prereqs": [
+        [
+          "9.7.omega-euler",
+          "n",
+          "T uses ω in Euler angles."
+        ],
+        [
+          "6.5.cyclic",
+          "n",
+          "φ and ψ are cyclic."
+        ],
+        [
+          "6.1.euler-lagrange",
+          "n",
+          "The method itself."
+        ]
+      ]
+    },
+    {
+      "id": "9.7.nutation",
+      "sec": "9.7",
+      "title": "Nutation",
+      "task": "Describe the tip's bobbing about steady precession and estimate its frequency ($\\approx I_3\\omega_3/I$ for a fast top).",
+      "prereqs": [
+        [
+          "9.7.steady-top",
+          "n",
+          "Nutation is about steady precession."
+        ],
+        [
+          "M.ode.harmonic",
+          "n",
+          "Small oscillations."
+        ],
+        [
+          "9.7.lagrangian-top",
+          "h",
+          "Morin derives it from the Lagrangian."
+        ]
+      ]
+    },
+    {
+      "id": "9.7.sleeping-top",
+      "sec": "9.7",
+      "title": "Stability of a vertical (sleeping) top",
+      "task": "Show a vertical top is stable if $I_3^2\\omega_3^2>4IMg\\ell$.",
+      "prereqs": [
+        [
+          "9.7.steady-top",
+          "n",
+          "Uses the same equation near θ = 0."
+        ],
+        [
+          "M.ode.harmonic",
+          "h",
+          "Stability ↔ oscillation."
+        ]
+      ]
+    },
+    {
+      "id": "1.2.scaling",
+      "sec": "1.2",
+      "title": "Deriving dimensional scales",
+      "task": "Match mass, length and time powers to derive time, speed and energy scales for a pendulum, spring or orbit, and predict changes when parameters change.",
+      "prereqs": [
+        [
+          "1.2.dimensions",
+          "n",
+          "Deriving a scale requires the dimensions of its ingredients."
+        ]
+      ]
+    },
+    {
+      "id": "1.2.limits",
+      "sec": "1.2",
+      "title": "What dimensions can and cannot determine",
+      "task": "Separate dimensional constraints from unknown constants and functions of dimensionless parameters; identify when amplitude or another ingredient can matter.",
+      "prereqs": [
+        [
+          "1.2.dimensions",
+          "n",
+          "A dimensionless ratio is identified by cancelling units."
+        ]
+      ]
+    },
+    {
+      "id": "3.1.first-law",
+      "sec": "3.1",
+      "title": "Inertia and inertial frames",
+      "task": "Predict force-free motion, distinguish velocity from acceleration at an instant, and recognize an inertial frame using free-particle motion.",
+      "prereqs": []
+    },
+    {
+      "id": "3.1.force-law",
+      "sec": "3.1",
+      "title": "Momentum rate, mass and vector acceleration",
+      "task": "Use net force as momentum rate, state the constant-mass condition for F=ma, compare mass through acceleration, and apply the vector law in its Newtonian domain.",
+      "prereqs": [
+        [
+          "M.vec.components",
+          "n",
+          "Force and acceleration must be compared component by component."
+        ]
+      ]
+    },
+    {
+      "id": "3.1.interactions",
+      "sec": "3.1",
+      "title": "Interaction pairs and isolated systems",
+      "task": "Identify third-law partners on different bodies, relate their accelerations and total momentum, and state the particle-force scope of the third law.",
+      "prereqs": [
+        [
+          "3.1.newton",
+          "h",
+          "Separating bodies helps distinguish a reaction force from the net force."
+        ]
+      ]
+    }
+  ]
+}

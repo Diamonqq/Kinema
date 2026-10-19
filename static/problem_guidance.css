@@ -1,0 +1,43 @@
+/* Ideas & formulas (Kinema 1.43): a quiet header pill beside Aa, and a small panel under it. Neutral surfaces, no accent
+   bar, no separator lines; the panel is a fixed layer so the transcript and the composer draft never move. */
+.pg-pill{flex:none;display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;margin-right:6px;border:0;border-radius:999px;
+  background:#ffffff08;color:#c9ced6;font:13px/1 var(--tv-sans);cursor:pointer;white-space:nowrap}
+.pg-pill:hover{background:#ffffff10;color:#eef1f5}
+.pg-pill[aria-expanded=true]{background:#a7cafa1a;color:#a7cafa}
+.pg-pill:focus-visible{outline:2px solid #a7cafa;outline-offset:2px}
+.pg-pill[hidden]{display:none}
+.pg-pill svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.pg-hint{flex:none;height:30px;padding:0 11px;border:0;border-radius:999px;background:#ffffff08;color:#c9ced6;font:13px/1 var(--tv-sans);cursor:pointer}
+.pg-hint:hover,.pg-ask:hover{background:#ffffff10;color:#eef1f5}
+.pg-hint[hidden]{display:none}
+.pg-hint:focus-visible,.pg-ask:focus-visible{outline:2px solid #a7cafa;outline-offset:2px}
+.pg-hint:disabled,.pg-ask:disabled{opacity:.45;cursor:default}
+.pg-ask{display:block;margin-top:12px;padding:9px 12px;border:0;border-radius:12px;background:#a7cafa1a;color:#b9d5fb;font:inherit;cursor:pointer}
+@media(max-width:460px){.pg-pill{gap:4px;padding:0 8px;margin-right:0;font-size:12px}.pg-pill svg{display:none}.pg-hint{padding:0 8px;font-size:12px}.lr-active .tv-head{gap:4px}.lr-active .tv-state{display:none}}
+
+.pg-panel{position:fixed;z-index:45;box-sizing:border-box;overflow:auto;overscroll-behavior:contain;padding:16px 18px 18px;
+  background:#242629;color:#e6e9ee;border:1px solid #ffffff10;border-radius:16px;box-shadow:0 14px 34px #00000055,0 2px 6px #00000040;
+  font:400 14px/1.6 var(--tv-sans);overflow-wrap:anywhere}
+.pg-panel[hidden]{display:none}
+.pg-panel:focus{outline:none}
+.pg-panel>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.pg-panel h3{margin:0;font-size:14px;font-weight:600}
+.pg-panel header small{display:block;margin-top:2px;color:#9aa3b2;font-size:12px;line-height:1.4}
+.pg-close{flex:none;width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:#9aa3b2;font:400 20px/1 var(--tv-sans);cursor:pointer}
+.pg-close:hover{background:#ffffff0f;color:#eef1f5}
+.pg-close:focus-visible{outline:2px solid #a7cafa;outline-offset:1px}
+.pg-body{color:#d6dbe3}
+.pg-body p,.pg-relations p{margin:0}
+.pg-body p+p,.pg-relations p+p{margin-top:8px}
+.pg-panel .katex-display{max-width:100%;overflow-x:auto;overflow-y:hidden;margin:8px 0}
+.pg-relations{margin-top:14px;padding-top:0}
+.pg-relations>span{display:block;margin-bottom:6px;color:#8fb3e6;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+@media(prefers-reduced-motion:no-preference){.pg-panel:not([hidden]){animation:pg-in .16s ease-out}}
+@keyframes pg-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+/* Shared chat styles give every header a surface and border; the reference title row is plain text. */
+.pg-panel>header{background:none;box-shadow:none;border:0;padding:0;min-height:0;height:auto;position:static}
+@media(max-width:460px){
+  .pg-panel{padding:12px 14px 14px}
+  .pg-panel .katex-display{margin:6px 0}
+  .pg-relations{margin-top:10px}
+}

@@ -1,0 +1,2720 @@
+{
+  "version": "2026-09-27.1",
+  "note": "Diagnostic questions. The correct choice is listed first and choices are shuffled when shown. 'I don't know yet' is added by the app.",
+  "questions": [
+    {
+      "id": "q.M.vec.components.1",
+      "skill": "M.vec.components",
+      "stem": "A vector $\\vec A$ of length 10 lies in the $x$-$y$ plane at $30^\\circ$ above the $+x$ axis. Its components $(A_x, A_y)$ are:",
+      "choices": [
+        "$(8.66,\\ 5)$",
+        "$(5,\\ 8.66)$",
+        "$(10,\\ 5)$",
+        "$(8.66,\\ -5)$"
+      ],
+      "why": "$A_x=10\\cos30^\\circ=8.66$, $A_y=10\\sin30^\\circ=5$."
+    },
+    {
+      "id": "q.M.vec.dot.1",
+      "skill": "M.vec.dot",
+      "stem": "$\\vec a=(1,2,2)$ and $\\vec b=(2,0,1)$. What is $\\vec a\\cdot\\vec b$?",
+      "choices": [
+        "4",
+        "5",
+        "3",
+        "$(2,0,2)$"
+      ],
+      "why": "$1\\cdot2+2\\cdot0+2\\cdot1=4$; a dot product is a number, not a vector."
+    },
+    {
+      "id": "q.M.vec.dot.2",
+      "skill": "M.vec.dot",
+      "stem": "What is the component of $\\vec a=(3,4,0)$ along the unit vector $\\hat u=(0.6,\\,0.8,\\,0)$?",
+      "choices": [
+        "5",
+        "4.2",
+        "25",
+        "0.6"
+      ],
+      "why": "$\\vec a\\cdot\\hat u=3(0.6)+4(0.8)=5$ (here $\\hat u$ points along $\\vec a$)."
+    },
+    {
+      "id": "q.M.vec.cross.1",
+      "skill": "M.vec.cross",
+      "stem": "$\\vec a=(1,0,0)$ and $\\vec b=(0,2,0)$. What is $\\vec a\\times\\vec b$?",
+      "choices": [
+        "$(0,0,2)$",
+        "$(0,0,-2)$",
+        "2",
+        "$(0,2,0)$"
+      ],
+      "why": "$\\hat x\\times2\\hat y=2\\hat z$."
+    },
+    {
+      "id": "q.M.vec.cross.2",
+      "skill": "M.vec.cross",
+      "stem": "With right-handed axes ($\\hat x$ east, $\\hat y$ north, $\\hat z$ up), what is $\\hat z\\times\\hat x$?",
+      "choices": [
+        "$\\hat y$ (north)",
+        "$-\\hat y$ (south)",
+        "$\\hat z$",
+        "0"
+      ],
+      "why": "Cyclic order $\\hat x\\to\\hat y\\to\\hat z\\to\\hat x$: $\\hat z\\times\\hat x=\\hat y$."
+    },
+    {
+      "id": "q.M.vec.rotating.1",
+      "skill": "M.vec.rotating",
+      "stem": "A vector $\\vec A$ of fixed length turns about the vertical $\\hat z$ axis at rate $\\Omega$, keeping a fixed angle with $\\hat z$. Which is true?",
+      "choices": [
+        "$d\\vec A/dt=\\Omega\\hat z\\times\\vec A$: horizontal, with size $\\Omega$ times the horizontal part of $\\vec A$",
+        "$d\\vec A/dt=\\Omega\\vec A$",
+        "$d\\vec A/dt$ is vertical because the tip circles the vertical axis",
+        "$d\\vec A/dt=0$ because $|\\vec A|$ is constant"
+      ],
+      "why": "The tip moves on a horizontal circle of radius $A_\\perp$ at angular rate $\\Omega$, so $d\\vec A/dt=\\vec\\Omega\\times\\vec A$ with size $\\Omega A_\\perp$."
+    },
+    {
+      "id": "q.M.vec.rotating.2",
+      "skill": "M.vec.rotating",
+      "stem": "$\\vec L=(3,0,4)$ turns about $\\hat z$ at $\\Omega=2$ rad/s. What is $|d\\vec L/dt|$?",
+      "choices": [
+        "6",
+        "10",
+        "8",
+        "0"
+      ],
+      "why": "$2\\hat z\\times(3,0,4)=(0,6,0)$: only the horizontal part (3) counts, $2\\times3=6$."
+    },
+    {
+      "id": "q.M.calc.derivative.1",
+      "skill": "M.calc.derivative",
+      "stem": "$\\dfrac{d}{dt}\\sin\\theta(t)=\\ ?$",
+      "choices": [
+        "$\\cos\\theta\\,\\dot\\theta$",
+        "$\\cos\\theta$",
+        "$-\\cos\\theta\\,\\dot\\theta$",
+        "$\\sin\\dot\\theta$"
+      ],
+      "why": "Chain rule: $\\cos\\theta\\cdot d\\theta/dt$."
+    },
+    {
+      "id": "q.M.calc.integral.1",
+      "skill": "M.calc.integral",
+      "stem": "$\\displaystyle\\int_0^L x^2\\,dx=\\ ?$",
+      "choices": [
+        "$L^3/3$",
+        "$L^2/2$",
+        "$2L$",
+        "$L^3$"
+      ],
+      "why": "The antiderivative of $x^2$ is $x^3/3$."
+    },
+    {
+      "id": "q.M.calc.mass-integral.1",
+      "skill": "M.calc.mass-integral",
+      "stem": "A uniform disk of mass $M$ and radius $R$ is cut into thin rings of radius $r$ and width $dr$. The mass of one ring is:",
+      "choices": [
+        "$\\dfrac{2Mr\\,dr}{R^2}$",
+        "$\\dfrac{M\\,dr}{R}$",
+        "$\\dfrac{Mr\\,dr}{R^2}$",
+        "$\\dfrac{M\\,dr}{\\pi R^2}$"
+      ],
+      "why": "$dm=\\sigma\\cdot2\\pi r\\,dr$ with $\\sigma=M/\\pi R^2$."
+    },
+    {
+      "id": "q.M.series.small.1",
+      "skill": "M.series.small",
+      "stem": "For small $\\theta$, $1-\\cos\\theta\\approx\\ ?$",
+      "choices": [
+        "$\\theta^2/2$",
+        "$\\theta$",
+        "0",
+        "$\\theta^2$"
+      ],
+      "why": "$\\cos\\theta\\approx1-\\theta^2/2$."
+    },
+    {
+      "id": "q.M.series.small.2",
+      "skill": "M.series.small",
+      "stem": "For $x\\ll1$, $\\sqrt{1+x}\\approx\\ ?$",
+      "choices": [
+        "$1+x/2$",
+        "$1+2x$",
+        "$1+x$",
+        "$1-x/2$"
+      ],
+      "why": "$(1+x)^n\\approx1+nx$ with $n=\\tfrac12$."
+    },
+    {
+      "id": "q.M.ode.harmonic.1",
+      "skill": "M.ode.harmonic",
+      "stem": "An angle obeys $\\ddot\\theta=-\\dfrac{3g}{2L}\\,\\theta$. The angular frequency of its oscillations is:",
+      "choices": [
+        "$\\sqrt{3g/2L}$",
+        "$3g/2L$",
+        "$\\sqrt{2L/3g}$",
+        "$2\\pi\\sqrt{3g/2L}$"
+      ],
+      "why": "$\\ddot\\theta=-\\omega^2\\theta$ gives $\\omega=\\sqrt{3g/2L}$."
+    },
+    {
+      "id": "q.M.coords.polar.1",
+      "skill": "M.coords.polar",
+      "stem": "At a point on the $+x$ axis, which way does $\\hat\\phi$ point?",
+      "choices": [
+        "$+\\hat y$",
+        "$-\\hat y$",
+        "$+\\hat x$",
+        "$+\\hat z$"
+      ],
+      "why": "$\\hat\\phi$ points in the direction of increasing angle, counterclockwise seen from above."
+    },
+    {
+      "id": "q.M.coords.polar.2",
+      "skill": "M.coords.polar",
+      "stem": "In cylindrical coordinates $(r,\\phi,z)$, $\\hat z\\times\\hat r=\\ ?$",
+      "choices": [
+        "$\\hat\\phi$",
+        "$-\\hat\\phi$",
+        "$\\hat r$",
+        "0"
+      ],
+      "why": "$(\\hat r,\\hat\\phi,\\hat z)$ is right-handed, so $\\hat z\\times\\hat r=\\hat\\phi$."
+    },
+    {
+      "id": "q.M.lin.matrix-vector.1",
+      "skill": "M.lin.matrix-vector",
+      "stem": "$\\begin{pmatrix}2&0&0\\\\0&3&1\\\\0&1&3\\end{pmatrix}\\begin{pmatrix}0\\\\1\\\\1\\end{pmatrix}=\\ ?$",
+      "choices": [
+        "$(0,4,4)$",
+        "$(0,3,3)$",
+        "$(2,4,4)$",
+        "$(0,1,1)$"
+      ],
+      "why": "Row by row: $0$, $3+1$, $1+3$."
+    },
+    {
+      "id": "q.M.lin.change-basis.1",
+      "skill": "M.lin.change-basis",
+      "stem": "Let $\\hat e_3=\\cos\\theta\\,\\hat x+\\sin\\theta\\,\\hat z$ and $\\hat e_2=-\\sin\\theta\\,\\hat x+\\cos\\theta\\,\\hat z$. The components of $\\hat x$ along $(\\hat e_3,\\hat e_2)$ are:",
+      "choices": [
+        "$(\\cos\\theta,\\ -\\sin\\theta)$",
+        "$(\\cos\\theta,\\ \\sin\\theta)$",
+        "$(\\sin\\theta,\\ \\cos\\theta)$",
+        "$(1,\\ 0)$"
+      ],
+      "why": "$\\hat x\\cdot\\hat e_3=\\cos\\theta$ and $\\hat x\\cdot\\hat e_2=-\\sin\\theta$."
+    },
+    {
+      "id": "q.M.lin.eigen.1",
+      "skill": "M.lin.eigen",
+      "stem": "The eigenvalues of $\\begin{pmatrix}3&1\\\\1&3\\end{pmatrix}$ are:",
+      "choices": [
+        "4 and 2",
+        "3 and 3",
+        "3 and 1",
+        "4 and $-2$"
+      ],
+      "why": "$(3-\\lambda)^2-1=0$ gives $\\lambda=4,2$."
+    },
+    {
+      "id": "q.M.lin.eigen.2",
+      "skill": "M.lin.eigen",
+      "stem": "For $\\begin{pmatrix}3&1\\\\1&3\\end{pmatrix}$, which vector is an eigenvector with eigenvalue 4?",
+      "choices": [
+        "$(1,1)$",
+        "$(1,-1)$",
+        "$(1,0)$",
+        "$(0,1)$"
+      ],
+      "why": "$\\begin{pmatrix}3&1\\\\1&3\\end{pmatrix}\\begin{pmatrix}1\\\\1\\end{pmatrix}=\\begin{pmatrix}4\\\\4\\end{pmatrix}$."
+    },
+    {
+      "id": "q.1.2.dimensions.1",
+      "skill": "1.2.dimensions",
+      "stem": "Which formula for a top's precession rate $\\Omega$ has the right units? ($M$ mass, $g$ gravity, $\\ell$ length, $I$ moment of inertia, $\\omega$ spin rate)",
+      "choices": [
+        "$\\Omega=\\dfrac{Mg\\ell}{I\\omega}$",
+        "$\\Omega=\\dfrac{Mg\\ell\\,\\omega}{I}$",
+        "$\\Omega=\\dfrac{Mg}{I\\omega}$",
+        "$\\Omega=\\dfrac{I\\omega}{Mg\\ell}$"
+      ],
+      "why": "$Mg\\ell$ is a torque (kg m²/s²) and $I\\omega$ is angular momentum (kg m²/s), so their ratio is 1/s."
+    },
+    {
+      "id": "q.1.3.limits.1",
+      "skill": "1.3.limits",
+      "stem": "A block slides down a frictionless incline of angle $\\theta$. Someone proposes $a=g\\sin\\theta\\cos\\theta$. Which check shows it is wrong?",
+      "choices": [
+        "At $\\theta=90^\\circ$ it gives 0, but a vertical 'incline' is free fall with $a=g$",
+        "At $\\theta=0$ it gives 0, which is wrong",
+        "Its units are wrong",
+        "No limiting case can test it"
+      ],
+      "why": "The correct answer is $g\\sin\\theta$; the $\\theta\\to90^\\circ$ limit exposes the extra $\\cos\\theta$."
+    },
+    {
+      "id": "q.3.1.newton.1",
+      "skill": "3.1.newton",
+      "stem": "A 2 kg block is pushed with 10 N across a floor against 4 N of kinetic friction. Its acceleration is:",
+      "choices": [
+        "3 m/s²",
+        "5 m/s²",
+        "7 m/s²",
+        "2 m/s²"
+      ],
+      "why": "$(10-4)/2=3$ m/s²."
+    },
+    {
+      "id": "q.3.2.fbd.1",
+      "skill": "3.2.fbd",
+      "stem": "A ball on a string swings in a horizontal circle (a conical pendulum). Which forces act on the ball?",
+      "choices": [
+        "Gravity and tension",
+        "Gravity, tension and a centripetal force",
+        "Gravity, tension and a centrifugal force",
+        "Tension only"
+      ],
+      "why": "Centripetal is the name of the net inward force (here a part of the tension), not an extra force."
+    },
+    {
+      "id": "q.3.5.circular.1",
+      "skill": "3.5.circular",
+      "stem": "A point moves in a circle of radius 0.5 m at $\\omega=4$ rad/s. Its acceleration is:",
+      "choices": [
+        "8 m/s² toward the center",
+        "2 m/s² toward the center",
+        "8 m/s² along the velocity",
+        "0, because the speed is constant"
+      ],
+      "why": "$a=r\\omega^2=0.5\\times16=8$ m/s², pointing inward."
+    },
+    {
+      "id": "q.5.5.momentum.1",
+      "skill": "5.5.momentum",
+      "stem": "Two skaters, 60 kg and 40 kg, push off from rest. The 60 kg skater moves at 2 m/s. The other moves at:",
+      "choices": [
+        "3 m/s",
+        "2 m/s",
+        "1.33 m/s",
+        "5 m/s"
+      ],
+      "why": "Momentum stays zero: $60\\times2=40v$."
+    },
+    {
+      "id": "q.5.6.cm.1",
+      "skill": "5.6.cm",
+      "stem": "A 1 kg mass is at $x=0$ and a 3 kg mass at $x=4$ m. Where is the center of mass?",
+      "choices": [
+        "$x=3$ m",
+        "$x=2$ m",
+        "$x=1$ m",
+        "$x=4$ m"
+      ],
+      "why": "$(1\\cdot0+3\\cdot4)/4=3$ m."
+    },
+    {
+      "id": "q.6.1.euler-lagrange.1",
+      "skill": "6.1.euler-lagrange",
+      "stem": "For $L=\\tfrac12m\\dot x^2-\\tfrac12kx^2$, the Euler–Lagrange equation is:",
+      "choices": [
+        "$m\\ddot x=-kx$",
+        "$m\\ddot x=kx$",
+        "$m\\dot x=-kx$",
+        "$\\tfrac12m\\ddot x=-kx$"
+      ],
+      "why": "$\\frac{d}{dt}(m\\dot x)=-kx$."
+    },
+    {
+      "id": "q.6.5.cyclic.1",
+      "skill": "6.5.cyclic",
+      "stem": "For $L=\\tfrac12m(\\dot r^2+r^2\\dot\\theta^2)-V(r)$, which quantity is conserved because $\\theta$ is cyclic?",
+      "choices": [
+        "$mr^2\\dot\\theta$",
+        "$m\\dot r$",
+        "$\\tfrac12mr^2\\dot\\theta^2$",
+        "$mr\\dot\\theta$"
+      ],
+      "why": "$\\partial L/\\partial\\dot\\theta=mr^2\\dot\\theta$ is conserved."
+    },
+    {
+      "id": "q.7.1.L-particle.1",
+      "skill": "7.1.L-particle",
+      "stem": "A particle of mass $m$ moves with velocity $v\\hat y$ along the line $x=d$ (in the $x$-$y$ plane). Its angular momentum about the origin is:",
+      "choices": [
+        "$mvd\\,\\hat z$, the same at every point of the line",
+        "$-mvd\\,\\hat z$",
+        "$mvy\\,\\hat z$, growing as it moves",
+        "0"
+      ],
+      "why": "$\\vec r\\times m\\vec v=(d,y,0)\\times(0,mv,0)=mvd\\,\\hat z$."
+    },
+    {
+      "id": "q.8.1.L-pancake.1",
+      "skill": "8.1.L-pancake",
+      "stem": "A uniform disk (mass $M$, radius $R$) spins at $\\omega$ about the perpendicular axis through its center. Its angular momentum is:",
+      "choices": [
+        "$\\tfrac12MR^2\\omega$",
+        "$MR^2\\omega$",
+        "$\\tfrac14MR^2\\omega$",
+        "$\\tfrac12MR\\omega$"
+      ],
+      "why": "$L=I\\omega$ with $I=\\tfrac12MR^2$."
+    },
+    {
+      "id": "q.8.1.ke-rot.1",
+      "skill": "8.1.ke-rot",
+      "stem": "A thin ring (mass $M$, radius $R$) spins at $\\omega$ about its central perpendicular axis. Its kinetic energy is:",
+      "choices": [
+        "$\\tfrac12MR^2\\omega^2$",
+        "$MR^2\\omega^2$",
+        "$\\tfrac14MR^2\\omega^2$",
+        "$\\tfrac12MR\\omega^2$"
+      ],
+      "why": "$\\tfrac12I\\omega^2$ with $I=MR^2$."
+    },
+    {
+      "id": "q.8.1.plane-motion.1",
+      "skill": "8.1.plane-motion",
+      "stem": "A uniform disk (mass $M$) rolls without slipping at speed $v$. Its total kinetic energy is:",
+      "choices": [
+        "$\\tfrac34Mv^2$",
+        "$\\tfrac12Mv^2$",
+        "$Mv^2$",
+        "$\\tfrac14Mv^2$"
+      ],
+      "why": "$\\tfrac12Mv^2+\\tfrac12(\\tfrac12MR^2)(v/R)^2=\\tfrac34Mv^2$."
+    },
+    {
+      "id": "q.8.1.parallel-axis.1",
+      "skill": "8.1.parallel-axis",
+      "stem": "A uniform rod (mass $M$, length $\\ell$) has $I_{CM}=M\\ell^2/12$. Its moment of inertia about one end is:",
+      "choices": [
+        "$M\\ell^2/3$",
+        "$M\\ell^2/12+M\\ell^2$",
+        "$M\\ell^2/4$",
+        "$M\\ell^2/6$"
+      ],
+      "why": "$M\\ell^2/12+M(\\ell/2)^2=M\\ell^2/3$."
+    },
+    {
+      "id": "q.8.1.parallel-axis.2",
+      "skill": "8.1.parallel-axis",
+      "stem": "A uniform disk (mass $M$, radius $R$) rotates about an axis perpendicular to it through a point on its rim. $I=\\ ?$",
+      "choices": [
+        "$\\tfrac32MR^2$",
+        "$\\tfrac12MR^2$",
+        "$2MR^2$",
+        "$\\tfrac54MR^2$"
+      ],
+      "why": "$\\tfrac12MR^2+MR^2$."
+    },
+    {
+      "id": "q.8.1.perp-axis.1",
+      "skill": "8.1.perp-axis",
+      "stem": "The moment of inertia of a uniform disk (mass $M$, radius $R$) about a diameter is:",
+      "choices": [
+        "$\\tfrac14MR^2$",
+        "$\\tfrac12MR^2$",
+        "$MR^2$",
+        "$\\tfrac1{12}MR^2$"
+      ],
+      "why": "$I_x+I_y=I_z=\\tfrac12MR^2$ and $I_x=I_y$."
+    },
+    {
+      "id": "q.8.2.L-3d-fixed-axis.1",
+      "skill": "8.2.L-3d-fixed-axis",
+      "stem": "A rigid body is forced to rotate about the fixed $z$ axis. Which is always true?",
+      "choices": [
+        "$L_z=I_z\\omega$, but $L_x$ and $L_y$ may be nonzero",
+        "$\\vec L=I_z\\omega\\,\\hat z$ exactly",
+        "$\\vec L$ is parallel to $\\vec\\omega$ for every body",
+        "$L_z=I_{CM}\\,\\omega$"
+      ],
+      "why": "Only the $z$ component is guaranteed; a lopsided body has sideways $\\vec L$ components (which is why axles feel wobbling torques)."
+    },
+    {
+      "id": "q.8.3.standard.1",
+      "skill": "8.3.standard",
+      "stem": "Same mass $M$ and radius $R$: which has the largest moment of inertia about its central axis?",
+      "choices": [
+        "A thin hoop",
+        "A uniform disk",
+        "A uniform solid sphere",
+        "They are all equal"
+      ],
+      "why": "Hoop $MR^2$ > disk $\\tfrac12MR^2$ > sphere $\\tfrac25MR^2$: all the hoop's mass is far out."
+    },
+    {
+      "id": "q.8.3.standard.2",
+      "skill": "8.3.standard",
+      "stem": "The moment of inertia of a uniform solid sphere about a diameter is:",
+      "choices": [
+        "$\\tfrac25MR^2$",
+        "$\\tfrac23MR^2$",
+        "$\\tfrac12MR^2$",
+        "$\\tfrac35MR^2$"
+      ],
+      "why": "Solid sphere $\\tfrac25MR^2$; the thin shell is $\\tfrac23MR^2$."
+    },
+    {
+      "id": "q.8.3.integrate.1",
+      "skill": "8.3.integrate",
+      "stem": "Using rings, $I_{disk}=\\displaystyle\\int_0^R r^2\\,\\frac{2Mr}{R^2}\\,dr=\\ ?$",
+      "choices": [
+        "$\\tfrac12MR^2$",
+        "$MR^2$",
+        "$\\tfrac23MR^2$",
+        "$\\tfrac14MR^2$"
+      ],
+      "why": "$\\frac{2M}{R^2}\\cdot\\frac{R^4}{4}=\\tfrac12MR^2$."
+    },
+    {
+      "id": "q.8.3.composite.1",
+      "skill": "8.3.composite",
+      "stem": "A massless rod of length $\\ell$ has a point mass $m$ at each end. Its moment about a perpendicular axis through the rod's center is:",
+      "choices": [
+        "$m\\ell^2/2$",
+        "$m\\ell^2$",
+        "$m\\ell^2/4$",
+        "$2m\\ell^2$"
+      ],
+      "why": "$2\\times m(\\ell/2)^2$."
+    },
+    {
+      "id": "q.8.4.torque.1",
+      "skill": "8.4.torque",
+      "stem": "A force $F\\hat y$ acts at the point $d\\hat x$. Its torque about the origin is:",
+      "choices": [
+        "$dF\\,\\hat z$",
+        "$-dF\\,\\hat z$",
+        "$dF\\,\\hat x$",
+        "0"
+      ],
+      "why": "$d\\hat x\\times F\\hat y=dF\\,\\hat z$."
+    },
+    {
+      "id": "q.8.4.tau-dLdt.1",
+      "skill": "8.4.tau-dLdt",
+      "stem": "About which points can you always use $\\vec\\tau=d\\vec L/dt$?",
+      "choices": [
+        "A fixed point, or the center of mass even if it accelerates",
+        "Any point at all",
+        "Only the center of mass",
+        "Only points where the net force is zero"
+      ],
+      "why": "The CM works because the fictitious force in its frame acts at the CM and has no torque about it."
+    },
+    {
+      "id": "q.8.4.rolling.1",
+      "skill": "8.4.rolling",
+      "stem": "A wheel of radius $R$ rolls without slipping at speed $v$. How fast is the top of the wheel moving?",
+      "choices": [
+        "$2v$",
+        "$v$",
+        "0",
+        "$\\sqrt2\\,v$"
+      ],
+      "why": "The contact point is at rest; the top is twice as far from it: $v+\\omega R=2v$."
+    },
+    {
+      "id": "q.8.4.rolling.2",
+      "skill": "8.4.rolling",
+      "stem": "A ball rolls without slipping across flat ground at constant speed. The friction force from the ground is:",
+      "choices": [
+        "Zero",
+        "Backward, slowing it",
+        "Forward",
+        "Equal to $\\mu mg$"
+      ],
+      "why": "Nothing needs to change the motion, so no friction is needed (ignoring rolling resistance)."
+    },
+    {
+      "id": "q.8.4.incline.1",
+      "skill": "8.4.incline",
+      "stem": "A uniform solid sphere rolls without slipping down an incline of angle $\\theta$. Its acceleration is:",
+      "choices": [
+        "$\\tfrac57g\\sin\\theta$",
+        "$g\\sin\\theta$",
+        "$\\tfrac23g\\sin\\theta$",
+        "$\\tfrac12g\\sin\\theta$"
+      ],
+      "why": "$g\\sin\\theta/(1+\\tfrac25)$."
+    },
+    {
+      "id": "q.8.4.physical-pendulum.1",
+      "skill": "8.4.physical-pendulum",
+      "stem": "A uniform rod of length $\\ell$ swings about one end. Its small-oscillation angular frequency is:",
+      "choices": [
+        "$\\sqrt{3g/2\\ell}$",
+        "$\\sqrt{g/\\ell}$",
+        "$\\sqrt{2g/3\\ell}$",
+        "$\\sqrt{g/2\\ell}$"
+      ],
+      "why": "$\\omega^2=Mgd/I=Mg(\\ell/2)/(M\\ell^2/3)=3g/2\\ell$."
+    },
+    {
+      "id": "q.8.5.L-collisions.1",
+      "skill": "8.5.L-collisions",
+      "stem": "A ball hits and sticks to a rod hanging from a frictionless pivot. Through the collision, what is conserved?",
+      "choices": [
+        "Angular momentum about the pivot",
+        "Linear momentum of ball plus rod",
+        "Kinetic energy",
+        "Angular momentum about the ball's starting point"
+      ],
+      "why": "The pivot's large impulsive force has no torque about the pivot, but it does change linear momentum."
+    },
+    {
+      "id": "q.8.6.impulse.1",
+      "skill": "8.6.impulse",
+      "stem": "A free uniform stick (mass $M$, length $\\ell$) at rest gets an impulse $J$ perpendicular to it at one end. Right after, $V_{CM}$ and $\\omega$ are:",
+      "choices": [
+        "$J/M$ and $6J/M\\ell$",
+        "$J/M$ and $3J/M\\ell$",
+        "$J/2M$ and $6J/M\\ell$",
+        "0 and $12J/M\\ell$"
+      ],
+      "why": "$MV=J$ and $I_{CM}\\omega=J\\ell/2$ with $I_{CM}=M\\ell^2/12$."
+    },
+    {
+      "id": "q.8.6.percussion.1",
+      "skill": "8.6.percussion",
+      "stem": "You hold a uniform stick at one end. Where should a ball hit it so your hand feels no jolt?",
+      "choices": [
+        "$2\\ell/3$ from your hand",
+        "At the far end",
+        "At the middle",
+        "$\\ell/3$ from your hand"
+      ],
+      "why": "There the CM's forward jump exactly cancels the backward rotation at your hand."
+    },
+    {
+      "id": "q.9.1.general-motion.1",
+      "skill": "9.1.general-motion",
+      "stem": "Which describes the motion of any rigid body at a given instant?",
+      "choices": [
+        "The velocity of any one chosen point plus a rotation $\\vec\\omega$ about it; $\\vec\\omega$ is the same whichever point you choose",
+        "A rotation about the center of mass only",
+        "A pure translation, if you pick the right point",
+        "A rotation whose $\\vec\\omega$ depends on the point you choose"
+      ],
+      "why": "Morin 9.1.1: translation of a point plus rotation; the angular velocity doesn't depend on the chosen point."
+    },
+    {
+      "id": "q.9.1.omega-vector.1",
+      "skill": "9.1.omega-vector",
+      "stem": "A body rotates about the origin with $\\vec\\omega=\\omega\\hat z$. The velocity of the body point at $(0,R,0)$ is:",
+      "choices": [
+        "$-\\omega R\\,\\hat x$",
+        "$+\\omega R\\,\\hat x$",
+        "$\\omega R\\,\\hat y$",
+        "$\\omega R\\,\\hat z$"
+      ],
+      "why": "$\\omega\\hat z\\times R\\hat y=-\\omega R\\,\\hat x$."
+    },
+    {
+      "id": "q.9.1.omega-add.1",
+      "skill": "9.1.omega-add",
+      "stem": "A wheel spins at $\\omega'$ about its axle direction $\\hat e_3$ (relative to the axle), while the axle turns about the vertical at $\\Omega\\hat z$. The wheel's angular velocity is:",
+      "choices": [
+        "$\\Omega\\hat z+\\omega'\\hat e_3$",
+        "$\\omega'\\hat e_3$",
+        "$\\Omega\\hat z$",
+        "$\\Omega\\omega'\\,\\hat e_3$"
+      ],
+      "why": "Angular velocities add as vectors."
+    },
+    {
+      "id": "q.9.1.instant-axis.1",
+      "skill": "9.1.instant-axis",
+      "stem": "A cone rolls without slipping on a table with its tip fixed. Its angular velocity points:",
+      "choices": [
+        "Along the line where the cone touches the table",
+        "Along the cone's own symmetry axis",
+        "Vertically",
+        "Horizontally, perpendicular to the contact line"
+      ],
+      "why": "Every point on the contact line is momentarily at rest, so it is the instantaneous axis."
+    },
+    {
+      "id": "q.9.1.instant-axis.2",
+      "skill": "9.1.instant-axis",
+      "stem": "Two points $O$ and $P$ of a rigid body are momentarily at rest. Then:",
+      "choices": [
+        "$\\vec\\omega$ lies along the line $OP$ (or is zero)",
+        "$\\vec\\omega$ is perpendicular to $OP$",
+        "$\\vec\\omega$ must be zero",
+        "Nothing can be said about $\\vec\\omega$"
+      ],
+      "why": "$\\vec v_P=\\vec\\omega\\times\\vec{OP}=0$ requires $\\vec\\omega\\parallel\\vec{OP}$."
+    },
+    {
+      "id": "q.9.1.rolling-3d.1",
+      "skill": "9.1.rolling-3d",
+      "stem": "A wheel of radius $r$ on an axle pivoted at ground level rolls without slipping (the axle is tilted so the rim touches the ground). Its contact point is a distance $R$ from the pivot and circles it at rate $\\Omega$. The wheel's spin relative to the axle is:",
+      "choices": [
+        "$(R/r)\\,\\Omega$",
+        "$(r/R)\\,\\Omega$",
+        "$\\Omega$",
+        "$(R/r)^2\\,\\Omega$"
+      ],
+      "why": "No slipping: the rim speed $r\\omega'$ matches the ground's speed $R\\Omega$ under the contact point, in the frame turning with the axle."
+    },
+    {
+      "id": "q.9.1.rolling-3d.2",
+      "skill": "9.1.rolling-3d",
+      "stem": "A cone of half-angle $\\alpha$ rolls without slipping on a table, tip fixed, its axis circling the vertical at rate $\\Omega$. How fast does it spin relative to a frame turning with its axis?",
+      "choices": [
+        "$\\Omega/\\sin\\alpha$",
+        "$\\Omega\\sin\\alpha$",
+        "$\\Omega/\\tan\\alpha$",
+        "$\\Omega$"
+      ],
+      "why": "The axis is tilted $\\alpha$ above the table. $\\vec\\omega=\\Omega\\hat z+\\omega'\\hat e_3$ must lie along the horizontal contact line, so $\\omega'\\sin\\alpha=\\Omega$."
+    },
+    {
+      "id": "q.9.2.L-tensor.1",
+      "skill": "9.2.L-tensor",
+      "stem": "A dumbbell (two equal masses at the ends of a rod through the origin) is tilted from the $z$ axis and spun about the $z$ axis. Which is true?",
+      "choices": [
+        "$\\vec L$ has a horizontal part, so it is not parallel to $\\vec\\omega$",
+        "$\\vec L=I\\omega\\,\\hat z$ exactly",
+        "$\\vec L=0$",
+        "$\\vec L$ points along the rod"
+      ],
+      "why": "For a mass at $(a,0,b)$: $\\vec r\\times(\\vec\\omega\\times\\vec r)$ has an $x$ part $-ab\\,\\omega$, so $\\vec L$ tilts away from $\\hat z$."
+    },
+    {
+      "id": "q.9.2.L-tensor.2",
+      "skill": "9.2.L-tensor",
+      "stem": "In units of $ma^2$, $\\mathbf I=\\begin{pmatrix}2&0&-1\\\\0&2&0\\\\-1&0&1\\end{pmatrix}$ and $\\vec\\omega=\\omega\\hat z$. Then $\\vec L$ is:",
+      "choices": [
+        "$(-\\omega,0,\\omega)\\,ma^2$",
+        "$(0,0,\\omega)\\,ma^2$",
+        "$(2\\omega,2\\omega,\\omega)\\,ma^2$",
+        "$(-\\omega,0,-\\omega)\\,ma^2$"
+      ],
+      "why": "$\\mathbf I\\vec\\omega$ is the third column times $\\omega$."
+    },
+    {
+      "id": "q.9.2.tensor-compute.1",
+      "skill": "9.2.tensor-compute",
+      "stem": "A point mass $m$ sits at $(a,a,0)$. What is $I_{xy}$ about the origin?",
+      "choices": [
+        "$-ma^2$",
+        "$+ma^2$",
+        "$2ma^2$",
+        "0"
+      ],
+      "why": "$I_{xy}=-\\sum m\\,xy=-ma^2$."
+    },
+    {
+      "id": "q.9.2.tensor-compute.2",
+      "skill": "9.2.tensor-compute",
+      "stem": "The same point mass $m$ at $(a,a,0)$: what is $I_{zz}$ about the origin?",
+      "choices": [
+        "$2ma^2$",
+        "$ma^2$",
+        "0",
+        "$-ma^2$"
+      ],
+      "why": "$I_{zz}=m(x^2+y^2)=2ma^2$."
+    },
+    {
+      "id": "q.9.2.ke-tensor.1",
+      "skill": "9.2.ke-tensor",
+      "stem": "$\\vec\\omega=(0,0,\\omega)$ and $\\vec L=(-\\omega,0,\\omega)\\,ma^2$. The kinetic energy is:",
+      "choices": [
+        "$\\tfrac12ma^2\\omega^2$",
+        "$ma^2\\omega^2$",
+        "$\\tfrac{\\sqrt2}{2}ma^2\\omega^2$",
+        "0"
+      ],
+      "why": "$\\tfrac12\\vec\\omega\\cdot\\vec L=\\tfrac12\\omega\\cdot\\omega\\,ma^2$."
+    },
+    {
+      "id": "q.9.2.general-L.1",
+      "skill": "9.2.general-L",
+      "stem": "A body's CM is at $\\vec R$ moving with $\\vec V$, and the body rotates with $\\vec\\omega$. Its angular momentum about the origin is:",
+      "choices": [
+        "$\\vec R\\times M\\vec V+\\mathbf I_{CM}\\,\\vec\\omega$",
+        "$\\mathbf I_{origin}\\,\\vec\\omega$, always",
+        "$\\vec R\\times M\\vec V$ only",
+        "$\\mathbf I_{CM}\\,\\vec\\omega$ only"
+      ],
+      "why": "Orbital part of the CM plus spin about the CM."
+    },
+    {
+      "id": "q.9.2.parallel-axis-tensor.1",
+      "skill": "9.2.parallel-axis-tensor",
+      "stem": "A body's CM is at $\\vec R=(0,0,d)$ from the origin. Compare $I_{zz}$ about the origin with $I_{zz}$ about the CM:",
+      "choices": [
+        "They are equal",
+        "Larger by $Md^2$",
+        "Smaller by $Md^2$",
+        "Larger by $2Md^2$"
+      ],
+      "why": "The shift is along $z$: $M(R^2-R_z^2)=0$. Both $z$ axes are the same line."
+    },
+    {
+      "id": "q.9.2.parallel-axis-tensor.2",
+      "skill": "9.2.parallel-axis-tensor",
+      "stem": "With the same shift $\\vec R=(0,0,d)$, $I_{xx}$ about the origin is:",
+      "choices": [
+        "$I^{CM}_{xx}+Md^2$",
+        "$I^{CM}_{xx}$",
+        "$I^{CM}_{xx}-Md^2$",
+        "$I^{CM}_{xx}+2Md^2$"
+      ],
+      "why": "$M(R^2-R_x^2)=Md^2$."
+    },
+    {
+      "id": "q.9.3.definition.1",
+      "skill": "9.3.definition",
+      "stem": "What makes an axis (through a given point) a principal axis?",
+      "choices": [
+        "If $\\vec\\omega$ points along it, $\\vec L$ points along it too",
+        "It passes through the center of mass",
+        "It is a symmetry axis",
+        "The moment of inertia about it is the largest"
+      ],
+      "why": "Principal axes are the eigenvectors of $\\mathbf I$: $\\mathbf I\\vec\\omega=\\lambda\\vec\\omega$. Symmetry axes are principal, but not every principal axis is a symmetry axis."
+    },
+    {
+      "id": "q.9.3.definition.2",
+      "skill": "9.3.definition",
+      "stem": "Written in a basis of principal axes, the inertia tensor is:",
+      "choices": [
+        "Diagonal",
+        "Symmetric, with all entries nonzero",
+        "The identity matrix",
+        "Zero except in the first row"
+      ],
+      "why": "The principal moments sit on the diagonal."
+    },
+    {
+      "id": "q.9.3.symmetry.1",
+      "skill": "9.3.symmetry",
+      "stem": "A uniform disk sits on a massless axle along its symmetry axis, with a pivot at the axle's far end. Which are principal axes through the pivot?",
+      "choices": [
+        "The axle, and every axis through the pivot perpendicular to it",
+        "Only the axle",
+        "The axle and the vertical",
+        "Only axes through the disk's center"
+      ],
+      "why": "The body is symmetric about the axle and the pivot lies on it."
+    },
+    {
+      "id": "q.9.3.symmetry.2",
+      "skill": "9.3.symmetry",
+      "stem": "For that disk (mass $m$, radius $r$) with the pivot a distance $\\ell$ from its center, the moment about a perpendicular principal axis through the pivot is:",
+      "choices": [
+        "$\\tfrac14mr^2+m\\ell^2$",
+        "$\\tfrac12mr^2+m\\ell^2$",
+        "$\\tfrac14mr^2$",
+        "$m\\ell^2$"
+      ],
+      "why": "A diameter's $\\tfrac14mr^2$ plus the parallel-axis term $m\\ell^2$."
+    },
+    {
+      "id": "q.9.3.eigen-method.1",
+      "skill": "9.3.eigen-method",
+      "stem": "In units of $ma^2$, $\\mathbf I=\\begin{pmatrix}3&1&0\\\\1&3&0\\\\0&0&2\\end{pmatrix}$. The principal moments are:",
+      "choices": [
+        "4, 2, 2",
+        "3, 3, 2",
+        "4, 3, 2",
+        "1, 3, 3"
+      ],
+      "why": "The $2\\times2$ block gives 4 and 2; the $zz$ entry is already 2."
+    },
+    {
+      "id": "q.9.3.L-components.1",
+      "skill": "9.3.L-components",
+      "stem": "A symmetric body has moment $I_3$ about its axis $\\hat e_3$ and $I$ about perpendicular axes. If $\\vec\\omega=\\omega_3\\hat e_3+\\omega_2\\hat e_2$, then $\\vec L=$",
+      "choices": [
+        "$I_3\\omega_3\\hat e_3+I\\omega_2\\hat e_2$",
+        "$I_3\\,\\vec\\omega$",
+        "$I(\\omega_3\\hat e_3+\\omega_2\\hat e_2)$",
+        "$(I_3+I)\\,\\vec\\omega$"
+      ],
+      "why": "Each principal component of $\\vec\\omega$ is multiplied by its own moment."
+    },
+    {
+      "id": "q.9.3.L-components.2",
+      "skill": "9.3.L-components",
+      "stem": "A wheel spins at $\\omega'$ relative to its axle $\\hat e_3$ while the axle turns at $-\\Omega\\hat z$; $\\hat e_3$ is tilted up $\\theta$ from the horizontal. The total component $\\omega_3$ along $\\hat e_3$ is:",
+      "choices": [
+        "$\\omega'-\\Omega\\sin\\theta$",
+        "$\\omega'$",
+        "$\\omega'-\\Omega\\cos\\theta$",
+        "$\\omega'+\\Omega\\sin\\theta$"
+      ],
+      "why": "$\\vec\\omega=-\\Omega\\hat z+\\omega'\\hat e_3$ and $\\hat z\\cdot\\hat e_3=\\sin\\theta$."
+    },
+    {
+      "id": "q.9.4.blow.1",
+      "skill": "9.4.blow",
+      "stem": "A body at rest gets angular momentum $\\vec L$ from a blow, and $\\vec L$ is not along a principal axis. Right after the blow:",
+      "choices": [
+        "$\\vec\\omega=\\mathbf I^{-1}\\vec L$, which is not parallel to $\\vec L$",
+        "$\\vec\\omega$ is parallel to $\\vec L$",
+        "$\\vec\\omega=\\vec L/I_3$",
+        "The body only starts rotating later"
+      ],
+      "why": "Resolve $\\vec L$ along the principal axes and divide each part by its own moment."
+    },
+    {
+      "id": "q.9.4.steady-precession.1",
+      "skill": "9.4.steady-precession",
+      "stem": "$\\vec L$ has a vertical part $L_z$ and a horizontal part $L_\\perp$, and the whole vector turns about the vertical at rate $\\Omega$. Then $|d\\vec L/dt|$ is:",
+      "choices": [
+        "$\\Omega L_\\perp$",
+        "$\\Omega|\\vec L|$",
+        "$\\Omega L_z$",
+        "0"
+      ],
+      "why": "$\\vec\\Omega\\times\\vec L$ only sees the part of $\\vec L$ perpendicular to $\\vec\\Omega$."
+    },
+    {
+      "id": "q.9.4.steady-precession.2",
+      "skill": "9.4.steady-precession",
+      "stem": "A gyroscope's axle is horizontal and supported at one end; it precesses steadily. Taking torques about the support point, which force(s) contribute?",
+      "choices": [
+        "Only gravity, acting at the center of mass",
+        "Gravity and the support force",
+        "Only the support force",
+        "None; torque is zero in steady precession"
+      ],
+      "why": "The support force acts at the origin you chose, so it has no lever arm."
+    },
+    {
+      "id": "q.9.5.euler.1",
+      "skill": "9.5.euler",
+      "stem": "For a torque-free body with principal moments $I_1, I_2, I_3$, Euler's equation gives $\\dot\\omega_1=$",
+      "choices": [
+        "$(I_2-I_3)\\,\\omega_2\\omega_3/I_1$",
+        "$(I_3-I_2)\\,\\omega_2\\omega_3/I_1$",
+        "0",
+        "$(I_2-I_3)\\,\\omega_1\\omega_2/I_3$"
+      ],
+      "why": "$I_1\\dot\\omega_1+(I_3-I_2)\\omega_2\\omega_3=0$."
+    },
+    {
+      "id": "q.9.5.stability.1",
+      "skill": "9.5.stability",
+      "stem": "A book with $I_1<I_2<I_3$ is tossed spinning about one principal axis. About which one is the spin unstable?",
+      "choices": [
+        "The intermediate axis ($I_2$)",
+        "The axis with the largest moment",
+        "The axis with the smallest moment",
+        "None; all three are stable"
+      ],
+      "why": "The tennis-racket theorem."
+    },
+    {
+      "id": "q.9.6.body-frame.1",
+      "skill": "9.6.body-frame",
+      "stem": "A torque-free symmetric top ($I_1=I_2=I$, $I_3$). Seen from the body, $\\vec\\omega$ precesses around $\\hat e_3$ at:",
+      "choices": [
+        "$(I_3-I)\\,\\omega_3/I$",
+        "$L/I$",
+        "$I_3\\omega_3/I$",
+        "0"
+      ],
+      "why": "From Euler's equations with $\\omega_3$ constant."
+    },
+    {
+      "id": "q.9.6.fixed-frame.1",
+      "skill": "9.6.fixed-frame",
+      "stem": "The same free top seen from the fixed frame: which vector stays fixed in space?",
+      "choices": [
+        "$\\vec L$",
+        "$\\vec\\omega$",
+        "$\\hat e_3$",
+        "None of them"
+      ],
+      "why": "No torque means constant $\\vec L$; $\\vec\\omega$ and $\\hat e_3$ circle around it."
+    },
+    {
+      "id": "q.9.7.euler-angles.1",
+      "skill": "9.7.euler-angles",
+      "stem": "In Morin's treatment of the top, which Euler angle is the tilt of the symmetry axis from the vertical?",
+      "choices": [
+        "$\\theta$",
+        "$\\phi$",
+        "$\\psi$"
+      ],
+      "why": "$\\phi$ is the precession angle and $\\psi$ the spin about the symmetry axis."
+    },
+    {
+      "id": "q.9.7.omega-euler.1",
+      "skill": "9.7.omega-euler",
+      "stem": "With $\\theta$ measured from the vertical, the component of $\\vec\\omega$ along a top's symmetry axis is:",
+      "choices": [
+        "$\\dot\\psi+\\dot\\phi\\cos\\theta$",
+        "$\\dot\\psi$",
+        "$\\dot\\psi+\\dot\\phi\\sin\\theta$",
+        "$\\dot\\phi+\\dot\\psi\\cos\\theta$"
+      ],
+      "why": "$\\dot\\phi\\hat z$ contributes $\\dot\\phi\\cos\\theta$ along $\\hat e_3$."
+    },
+    {
+      "id": "q.9.7.steady-top.1",
+      "skill": "9.7.steady-top",
+      "stem": "A heavy top precesses steadily at rate $\\Omega$, tilted $\\theta$ from the vertical, with pivot-to-CM distance $\\ell$. The exact condition is:",
+      "choices": [
+        "$Mg\\ell=\\Omega\\,(I_3\\omega_3-I\\Omega\\cos\\theta)$",
+        "$Mg\\ell=\\Omega I_3\\omega_3$",
+        "$Mg\\ell\\sin\\theta=\\Omega I_3\\omega_3$",
+        "$Mg\\ell=\\Omega\\,(I_3\\omega_3+I\\Omega\\cos\\theta)$"
+      ],
+      "why": "Morin's torque method, with $I$ about a perpendicular axis through the pivot; the second choice is only the fast-top approximation."
+    },
+    {
+      "id": "q.9.7.fast-top.1",
+      "skill": "9.7.fast-top",
+      "stem": "A top is spun faster (larger $\\omega_3$). Its slow precession rate:",
+      "choices": [
+        "Decreases, roughly as $1/\\omega_3$",
+        "Increases",
+        "Stays the same",
+        "Grows without limit"
+      ],
+      "why": "$\\Omega\\approx Mg\\ell/(I_3\\omega_3)$."
+    },
+    {
+      "id": "q.9.7.lagrangian-top.1",
+      "skill": "9.7.lagrangian-top",
+      "stem": "In the heavy top's Lagrangian written with Euler angles, which coordinates are cyclic?",
+      "choices": [
+        "$\\phi$ and $\\psi$",
+        "$\\theta$ only",
+        "$\\theta$ and $\\phi$",
+        "None"
+      ],
+      "why": "$L$ depends on $\\theta$ but not on $\\phi$ or $\\psi$, giving two conserved momenta."
+    },
+    {
+      "id": "q.9.7.nutation.1",
+      "skill": "9.7.nutation",
+      "stem": "A fast top is released with its axis tilted and not precessing. Its tip mostly:",
+      "choices": [
+        "Drifts sideways at about the slow precession rate while bobbing with small, fast wobbles",
+        "Falls straight down",
+        "Precesses smoothly with no wobble",
+        "Stays still"
+      ],
+      "why": "That bobbing is nutation; for a fast top its frequency is about $I_3\\omega_3/I$."
+    },
+    {
+      "id": "q.9.7.sleeping-top.1",
+      "skill": "9.7.sleeping-top",
+      "stem": "A top spinning with its axis vertical stays up (is stable) if:",
+      "choices": [
+        "$I_3^2\\omega_3^2>4IMg\\ell$",
+        "$I_3\\omega_3>Mg\\ell$",
+        "$\\omega_3>0$",
+        "$I_3>I$"
+      ],
+      "why": "The sleeping-top condition; below it, a small tilt grows."
+    },
+    {
+      "id": "q.M.vec.components.2",
+      "skill": "M.vec.components",
+      "stem": "A vector in the $x$-$y$ plane is $\\mathbf a=-\\sqrt3\\,\\hat{\\mathbf x}-\\hat{\\mathbf y}$. What are its magnitude and its direction, measured counterclockwise from the $+x$ axis?",
+      "choices": [
+        "$a=2$, at $210^\\circ$",
+        "$a=2$, at $30^\\circ$",
+        "$a=2$, at $240^\\circ$",
+        "$a=\\sqrt3+1$, at $210^\\circ$"
+      ],
+      "why": "$a=\\sqrt{3+1}=2$. $\\tan\\theta=a_y/a_x=1/\\sqrt3$, and since both components are negative the vector is in the third quadrant, so $\\theta=180^\\circ+30^\\circ=210^\\circ$. The most tempting wrong answer is $30^\\circ$, which comes from taking the arctan without checking the quadrant.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.3.1.newton.2",
+      "skill": "3.1.newton",
+      "stem": "Block A (3 kg) and block B (1 kg) touch each other on a frictionless floor. A horizontal 8 N push in the $+x$ direction acts on A, which pushes B ahead of it. What force does B exert on A?",
+      "choices": [
+        "2 N, in the $-x$ direction",
+        "2 N, in the $+x$ direction",
+        "6 N, in the $-x$ direction",
+        "8 N, in the $-x$ direction"
+      ],
+      "why": "Both blocks have $a=8/4=2$ m/s², so A pushes B with $m_Ba=2$ N in $+x$. By the third law, B pushes back on A with 2 N in $-x$. The tempting mistake is to give the force of A on B ($+x$) instead of its reaction.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.5.5.momentum.2",
+      "skill": "5.5.momentum",
+      "stem": "At the top of its flight, a 2 kg shell moving horizontally at 10 m/s explodes into two 1 kg pieces. Just after the explosion, one piece is at rest. What is the velocity of the other piece just after the explosion?",
+      "choices": [
+        "20 m/s, horizontal",
+        "10 m/s, horizontal",
+        "$10\\sqrt2$ m/s, horizontal",
+        "Undetermined, because gravity is an external force"
+      ],
+      "why": "Gravity has no horizontal component, so horizontal momentum is conserved: $2(10)=1\\cdot v$, giving $v=20$ m/s. The $10\\sqrt2$ answer comes from wrongly conserving kinetic energy, and the 'undetermined' answer forgets that momentum is conserved component by component.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.5.6.cm.2",
+      "skill": "5.6.cm",
+      "stem": "A 1 kg mass moving at 6 m/s approaches a 2 kg mass at rest along a line. How much of the system's lab kinetic energy is kinetic energy relative to the center of mass, $K_{CM}$?",
+      "choices": [
+        "12 J",
+        "18 J",
+        "6 J",
+        "4.5 J"
+      ],
+      "why": "$u=P/M=6/3=2$ m/s, so $K_{CM}=K_{lab}-\\tfrac12Mu^2=18-6=12$ J. 18 J is the whole lab kinetic energy, 6 J is the CM-motion part, and 4.5 J comes from using the plain average velocity (3 m/s) instead of the mass-weighted one.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.calc.derivative.2",
+      "skill": "M.calc.derivative",
+      "stem": "A pendulum bob has height $y=-\\ell\\cos\\theta(t)$, where $\\ell$ is constant. What is $\\ddot y$?",
+      "choices": [
+        "$\\ell(\\sin\\theta\\,\\ddot\\theta+\\cos\\theta\\,\\dot\\theta^2)$",
+        "$\\ell\\sin\\theta\\,\\ddot\\theta$",
+        "$\\ell(\\sin\\theta\\,\\ddot\\theta-\\cos\\theta\\,\\dot\\theta^2)$",
+        "$\\ell(\\sin\\theta\\,\\ddot\\theta+\\cos\\theta\\,\\dot\\theta)$"
+      ],
+      "why": "$\\dot y=\\ell\\sin\\theta\\,\\dot\\theta$. Using the product rule and chain rule gives $\\ddot y=\\ell(\\cos\\theta\\,\\dot\\theta^2+\\sin\\theta\\,\\ddot\\theta)$. The most tempting error is to treat $\\dot\\theta$ as constant, which drops the centripetal $\\dot\\theta^2$ term.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.6.1.euler-lagrange.2",
+      "skill": "6.1.euler-lagrange",
+      "stem": "A free particle of mass $m$ moves in a plane, with $L=\\tfrac12m(\\dot r^2+r^2\\dot\\theta^2)$ in polar coordinates. Its Euler–Lagrange equation for $\\theta$, after dividing by $mr$, is:",
+      "choices": [
+        "$r\\ddot\\theta+2\\dot r\\dot\\theta=0$",
+        "$r\\ddot\\theta=0$",
+        "$r\\ddot\\theta+\\dot r\\dot\\theta=0$",
+        "$r\\ddot\\theta-2\\dot r\\dot\\theta=0$"
+      ],
+      "why": "$\\partial L/\\partial\\theta=0$ and $\\frac{d}{dt}(mr^2\\dot\\theta)=m(2r\\dot r\\dot\\theta+r^2\\ddot\\theta)$, which gives the Coriolis term $2\\dot r\\dot\\theta$. The tempting mistake is to treat $r^2$ as constant inside the total time derivative, which gives $r\\ddot\\theta=0$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.6.5.cyclic.2",
+      "skill": "6.5.cyclic",
+      "stem": "A particle has $L=\\tfrac12 m(\\dot r^2+r^2\\dot\\theta^2+r^2\\sin^2\\theta\\,\\dot\\phi^2)-V(r,\\theta)$. At one moment $r=a$, $\\theta=90^\\circ$, $\\dot\\phi=\\omega$. Later it has $r=a$, $\\theta=30^\\circ$. What is $\\dot\\phi$ then?",
+      "choices": [
+        "$4\\omega$",
+        "$\\omega$",
+        "$2\\omega$",
+        "$\\omega/4$"
+      ],
+      "why": "$\\phi$ is cyclic, so $mr^2\\sin^2\\theta\\,\\dot\\phi$ is conserved. Since $\\sin^2 30^\\circ=\\tfrac14$, $\\dot\\phi$ must become $4\\omega$. The most tempting wrong answer, $\\omega$, comes from treating $\\dot\\phi$ itself as the conserved quantity. Using $\\sin\\theta$ instead of $\\sin^2\\theta$ gives $2\\omega$, and inverting the ratio gives $\\omega/4$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.7.1.L-particle.2",
+      "skill": "7.1.L-particle",
+      "stem": "A particle of mass $1$ kg is at $(x,y)=(4,3)$ m with velocity $(v_x,v_y)=(0,2)$ m/s in the plane $z=0$. What is its angular momentum about the origin, in kg·m²/s?",
+      "choices": [
+        "$+8\\,\\hat z$",
+        "$-8\\,\\hat z$",
+        "$+10\\,\\hat z$",
+        "$+6\\,\\hat z$"
+      ],
+      "why": "$L_z=m(xv_y-yv_x)=1(4\\cdot2-3\\cdot0)=+8$. Reversing the cross product to $\\mathbf p\\times\\mathbf r$ gives $-8$. Using $mrv$ with $r=5$ gives $10$, and using $y$ instead of $x$ as the lever arm gives $6$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.1.L-pancake.2",
+      "skill": "8.1.L-pancake",
+      "stem": "A uniform thin stick of mass $M$ and length $\\ell$ lies in the $x$-$y$ plane. It is pivoted at one end at the origin and spins about the $z$ axis at angular speed $\\omega$. What is $L_z$?",
+      "choices": [
+        "$\\tfrac13M\\ell^2\\omega$",
+        "$\\tfrac1{12}M\\ell^2\\omega$",
+        "$\\tfrac14M\\ell^2\\omega$",
+        "$M\\ell^2\\omega$"
+      ],
+      "why": "$I_z=\\int_0^\\ell x^2\\,(M/\\ell)\\,dx=M\\ell^2/3$, so $L_z=\\tfrac13M\\ell^2\\omega$. The $\\tfrac1{12}$ answer uses the moment of inertia about the center instead of about the pivot. The $\\tfrac14$ answer treats the stick as a point mass at its CM and drops $I^{CM}$. The last answer puts all the mass at the far end.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.1.plane-motion.2",
+      "skill": "8.1.plane-motion",
+      "stem": "A uniform disk of mass $M$ and radius $R$ ($I^{CM}=\\tfrac12MR^2$) lies in the $x$-$y$ plane, with $y$ pointing up. It rolls without slipping in the $+x$ direction along the ground $y=0$ at speed $v$. What is its angular momentum about the origin, a fixed point on the ground?",
+      "choices": [
+        "$-\\tfrac32MRv\\,\\hat z$",
+        "$-\\tfrac12MRv\\,\\hat z$",
+        "$-MRv\\,\\hat z$",
+        "$+\\tfrac32MRv\\,\\hat z$"
+      ],
+      "why": "The CM term is $(\\mathbf R\\times M\\mathbf V)_z=M(X\\cdot0-R\\,v)=-MRv$. The disk spins clockwise at $v/R$, so the spin term is $-\\tfrac12MRv$, and the total is $-\\tfrac32MRv\\,\\hat z$. Leaving out the CM point-mass term gives $-\\tfrac12MRv$ (so does giving the spin the wrong sign). Leaving out the spin gives $-MRv$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.4.torque.2",
+      "skill": "8.4.torque",
+      "stem": "A force of $2$ N in the $-\\hat x$ direction acts at the point $(x,y)=(4,3)$ m. What is the torque about the origin, in N·m?",
+      "choices": [
+        "$+6\\,\\hat z$",
+        "$-6\\,\\hat z$",
+        "$+8\\,\\hat z$",
+        "$+10\\,\\hat z$"
+      ],
+      "why": "$\\tau_z=xF_y-yF_x=4\\cdot0-3(-2)=+6$. The lever arm is the perpendicular distance, 3 m, from the origin to the horizontal line of action. Writing $\\mathbf F\\times\\mathbf r$ flips the sign to $-6$. Using $x=4$ or the distance $r=5$ as the lever arm gives 8 or 10.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.4.tau-dLdt.2",
+      "skill": "8.4.tau-dLdt",
+      "stem": "A uniform solid cylinder ($I=\\tfrac12MR^2$) rolls without slipping down a fixed incline of angle $\\theta$. You apply $\\tau=dL/dt$ about the fixed point on the incline where it touches at that instant, so $\\tau=MgR\\sin\\theta$. What CM acceleration does this give?",
+      "choices": [
+        "$\\tfrac23g\\sin\\theta$",
+        "$2g\\sin\\theta$",
+        "$g\\sin\\theta$",
+        "$\\tfrac25g\\sin\\theta$"
+      ],
+      "why": "About a fixed point, $L=I\\omega+MvR=\\tfrac32MRv$. Then $\\tfrac32MRa=MgR\\sin\\theta$, so $a=\\tfrac23g\\sin\\theta$. Using $L=I\\omega$ alone, without the CM point-mass term, gives $2g\\sin\\theta$. Keeping only $MvR$ gives $g\\sin\\theta$. Using $I$ about the contact point and also adding $MvR$ double counts and gives $\\tfrac25g\\sin\\theta$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.6.impulse.2",
+      "skill": "8.6.impulse",
+      "stem": "A uniform disk (mass $M$, radius $R$) lies at rest on frictionless ice. A sharp blow $J$ hits a rim point, directed along the rim's tangent (in the plane of the ice). Just after the blow, what is the velocity of the struck point, measured along the direction of the blow?",
+      "choices": [
+        "$3J/M$",
+        "$2J/M$",
+        "$5J/3M$",
+        "$-J/M$"
+      ],
+      "why": "$V_{CM}=J/M$, and $\\omega=JR/(\\tfrac12MR^2)=2J/MR$, so the rotation adds $\\omega R=2J/M$ in the direction of the blow, for a total of $3J/M$. The most tempting wrong answer is $5J/3M$, which comes from using the moment of inertia about the rim point ($\\tfrac32MR^2$) instead of $I_{CM}$. Using the hoop value $MR^2$ gives $2J/M$, and subtracting the rotational velocity instead of adding it gives $-J/M$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.1.general-motion.2",
+      "skill": "9.1.general-motion",
+      "stem": "At some instant, point $A$ of a rigid body has velocity $\\vec V_A$, and the body rotates with $\\vec\\omega$ about an axis through $A$. You describe the same motion using a different body point $B$ as the reference point. Which is correct?",
+      "choices": [
+        "$\\vec V_B=\\vec V_A+\\vec\\omega\\times(\\vec r_B-\\vec r_A)$, with the same $\\vec\\omega$",
+        "$\\vec V_B=\\vec V_A$, with the same $\\vec\\omega$",
+        "$\\vec V_B=\\vec V_A+\\vec\\omega\\times(\\vec r_B-\\vec r_A)$, with a new $\\vec\\omega$",
+        "$\\vec V_B=\\vec V_A+(\\vec r_B-\\vec r_A)\\times\\vec\\omega$, with the same $\\vec\\omega$"
+      ],
+      "why": "By Chasles' theorem, $B$ moves with $A$'s velocity plus the rotational velocity $\\vec\\omega\\times(\\vec r_B-\\vec r_A)$. The angular velocity does not depend on which reference point you choose. The most tempting mistake is to think $\\vec\\omega$ changes with the reference point. Writing $\\vec r\\times\\vec\\omega$ flips the sign, and dropping the rotation term treats the body as if it were only translating.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.1.omega-vector.2",
+      "skill": "9.1.omega-vector",
+      "stem": "A rigid body spins at angular speed $\\omega$ about the $z$ axis, clockwise as seen from above (from $+z$). The origin is on the axis. What are $\\vec\\omega$ and the velocity of the body point at $(R,0,h)$?",
+      "choices": [
+        "$\\vec\\omega=-\\omega\\hat z$, $\\vec v=-\\omega R\\,\\hat y$",
+        "$\\vec\\omega=+\\omega\\hat z$, $\\vec v=+\\omega R\\,\\hat y$",
+        "$\\vec\\omega=-\\omega\\hat z$, $\\vec v=+\\omega R\\,\\hat y$",
+        "$\\vec\\omega=-\\omega\\hat z$, $\\vec v=-\\omega\\sqrt{R^2+h^2}\\,\\hat y$"
+      ],
+      "why": "Curling your right-hand fingers clockwise (seen from above) points your thumb along $-\\hat z$. Then $\\vec v=\\vec\\omega\\times\\vec r=-\\omega\\hat z\\times(R\\hat x+h\\hat z)=-\\omega R\\hat y$, and the radius that matters is the perpendicular distance $R$. The most tempting wrong answer is $+\\omega R\\hat y$ with the correct $\\vec\\omega$, which comes from computing $\\vec r\\times\\vec\\omega$. Using the full distance $\\sqrt{R^2+h^2}$ is also wrong.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.1.omega-add.2",
+      "skill": "9.1.omega-add",
+      "stem": "A sphere spins at $4$ rad/s about a horizontal stick along $\\hat x$ (right-hand sense along $+\\hat x$, relative to the stick). The stick is turned about the vertical $z$ axis at $3$ rad/s, counterclockwise as seen from above. What is the sphere's angular velocity relative to the lab at this instant?",
+      "choices": [
+        "$5$ rad/s, along $(4\\hat x+3\\hat z)/5$",
+        "$7$ rad/s, along $(4\\hat x+3\\hat z)/5$",
+        "$4$ rad/s, along $\\hat x$ (the stick)",
+        "$5$ rad/s, along $(4\\hat x-3\\hat z)/5$"
+      ],
+      "why": "The angular velocities add as vectors: $\\vec\\omega=4\\hat x+3\\hat z$, which has magnitude $\\sqrt{16+9}=5$ rad/s. The most tempting mistake is adding the angular speeds as scalars to get $7$. Treating the stick as the rotation axis gives $4\\hat x$, and a right-hand-rule sign error on the stick's rotation gives $4\\hat x-3\\hat z$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.lin.matrix-vector.2",
+      "skill": "M.lin.matrix-vector",
+      "stem": "Let $\\mathbf A=\\begin{pmatrix}1&2&0\\\\0&1&0\\\\0&0&3\\end{pmatrix}$ and $\\mathbf u=(1,1,0)$. Compute $\\mathbf A\\mathbf u$, and say whether $\\mathbf A$ is symmetric.",
+      "choices": [
+        "$(3,1,0)$; not symmetric",
+        "$(1,3,0)$; not symmetric",
+        "$(3,1,0)$; symmetric",
+        "$(1,1,0)$; not symmetric"
+      ],
+      "why": "Dotting each row into $\\mathbf u$ gives $(1+2,\\,0+1,\\,0)=(3,1,0)$. The matrix is not symmetric because $A_{12}=2\\neq A_{21}=0$. The most tempting wrong answer is $(1,3,0)$, which comes from multiplying columns instead of rows. That only gives the same result when the matrix is symmetric. Keeping only the diagonal entries gives $(1,1,0)$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.2.general-L.2",
+      "skill": "9.2.general-L",
+      "stem": "A uniform disk (mass $M$, radius $R$) lies in the $x$-$y$ plane and rolls without slipping along the $x$ axis in the $+x$ direction. Its center is at height $y=R$ and moves at speed $V$. What is its angular momentum about the origin?",
+      "choices": [
+        "$-\\tfrac32MRV\\,\\hat z$",
+        "$-MRV\\,\\hat z$",
+        "$+\\tfrac12MRV\\,\\hat z$",
+        "$-\\tfrac12MRV\\,\\hat z$"
+      ],
+      "why": "The orbital part is $M\\vec R\\times\\vec V=M(R\\hat y)\\times(V\\hat x)=-MRV\\hat z$. The disk rolls clockwise as seen from $+z$, so $\\vec\\omega=-(V/R)\\hat z$, and the spin part is $\\tfrac12MR^2\\,\\vec\\omega=-\\tfrac12MRV\\hat z$. The total is $-\\tfrac32MRV\\hat z$. The most tempting mistake is dropping the spin part, which gives $-MRV\\hat z$. Writing $\\vec V\\times\\vec R$ gives $+\\tfrac12MRV\\hat z$, and dropping the orbital part gives $-\\tfrac12MRV\\hat z$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.2.ke-tensor.2",
+      "skill": "9.2.ke-tensor",
+      "stem": "In units of $ma^2$, a body's inertia tensor about a fixed origin has $I_{11}=I_{22}=\\tfrac13$, $I_{12}=-\\tfrac14$, $I_{33}=\\tfrac23$, and all other entries zero. It rotates with $\\boldsymbol\\omega=(\\omega,\\omega,0)$. Its kinetic energy is:",
+      "choices": [
+        "$\\tfrac1{12}ma^2\\omega^2$",
+        "$\\tfrac7{12}ma^2\\omega^2$",
+        "$\\tfrac5{24}ma^2\\omega^2$",
+        "$\\tfrac13ma^2\\omega^2$"
+      ],
+      "why": "$\\mathbf L=\\mathbf I\\boldsymbol\\omega=ma^2\\omega(\\tfrac1{12},\\tfrac1{12},0)$, so $T=\\tfrac12\\boldsymbol\\omega\\cdot\\mathbf L=\\tfrac1{12}ma^2\\omega^2$. Taking $I_{12}$ as $+\\tfrac14$ gives $\\tfrac7{12}$, counting the cross term $I_{12}\\omega_1\\omega_2$ only once gives $\\tfrac5{24}$, and dropping the off-diagonal terms gives $\\tfrac13$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.calc.integral.2",
+      "skill": "M.calc.integral",
+      "stem": "For a constant $\\omega>0$, evaluate $\\displaystyle\\int_0^{\\pi/\\omega}\\sin(\\omega t)\\,dt$.",
+      "choices": [
+        "$2/\\omega$",
+        "$2$",
+        "$-2/\\omega$",
+        "$0$"
+      ],
+      "why": "The antiderivative is $-\\cos(\\omega t)/\\omega$, so the result is $[-\\cos\\pi+\\cos0]/\\omega=2/\\omega$. Forgetting the $1/\\omega$ gives 2, the sign error $\\int\\sin=+\\cos$ gives $-2/\\omega$, and using $\\sin(\\omega t)/\\omega$ as the antiderivative gives 0.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.calc.mass-integral.2",
+      "skill": "M.calc.mass-integral",
+      "stem": "A uniform thin spherical shell has mass $M$ and radius $R$. It is cut into rings lying between polar angles $\\theta$ and $\\theta+d\\theta$, measured from an axis through the center. The mass of one ring is:",
+      "choices": [
+        "$\\tfrac{M}{2}\\sin\\theta\\,d\\theta$",
+        "$\\tfrac{M}{2}\\,d\\theta$",
+        "$2M\\sin\\theta\\,d\\theta$",
+        "$\\tfrac{M}{2}\\cos\\theta\\,d\\theta$"
+      ],
+      "why": "The ring has radius $R\\sin\\theta$ and width $R\\,d\\theta$, so $dm=\\frac{M}{4\\pi R^2}\\,2\\pi R^2\\sin\\theta\\,d\\theta=\\tfrac M2\\sin\\theta\\,d\\theta$. Using $R$ for the ring radius gives $\\tfrac M2 d\\theta$, using the disk density $M/\\pi R^2$ gives $2M\\sin\\theta\\,d\\theta$, and measuring the ring radius from the wrong axis gives $\\cos\\theta$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.lin.change-basis.2",
+      "skill": "M.lin.change-basis",
+      "stem": "A square's principal axes are $\\hat{\\boldsymbol\\omega}_1=(\\hat{\\mathbf x}-\\hat{\\mathbf y})/\\sqrt2$ and $\\hat{\\boldsymbol\\omega}_2=(\\hat{\\mathbf x}+\\hat{\\mathbf y})/\\sqrt2$. If $\\boldsymbol\\omega=\\omega\\hat{\\mathbf y}$, what are its components $(\\omega_1,\\omega_2)$ along $(\\hat{\\boldsymbol\\omega}_1,\\hat{\\boldsymbol\\omega}_2)$?",
+      "choices": [
+        "$(-\\omega/\\sqrt2,\\ \\omega/\\sqrt2)$",
+        "$(\\omega/\\sqrt2,\\ \\omega/\\sqrt2)$",
+        "$(-\\omega,\\ \\omega)$",
+        "$(\\omega/\\sqrt2,\\ -\\omega/\\sqrt2)$"
+      ],
+      "why": "Projecting gives $\\omega_1=\\omega\\hat{\\mathbf y}\\cdot\\hat{\\boldsymbol\\omega}_1=-\\omega/\\sqrt2$ and $\\omega_2=\\omega\\hat{\\mathbf y}\\cdot\\hat{\\boldsymbol\\omega}_2=+\\omega/\\sqrt2$. Losing the minus sign in $\\hat{\\boldsymbol\\omega}_1$ is the most tempting error. Projecting onto the unnormalized vectors gives $(-\\omega,\\omega)$, and swapping the signs gives the last choice.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.3.eigen-method.2",
+      "skill": "9.3.eigen-method",
+      "stem": "In units of $ma^2$, $\\mathbf I=\\begin{pmatrix}2&-1&0\\\\-1&2&0\\\\0&0&4\\end{pmatrix}$. The smallest principal moment and its principal axis are:",
+      "choices": [
+        "$1$, along $(1,1,0)/\\sqrt2$",
+        "$1$, along $(1,-1,0)/\\sqrt2$",
+        "$3$, along $(1,1,0)/\\sqrt2$",
+        "$2$, along $\\hat{\\mathbf x}$"
+      ],
+      "why": "$\\mathbf I(1,1,0)=(1,1,0)$, so the eigenvalue 1 goes with $(1,1,0)/\\sqrt2$. The axis $(1,-1,0)/\\sqrt2$ has moment 3 and the $z$ axis has moment 4. Pairing the root with the wrong eigenvector, or flipping the sign of the off-diagonal entry, gives the tempting wrong choices. Reading the diagonal entries as principal moments gives 2.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.4.blow.2",
+      "skill": "9.4.blow",
+      "stem": "A free body has principal axes $x,y,z$ through its CM, with $I_x=ma^2$ and $I_y=2ma^2$. An impulse $\\mathbf P=(0,0,-P)$ strikes the point $\\mathbf r=(a,a,0)$ relative to the CM. Just after the blow, $\\boldsymbol\\omega$ is:",
+      "choices": [
+        "$\\frac{P}{2ma}(-2,1,0)$",
+        "$\\frac{P}{2ma}(2,-1,0)$",
+        "$\\frac{P}{2ma}(-1,2,0)$",
+        "$\\frac{P}{ma}(-1,1,0)$"
+      ],
+      "why": "$\\mathbf L=\\mathbf r\\times\\mathbf P=aP(-1,1,0)$. Solving $I_x\\omega_x=L_x$ and $I_y\\omega_y=L_y$ gives $\\boldsymbol\\omega=\\frac{P}{ma}(-1,\\tfrac12,0)$, which is not parallel to $\\mathbf L$. Computing $\\mathbf P\\times\\mathbf r$ flips the signs, swapping $I_x$ and $I_y$ gives $(-1,2,0)$, and using one scalar $I$ makes $\\boldsymbol\\omega$ parallel to $\\mathbf L$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.5.euler.2",
+      "skill": "9.5.euler",
+      "stem": "A body with principal moments $I_1=1$, $I_2=3$, $I_3=5$ (SI units) rotates steadily ($\\dot\\omega_i=0$) with body components $\\omega_1=2$, $\\omega_2=1$, $\\omega_3=0$. The origin is at the CM. What torque is needed to keep up this motion?",
+      "choices": [
+        "$\\boldsymbol\\tau=4\\,\\hat{\\mathbf x}_3$",
+        "$\\boldsymbol\\tau=-4\\,\\hat{\\mathbf x}_3$",
+        "$\\boldsymbol\\tau=0$",
+        "$\\boldsymbol\\tau=8\\,\\hat{\\mathbf x}_3$"
+      ],
+      "why": "Since $\\omega_3=0$, $\\tau_1=\\tau_2=0$, and $\\tau_3=(I_2-I_1)\\omega_2\\omega_1=(3-1)(1)(2)=4$. The most tempting wrong answer is $0$: it comes from thinking steady $\\boldsymbol\\omega$ needs no torque and forgetting the $\\omega\\omega$ terms from the rotating frame. Reversing the order to $(I_1-I_2)$ gives $-4$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.ode.harmonic.2",
+      "skill": "M.ode.harmonic",
+      "stem": "A coordinate obeys $4\\ddot x+16x=8$ (SI units). What is its general solution?",
+      "choices": [
+        "$x=\\tfrac12+A\\cos(2t+\\phi)$",
+        "$x=2+A\\cos(2t+\\phi)$",
+        "$x=\\tfrac12+A\\cos(4t+\\phi)$",
+        "$x=A\\cos(2t+\\phi)$"
+      ],
+      "why": "Dividing by 4 gives $\\ddot x=-4x+2$. So $\\omega=2$ and the center is at $c/\\omega^2=2/4=\\tfrac12$. The most tempting wrong answer, $\\omega=4$, comes from taking $\\sqrt{16}$ before dividing by the coefficient of $\\ddot x$. Putting the center at $c=2$ or dropping the constant gives the other two.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.5.stability.2",
+      "skill": "9.5.stability",
+      "stem": "A free body has principal moments $I_1=1$, $I_2=2$, $I_3=3$ (arbitrary units). It spins at $\\omega$ about axis 3 with a tiny wobble. In the body frame, how do the small components $\\omega_1,\\omega_2$ behave?",
+      "choices": [
+        "They oscillate at angular frequency $\\omega$",
+        "They grow like $e^{\\omega t}$",
+        "They oscillate at angular frequency $\\sqrt2\\,\\omega$",
+        "They oscillate at angular frequency $\\omega/\\sqrt3$"
+      ],
+      "why": "Axis 3 has the largest moment, so the spin is stable, with $\\Omega=\\omega\\sqrt{(I_3-I_1)(I_3-I_2)/(I_1I_2)}=\\omega\\sqrt{2\\cdot1/2}=\\omega$. Leaving out the $I_bI_c$ denominator gives $\\sqrt2\\,\\omega$. Using the formula for axis 1 gives $\\omega/\\sqrt3$, and a sign error makes it look unstable.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.6.body-frame.2",
+      "skill": "9.6.body-frame",
+      "stem": "A torque-free symmetric top has $I_1=I_2=I$ and $I_3=\\tfrac32 I$. Its spin component is $\\omega_3=6$ rad/s, and $\\omega_1,\\omega_2$ are small. Seen in the body frame and viewed from $+\\hat{\\mathbf x}_3$, how does $\\boldsymbol\\omega$ circle $\\hat{\\mathbf x}_3$?",
+      "choices": [
+        "At 3 rad/s, counterclockwise",
+        "At 3 rad/s, clockwise",
+        "At 9 rad/s, counterclockwise",
+        "At 2 rad/s, counterclockwise"
+      ],
+      "why": "$\\Omega=(I_3-I)\\omega_3/I=\\tfrac12\\cdot6=3$ rad/s. It is positive because $I_3>I$, so the sense is counterclockwise. The most tempting wrong answer, 9 rad/s, is the fixed-frame rate $L/I\\approx I_3\\omega_3/I$. Dividing by $I_3$ instead of $I$ gives 2 rad/s.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.6.fixed-frame.2",
+      "skill": "9.6.fixed-frame",
+      "stem": "A torque-free symmetric top has $I_1=I_2=I=1$ kg m$^2$ and $I_3=2$ kg m$^2$. Its spin component is $\\omega_3=4$ rad/s, and its transverse component is $\\sqrt{\\omega_1^2+\\omega_2^2}=6$ rad/s. Seen from an inertial frame, at what rate does the symmetry axis precess around $\\mathbf L$?",
+      "choices": [
+        "$10$ rad/s",
+        "$5$ rad/s",
+        "$4$ rad/s",
+        "$8$ rad/s"
+      ],
+      "why": "$L=\\sqrt{(1\\cdot6)^2+(2\\cdot4)^2}=10$, so $\\tilde\\omega=L/I=10$ rad/s. The most tempting wrong answer, 4 rad/s, is the body-frame rate $\\Omega=(I_3-I)\\omega_3/I$. Dividing by $I_3$ gives 5, and keeping only $L_3$ gives 8.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.euler-angles.2",
+      "skill": "9.7.euler-angles",
+      "stem": "A top precesses steadily with tilt $\\theta=60^\\circ$ ($\\dot\\theta=0$), precession rate $\\dot\\phi=2$ rad/s and spin rate $\\dot\\psi=5$ rad/s. What is $\\omega_3$, the component of $\\boldsymbol\\omega$ along the symmetry axis $\\hat{\\mathbf x}_3$?",
+      "choices": [
+        "$6$ rad/s",
+        "$5$ rad/s",
+        "$(5+\\sqrt3)$ rad/s",
+        "$7$ rad/s"
+      ],
+      "why": "$\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta=5+2\\cdot\\tfrac12=6$ rad/s. The most tempting wrong answer, 5 rad/s, comes from taking $\\dot\\psi$ alone as $\\omega_3$. Using $\\sin\\theta$ instead of $\\cos\\theta$ gives $5+\\sqrt3$, and leaving out the projection factor gives 7.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.omega-euler.2",
+      "skill": "9.7.omega-euler",
+      "stem": "A symmetric top has $\\theta=60^\\circ$ from the vertical, $\\dot\\theta=0$, $\\dot\\phi=2$ rad/s and $\\dot\\psi=10$ rad/s. What are its angular-velocity components $\\omega_3$ (along $\\hat{\\mathbf x}_3$) and $\\omega_2$ (along $\\hat{\\mathbf x}_2$), in rad/s?",
+      "choices": [
+        "$\\omega_3=11,\\ \\omega_2=\\sqrt3$",
+        "$\\omega_3=10,\\ \\omega_2=\\sqrt3$",
+        "$\\omega_3=10+\\sqrt3,\\ \\omega_2=1$",
+        "$\\omega_3=11,\\ \\omega_2=0$"
+      ],
+      "why": "Substituting $\\hat z=\\cos\\theta\\,\\hat x_3+\\sin\\theta\\,\\hat x_2$ gives $\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta=11$ and $\\omega_2=\\dot\\phi\\sin\\theta=\\sqrt3$. The most tempting mistake is setting $\\omega_3=\\dot\\psi=10$, which leaves out the precession's share along the axis.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.steady-top.2",
+      "skill": "9.7.steady-top",
+      "stem": "In the torque derivation for a heavy top in steady precession, $\\mathbf L=I_3\\omega_3\\hat{\\mathbf x}_3+I\\Omega\\sin\\theta\\,\\hat{\\mathbf x}_2$ about the pivot, and $|d\\mathbf L/dt|=\\Omega L_\\perp$. Here $\\theta$ is measured from the vertical. What is $L_\\perp$, the horizontal part of $\\mathbf L$?",
+      "choices": [
+        "$I_3\\omega_3\\sin\\theta-I\\Omega\\sin\\theta\\cos\\theta$",
+        "$I_3\\omega_3\\sin\\theta+I\\Omega\\sin\\theta\\cos\\theta$",
+        "$I_3\\omega_3\\sin\\theta$",
+        "$I_3\\omega_3\\cos\\theta-I\\Omega\\sin\\theta\\cos\\theta$"
+      ],
+      "why": "The horizontal projections of $\\mathbf L_3$ and $\\mathbf L_2$ point in opposite directions, so the $I\\Omega\\sin\\theta\\cos\\theta$ term is subtracted. The most tempting wrong choices are the $+$ sign and dropping $\\mathbf L_2$, which only gives the fast-top approximation.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.fast-top.2",
+      "skill": "9.7.fast-top",
+      "stem": "A top has $Mg\\ell=0.1$ J, $I_3\\omega_3=0.1$ kg·m²/s, and $I=10^{-3}$ kg·m² about the pivot. Its axis is at $\\theta=60^\\circ$ from the vertical. Estimate the rate of the gentle steady precession you would normally see.",
+      "choices": [
+        "$1$ rad/s",
+        "$200$ rad/s",
+        "$\\sqrt3/2$ rad/s",
+        "$100$ rad/s"
+      ],
+      "why": "For a fast top, the slow root is $\\Omega_-\\approx Mg\\ell/(I_3\\omega_3)=1$ rad/s, and it doesn't depend on $\\theta$ because the $\\sin\\theta$ factors cancel. Picking the $+$ root, $I_3\\omega_3/(I\\cos\\theta)=200$ rad/s, is the most tempting mistake. Keeping a stray $\\sin\\theta$ gives $\\sqrt3/2$, and $100$ rad/s is the nutation frequency $I_3\\omega_3/I$.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.lagrangian-top.2",
+      "skill": "9.7.lagrangian-top",
+      "stem": "For the heavy top, $\\mathcal L=\\tfrac12 I_3(\\dot\\psi+\\dot\\phi\\cos\\theta)^2+\\tfrac12 I(\\dot\\phi^2\\sin^2\\theta+\\dot\\theta^2)-Mg\\ell\\cos\\theta$, with $\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta$. What is the conserved momentum $\\partial\\mathcal L/\\partial\\dot\\phi$?",
+      "choices": [
+        "$I_3\\omega_3\\cos\\theta+I\\dot\\phi\\sin^2\\theta$",
+        "$I\\dot\\phi\\sin^2\\theta$",
+        "$I_3\\dot\\psi\\cos\\theta+I\\dot\\phi\\sin^2\\theta$",
+        "$I_3\\omega_3\\sin\\theta+I\\dot\\phi\\cos^2\\theta$"
+      ],
+      "why": "$\\dot\\phi$ appears both inside $(\\dot\\psi+\\dot\\phi\\cos\\theta)^2$ and in the $I$ term, so $L_z=I_3\\omega_3\\cos\\theta+I\\dot\\phi\\sin^2\\theta$. The most tempting error is replacing $\\dot\\psi+\\dot\\phi\\cos\\theta$ with a constant before differentiating, which drops the spin term.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.nutation.2",
+      "skill": "9.7.nutation",
+      "stem": "A fast top has $I=10^{-3}$ kg·m² about the pivot ($I_{\\rm cm}=2\\times10^{-4}$ kg·m²), $I_3=4\\times10^{-4}$ kg·m², $\\omega_3=200$ rad/s, and $Mg\\ell=0.2$ J. It precesses slowly at $\\theta=60^\\circ$. After a small kick, at what angular frequency does its axis bob?",
+      "choices": [
+        "$80$ rad/s",
+        "$2.5$ rad/s",
+        "$160$ rad/s",
+        "$400$ rad/s"
+      ],
+      "why": "The nutation frequency is $\\omega_n=I_3\\omega_3/I=0.08/10^{-3}=80$ rad/s, using $I$ about the pivot. The distractors come from using the slow precession rate $Mg\\ell/(I_3\\omega_3)$ (2.5), the fast-precession root $I_3\\omega_3/(I\\cos\\theta)$ (160), or $I_{\\rm cm}$ (400).",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.sleeping-top.2",
+      "skill": "9.7.sleeping-top",
+      "stem": "A top has $I=10^{-3}$ kg·m² about the pivot, $I_3=2\\times10^{-4}$ kg·m², and $Mg\\ell=0.1$ J. It spins with its axis vertical. What is the minimum $\\omega_3$ for it to sleep stably?",
+      "choices": [
+        "$100$ rad/s",
+        "$50$ rad/s",
+        "about $71$ rad/s",
+        "$2$ rad/s"
+      ],
+      "why": "Stability needs $I_3^2\\omega_3^2>4IMg\\ell$, so $\\omega_3>2\\sqrt{10^{-4}}/(2\\times10^{-4})=100$ rad/s. Dropping the factor 4 gives 50. Dropping the $I\\dot\\phi^2\\cos\\theta$ term (the slow-precession approximation) gives $I_3^2\\omega_3^2>2IMg\\ell$, about 71. Leaving out the squares gives 2.",
+      "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.vec.components.t1",
+      "skill": "M.vec.components",
+      "stem": "A force $\\mathbf F=(6\\text{ N})\\,\\hat{\\mathbf x}+(2\\text{ N})\\,\\hat{\\mathbf y}$ acts on a block. What is its component along a unit vector $\\hat{\\mathbf u}$ that points $60^\\circ$ above the $+x$ axis?",
+      "choices": [
+        "$3+\\sqrt3\\approx 4.73$ N",
+        "$3\\sqrt3+1\\approx 6.20$ N",
+        "$\\sqrt{40}\\approx 6.32$ N",
+        "$8$ N"
+      ],
+      "why": "$F_u=F_x\\cos60^\\circ+F_y\\sin60^\\circ=3+\\sqrt3$. Swapping sin and cos gives 6.20 N. Using the full magnitude $|\\mathbf F|$ gives 6.32 N, and simply adding the components gives 8 N.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.3.1.newton.t1",
+      "skill": "3.1.newton",
+      "stem": "A block $M_1=4$ kg on a $30^\\circ$ incline with $\\mu=0.25$ is tied by a string over a massless pulley to a hanging mass $M_2=6$ kg. $M_1$ slides up the plane. What is the acceleration? (Use $g=9.8$ m/s$^2$.)",
+      "choices": [
+        "$3.07$ m/s$^2$",
+        "$4.77$ m/s$^2$",
+        "$3.92$ m/s$^2$",
+        "$5.12$ m/s$^2$"
+      ],
+      "why": "$a=g(6-4\\sin30^\\circ-0.25\\cdot4\\cos30^\\circ)/10=3.07$ m/s$^2$. Pointing friction up the plane gives 4.77, leaving out friction gives 3.92, and dividing by $M_2$ alone gives 5.12.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.5.5.momentum.t1",
+      "skill": "5.5.momentum",
+      "stem": "A 30 kg sled moves at 4 m/s on straight frictionless tracks. A 10 kg box is thrown onto it horizontally along the track at 2 m/s in the opposite direction, and it sticks. What is the sled's final speed?",
+      "choices": [
+        "$2.5$ m/s",
+        "$3.5$ m/s",
+        "$3.0$ m/s",
+        "$3.6$ m/s"
+      ],
+      "why": "$v=(30\\cdot4-10\\cdot2)/40=2.5$ m/s. Giving the box's momentum a plus sign gives 3.5 m/s, ignoring its momentum gives 3.0 m/s, and conserving kinetic energy in this inelastic collision gives 3.6 m/s.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.5.6.cm.t1",
+      "skill": "5.6.cm",
+      "stem": "A 3 kg mass moving at $+4$ m/s and a 1 kg mass moving at $-4$ m/s approach each other along a line. How much of the system's lab kinetic energy is kinetic energy relative to the center of mass?",
+      "choices": [
+        "$24$ J",
+        "$32$ J",
+        "$8$ J",
+        "$0$ J"
+      ],
+      "why": "$u=(12-4)/4=2$ m/s and $K_S=32$ J, so $K_{CM}=32-\\tfrac12(4)(2)^2=24$ J. A plain average of the velocities ($u=0$) gives 32 J, and 8 J is the CM-motion part. Dropping the minus sign on $-4$ m/s gives $u=4$ m/s and 0 J.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.calc.derivative.t1",
+      "skill": "M.calc.derivative",
+      "stem": "A particle in polar coordinates has $r=2$ m, $\\dot r=0.5$ m/s, $\\dot\\theta=3$ rad/s and $\\ddot\\theta=1$ rad/s$^2$ at some instant. What is $\\frac{d}{dt}(r^2\\dot\\theta)$ at that instant?",
+      "choices": [
+        "$10$ m$^2$/s$^2$",
+        "$6$ m$^2$/s$^2$",
+        "$16$ m$^2$/s$^2$",
+        "$7$ m$^2$/s$^2$"
+      ],
+      "why": "$\\frac{d}{dt}(r^2\\dot\\theta)=2r\\dot r\\dot\\theta+r^2\\ddot\\theta=6+4=10$. Treating $\\dot\\theta$ as constant gives 6, dropping the chain-rule factor $\\dot r$ gives 16, and dropping the 2 from $(r^2)'$ gives 7.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.6.1.euler-lagrange.t1",
+      "skill": "6.1.euler-lagrange",
+      "stem": "A spring pendulum has $m=0.5$ kg, $k=10$ N/m and $\\ell=1.0$ m. At the instant it passes straight down ($\\theta=0$), $x=0.2$ m and $\\dot\\theta=3$ rad/s. Take $g=9.8$ m/s². What is $\\ddot x$?",
+      "choices": [
+        "$16.6$ m/s²",
+        "$5.8$ m/s²",
+        "$14.8$ m/s²",
+        "$-3.0$ m/s²"
+      ],
+      "why": "$\\ddot x=(\\ell+x)\\dot\\theta^2+g\\cos\\theta-kx/m=10.8+9.8-4=16.6$ m/s². The wrong choices come from dropping the centripetal term, using $\\ell$ in place of $\\ell+x$, or flipping the sign of gravity.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.6.5.cyclic.t1",
+      "skill": "6.5.cyclic",
+      "stem": "A particle of mass $0.5$ kg moves in a plane under a central potential $V(r)$. At $r=0.2$ m it has $\\dot\\theta=10$ rad/s. What is its tangential speed $r\\dot\\theta$ when it reaches $r=0.4$ m?",
+      "choices": [
+        "$1.0$ m/s",
+        "$4.0$ m/s",
+        "$2.0$ m/s",
+        "$2.5$ m/s"
+      ],
+      "why": "$mr^2\\dot\\theta$ is conserved, so $\\dot\\theta=10(0.2/0.4)^2=2.5$ rad/s and $r\\dot\\theta=0.4(2.5)=1.0$ m/s. The wrong choices come from assuming $\\dot\\theta$ is conserved, assuming the speed $r\\dot\\theta$ is conserved, or reporting $\\dot\\theta$ as the speed.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.vec.cross.t1",
+      "skill": "M.vec.cross",
+      "stem": "In right-handed axes, $\\mathbf a=(1,2,0)$ and $\\mathbf b=(0,1,3)$. What is $\\mathbf a\\times\\mathbf b$?",
+      "choices": [
+        "$(6,-3,1)$",
+        "$(6,3,1)$",
+        "$(-6,3,-1)$",
+        "$(0,2,0)$"
+      ],
+      "why": "$(a_yb_z-a_zb_y,\\ a_zb_x-a_xb_z,\\ a_xb_y-a_yb_x)=(6,-3,1)$. The wrong choices come from getting the $y$ component's sign wrong, computing $\\mathbf b\\times\\mathbf a$, or multiplying components term by term.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.7.1.L-particle.t1",
+      "skill": "7.1.L-particle",
+      "stem": "A particle of mass $0.5$ kg is at $(x,y)=(2,-1)$ m with velocity $(v_x,v_y)=(3,1)$ m/s in the plane $z=0$. What is $L_z$ about the origin?",
+      "choices": [
+        "$2.5$ kg·m²/s",
+        "$-0.5$ kg·m²/s",
+        "$-2.5$ kg·m²/s",
+        "$3.5$ kg·m²/s"
+      ],
+      "why": "$L_z=m(xv_y-yv_x)=0.5(2\\cdot1-(-1)\\cdot3)=2.5$ kg·m²/s. The wrong choices come from dropping the sign of $y$, computing $\\mathbf p\\times\\mathbf r$, or using $m|\\mathbf r||\\mathbf v|$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.1.L-pancake.t1",
+      "skill": "8.1.L-pancake",
+      "stem": "Two point masses of $0.5$ kg each sit at the ends of a massless rod of length $1.0$ m in the $x$-$y$ plane. The rod spins about the $z$ axis through its center at $\\omega=4$ rad/s. What is $L_z$?",
+      "choices": [
+        "$1.0$ kg·m²/s",
+        "$4.0$ kg·m²/s",
+        "$2.0$ kg·m²/s",
+        "$0.5$ kg·m²/s"
+      ],
+      "why": "Each mass is $r=0.5$ m from the axis, so $I_z=2(0.5)(0.5)^2=0.25$ kg·m² and $L_z=0.25(4)=1.0$ kg·m²/s. The wrong choices come from using the full length as $r$, forgetting to square $r$, or counting only one mass.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.1.parallel-axis.t1",
+      "skill": "8.1.parallel-axis",
+      "stem": "A uniform disk has mass $M=4$ kg and radius $0.5$ m, so $I^{\\rm CM}=\\tfrac12MR^2$. It spins about an axis perpendicular to the disk through a point $0.25$ m from its center. What is its moment of inertia about that axis?",
+      "choices": [
+        "$0.75$ kg·m²",
+        "$0.25$ kg·m²",
+        "$1.5$ kg·m²",
+        "$1.25$ kg·m²"
+      ],
+      "why": "$I=\\tfrac12(4)(0.5)^2+4(0.25)^2=0.5+0.25=0.75$ kg·m². The wrong answers subtract the shift ($0.25$), use the rim distance $0.5$ m ($1.5$), or use a hoop's $I^{\\rm CM}=MR^2$ ($1.25$).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.1.plane-motion.t1",
+      "skill": "8.1.plane-motion",
+      "stem": "A uniform stick ($m=0.6$ kg, $\\ell=1$ m) is thrown. Its CM moves at $V=4$ m/s and it spins at $\\omega'=6$ rad/s about its CM. What is its total kinetic energy?",
+      "choices": [
+        "$5.7$ J",
+        "$4.8$ J",
+        "$8.4$ J",
+        "$0.9$ J"
+      ],
+      "why": "$T=\\tfrac12(0.6)(16)+\\tfrac12\\cdot\\tfrac{0.6}{12}\\cdot36=4.8+0.9=5.7$ J. The wrong answers drop the spin ($4.8$), use $I^{\\rm end}=\\tfrac13m\\ell^2$ ($8.4$), or keep only the spin ($0.9$).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.4.torque.t1",
+      "skill": "8.4.torque",
+      "stem": "A wrench lies along $+\\hat x$ from a bolt at the origin, and its length is $0.3$ m. At its end you push with $10$ N in the $xy$-plane, directed $30^\\circ$ above the $+x$ direction. What is the torque about the bolt?",
+      "choices": [
+        "$1.5$ N·m, counterclockwise",
+        "$1.5$ N·m, clockwise",
+        "$2.6$ N·m, counterclockwise",
+        "$3.0$ N·m, counterclockwise"
+      ],
+      "why": "$\\tau=rF\\sin\\theta=0.3\\cdot10\\cdot\\sin30^\\circ=1.5$ N·m along $+\\hat z$ (counterclockwise). The wrong answers use $\\mathbf F\\times\\mathbf r$ (clockwise), $\\cos\\theta$ ($2.6$), or ignore the angle ($3.0$).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.4.tau-dLdt.t1",
+      "skill": "8.4.tau-dLdt",
+      "stem": "A uniform disk pulley ($M=4$ kg, $I=\\tfrac12MR^2$) turns on a fixed frictionless axle. A string wound on its rim holds a hanging mass $m=1$ kg. Using $\\tau=dL/dt$ about the fixed axle, find the downward acceleration of $m$.",
+      "choices": [
+        "$3.27$ m/s²",
+        "$4.9$ m/s²",
+        "$9.8$ m/s²",
+        "$1.96$ m/s²"
+      ],
+      "why": "About the axle, $\\tau=mgR$ and $L=\\tfrac12MRv+mvR$, so $a=mg/(m+M/2)=3.27$ m/s². The wrong answers drop $m$'s $mvR$ term ($4.9$), ignore the pulley ($9.8$), or use a hoop's $I=MR^2$ ($1.96$).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.8.6.impulse.t1",
+      "skill": "8.6.impulse",
+      "stem": "The same free stick ($m=2$ kg, $\\ell=1.2$ m, at rest on ice) gets an impulse $J=3$ N·s perpendicular to it at a point $0.2$ m from one end. What is its angular velocity just after the blow?",
+      "choices": [
+        "$5.0$ rad/s",
+        "$2.5$ rad/s",
+        "$1.25$ rad/s",
+        "$7.5$ rad/s"
+      ],
+      "why": "$d=0.6-0.2=0.4$ m from the CM, so $\\omega=Jd/I_{CM}=1.2/0.24=5.0$ rad/s. The wrong answers take $d$ from the end ($2.5$), use $I^{\\rm end}=0.96$ ($1.25$), or treat the blow as hitting the end ($7.5$).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.1.general-motion.t1",
+      "skill": "9.1.general-motion",
+      "stem": "A rigid body's point $P$ moves at $\\mathbf V_P=3\\hat{\\mathbf x}$ m/s. The body rotates with $\\boldsymbol\\omega=2\\hat{\\mathbf z}$ rad/s about an axis through $P$. Point $Q$ sits at $\\mathbf r-\\mathbf r_P=1\\hat{\\mathbf y}$ m. What is $Q$'s speed in the lab frame?",
+      "choices": [
+        "$1$ m/s",
+        "$5$ m/s",
+        "$2$ m/s",
+        "$\\sqrt{13}\\approx3.6$ m/s"
+      ],
+      "why": "$2\\hat{\\mathbf z}\\times1\\hat{\\mathbf y}=-2\\hat{\\mathbf x}$ m/s, which cancels part of $\\mathbf V_P$, so $\\mathbf v=1\\hat{\\mathbf x}$ m/s. The wrong answers come from reversing the cross product (5), dropping $\\mathbf V_P$ (2), or assuming the two pieces are perpendicular ($\\sqrt{13}$).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.1.omega-vector.t1",
+      "skill": "9.1.omega-vector",
+      "stem": "A body's point $P$ moves at $1\\hat{\\mathbf y}$ m/s. The body spins at $4$ rad/s about an axis through $P$ along $x$, counterclockwise as seen from $+x$. Point $Q$ sits at $\\mathbf r-\\mathbf r_P=(0.3,0,0.4)$ m. What is $Q$'s velocity?",
+      "choices": [
+        "$-0.6\\hat{\\mathbf y}$ m/s",
+        "$2.6\\hat{\\mathbf y}$ m/s",
+        "$-1.6\\hat{\\mathbf y}$ m/s",
+        "$-1.0\\hat{\\mathbf y}$ m/s"
+      ],
+      "why": "By the right-hand rule, $\\boldsymbol\\omega=4\\hat{\\mathbf x}$, so $\\boldsymbol\\omega\\times(\\mathbf r-\\mathbf r_P)=4(0.4)(\\hat{\\mathbf x}\\times\\hat{\\mathbf z})=-1.6\\hat{\\mathbf y}$ and $\\mathbf v=-0.6\\hat{\\mathbf y}$ m/s. The wrong answers come from flipping the sense or the cross-product order (2.6), dropping $\\mathbf V_P$ (−1.6), or using $|\\mathbf r-\\mathbf r_P|=0.5$ m instead of $r'=0.4$ m (−1.0).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.1.instant-axis.t1",
+      "skill": "9.1.instant-axis",
+      "stem": "A body pivots about the origin. Its point $C$ at $(4,0,3)$ m is momentarily at rest. Point $Q$ at $(0,2,0)$ m moves with $\\mathbf v_Q=(6,0,-8)$ m/s. What is $\\boldsymbol\\omega$?",
+      "choices": [
+        "$-(4\\hat{\\mathbf x}+3\\hat{\\mathbf z})$ rad/s",
+        "$4\\hat{\\mathbf x}+3\\hat{\\mathbf z}$ rad/s",
+        "$-(1.6\\hat{\\mathbf x}+1.2\\hat{\\mathbf z})$ rad/s",
+        "$5\\hat{\\mathbf z}$ rad/s"
+      ],
+      "why": "The axis runs along $\\mathbf r_C$, and $\\omega=v_Q/r'_Q=10/2=5$ rad/s. Only the minus sign makes $\\boldsymbol\\omega\\times\\mathbf r_Q=(6,0,-8)$. The wrong answers come from assuming the sense follows $\\mathbf r_C$, dividing by $|\\mathbf r_C|=5$ m instead of $r'_Q$, or assuming a vertical axis.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.1.omega-add.t1",
+      "skill": "9.1.omega-add",
+      "stem": "A top's symmetry axis $\\hat{\\mathbf e}_3$ makes $60^\\circ$ with the upward vertical $\\hat{\\mathbf z}$. The axis precesses at $\\Omega=2$ rad/s about $\\hat{\\mathbf z}$. The top spins at $\\omega'=4$ rad/s about $\\hat{\\mathbf e}_3$, relative to the precessing frame. What is the lab-frame $|\\boldsymbol\\omega|$?",
+      "choices": [
+        "$\\sqrt{28}\\approx5.3$ rad/s",
+        "$6$ rad/s",
+        "$\\sqrt{20}\\approx4.5$ rad/s",
+        "$4$ rad/s"
+      ],
+      "why": "$|\\boldsymbol\\Omega+\\omega'\\hat{\\mathbf e}_3|^2=4+16+2(2)(4)\\cos60^\\circ=28$. The wrong answers come from adding the speeds as scalars (6), treating the vectors as perpendicular ($\\sqrt{20}$), or ignoring the precession (4).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.1.rolling-3d.t1",
+      "skill": "9.1.rolling-3d",
+      "stem": "A wheel of radius $r=0.3$ m on a horizontal axle is pivoted $R=0.4$ m from its center. It rolls without slipping while the axle precesses about the vertical. Its total lab-frame angular speed is $|\\boldsymbol\\omega|=10$ rad/s. What is its spin $\\omega'$ relative to the axle frame?",
+      "choices": [
+        "$8$ rad/s",
+        "$10$ rad/s",
+        "$13.3$ rad/s",
+        "$6$ rad/s"
+      ],
+      "why": "$|\\boldsymbol\\omega|=\\Omega\\sqrt{1+R^2/r^2}=\\tfrac53\\Omega$, so $\\Omega=6$ rad/s and $\\omega'=(R/r)\\Omega=8$ rad/s. The wrong answers come from taking the total as the spin (10), treating $|\\boldsymbol\\omega|$ as $\\Omega$ (13.3), or giving $\\Omega$ instead of $\\omega'$ (6).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.lin.matrix-vector.t1",
+      "skill": "M.lin.matrix-vector",
+      "stem": "The same square tensor $\\mathbf I=ma^2\\begin{pmatrix}1/3&-1/4&0\\\\-1/4&1/3&0\\\\0&0&2/3\\end{pmatrix}$, now with $m=1$ kg and $a=2$ m. For $\\boldsymbol\\omega=(4,6,0)$ rad/s, what is $L_y$?",
+      "choices": [
+        "$4\\ \\text{kg m}^2/\\text{s}$",
+        "$12\\ \\text{kg m}^2/\\text{s}$",
+        "$8\\ \\text{kg m}^2/\\text{s}$",
+        "$-\\tfrac23\\ \\text{kg m}^2/\\text{s}$"
+      ],
+      "why": "Row $y$ gives $L_y=4(-\\tfrac14\\cdot4+\\tfrac13\\cdot6)=4(-1+2)=4$. Dropping the minus sign gives 12. Keeping only the diagonal term gives 8. Using row $x$ gives $-2/3$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.2.L-tensor.t1",
+      "skill": "9.2.L-tensor",
+      "stem": "A point mass $m$ sits at $(a,0,2a)$ on a massless frame. The frame rotates about the origin with $\\boldsymbol\\omega=\\omega\\hat{\\mathbf z}$. What is its angular momentum $\\mathbf L=\\mathbf I\\boldsymbol\\omega$ about the origin?",
+      "choices": [
+        "$ma^2\\omega(-2,0,1)$",
+        "$ma^2\\omega(2,0,1)$",
+        "$ma^2\\omega(0,0,1)$",
+        "$ma^2\\omega(-2,0,5)$"
+      ],
+      "why": "$I_{xz}=-mxz=-2ma^2$, $I_{yz}=0$, and $I_{zz}=m(x^2+y^2)=ma^2$, so $\\mathbf L=ma^2\\omega(-2,0,1)$. The distractors drop the minus sign, assume $\\mathbf L\\parallel\\boldsymbol\\omega$, or use $x^2+y^2+z^2$ for $I_{zz}$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.2.general-L.t1",
+      "skill": "9.2.general-L",
+      "stem": "A thin uniform disk (mass $M$, radius $b$) has its CM at $(d,0,0)$, moving with $\\mathbf V=(0,v,0)$. It spins with $\\boldsymbol\\omega=\\omega\\hat{\\mathbf x}$ about a diameter. What is its angular momentum about the origin?",
+      "choices": [
+        "$Mdv\\,\\hat{\\mathbf z}+\\tfrac14Mb^2\\omega\\,\\hat{\\mathbf x}$",
+        "$-Mdv\\,\\hat{\\mathbf z}+\\tfrac14Mb^2\\omega\\,\\hat{\\mathbf x}$",
+        "$Mdv\\,\\hat{\\mathbf z}+\\tfrac12Mb^2\\omega\\,\\hat{\\mathbf x}$",
+        "$(Mdv+\\tfrac14Mb^2\\omega)\\,\\hat{\\mathbf z}$"
+      ],
+      "why": "The orbital part is $M\\mathbf R\\times\\mathbf V=Mdv\\,\\hat{\\mathbf z}$, and the spin about a diameter is $\\tfrac14Mb^2\\omega\\,\\hat{\\mathbf x}$. The distractors use $\\mathbf V\\times\\mathbf R$, use the symmetry-axis moment $\\tfrac12Mb^2$, or add the two parts as if they were parallel.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.vec.dot.t1",
+      "skill": "M.vec.dot",
+      "stem": "A force $\\mathbf F=(2,1,2)$ N acts on a bead that moves along the direction of $\\mathbf d=(0,3,4)$ m. What is the component of $\\mathbf F$ along $\\mathbf d$?",
+      "choices": [
+        "$2.2$ N",
+        "$11$ N",
+        "$0.44$ N",
+        "$0.6$ N"
+      ],
+      "why": "$\\mathbf F\\cdot\\mathbf d=0+3+8=11$ and $d=5$, so the component is $11/5=2.2$ N. The distractors do not divide by $d$, divide by $d^2$, or drop the $z$-components.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.2.ke-tensor.t1",
+      "skill": "9.2.ke-tensor",
+      "stem": "A solid cube (mass $M$, side $L$) pivots about a fixed corner, with $\\mathbf I=ML^2\\begin{pmatrix}2/3&-1/4&-1/4\\\\-1/4&2/3&-1/4\\\\-1/4&-1/4&2/3\\end{pmatrix}$ (axes along the edges). It rotates with $\\boldsymbol\\omega=(\\omega,\\omega,0)$. What is its kinetic energy?",
+      "choices": [
+        "$\\tfrac{5}{12}ML^2\\omega^2$",
+        "$\\tfrac{11}{12}ML^2\\omega^2$",
+        "$\\tfrac{13}{24}ML^2\\omega^2$",
+        "$\\tfrac{2}{3}ML^2\\omega^2$"
+      ],
+      "why": "$\\mathbf L=ML^2\\omega(\\tfrac5{12},\\tfrac5{12},-\\tfrac12)$, so $T=\\tfrac12\\boldsymbol\\omega\\cdot\\mathbf L=\\tfrac5{12}ML^2\\omega^2$. The distractors drop the minus signs, count the $I_{12}$ cross term only once, or use $\\tfrac12I_{zz}|\\boldsymbol\\omega|^2$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.calc.integral.t1",
+      "skill": "M.calc.integral",
+      "stem": "A cart has velocity $v(t)=v_0\\cos(\\omega t)$ with $v_0=4$ m/s and $\\omega=2$ rad/s. How far does it move between $t=0$ and $T=0.5$ s?",
+      "choices": [
+        "$1.68$ m",
+        "$3.37$ m",
+        "$6.73$ m",
+        "$0.035$ m"
+      ],
+      "why": "$x=(v_0/\\omega)\\sin(\\omega T)=2\\sin(1)\\approx1.68$ m. Dropping the $1/\\omega$ gives 3.37 m, multiplying by $\\omega$ instead gives 6.73 m, and using degrees gives 0.035 m.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.calc.mass-integral.t1",
+      "skill": "M.calc.mass-integral",
+      "stem": "A uniform flat washer has mass $M=3$ kg, inner radius $R_1=0.2$ m and outer radius $R_2=0.4$ m. Integrating over thin rings, what is its moment of inertia about its symmetry axis?",
+      "choices": [
+        "$0.30$ kg m²",
+        "$0.24$ kg m²",
+        "$0.18$ kg m²",
+        "$0.15$ kg m²"
+      ],
+      "why": "With $\\sigma=M/\\pi(R_2^2-R_1^2)$, $\\int_{R_1}^{R_2}r^2\\sigma\\,2\\pi r\\,dr=\\tfrac12M(R_1^2+R_2^2)=0.30$ kg m². Integrating from $0$ gives 0.24, subtracting two full disks of mass $M$ gives 0.18, and using $dA=\\pi r\\,dr$ gives 0.15.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.2.tensor-compute.t1",
+      "skill": "9.2.tensor-compute",
+      "stem": "A point mass $m=2$ kg sits at $(0.1,0.2,0.3)$ m. It rotates about the $z$ axis through the origin with $\\omega_3=5$ rad/s. What is $L_2$, the $y$-component of its angular momentum about the origin?",
+      "choices": [
+        "$-0.6$ kg m²/s",
+        "$+0.6$ kg m²/s",
+        "$0$",
+        "$-0.3$ kg m²/s"
+      ],
+      "why": "$L_2=I_{yz}\\omega_3=-m\\,yz\\,\\omega_3=-2(0.2)(0.3)(5)=-0.6$ kg m²/s. Dropping the minus sign gives $+0.6$, assuming $\\mathbf L\\parallel\\boldsymbol\\omega$ gives 0, and using $zx$ instead of $yz$ gives $-0.3$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.2.parallel-axis-tensor.t1",
+      "skill": "9.2.parallel-axis-tensor",
+      "stem": "A uniform solid sphere (mass $M$, radius $a$) has $\\mathbf I_{\\rm CM}=\\tfrac25Ma^2\\mathbf 1$. Its CM is at $\\mathbf R=(a,2a,0)$ from a new origin, and the axes are parallel to the CM axes. What is $I_{xx}$ about the new origin?",
+      "choices": [
+        "$\\tfrac{22}{5}Ma^2$",
+        "$\\tfrac{27}{5}Ma^2$",
+        "$\\tfrac75Ma^2$",
+        "$4Ma^2$"
+      ],
+      "why": "$I_{xx}=\\tfrac25Ma^2+M(Y^2+Z^2)=\\tfrac25Ma^2+4Ma^2=\\tfrac{22}{5}Ma^2$. Using $R^2=5a^2$ gives $\\tfrac{27}{5}$, using $X^2$ instead gives $\\tfrac75$, and forgetting $\\mathbf I_{\\rm CM}$ gives $4Ma^2$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.lin.eigen.t1",
+      "skill": "M.lin.eigen",
+      "stem": "The symmetric matrix $\\begin{pmatrix}4&-2\\\\-2&1\\end{pmatrix}$ has eigenvalues $5$ and $0$. Which unit vector is the eigenvector with eigenvalue $5$?",
+      "choices": [
+        "$\\tfrac1{\\sqrt5}(2,-1)$",
+        "$\\tfrac1{\\sqrt5}(2,1)$",
+        "$\\tfrac1{\\sqrt5}(1,2)$",
+        "$\\tfrac1{\\sqrt2}(1,-1)$"
+      ],
+      "why": "The first row gives $(4-5)u_x-2u_y=0$, so $u_y=-u_x/2$ and $\\mathbf u=(2,-1)/\\sqrt5$. Dropping the minus sign on the off-diagonal entries gives $(2,1)$, $(1,2)$ is the eigenvector for $\\lambda=0$, and $(1,-1)/\\sqrt2$ would only be right if the diagonal entries were equal.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.3.definition.t1",
+      "skill": "9.3.definition",
+      "stem": "Same body and tensor (kg·m²). It now spins at $\\omega=3$ rad/s about $\\hat{\\boldsymbol\\omega}=(1,-1,0)/\\sqrt2$. What is $|\\mathbf L|$ about the pivot?",
+      "choices": [
+        "$9\\ \\text{kg m}^2/\\text{s}$",
+        "$21\\ \\text{kg m}^2/\\text{s}$",
+        "$15\\ \\text{kg m}^2/\\text{s}$",
+        "$13.5\\ \\text{kg m}^2/\\text{s}$"
+      ],
+      "why": "$\\mathbf I(1,-1,0)=(3,-3,0)=3(1,-1,0)$, so this axis is principal with $I=3$ and $L=3\\cdot3=9$. The answer $21$ reuses the other moment ($7$), $15$ uses $I_{xx}=5$, and $13.5$ is $T=\\tfrac12I\\omega^2$ rather than $L$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.lin.change-basis.t1",
+      "skill": "M.lin.change-basis",
+      "stem": "In the plane, $\\hat{\\mathbf e}_1=\\cos\\theta\\,\\hat{\\mathbf x}+\\sin\\theta\\,\\hat{\\mathbf y}$ and $\\hat{\\mathbf e}_2=-\\sin\\theta\\,\\hat{\\mathbf x}+\\cos\\theta\\,\\hat{\\mathbf y}$, with $\\theta=60^\\circ$. Write $\\hat{\\mathbf y}$ in terms of $\\hat{\\mathbf e}_1$ and $\\hat{\\mathbf e}_2$.",
+      "choices": [
+        "$\\tfrac{\\sqrt3}{2}\\hat{\\mathbf e}_1+\\tfrac12\\hat{\\mathbf e}_2$",
+        "$\\tfrac12\\hat{\\mathbf e}_1+\\tfrac{\\sqrt3}{2}\\hat{\\mathbf e}_2$",
+        "$\\tfrac{\\sqrt3}{2}\\hat{\\mathbf e}_1-\\tfrac12\\hat{\\mathbf e}_2$",
+        "$-\\tfrac{\\sqrt3}{2}\\hat{\\mathbf e}_1+\\tfrac12\\hat{\\mathbf e}_2$"
+      ],
+      "why": "Project: $\\hat{\\mathbf y}\\cdot\\hat{\\mathbf e}_1=\\sin60^\\circ=\\tfrac{\\sqrt3}{2}$ and $\\hat{\\mathbf y}\\cdot\\hat{\\mathbf e}_2=\\cos60^\\circ=\\tfrac12$. The distractors swap $\\sin$ and $\\cos$, flip the sign that belongs to $\\hat{\\mathbf x}$, or copy the forward row of $\\hat{\\mathbf e}_2$ instead of transposing.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.3.L-components.t1",
+      "skill": "9.3.L-components",
+      "stem": "A uniform disk ($M=4$ kg, $R=0.5$ m) spins at $\\omega_s=6$ rad/s about its horizontal axle. The axle turns at $\\Omega=4$ rad/s about a vertical axis along a diameter. What is the disk's kinetic energy about its CM?",
+      "choices": [
+        "$11$ J",
+        "$9$ J",
+        "$13$ J",
+        "$25$ J"
+      ],
+      "why": "$T=\\tfrac12(I_3\\omega_s^2+I_\\perp\\Omega^2)=\\tfrac12(0.5\\cdot36+0.25\\cdot16)=11$ J. The distractors drop $\\Omega$ ($9$ J), use $I_3$ for every component ($13$ J), or add the two rates as scalars ($25$ J).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.3.eigen-method.t1",
+      "skill": "9.3.eigen-method",
+      "stem": "In units of $ma^2$, $\\mathbf I=\\begin{pmatrix}6&2&0\\\\2&3&0\\\\0&0&9\\end{pmatrix}$. Its principal moments are $7ma^2$, $2ma^2$ and $9ma^2$. Which principal axis has moment $7ma^2$?",
+      "choices": [
+        "$(2,1,0)/\\sqrt5$",
+        "$(1,-2,0)/\\sqrt5$",
+        "$(1,2,0)/\\sqrt5$",
+        "$(1,1,0)/\\sqrt2$"
+      ],
+      "why": "$(\\mathbf I-7\\mathbf 1)\\mathbf v=0$ gives $-v_x+2v_y=0$, so $\\mathbf v\\propto(2,1,0)$. The distractors are the axis for $\\lambda=2$, the correct components swapped, and the $45^\\circ$ axis, which is only right when the diagonal entries are equal.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.3.symmetry.t1",
+      "skill": "9.3.symmetry",
+      "stem": "The same square plate ($M=2$ kg, $a=0.5$ m), still pivoted at a corner, now spins at $\\omega=6$ rad/s about the diagonal through that corner. What is $|\\mathbf L|$ about the corner?",
+      "choices": [
+        "$0.25\\ \\text{kg m}^2/\\text{s}$",
+        "$1.75\\ \\text{kg m}^2/\\text{s}$",
+        "$1.0\\ \\text{kg m}^2/\\text{s}$",
+        "$2.0\\ \\text{kg m}^2/\\text{s}$"
+      ],
+      "why": "The diagonal is a principal axis with moment $Ma^2/12=1/24$ kg·m², so $L=\\omega/24=0.25$ and $\\mathbf L\\parallel\\boldsymbol\\omega$. The distractors use the perpendicular in-plane moment $7Ma^2/12$, the moment about a side $Ma^2/3$, or the moment about $z$, $2Ma^2/3$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.5.stability.t1",
+      "skill": "9.5.stability",
+      "stem": "The same block ($I_1=0.005$, $I_2=0.004$, $I_3=0.002$ kg m$^2$) is now spun at $\\omega_1=10$ rad/s about axis 1 with a tiny wobble. What do the small components $\\omega_2,\\omega_3$ do in the body frame?",
+      "choices": [
+        "They oscillate with $\\Omega\\approx6.1$ rad/s (stable)",
+        "They grow with $\\lambda\\approx6.1\\ \\text{s}^{-1}$ (unstable)",
+        "They oscillate with $\\Omega\\approx37.5$ rad/s (stable)",
+        "They oscillate with $\\Omega\\approx3.5$ rad/s (stable)"
+      ],
+      "why": "$I_1$ is the largest moment, so $K=(I_1-I_2)(I_1-I_3)\\omega_1^2/(I_2I_3)=37.5\\ \\text{s}^{-2}>0$ and $\\Omega=\\sqrt{37.5}\\approx6.1$ rad/s. The distractors come from getting the sign wrong (6.1 growth), forgetting the square root (37.5), or putting $I_1^2$ in the denominator (3.5).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.6.body-frame.t1",
+      "skill": "9.6.body-frame",
+      "stem": "A football in space is a prolate symmetric top with $I_3=0.4I$. Its spin component is $\\omega_3=10$ rad/s and its transverse part is $2$ rad/s. Seen in the body, at what rate and in which sense does $\\boldsymbol\\omega$ precess about $+\\hat{\\mathbf x}_3$?",
+      "choices": [
+        "$\\Omega=-6$ rad/s (clockwise)",
+        "$\\Omega=+6$ rad/s (counterclockwise)",
+        "$\\Omega=-15$ rad/s (clockwise)",
+        "$4.5$ rad/s"
+      ],
+      "why": "$\\Omega=(I_3-I)\\omega_3/I=(0.4-1)(10)=-6$ rad/s, and the negative sign means clockwise. Dropping the sign gives $+6$, dividing by $I_3$ gives $-15$, and $L/I\\approx4.5$ is the fixed-frame rate.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.6.fixed-frame.t1",
+      "skill": "9.6.fixed-frame",
+      "stem": "A football in free flight has $I=0.004$ kg m$^2$, $I_3=0.002$ kg m$^2$, spin component $\\omega_3=8$ rad/s and transverse part $A=3$ rad/s. Seen from the ground, at what rate does its symmetry axis precess around $\\mathbf L$?",
+      "choices": [
+        "$5$ rad/s",
+        "$10$ rad/s",
+        "$4$ rad/s",
+        "$8.5$ rad/s"
+      ],
+      "why": "$L=\\sqrt{0.012^2+0.016^2}=0.02$ kg m$^2$/s, so $L/I=5$ rad/s. The answer 10 uses $L/I_3$, 4 is the body-frame $|\\Omega|$, and 8.5 is $|\\boldsymbol\\omega|$, which wrongly treats $\\boldsymbol\\omega$ as fixed.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.euler-angles.t1",
+      "skill": "9.7.euler-angles",
+      "stem": "A top's axis is tilted to $\\theta=2\\pi/3$ from the vertical, so it points below the horizontal. It has $\\dot\\theta=0$, $\\dot\\phi=4$ rad/s and $\\dot\\psi=20$ rad/s. What is $|\\boldsymbol\\omega|$?",
+      "choices": [
+        "$18.3$ rad/s",
+        "$22.3$ rad/s",
+        "$20.4$ rad/s",
+        "$24$ rad/s"
+      ],
+      "why": "$\\omega_3=20+4\\cos(2\\pi/3)=18$ and $\\omega_2=4\\sin(2\\pi/3)=2\\sqrt3$, so $|\\boldsymbol\\omega|=\\sqrt{336}\\approx18.3$ rad/s. Taking $\\cos\\theta=+\\tfrac12$ gives 22.3, treating $\\hat{\\mathbf z}$ and $\\hat{\\mathbf x}_3$ as orthogonal gives 20.4, and simply adding the rates gives 24.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.omega-euler.t1",
+      "skill": "9.7.omega-euler",
+      "stem": "A top has $I_3=0.002$ kg m$^2$ and $I=0.005$ kg m$^2$ about its pivot. It moves with $\\theta=60^\\circ$, $\\dot\\theta=0$, $\\dot\\phi=4$ rad/s and $\\dot\\psi=30$ rad/s. What is $L_3$, its angular momentum along the symmetry axis?",
+      "choices": [
+        "$0.064$ kg m$^2$/s",
+        "$0.060$ kg m$^2$/s",
+        "$0.067$ kg m$^2$/s",
+        "$0.16$ kg m$^2$/s"
+      ],
+      "why": "$\\omega_3=30+4\\cos60^\\circ=32$ rad/s, so $L_3=I_3\\omega_3=0.064$ kg m$^2$/s. The distractors come from using $\\omega_3=\\dot\\psi$ (0.060), using $\\sin\\theta$ instead of $\\cos\\theta$ (0.067), and multiplying by $I$ instead of $I_3$ (0.16).",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.steady-top.t1",
+      "skill": "9.7.steady-top",
+      "stem": "A top has $M=0.4$ kg and $\\ell=0.05$ m. About the pivot, $I=2\\times10^{-3}$ kg·m² and $I_3=5\\times10^{-4}$ kg·m². It spins with $\\omega_3=200$ rad/s, and its axis is at $\\theta=60^\\circ$ from the vertical. Use $g=9.8$ m/s². What is its exact slow steady-precession rate $\\Omega$?",
+      "choices": [
+        "$2.00$ rad/s",
+        "$1.96$ rad/s",
+        "$98.0$ rad/s",
+        "$1.92$ rad/s"
+      ],
+      "why": "Solving $10^{-3}\\Omega^2-0.1\\Omega+0.196=0$ gives $\\Omega_-=(0.1-0.096)/0.002=2.00$ rad/s. Dropping $\\mathbf L_2$ gives $1.96$ rad/s, the plus root gives $98$ rad/s, and flipping the sign of the $I\\Omega\\cos\\theta$ term gives $1.92$ rad/s.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.series.small.t1",
+      "skill": "M.series.small",
+      "stem": "A conical pendulum has period $T=2\\pi\\sqrt{\\ell\\cos\\theta/g}$. For small $\\theta$ (in radians), what is $T$ correct to order $\\theta^2$?",
+      "choices": [
+        "$2\\pi\\sqrt{\\ell/g}\\,(1-\\theta^2/4)$",
+        "$2\\pi\\sqrt{\\ell/g}\\,(1+\\theta^2/4)$",
+        "$2\\pi\\sqrt{\\ell/g}\\,(1-\\theta^2/2)$",
+        "$2\\pi\\sqrt{\\ell/g}$"
+      ],
+      "why": "$\\cos\\theta\\approx1-\\theta^2/2$, and $(1-\\theta^2/2)^{1/2}\\approx1-\\theta^2/4$. The wrong choices come from flipping the sign of $n$, forgetting the square root, or using $\\cos\\theta\\approx1$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.fast-top.t1",
+      "skill": "9.7.fast-top",
+      "stem": "A fast top has $M=0.2$ kg and $\\ell=0.05$ m. It has $I_3=10^{-4}$ kg·m², $I=5\\times10^{-4}$ kg·m² about the pivot, and $\\omega_3=490$ rad/s. Its axis is at $30^\\circ$ from the vertical. Use $g=9.8$ m/s². Estimate its slow precession rate.",
+      "choices": [
+        "$2.0$ rad/s",
+        "$1.0$ rad/s",
+        "$113$ rad/s",
+        "$0.40$ rad/s"
+      ],
+      "why": "$\\Omega\\approx Mg\\ell/(I_3\\omega_3)=0.098/0.049=2.0$ rad/s, with no $\\sin\\theta$. The wrong choices come from keeping a $\\sin\\theta$, taking the fast root $I_3\\omega_3/(I\\cos\\theta)$, or using $I$ in place of $I_3$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.lagrangian-top.t1",
+      "skill": "9.7.lagrangian-top",
+      "stem": "A top has $I=2\\times10^{-3}$ kg·m² about the pivot and $I_3\\omega_3=0.02$ kg·m²/s. It is released with its axis horizontal and $\\dot\\phi=0$, $\\dot\\theta=0$. Later its axis passes $\\theta=120^\\circ$ from the upward vertical. What is $\\dot\\phi$ there?",
+      "choices": [
+        "$6.67$ rad/s",
+        "$0$ rad/s",
+        "$5.77$ rad/s",
+        "$-6.67$ rad/s"
+      ],
+      "why": "$L_z=0$ at release, so $\\dot\\phi=-L_3\\cos\\theta/(I\\sin^2\\theta)=0.01/0.0015=6.67$ rad/s. The wrong choices come from dropping the spin term in $L_z$, using $\\sin\\theta$ instead of $\\sin^2\\theta$, or flipping the sign of the $\\cos\\theta$ term.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.7.nutation.t1",
+      "skill": "9.7.nutation",
+      "stem": "A fast top has $I=10^{-3}$ kg·m² about the pivot, $I_{\\rm cm}=2\\times10^{-4}$ kg·m², $I_3=4\\times10^{-4}$ kg·m² and $\\omega_3=200$ rad/s. It is in slow precession with its axis horizontal. A sideways kick increases $\\dot\\phi$ by $\\Delta\\Omega=4$ rad/s. What is the largest change in the axis angle?",
+      "choices": [
+        "It rises by $0.10$ rad",
+        "It dips by $0.10$ rad",
+        "It rises by $0.05$ rad",
+        "It rises by $0.02$ rad"
+      ],
+      "why": "$\\omega_n=I_3\\omega_3/I=80$ rad/s, so the axis rises by up to $2\\Delta\\Omega\\sin\\theta_0/\\omega_n=0.10$ rad. The wrong choices come from getting the direction backward, forgetting the factor 2 in $1-\\cos$, or using $I_{\\rm cm}$ instead of $I$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.4.blow.t1",
+      "skill": "9.4.blow",
+      "stem": "Use the same free triangle: $m=1$ kg at $A$ and $B$, $2m$ at $C$, $a=0.5$ m, with $I_x=4ma^2$, $I_y=8ma^2$, $I_z=12ma^2$ about the CM. This time $C$, at $\\mathbf r_C=(0,a,0)$, gets $P=2$ N·s into the page. What is $|\\boldsymbol\\omega|$ just after the blow?",
+      "choices": [
+        "$1$ rad/s",
+        "$0.33$ rad/s",
+        "$0.5$ rad/s",
+        "$2$ rad/s"
+      ],
+      "why": "$\\mathbf L=\\mathbf r_C\\times\\mathbf P=(-aP,0,0)$ lies along the principal $x$ axis, so $|\\boldsymbol\\omega|=aP/I_x=P/(4ma)=1$ rad/s. The wrong answers come from using $I_z$, from using $I_y$, and from measuring $\\mathbf r$ from the hypotenuse midpoint instead of the CM.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.vec.rotating.t1",
+      "skill": "M.vec.rotating",
+      "stem": "A fixed-length vector $\\vec A=(1,2,2)$ m turns about $\\hat z$ with constant $\\vec\\Omega=3\\hat z$ rad/s. At this instant, what is $d^2\\vec A/dt^2$?",
+      "choices": [
+        "$(-9,-18,0)$ m/s²",
+        "$(-9,-18,-18)$ m/s²",
+        "$(9,18,0)$ m/s²",
+        "$(-3,-6,0)$ m/s²"
+      ],
+      "why": "First, $d\\vec A/dt=\\vec\\Omega\\times\\vec A=(-6,3,0)$. Applying $\\vec\\Omega\\times$ again gives $(-9,-18,0)=-\\Omega^2\\vec A_\\perp$. The $z$ part never moves.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.4.steady-precession.t1",
+      "skill": "9.4.steady-precession",
+      "stem": "A uniform stick of length $0.3$ m is pivoted at its top end. It swings steadily around the vertical at a constant $60^\\circ$ from the vertical. Take $g=9.8$ m/s². What is its angular frequency $\\omega$?",
+      "choices": [
+        "$9.90$ rad/s",
+        "$8.08$ rad/s",
+        "$7.00$ rad/s",
+        "$14.0$ rad/s"
+      ],
+      "why": "$\\omega=\\sqrt{3g/(2\\ell\\cos\\theta)}=\\sqrt{98}\\approx9.90$ rad/s. The wrong answers come from using the point-mass formula, from using $L\\omega$ instead of $(L\\cos\\theta)\\omega$, and from putting gravity at the end of the stick.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.9.5.euler.t1",
+      "skill": "9.5.euler",
+      "stem": "A torque-free symmetric body has $I_1=I_2=5$ kg·m², $I_3=2$ kg·m² and $\\omega_3=10$ rad/s. Seen in the body frame, $\\boldsymbol\\omega$ circles $\\hat{\\mathbf x}_3$ at rate $\\Omega$. What is $\\Omega$, and which way does $\\boldsymbol\\omega$ go, looking down from $+\\hat{\\mathbf x}_3$?",
+      "choices": [
+        "$\\Omega=-6$ rad/s, clockwise",
+        "$\\Omega=+6$ rad/s, counterclockwise",
+        "$\\Omega=-15$ rad/s, clockwise",
+        "$\\Omega=0$; $\\boldsymbol\\omega$ stays fixed in the body"
+      ],
+      "why": "$\\Omega=(I_3-I)\\omega_3/I=(2-5)(10)/5=-6$ rad/s. Since $I_3<I$, $\\boldsymbol\\omega$ goes clockwise. The wrong answers come from using $I-I_3$, from dividing by $I_3$, and from assuming that no torque means $\\boldsymbol\\omega$ is constant.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.M.ode.harmonic.t1",
+      "skill": "M.ode.harmonic",
+      "stem": "A coordinate obeys $2\\ddot x+18x=0$ (SI units). At $t=0$, $x=0$ and $\\dot x=6$ m/s. What is the amplitude $A$ of the oscillation?",
+      "choices": [
+        "$2$ m",
+        "$1.41$ m",
+        "$0.67$ m",
+        "$18$ m"
+      ],
+      "why": "$\\omega=\\sqrt{18/2}=3$ rad/s, so $A=\\sqrt{x_0^2+v_0^2/\\omega^2}=6/3=2$ m. The wrong answers come from not dividing by 2 first, from dropping the square root, and from multiplying $v_0$ by $\\omega$.",
+      "review": "Your-turn problem paired with the worked example; Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r1",
+      "skill": "8.1.L-pancake",
+      "stem": "A 3 kg ball on a string circles at radius $0.2$ m with $\\omega = 5$ rad/s. What is its angular momentum about the center?",
+      "choices": [
+        "$0.6\\ \\text{kg m}^2/\\text{s}$",
+        "$3\\ \\text{kg m}^2/\\text{s}$",
+        "$0.3\\ \\text{kg m}^2/\\text{s}$",
+        "$0.12\\ \\text{kg m}^2/\\text{s}$"
+      ],
+      "why": "$L=mr^2\\omega=(3)(0.2)^2(5)=0.6$. Each wrong choice comes from a specific slip: $mr\\omega$ drops a factor of $r$, $\\tfrac12mr^2\\omega$ borrows the disk formula, and $mr^2$ leaves out $\\omega$.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r2",
+      "skill": "9.1.omega-vector",
+      "stem": "A 1 kg ball at $\\mathbf r = 0.2\\,\\hat{\\mathbf y}$ m circles the origin clockwise, seen from above ($+z$), at 5 rad/s in the $xy$-plane. What is its angular momentum $\\mathbf L$ about the origin, in kg m²/s?",
+      "choices": [
+        "$-0.2\\,\\hat{\\mathbf z}$",
+        "$+0.2\\,\\hat{\\mathbf z}$",
+        "$-1\\,\\hat{\\mathbf z}$",
+        "$-0.04\\,\\hat{\\mathbf z}$"
+      ],
+      "why": "Clockwise gives $\\boldsymbol\\omega=-5\\hat{\\mathbf z}$, so $\\mathbf v=\\boldsymbol\\omega\\times\\mathbf r=+1\\,\\hat{\\mathbf x}$ m/s and $\\mathbf L=m\\,\\mathbf r\\times\\mathbf v=0.2(\\hat{\\mathbf y}\\times\\hat{\\mathbf x})=-0.2\\hat{\\mathbf z}$. The wrong choices come from flipping the sign (wrong hand, or computing $\\mathbf p\\times\\mathbf r$), using $mr\\omega$, or leaving out $\\omega$.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r3",
+      "skill": "8.1.L-pancake",
+      "stem": "A uniform disk of mass $4$ kg and radius $0.25$ m spins at $6$ rad/s about its symmetry axis. What is its angular momentum about that axis?",
+      "choices": [
+        "$0.75\\ \\text{kg m}^2/\\text{s}$",
+        "$1.5\\ \\text{kg m}^2/\\text{s}$",
+        "$3\\ \\text{kg m}^2/\\text{s}$",
+        "$2.25\\ \\text{kg m}^2/\\text{s}$"
+      ],
+      "why": "$I=\\tfrac12(4)(0.25)^2=0.125$ kg m², so $L=I\\omega=0.75$. The wrong choices come from $MR^2\\omega$ (treating all the mass as if it were on the rim), $\\tfrac12MR\\omega$ (forgetting to square $R$), and $\\tfrac12I\\omega^2$, which is the kinetic energy.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r4",
+      "skill": "7.1.L-particle",
+      "stem": "Same setup (1 kg ball, 1 m from the origin, $\\omega = 2$ rad/s about $z$, rod in the $xz$-plane), but the rod now makes $60^\\circ$ with the $z$ axis. What angle does the ball's $\\mathbf L$ about the origin make with the $+z$ axis?",
+      "choices": [
+        "$30^\\circ$",
+        "$0^\\circ$",
+        "$60^\\circ$",
+        "$150^\\circ$"
+      ],
+      "why": "$\\mathbf r=(0.87,0,0.5)$ and $\\mathbf v=1.73\\,\\hat{\\mathbf y}$, so $\\mathbf L=(-0.87,0,1.5)$, which is $30^\\circ$ from $z$ and perpendicular to the rod. The wrong choices come from assuming $\\mathbf L\\parallel\\boldsymbol\\omega$, assuming $\\mathbf L$ lies along the rod, and computing $\\mathbf v\\times\\mathbf r$ (reversed order).",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r5",
+      "skill": "9.2.general-L",
+      "stem": "Two 0.5 kg balls sit at the ends of a massless rod, each 2 m from the center at the origin. The rod is tilted $30^\\circ$ from the $z$ axis and spins about $z$ at 3 rad/s. What is the total $\\mathbf L$?",
+      "choices": [
+        "6 kg m²/s, at 60° from the z axis",
+        "3 kg m²/s, along the z axis",
+        "12 kg m²/s, at 60° from the z axis",
+        "6 kg m²/s, along the z axis"
+      ],
+      "why": "Each ball has $|\\mathbf L|=mr^2\\omega\\sin30^\\circ=3$, and the two point the same way (perpendicular to the rod), so the total is 6 at $60^\\circ$ from $z$. The wrong choices come from assuming the sideways parts cancel (keeping only $L_z$), using $v=\\omega r$ instead of $\\omega r\\sin\\theta$, or assuming $\\mathbf L\\parallel\\boldsymbol\\omega$.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r6",
+      "skill": "9.2.L-tensor",
+      "stem": "Two 1 kg balls sit at $\\pm(0.6,\\,0,\\,0.8)$ m on a massless rod through the origin, which spins with $\\boldsymbol\\omega=(0,0,5)$ rad/s. Using the inertia tensor about the origin, what is $\\mathbf L$ (in kg m²/s)?",
+      "choices": [
+        "(−4.8, 0, 3.6)",
+        "(4.8, 0, 3.6)",
+        "(−4.8, 0, 10)",
+        "(0, 0, 3.6)"
+      ],
+      "why": "$I_{xz}=-2(0.6)(0.8)=-0.96$ and $I_{zz}=2(0.36)=0.72$ kg m², so $\\mathbf L=(-4.8,0,3.6)$. The wrong choices drop the minus sign on $I_{xz}$, use $x^2+y^2+z^2$ for $I_{zz}$, or ignore the off-diagonal entry.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r7",
+      "skill": "9.3.definition",
+      "stem": "The same dumbbell (moment 0 along the rod, $I_\\perp=2$ kg m²) is now tilted $60^\\circ$ from the $z$ axis and spins at $\\boldsymbol\\omega=3\\hat{\\mathbf z}$ rad/s. What is $\\mathbf L$?",
+      "choices": [
+        "3√3 ≈ 5.2 kg m²/s, perpendicular to the rod (30° from z)",
+        "6 kg m²/s, along z",
+        "3 kg m²/s, perpendicular to the rod",
+        "0"
+      ],
+      "why": "$\\omega_\\perp=3\\sin60^\\circ=\\tfrac{3\\sqrt3}{2}$, so $L=I_\\perp\\omega_\\perp=3\\sqrt3$ along $\\hat{\\mathbf e}_\\perp$. The wrong choices come from writing $\\mathbf L=I_\\perp\\boldsymbol\\omega$, using the along-rod component $\\omega\\cos60^\\circ$, or treating all of $\\boldsymbol\\omega$ as lying along the rod.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r8",
+      "skill": "9.1.omega-add",
+      "stem": "A wheel spins at 6 rad/s relative to its horizontal axle while the axle turns about the vertical at 8 rad/s. What is the wheel's total angular velocity?",
+      "choices": [
+        "10 rad/s, 53° above horizontal",
+        "14 rad/s",
+        "10 rad/s, 37° above horizontal",
+        "6 rad/s, horizontal along the axle"
+      ],
+      "why": "$|\\boldsymbol\\omega|=\\sqrt{6^2+8^2}=10$ rad/s, and $\\tan\\alpha=8/6$ gives $53^\\circ$ above horizontal. The wrong choices add the speeds as scalars, invert the tangent, or ignore the axle's turning.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r9",
+      "skill": "M.vec.rotating",
+      "stem": "A spin angular momentum $\\mathbf L=4\\hat{\\mathbf y}$ kg m²/s is carried around the vertical at $\\boldsymbol\\Omega=3\\hat{\\mathbf z}$ rad/s (counterclockwise seen from above). Its length stays the same. What is $d\\mathbf L/dt$?",
+      "choices": [
+        "$12$ kg m²/s² along $-\\hat{\\mathbf x}$",
+        "$12$ kg m²/s² along $+\\hat{\\mathbf x}$",
+        "$12$ kg m²/s² along $+\\hat{\\mathbf y}$",
+        "$0$, because the length of $\\mathbf L$ doesn't change"
+      ],
+      "why": "$3\\hat{\\mathbf z}\\times4\\hat{\\mathbf y}=-12\\hat{\\mathbf x}$. The answer $+\\hat{\\mathbf x}$ comes from reversing the order to $\\mathbf L\\times\\boldsymbol\\Omega$. The answer $+\\hat{\\mathbf y}$ assumes $\\mathbf L$ gets longer. The answer 0 misses that $\\mathbf L$ changes direction even though its length stays fixed.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r10",
+      "skill": "8.4.tau-dLdt",
+      "stem": "The same gyroscope (mass 0.5 kg, $I_3=0.002$ kg m², axle 0.1 m from the pivot, $g=9.8$ m/s²) is now spun at 400 rad/s. Use the fast-spin approximation. What is its precession rate $\\Omega$?",
+      "choices": [
+        "$0.61$ rad/s",
+        "$2.45$ rad/s",
+        "$1.63$ rad/s",
+        "$6.1$ rad/s"
+      ],
+      "why": "$\\Omega=Mg\\ell/(I_3\\omega_3)=0.49/0.8\\approx0.61$ rad/s, so doubling the spin halves the precession rate. 2.45 assumes faster spin means faster precession. 1.63 inverts the formula to $L/\\tau$. 6.1 leaves out the lever arm $\\ell$.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r11",
+      "skill": "9.4.steady-precession",
+      "stem": "A uniform stick of length $\\ell=0.15$ m is pivoted at its top end. It swings steadily around the vertical at $\\theta=60^\\circ$ from the vertical. Take $g=9.8$ m/s². What is its angular frequency $\\omega$?",
+      "choices": [
+        "$14$ rad/s",
+        "$11.4$ rad/s",
+        "$9.9$ rad/s",
+        "$19.8$ rad/s"
+      ],
+      "why": "$\\omega^2=3g/(2\\ell\\cos\\theta)=29.4/0.15=196$, so $\\omega=14$ rad/s. 11.4 uses the point-mass result $\\sqrt{g/(\\ell\\cos\\theta)}$. 9.9 uses the full $L$ instead of $L\\cos\\theta$. 19.8 puts gravity at the end of the stick instead of at the center of mass.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r12",
+      "skill": "9.1.instant-axis",
+      "stem": "Same rolling wheel on a pivoted horizontal axle, now with $r=0.1$ m, $R=0.4$ m and $\\Omega=3$ rad/s. What is the wheel's spin rate $\\omega'$ relative to the axle?",
+      "choices": [
+        "12 rad/s",
+        "0.75 rad/s",
+        "12.4 rad/s",
+        "1.2 rad/s"
+      ],
+      "why": "No slipping means $\\omega' r=\\Omega R$, so $\\omega'=(0.4/0.1)(3)=12$ rad/s. The value 0.75 inverts $R/r$, 12.4 is the total $|\\boldsymbol\\omega|$ including $\\Omega$, and 1.2 is the center's speed $\\Omega R$.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r13",
+      "skill": "9.3.L-components",
+      "stem": "A uniform disk of mass $2$ kg and radius $r=0.1$ m rolls on a pivoted horizontal axle as in rung 12, with $R=0.2$ m and $\\Omega=3$ rad/s (so $\\omega'=6$ rad/s). What is the vertical component $L_z$ of its angular momentum about the pivot?",
+      "choices": [
+        "0.255 kg m²/s",
+        "0",
+        "0.015 kg m²/s",
+        "0.57 kg m²/s"
+      ],
+      "why": "$L_z=I_\\perp\\Omega=(\\tfrac14 mr^2+mR^2)\\Omega=0.085\\times3=0.255$ kg m²/s. Zero forgets that the axle turns, 0.015 leaves out the parallel-axis term $mR^2$, and 0.57 multiplies $I_\\perp$ by $|\\boldsymbol\\omega|$ as if $\\mathbf L=I\\boldsymbol\\omega$.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r14",
+      "skill": "9.4.steady-precession",
+      "stem": "Same rolling disk ($m=2$ kg, $r=0.1$ m, massless axle, no horizontal force from the ground), now with $R=0.2$ m and $\\Omega=3$ rad/s, so $\\omega'=6$ rad/s. What is the normal force $N$? ($g=9.8$ m/s²)",
+      "choices": [
+        "20.5 N",
+        "19.6 N",
+        "18.7 N",
+        "23.5 N"
+      ],
+      "why": "$N=mg+\\Omega I_3\\omega'/R=19.6+(3)(0.01)(6)/0.2=20.5$ N. 19.6 N ignores $d\\mathbf L/dt$, 18.7 N has its sign flipped, and 23.5 N uses $\\Omega|\\mathbf L|$ instead of $\\Omega L_\\perp$.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r15",
+      "skill": "9.5.euler",
+      "stem": "A free symmetric body has $I_1=I_2=I=3$ kg m², $I_3=5$ kg m², and spins with $\\omega_3=6$ rad/s plus a small sideways $\\boldsymbol\\omega$ component. Seen in the body frame, at what rate does $\\boldsymbol\\omega$ circle the symmetry axis?",
+      "choices": [
+        "4 rad/s",
+        "2.4 rad/s",
+        "10 rad/s",
+        "0 rad/s"
+      ],
+      "why": "$\\Omega=(I_3-I)\\omega_3/I=(5-3)(6)/3=4$ rad/s. The wrong choices come from dividing by $I_3$ instead of $I$ (2.4), using the fixed-frame rate $L/I\\approx I_3\\omega_3/I$ (10), or wrongly arguing that $\\dot{\\boldsymbol\\omega}=\\boldsymbol\\omega\\times\\boldsymbol\\omega=0$ (0).",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch9.r16",
+      "skill": "9.7.steady-top",
+      "stem": "The same top ($I=0.01$ kg m², $I_3=0.004$ kg m², $\\theta=60^\\circ$) now has $Mg\\ell=0.18$ J and spins with $\\omega_3=25$ rad/s. What is its slow steady precession rate?",
+      "choices": [
+        "$2$ rad/s",
+        "$1.8$ rad/s",
+        "$18$ rad/s",
+        "$4$ rad/s"
+      ],
+      "why": "Dividing $I\\Omega^2\\cos\\theta-I_3\\omega_3\\Omega+Mg\\ell=0$ by $I\\cos\\theta=0.005$ gives $\\Omega^2-20\\Omega+36=0$, so $\\Omega=(20-\\sqrt{256})/2=2$ rad/s. The fast-spin estimate $Mg\\ell/(I_3\\omega_3)$ gives 1.8, the other root is 18, and forgetting to halve gives 4.",
+      "review": "Ladder turn (ch. 9 lesson); Fable 5.1 answered it blind (2026-09-23)"
+    },
+    {
+      "id": "q.lesson.ch8.diameter",
+      "skill": "8.1.perp-axis",
+      "stem": "A thin uniform disk has mass $2$ kg and radius $0.4$ m. What is its moment of inertia about a diameter?",
+      "choices": [
+        "$0.08\\ \\text{kg m}^2$",
+        "$0.16\\ \\text{kg m}^2$",
+        "$0.32\\ \\text{kg m}^2$",
+        "$0.04\\ \\text{kg m}^2$"
+      ],
+      "why": "$I=MR^2/4=(2)(0.4)^2/4=0.08$ kg m². The perpendicular central axis would give 0.16.",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.lesson.ch8.composite",
+      "skill": "8.3.composite",
+      "stem": "A disk ($M=4$ kg, $R=0.25$ m) has a $2$ kg point mass at its rim. Find $I$ about the central perpendicular axis.",
+      "choices": [
+        "$0.25\\ \\text{kg m}^2$",
+        "$0.1875\\ \\text{kg m}^2$",
+        "$0.375\\ \\text{kg m}^2$",
+        "$0.125\\ \\text{kg m}^2$"
+      ],
+      "why": "$I=\\tfrac12(4)(0.25)^2+2(0.25)^2=0.125+0.125=0.25$ kg m².",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.lesson.ch8.acceleration",
+      "skill": "8.4.tau-dLdt",
+      "stem": "A disk ($M=4$ kg, $R=0.5$ m) has a tangential rim force of $2$ N. With a fixed frictionless central axle, what is $\\alpha$?",
+      "choices": [
+        "$2\\ \\text{rad/s}^2$",
+        "$4\\ \\text{rad/s}^2$",
+        "$1\\ \\text{rad/s}^2$",
+        "$0.5\\ \\text{rad/s}^2$"
+      ],
+      "why": "$I=0.5$ kg m² and $\\tau=1$ N m, so $\\alpha=\\tau/I=2$ rad/s².",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.lesson.ch8.energy",
+      "skill": "8.1.ke-rot",
+      "stem": "The same disk now spins at $8$ rad/s. What is its kinetic energy?",
+      "choices": [
+        "$8\\ \\text{J}$",
+        "$4\\ \\text{J}$",
+        "$2\\ \\text{J}$",
+        "$16\\ \\text{J}$"
+      ],
+      "why": "$T=\\tfrac12(0.25)(8)^2=8$ J. Doubling the spin quadruples the energy.",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.lesson.ch8.rolling",
+      "skill": "8.4.rolling",
+      "stem": "A wheel rolls without slipping with center speed $3$ m/s. What is the top point speed relative to stationary ground?",
+      "choices": [
+        "$6\\ \\text{m/s}$",
+        "$3\\ \\text{m/s}$",
+        "$0\\ \\text{m/s}$",
+        "$9\\ \\text{m/s}$"
+      ],
+      "why": "$v_{top}=v_{CM}+\\omega R=2v_{CM}=6$ m/s.",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.lesson.ch8.incline",
+      "skill": "8.4.incline",
+      "stem": "A thin hoop ($I_{CM}=MR^2$) rolls without slipping down the same $30^\\circ$ incline. What is its acceleration, using $g=9.8$ m/s²?",
+      "choices": [
+        "$2.45\\ \\text{m/s}^2$",
+        "$3.27\\ \\text{m/s}^2$",
+        "$4.90\\ \\text{m/s}^2$",
+        "$9.80\\ \\text{m/s}^2$"
+      ],
+      "why": "$a=g\\sin30^\\circ/(1+1)=4.9/2=2.45$ m/s². The hoop needs more energy in rotation than the cylinder.",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.lesson.ch8.pendulum",
+      "skill": "8.4.physical-pendulum",
+      "stem": "A uniform rod of length $0.6$ m swings through small angles about one end. With $g=10$ m/s², what is its angular frequency?",
+      "choices": [
+        "$5\\ \\text{rad/s}$",
+        "$2.5\\ \\text{rad/s}$",
+        "$25\\ \\text{rad/s}$",
+        "$\\sqrt{10}\\ \\text{rad/s}$"
+      ],
+      "why": "$\\Omega_0=\\sqrt{3g/(2\\ell)}=\\sqrt{30/1.2}=5$ rad/s.",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.lesson.ch8.collision",
+      "skill": "8.5.L-collisions",
+      "stem": "The same rod and ball undergo the same sticking collision, but the ball arrives at $6$ m/s. What is the final angular speed?",
+      "choices": [
+        "$3\\ \\text{rad/s}$",
+        "$6\\ \\text{rad/s}$",
+        "$2\\ \\text{rad/s}$",
+        "$\\sqrt{18}\\ \\text{rad/s}$"
+      ],
+      "why": "$I_f=2$ kg m² and $L_i=6$ kg m²/s, so $\\omega=6/2=3$ rad/s.",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.lesson.ch8.percussion",
+      "skill": "8.6.percussion",
+      "stem": "A uniform stick is $1.5$ m long and pinned at one end. Where is its center of percussion, measured from the pin?",
+      "choices": [
+        "$1.0\\ \\text{m}$",
+        "$0.75\\ \\text{m}$",
+        "$0.50\\ \\text{m}$",
+        "$1.5\\ \\text{m}$"
+      ],
+      "why": "$b=2\\ell/3=2(1.5)/3=1.0$ m from the pin.",
+      "review": "Lead-authored; numerical check, 2026-09-27. No independent model review."
+    },
+    {
+      "id": "q.1.2.dimensions.2",
+      "skill": "1.2.dimensions",
+      "stem": "A particle has initial position $x_0$ (m), velocity $v_0$ (m/s) and constant acceleration $a$ (m/s$^2$). Which expression is dimensionally allowed for its position after time $t$?",
+      "choices": [
+        "$x_0+v_0t+at^2$",
+        "$x_0+v_0+at^2$",
+        "$x_0+v_0t+at$",
+        "$x_0t+v_0t+at^2$"
+      ],
+      "why": "Every added term must have dimensions of length. Both $v_0t$ and $at^2$ are lengths. Units permit any dimensionless coefficient on $at^2$; they do not determine the correct coefficient $1/2$."
+    },
+    {
+      "id": "q.1.2.dimensions.3",
+      "skill": "1.2.dimensions",
+      "stem": "Newtonian gravity has force magnitude $F=Gm_1m_2/r^2$. Given $[F]=ML/T^2$, what are the dimensions of $G$?",
+      "choices": [
+        "$L^3/(MT^2)$",
+        "$L^2/(MT^2)$",
+        "$ML^3/T^2$",
+        "$L^3/(M^2T^2)$"
+      ],
+      "why": "$[G]=[F][r]^2/([m_1][m_2])=(ML/T^2)L^2/M^2=L^3/(MT^2)$. This is how the dimensions of a physical constant follow from a force law."
+    },
+    {
+      "id": "q.1.2.scaling.1",
+      "skill": "1.2.scaling",
+      "stem": "An ideal pendulum has bob mass $m$, length $\\ell$ and gravitational acceleration $g$. At a fixed amplitude angle, write its angular frequency as $\\omega=Cm^a\\ell^bg^c$, where $C$ is dimensionless. Which powers give $[\\omega]=1/T$?",
+      "choices": [
+        "$a=0,\\ b=-1/2,\\ c=1/2$",
+        "$a=0,\\ b=1/2,\\ c=-1/2$",
+        "$a=1,\\ b=-1/2,\\ c=1/2$",
+        "$a=0,\\ b=-1,\\ c=1$"
+      ],
+      "why": "Mass gives $a=0$, length gives $b+c=0$, and time gives $-2c=-1$. Hence $\\omega=C\\sqrt{g/\\ell}$. The result cannot depend on the sole mass, but $C$ may depend on the fixed dimensionless amplitude."
+    },
+    {
+      "id": "q.1.2.scaling.2",
+      "skill": "1.2.scaling",
+      "stem": "A linear spring has stiffness $k$ with dimensions $M/T^2$ and maximum displacement $A$ with dimensions $L$. Its oscillation energy depends only on $m,k,A$. Which expression has the required energy dimensions $ML^2/T^2$?",
+      "choices": [
+        "$CkA^2$",
+        "$Cm kA^2$",
+        "$CkA$",
+        "$CkA^2/m$"
+      ],
+      "why": "Write $E=Cm^ak^bA^c$. Time requires $b=1$, mass then requires $a=0$, and length requires $c=2$. Thus $E=CkA^2$; dimensions alone cannot supply $C=1/2$."
+    },
+    {
+      "id": "q.1.2.scaling.3",
+      "skill": "1.2.scaling",
+      "stem": "A satellite just above a spherical planet has speed set only by surface gravity $g$ and planet radius $R$. If $g$ becomes $g/4$ and $R$ becomes $9R$, with the same dimensionless orbit conditions, what is the speed ratio $v_{new}/v_{old}$?",
+      "choices": [
+        "$3/2$",
+        "$9/4$",
+        "$2/3$",
+        "$6$"
+      ],
+      "why": "The length and time powers give $v=C\\sqrt{gR}$, so $v_{new}/v_{old}=\\sqrt{(1/4)9}=3/2$. The unknown common constant cancels."
+    },
+    {
+      "id": "q.1.2.scaling.4",
+      "skill": "1.2.scaling",
+      "stem": "A negligible-mass satellite has an orbital time scale built only from radius $r$ and $\\mu=GM$, where $[\\mu]=L^3/T^2$. For $T_{orbit}=Cr^a\\mu^b$, which powers have dimensions of time?",
+      "choices": [
+        "$a=3/2,\\ b=-1/2$",
+        "$a=1/2,\\ b=-1/2$",
+        "$a=-3/2,\\ b=1/2$",
+        "$a=3,\\ b=-1$"
+      ],
+      "why": "Matching time gives $-2b=1$, and matching length gives $a+3b=0$. Thus $T_{orbit}=C\\sqrt{r^3/(GM)}$. Dynamics and orbit shape determine the remaining dimensionless factor."
+    },
+    {
+      "id": "q.1.2.limits.1",
+      "skill": "1.2.limits",
+      "stem": "A pendulum has length $\\ell$, gravity $g$ and maximum angle $\\theta_0$ in radians. Which claim follows from dimensional analysis alone?",
+      "choices": [
+        "$\\omega=f(\\theta_0)\\sqrt{g/\\ell}$, with $f$ still unknown",
+        "$\\omega=\\sqrt{g/\\ell}$ at every amplitude",
+        "$\\omega=2\\pi\\sqrt{g/\\ell}$ at every amplitude",
+        "$\\omega$ must be proportional to the bob mass"
+      ],
+      "why": "Angles in radians are dimensionless. An arbitrary function of $\\theta_0$ changes no units, so dimensions cannot rule out amplitude dependence or determine a numerical coefficient. Dynamics supplies that information."
+    },
+    {
+      "id": "q.1.2.limits.2",
+      "skill": "1.2.limits",
+      "stem": "A spring obeys $F=-kx+bx^2$, where $[k]=M/T^2$ and $[b]=M/(LT^2)$. With amplitude $A$, which dimensionless parameter can alter its frequency from the linear-spring scale $\\sqrt{k/m}$?",
+      "choices": [
+        "$bA/k$",
+        "$b/k$",
+        "$bA^2/k$",
+        "$k/(bA^2)$"
+      ],
+      "why": "$[bA]=M/T^2=[k]$, so $bA/k$ is dimensionless and $\\omega=f(bA/k)\\sqrt{k/m}$ is allowed. In contrast, for a perfectly linear spring with no other relevant length, $A$ cannot enter a dimensionless ratio."
+    },
+    {
+      "id": "q.1.2.limits.3",
+      "skill": "1.2.limits",
+      "stem": "Two proposed pendulum energies above the lowest point are $E_1=mg\\ell$ and $E_2=mg\\ell(1-\\cos\\theta_0)$. Which judgment can a units check alone make?",
+      "choices": [
+        "Both have energy units; dimensions alone cannot choose their angle dependence",
+        "Only $E_1$ has energy units because angles cannot appear",
+        "Only $E_2$ has energy units because cosine supplies length",
+        "Both have force units rather than energy units"
+      ],
+      "why": "$[mg\\ell]=ML^2/T^2$ and $1-\\cos\\theta_0$ is dimensionless. Both pass units. Physical reasoning at zero amplitude rejects $E_1$ for this reference energy; that extra reasoning is not a units test."
+    },
+    {
+      "id": "q.3.1.first-law.1",
+      "skill": "3.1.first-law",
+      "stem": "A puck slides east at 3 m/s on level frictionless ice in an inertial frame. After the push ends, its horizontal net force is zero. What happens?",
+      "choices": [
+        "Its eastward velocity stays 3 m/s",
+        "It slows at a constant rate",
+        "It stops immediately",
+        "Its eastward speed keeps increasing"
+      ],
+      "why": "$\\mathbf F_{net}=0$ implies $\\mathbf a=0$, so velocity stays constant. Motion does not require a continuing force; changing velocity does."
+    },
+    {
+      "id": "q.3.1.first-law.2",
+      "skill": "3.1.first-law",
+      "stem": "A freely floating particle has constant velocity in an inertial laboratory. A camera accelerates east relative to that laboratory. The particle appears to accelerate west in the camera frame. What does this show?",
+      "choices": [
+        "The camera frame is noninertial; apparent acceleration need not come from a real westward force",
+        "The particle must have gained a real westward interaction",
+        "Any frame where a camera is at rest is inertial",
+        "The laboratory is noninertial because the particle is moving"
+      ],
+      "why": "An inertial frame makes every free particle move with constant velocity. Subtracting the accelerating camera motion introduces apparent acceleration; using Newton laws there requires inertial-force bookkeeping."
+    },
+    {
+      "id": "q.3.1.first-law.3",
+      "skill": "3.1.first-law",
+      "stem": "A ball thrown straight upward reaches its highest point in an inertial frame. Neglect air resistance. At that instant, which statement is correct?",
+      "choices": [
+        "Its velocity is zero but its acceleration is $g$ downward",
+        "Both velocity and acceleration are zero",
+        "Its velocity is zero and acceleration is $g$ upward",
+        "Zero velocity means no gravitational force acts"
+      ],
+      "why": "Gravity remains $mg$ downward throughout the flight. The instantaneous zero velocity is not constant velocity over a time interval, so it does not imply zero force or acceleration."
+    },
+    {
+      "id": "q.3.1.force-law.1",
+      "skill": "3.1.force-law",
+      "stem": "For the same fixed collection of Newtonian particles in an inertial frame, which statement correctly relates net external force, total momentum and acceleration?",
+      "choices": [
+        "$\\sum\\mathbf F_{ext}=d\\mathbf p/dt$; for one constant-mass particle this becomes $m\\mathbf a$",
+        "$\\sum\\mathbf F_{ext}=\\mathbf p$; force keeps velocity nonzero",
+        "$\\sum\\mathbf F_{ext}=m\\mathbf v$ for every particle",
+        "$d\\mathbf p/dt=m\\mathbf a$ even when the particle mass changes"
+      ],
+      "why": "Force is a rate of change of momentum, not momentum or velocity. Differentiating $\\mathbf p=m\\mathbf v$ gives $m\\mathbf a$ when mass is constant. Changing-mass systems require careful system-boundary accounting."
+    },
+    {
+      "id": "q.3.1.force-law.2",
+      "skill": "3.1.force-law",
+      "stem": "The same net force acts separately on masses $m$ and $3m$ in an inertial frame. Their acceleration magnitudes are $a_1$ and $a_2$. What is $a_1/a_2$?",
+      "choices": [
+        "$3$",
+        "$1$",
+        "$1/3$",
+        "$9$"
+      ],
+      "why": "$a_1=F/m$ and $a_2=F/(3m)$, so the ratio is 3. This inverse-mass relation is observable and distinguishes $F=ma$ from an arbitrary invented quantity such as $m^2a$."
+    },
+    {
+      "id": "q.3.1.force-law.3",
+      "skill": "3.1.force-law",
+      "stem": "A 2 kg particle has velocity $\\mathbf v=(4,0)$ m/s and net force $\\mathbf F=(-6,8)$ N in an inertial frame. What is its acceleration?",
+      "choices": [
+        "$(-3,4)$ m/s$^2$",
+        "$(3,4)$ m/s$^2$",
+        "$(-6,8)$ m/s$^2$",
+        "$(4,0)$ m/s$^2$"
+      ],
+      "why": "Apply $a_x=F_x/m=-3$ and $a_y=F_y/m=4$. Acceleration follows net force, not the current velocity: the particle initially slows in x while acquiring y velocity."
+    },
+    {
+      "id": "q.3.1.force-law.4",
+      "skill": "3.1.force-law",
+      "stem": "When should the constant-mass Newtonian relation $\\mathbf F_{net}=m\\mathbf a$ be treated as the appropriate approximation?",
+      "choices": [
+        "For ordinary macroscopic motion at speeds much smaller than light speed, measured in an inertial frame",
+        "For any particle at any speed without changing the momentum law",
+        "Only when the particle is at rest",
+        "Only when gravity is the sole force"
+      ],
+      "why": "Newtonian mechanics describes ordinary low-speed macroscopic motion very well. Relativistic speeds or quantum-scale behavior can require other theories. Neither rest nor a gravity-only force is required."
+    },
+    {
+      "id": "q.3.1.interactions.1",
+      "skill": "3.1.interactions",
+      "stem": "A book rests on a horizontal table. What is the third-law partner of the gravitational force Earth exerts on the book?",
+      "choices": [
+        "The gravitational force the book exerts on Earth",
+        "The upward contact force the table exerts on the book",
+        "The contact force the book exerts on the table",
+        "The sum of all forces on the book"
+      ],
+      "why": "A third-law pair belongs to the same interaction with source and receiving bodies exchanged. Earth pulls the book downward and the book pulls Earth toward it. The normal force is a different interaction, even when its magnitude equals the weight."
+    },
+    {
+      "id": "q.3.1.interactions.2",
+      "skill": "3.1.interactions",
+      "stem": "Two initially resting carts of masses $m$ and $3m$ push apart through an internal spring on a frictionless horizontal track. There is no external horizontal force. Which statement holds during the push?",
+      "choices": [
+        "Their horizontal momenta sum to zero, while the lighter cart has three times the acceleration magnitude",
+        "Their accelerations have equal magnitudes because their interaction forces are equal",
+        "The heavier cart exerts three times the force on the lighter cart",
+        "Their total horizontal momentum increases as the spring releases"
+      ],
+      "why": "The internal forces are equal and opposite. Separately, $a=F/m$, so the lighter cart accelerates three times as much. Adding the momentum-rate equations cancels internal forces, keeping total horizontal momentum at its initial zero value."
+    },
+    {
+      "id": "q.3.1.interactions.3",
+      "skill": "3.1.interactions",
+      "stem": "Two isolated particles interact only through an ordinary equal-and-opposite mechanical force. Which equation explains conservation of their total momentum?",
+      "choices": [
+        "$d(\\mathbf p_1+\\mathbf p_2)/dt=\\mathbf F_{1\\leftarrow2}+\\mathbf F_{2\\leftarrow1}=0$",
+        "$d(\\mathbf p_1+\\mathbf p_2)/dt=\\mathbf F_{1\\leftarrow2}-\\mathbf F_{2\\leftarrow1}=0$",
+        "$\\mathbf p_1=\\mathbf p_2$ because the forces are equal in magnitude",
+        "$\\mathbf a_1=\\mathbf a_2$ even when the masses differ"
+      ],
+      "why": "Each momentum derivative equals the force on that particle. Summing adds the pair; the third law makes their vector sum zero. Conservation fixes the total momentum, not equal individual momenta or accelerations."
+    },
+    {
+      "id": "q.3.1.interactions.4",
+      "skill": "3.1.interactions",
+      "stem": "Is the statement \"two particles always exert equal-and-opposite instantaneous forces on one another\" an unrestricted law for electromagnetic interactions too?",
+      "choices": [
+        "No; electromagnetic fields can carry momentum, so particle momentum alone need not be conserved",
+        "Yes; momentum can never reside outside particles",
+        "No; this means total momentum including fields cannot be conserved",
+        "Yes; equal masses are enough to guarantee it for any interaction"
+      ],
+      "why": "The mechanical particle model used here assumes third-law force pairs. For electromagnetic interactions, fields can carry momentum; momentum conservation must include particles and fields. This limits the particle-only statement without abandoning total momentum conservation."
+    },
+    {
+      "id": "q.1.2.scaling.5",
+      "skill": "1.2.scaling",
+      "stem": "An ideal spring obeys $F=-kx$. Its only relevant dimensionful ingredients are mass $m$, stiffness $k$ and amplitude $A$. If its period is $P=Cm^ak^bA^c$, which exponents give dimensions of time?",
+      "choices": [
+        "$a=1/2,\\ b=-1/2,\\ c=0$",
+        "$a=-1/2,\\ b=1/2,\\ c=0$",
+        "$a=1/2,\\ b=-1/2,\\ c=1$",
+        "$a=1,\\ b=-1,\\ c=0$"
+      ],
+      "why": "Because $[k]=M/T^2$, the product has dimensions $M^{a+b}T^{-2b}L^c$. Thus $a+b=0$, $-2b=1$, and $c=0$: $P=C\\sqrt{m/k}$, independent of amplitude under these assumptions. Dynamics, not dimensions, gives $C=2\\pi$."
+    }
+  ]
+}

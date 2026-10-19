@@ -1,0 +1,2400 @@
+{
+ "version": 2,
+ "source": "Morin, Introduction to Classical Mechanics (printed contents and headings)",
+ "page_offset": 17,
+ "chapters": [
+  {
+   "n": 1,
+   "title": "Strategies for solving problems",
+   "page": 1,
+   "end": 21,
+   "sections": [
+    {
+     "id": "1.1",
+     "title": "General strategies",
+     "page": 1,
+     "end": 4,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "1.2",
+     "title": "Units, dimensional analysis",
+     "page": 4,
+     "end": 7,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Pendulum",
+       "page": 4
+      },
+      {
+       "kind": "example",
+       "title": "Spring",
+       "page": 6
+      },
+      {
+       "kind": "example",
+       "title": "Low-orbit satellite",
+       "page": 6
+      }
+     ]
+    },
+    {
+     "id": "1.3",
+     "title": "Approximations, limiting cases",
+     "page": 7,
+     "end": 11,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Dropped ball",
+       "page": 7
+      },
+      {
+       "kind": "example",
+       "title": "Two masses in 1-D",
+       "page": 10
+      },
+      {
+       "kind": "example",
+       "title": "Circular pendulum",
+       "page": 10
+      }
+     ]
+    },
+    {
+     "id": "1.4",
+     "title": "Solving differential equations numerically",
+     "page": 11,
+     "end": 14,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "1.5",
+     "title": "Problems",
+     "page": 14,
+     "end": 15,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "1.6",
+     "title": "Exercises",
+     "page": 15,
+     "end": 18,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "1.7",
+     "title": "Solutions",
+     "page": 18,
+     "end": 21,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "How to attack a problem",
+     "sections": [
+      "1.1",
+      "1.2",
+      "1.3"
+     ]
+    },
+    {
+     "title": "Numerical solutions",
+     "sections": [
+      "1.4"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "title": "Statics",
+   "page": 22,
+   "end": 50,
+   "sections": [
+    {
+     "id": "2.1",
+     "title": "Balancing forces",
+     "page": 22,
+     "end": 27,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "topic",
+       "title": "Tension",
+       "page": 23
+      },
+      {
+       "kind": "topic",
+       "title": "Normal force",
+       "page": 23
+      },
+      {
+       "kind": "topic",
+       "title": "Friction",
+       "page": 23
+      },
+      {
+       "kind": "topic",
+       "title": "Gravity",
+       "page": 24
+      },
+      {
+       "kind": "example",
+       "title": "Block on a plane",
+       "page": 24
+      },
+      {
+       "kind": "example",
+       "title": "Rope wrapped around a pole",
+       "page": 26
+      }
+     ]
+    },
+    {
+     "id": "2.2",
+     "title": "Balancing torques",
+     "page": 27,
+     "end": 30,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Leaning ladder",
+       "page": 29
+      }
+     ]
+    },
+    {
+     "id": "2.3",
+     "title": "Problems",
+     "page": 30,
+     "end": 35,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "2.4",
+     "title": "Exercises",
+     "page": 35,
+     "end": 39,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "2.5",
+     "title": "Solutions",
+     "page": 39,
+     "end": 50,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Forces in balance",
+     "sections": [
+      "2.1"
+     ]
+    },
+    {
+     "title": "Torques in balance",
+     "sections": [
+      "2.2"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "title": "Using F = ma",
+   "page": 51,
+   "end": 100,
+   "sections": [
+    {
+     "id": "3.1",
+     "title": "Newton’s laws",
+     "page": 51,
+     "end": 55,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "topic",
+       "title": "First law",
+       "page": 52
+      },
+      {
+       "kind": "topic",
+       "title": "Second law",
+       "page": 52
+      },
+      {
+       "kind": "topic",
+       "title": "Third law",
+       "page": 53
+      }
+     ]
+    },
+    {
+     "id": "3.2",
+     "title": "Free-body diagrams",
+     "page": 55,
+     "end": 60,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "A plane and masses",
+       "page": 55
+      },
+      {
+       "kind": "example",
+       "title": "Platform and pulley",
+       "page": 57
+      },
+      {
+       "kind": "example",
+       "title": "Atwood’s machine",
+       "page": 58
+      }
+     ]
+    },
+    {
+     "id": "3.3",
+     "title": "Solving differential equations",
+     "page": 60,
+     "end": 65,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Gravitational force",
+       "page": 63
+      },
+      {
+       "kind": "example",
+       "title": "Dropped ball",
+       "page": 63
+      }
+     ]
+    },
+    {
+     "id": "3.4",
+     "title": "Projectile motion",
+     "page": 65,
+     "end": 68,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Throwing a ball",
+       "page": 66
+      }
+     ]
+    },
+    {
+     "id": "3.5",
+     "title": "Motion in a plane, polar coordinates",
+     "page": 68,
+     "end": 70,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Circular pendulum",
+       "page": 70
+      }
+     ]
+    },
+    {
+     "id": "3.6",
+     "title": "Problems",
+     "page": 70,
+     "end": 75,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "3.7",
+     "title": "Exercises",
+     "page": 75,
+     "end": 84,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "3.8",
+     "title": "Solutions",
+     "page": 84,
+     "end": 100,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Newton's laws and free-body diagrams",
+     "sections": [
+      "3.1",
+      "3.2"
+     ]
+    },
+    {
+     "title": "Equations of motion",
+     "sections": [
+      "3.3",
+      "3.4",
+      "3.5"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "title": "Oscillations",
+   "page": 101,
+   "end": 137,
+   "sections": [
+    {
+     "id": "4.1",
+     "title": "Linear differential equations",
+     "page": 101,
+     "end": 105,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "4.2",
+     "title": "Simple harmonic motion",
+     "page": 105,
+     "end": 107,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Simple pendulum",
+       "page": 106
+      }
+     ]
+    },
+    {
+     "id": "4.3",
+     "title": "Damped harmonic motion",
+     "page": 107,
+     "end": 109,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "4.4",
+     "title": "Driven (and damped) harmonic motion",
+     "page": 109,
+     "end": 115,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Damped and driven spring",
+       "page": 111
+      },
+      {
+       "kind": "topic",
+       "title": "Resonance",
+       "page": 113
+      },
+      {
+       "kind": "topic",
+       "title": "The phase φ",
+       "page": 114
+      }
+     ]
+    },
+    {
+     "id": "4.5",
+     "title": "Coupled oscillators",
+     "page": 115,
+     "end": 120,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Two masses, three springs",
+       "page": 118
+      }
+     ]
+    },
+    {
+     "id": "4.6",
+     "title": "Problems",
+     "page": 120,
+     "end": 122,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "4.7",
+     "title": "Exercises",
+     "page": 122,
+     "end": 127,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "4.8",
+     "title": "Solutions",
+     "page": 127,
+     "end": 137,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "The oscillator and its equations",
+     "sections": [
+      "4.1",
+      "4.2"
+     ]
+    },
+    {
+     "title": "Damping and driving",
+     "sections": [
+      "4.3",
+      "4.4"
+     ]
+    },
+    {
+     "title": "More than one oscillator",
+     "sections": [
+      "4.5"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "title": "Conservation of energy and momentum",
+   "page": 138,
+   "end": 217,
+   "sections": [
+    {
+     "id": "5.1",
+     "title": "Conservation of energy in one dimension",
+     "page": 138,
+     "end": 147,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Gravitational potential energy",
+       "page": 141
+      },
+      {
+       "kind": "example",
+       "title": "Gravity near the earth",
+       "page": 142
+      },
+      {
+       "kind": "topic",
+       "title": "Conservative forces",
+       "page": 142
+      },
+      {
+       "kind": "example",
+       "title": "Unwinding string",
+       "page": 144
+      },
+      {
+       "kind": "topic",
+       "title": "Work vs. potential energy",
+       "page": 144
+      },
+      {
+       "kind": "example",
+       "title": "Raising a book",
+       "page": 145
+      }
+     ]
+    },
+    {
+     "id": "5.2",
+     "title": "Small oscillations",
+     "page": 147,
+     "end": 148,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "5.3",
+     "title": "Conservation of energy in three dimensions",
+     "page": 148,
+     "end": 152,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "topic",
+       "title": "Conservative forces in three dimensions",
+       "page": 150
+      },
+      {
+       "kind": "example",
+       "title": "Central force",
+       "page": 151
+      }
+     ]
+    },
+    {
+     "id": "5.4",
+     "title": "Gravity",
+     "page": 152,
+     "end": 156,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "5.4.1",
+       "title": "Newton’s universal law of gravitation",
+       "page": 152,
+       "end": 154
+      },
+      {
+       "kind": "example",
+       "title": "Supporting a tube",
+       "page": 154
+      },
+      {
+       "kind": "sub",
+       "id": "5.4.2",
+       "title": "The Cavendish experiment",
+       "page": 154,
+       "end": 156
+      }
+     ]
+    },
+    {
+     "id": "5.5",
+     "title": "Momentum",
+     "page": 156,
+     "end": 161,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "5.5.1",
+       "title": "Conservation of momentum",
+       "page": 156,
+       "end": 159
+      },
+      {
+       "kind": "example",
+       "title": "Snow on a sled",
+       "page": 158
+      },
+      {
+       "kind": "sub",
+       "id": "5.5.2",
+       "title": "Rocket motion",
+       "page": 159,
+       "end": 161
+      }
+     ]
+    },
+    {
+     "id": "5.6",
+     "title": "The center of mass frame",
+     "page": 161,
+     "end": 164,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "5.6.1",
+       "title": "Definition",
+       "page": 161,
+       "end": 163
+      },
+      {
+       "kind": "example",
+       "title": "Two masses in 1-D",
+       "page": 162
+      },
+      {
+       "kind": "sub",
+       "id": "5.6.2",
+       "title": "Kinetic energy",
+       "page": 163,
+       "end": 164
+      }
+     ]
+    },
+    {
+     "id": "5.7",
+     "title": "Collisions",
+     "page": 164,
+     "end": 167,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "5.7.1",
+       "title": "One-dimensional motion",
+       "page": 164,
+       "end": 166
+      },
+      {
+       "kind": "example",
+       "title": "Two masses in 1-D, again",
+       "page": 164
+      },
+      {
+       "kind": "sub",
+       "id": "5.7.2",
+       "title": "Two-dimensional motion",
+       "page": 166,
+       "end": 167
+      },
+      {
+       "kind": "example",
+       "title": "Billiards",
+       "page": 166
+      }
+     ]
+    },
+    {
+     "id": "5.8",
+     "title": "Inherently inelastic processes",
+     "page": 167,
+     "end": 173,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Sand on conveyor belt",
+       "page": 167
+      },
+      {
+       "kind": "example",
+       "title": "Chain on a scale",
+       "page": 168
+      }
+     ]
+    },
+    {
+     "id": "5.9",
+     "title": "Problems",
+     "page": 173,
+     "end": 180,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "5.10",
+     "title": "Exercises",
+     "page": 180,
+     "end": 194,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "5.11",
+     "title": "Solutions",
+     "page": 194,
+     "end": 217,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Energy",
+     "sections": [
+      "5.1",
+      "5.2",
+      "5.3",
+      "5.4"
+     ]
+    },
+    {
+     "title": "Momentum and collisions",
+     "sections": [
+      "5.5",
+      "5.6",
+      "5.7",
+      "5.8"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "title": "The Lagrangian method",
+   "page": 218,
+   "end": 280,
+   "sections": [
+    {
+     "id": "6.1",
+     "title": "The Euler–Lagrange equations",
+     "page": 218,
+     "end": 221,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Spring pendulum",
+       "page": 220
+      }
+     ]
+    },
+    {
+     "id": "6.2",
+     "title": "The principle of stationary action",
+     "page": 221,
+     "end": 227,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "6.3",
+     "title": "Forces of constraint",
+     "page": 227,
+     "end": 229,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "6.4",
+     "title": "Change of coordinates",
+     "page": 229,
+     "end": 232,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "6.5",
+     "title": "Conservation laws",
+     "page": 232,
+     "end": 236,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "6.5.1",
+       "title": "Cyclic coordinates",
+       "page": 232,
+       "end": 234
+      },
+      {
+       "kind": "example",
+       "title": "Linear momentum",
+       "page": 233
+      },
+      {
+       "kind": "example",
+       "title": "Angular and linear momentum in cylindrical coordinates",
+       "page": 233
+      },
+      {
+       "kind": "example",
+       "title": "Angular momentum in spherical coordinates",
+       "page": 233
+      },
+      {
+       "kind": "sub",
+       "id": "6.5.2",
+       "title": "Energy conservation",
+       "page": 234,
+       "end": 236
+      }
+     ]
+    },
+    {
+     "id": "6.6",
+     "title": "Noether’s theorem",
+     "page": 236,
+     "end": 239,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "6.7",
+     "title": "Small oscillations",
+     "page": 239,
+     "end": 242,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "6.8",
+     "title": "Other applications",
+     "page": 242,
+     "end": 246,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Minimal surface of revolution",
+       "page": 242
+      }
+     ]
+    },
+    {
+     "id": "6.9",
+     "title": "Problems",
+     "page": 246,
+     "end": 251,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "6.10",
+     "title": "Exercises",
+     "page": 251,
+     "end": 255,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "6.11",
+     "title": "Solutions",
+     "page": 255,
+     "end": 280,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "The Lagrangian idea",
+     "sections": [
+      "6.1",
+      "6.2",
+      "6.3",
+      "6.4"
+     ]
+    },
+    {
+     "title": "Symmetries and uses",
+     "sections": [
+      "6.5",
+      "6.6",
+      "6.7",
+      "6.8"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 7,
+   "title": "Central forces",
+   "page": 281,
+   "end": 308,
+   "sections": [
+    {
+     "id": "7.1",
+     "title": "Conservation of angular momentum",
+     "page": 281,
+     "end": 283,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "7.2",
+     "title": "The effective potential",
+     "page": 283,
+     "end": 285,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "7.3",
+     "title": "Solving the equations of motion",
+     "page": 285,
+     "end": 287,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "7.3.1",
+       "title": "Finding r(t) and θ(t)",
+       "page": 286,
+       "end": 286
+      },
+      {
+       "kind": "sub",
+       "id": "7.3.2",
+       "title": "Finding r(θ )",
+       "page": 286,
+       "end": 287
+      }
+     ]
+    },
+    {
+     "id": "7.4",
+     "title": "Gravity, Kepler’s laws",
+     "page": 287,
+     "end": 296,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "7.4.1",
+       "title": "Calculation of r(θ )",
+       "page": 287,
+       "end": 289
+      },
+      {
+       "kind": "sub",
+       "id": "7.4.2",
+       "title": "The orbits",
+       "page": 289,
+       "end": 290
+      },
+      {
+       "kind": "sub",
+       "id": "7.4.3",
+       "title": "Proof of conic orbits",
+       "page": 290,
+       "end": 291
+      },
+      {
+       "kind": "sub",
+       "id": "7.4.4",
+       "title": "Kepler’s laws",
+       "page": 291,
+       "end": 293
+      },
+      {
+       "kind": "sub",
+       "id": "7.4.5",
+       "title": "Reduced mass",
+       "page": 293,
+       "end": 296
+      }
+     ]
+    },
+    {
+     "id": "7.5",
+     "title": "Problems",
+     "page": 296,
+     "end": 298,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "7.6",
+     "title": "Exercises",
+     "page": 298,
+     "end": 300,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "7.7",
+     "title": "Solutions",
+     "page": 300,
+     "end": 308,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Reducing the problem",
+     "sections": [
+      "7.1",
+      "7.2",
+      "7.3"
+     ]
+    },
+    {
+     "title": "Gravity and orbits",
+     "sections": [
+      "7.4"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 8,
+   "title": "Angular momentum, Part I (Constant L)",
+   "page": 309,
+   "end": 370,
+   "sections": [
+    {
+     "id": "8.1",
+     "title": "Pancake object in x-y plane",
+     "page": 310,
+     "end": 316,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "8.1.1",
+       "title": "Rotation about the z axis",
+       "page": 311,
+       "end": 312
+      },
+      {
+       "kind": "sub",
+       "id": "8.1.2",
+       "title": "General motion in x -y plane",
+       "page": 312,
+       "end": 314
+      },
+      {
+       "kind": "example",
+       "title": "Cylinder on a ramp",
+       "page": 313
+      },
+      {
+       "kind": "sub",
+       "id": "8.1.3",
+       "title": "The parallel-axis theorem",
+       "page": 314,
+       "end": 316
+      },
+      {
+       "kind": "example",
+       "title": "A stick",
+       "page": 315
+      },
+      {
+       "kind": "sub",
+       "id": "8.1.4",
+       "title": "The perpendicular-axis theorem",
+       "page": 316,
+       "end": 316
+      }
+     ]
+    },
+    {
+     "id": "8.2",
+     "title": "Nonplanar objects",
+     "page": 316,
+     "end": 318,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "topic",
+       "title": "Finding the CM",
+       "page": 317
+      },
+      {
+       "kind": "example",
+       "title": "Hemispherical shell",
+       "page": 317
+      }
+     ]
+    },
+    {
+     "id": "8.3",
+     "title": "Calculating moments of inertia",
+     "page": 318,
+     "end": 322,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "8.3.1",
+       "title": "Lots of examples",
+       "page": 318,
+       "end": 321
+      },
+      {
+       "kind": "sub",
+       "id": "8.3.2",
+       "title": "A neat trick",
+       "page": 321,
+       "end": 322
+      }
+     ]
+    },
+    {
+     "id": "8.4",
+     "title": "Torque",
+     "page": 322,
+     "end": 328,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "8.4.1",
+       "title": "Point mass, fixed origin",
+       "page": 323,
+       "end": 323
+      },
+      {
+       "kind": "sub",
+       "id": "8.4.2",
+       "title": "Extended mass, fixed origin",
+       "page": 323,
+       "end": 324
+      },
+      {
+       "kind": "sub",
+       "id": "8.4.3",
+       "title": "Extended mass, nonfixed origin",
+       "page": 324,
+       "end": 328
+      }
+     ]
+    },
+    {
+     "id": "8.5",
+     "title": "Collisions",
+     "page": 328,
+     "end": 331,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Elastic collision",
+       "page": 329
+      },
+      {
+       "kind": "example",
+       "title": "Inelastic collision",
+       "page": 330
+      }
+     ]
+    },
+    {
+     "id": "8.6",
+     "title": "Angular impulse",
+     "page": 331,
+     "end": 333,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Striking a stick",
+       "page": 332
+      }
+     ]
+    },
+    {
+     "id": "8.7",
+     "title": "Problems",
+     "page": 333,
+     "end": 339,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "8.8",
+     "title": "Exercises",
+     "page": 339,
+     "end": 349,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "8.9",
+     "title": "Solutions",
+     "page": 349,
+     "end": 370,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Rotation about a fixed axis",
+     "sections": [
+      "8.1",
+      "8.2",
+      "8.3"
+     ]
+    },
+    {
+     "title": "Torque",
+     "sections": [
+      "8.4"
+     ]
+    },
+    {
+     "title": "Collisions and angular impulse",
+     "sections": [
+      "8.5",
+      "8.6"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 9,
+   "title": "Angular momentum, Part II (General L)",
+   "page": 371,
+   "end": 456,
+   "sections": [
+    {
+     "id": "9.1",
+     "title": "Preliminaries concerning rotations",
+     "page": 371,
+     "end": 376,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "9.1.1",
+       "title": "The form of general motion",
+       "page": 371,
+       "end": 372
+      },
+      {
+       "kind": "sub",
+       "id": "9.1.2",
+       "title": "The angular velocity vector",
+       "page": 372,
+       "end": 376
+      },
+      {
+       "kind": "example",
+       "title": "Rotating sphere",
+       "page": 375
+      }
+     ]
+    },
+    {
+     "id": "9.2",
+     "title": "The inertia tensor",
+     "page": 376,
+     "end": 383,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "9.2.1",
+       "title": "Rotation around an axis through the origin",
+       "page": 376,
+       "end": 380
+      },
+      {
+       "kind": "example",
+       "title": "Cube with origin at corner",
+       "page": 377
+      },
+      {
+       "kind": "sub",
+       "id": "9.2.2",
+       "title": "General motion",
+       "page": 380,
+       "end": 382
+      },
+      {
+       "kind": "sub",
+       "id": "9.2.3",
+       "title": "The parallel-axis theorem",
+       "page": 382,
+       "end": 383
+      }
+     ]
+    },
+    {
+     "id": "9.3",
+     "title": "Principal axes",
+     "page": 383,
+     "end": 388,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Square with origin at corner",
+       "page": 384
+      }
+     ]
+    },
+    {
+     "id": "9.4",
+     "title": "Two basic types of problems",
+     "page": 388,
+     "end": 393,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "9.4.1",
+       "title": "Motion after an impulsive blow",
+       "page": 389,
+       "end": 391
+      },
+      {
+       "kind": "sub",
+       "id": "9.4.2",
+       "title": "Frequency of motion due to a torque",
+       "page": 391,
+       "end": 393
+      }
+     ]
+    },
+    {
+     "id": "9.5",
+     "title": "Euler’s equations",
+     "page": 393,
+     "end": 396,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "topic",
+       "title": "Derivation of Euler’s equations",
+       "page": 393
+      }
+     ]
+    },
+    {
+     "id": "9.6",
+     "title": "Free symmetric top",
+     "page": 396,
+     "end": 399,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "9.6.1",
+       "title": "View from the body frame",
+       "page": 396,
+       "end": 398
+      },
+      {
+       "kind": "sub",
+       "id": "9.6.2",
+       "title": "View from a fixed frame",
+       "page": 398,
+       "end": 399
+      }
+     ]
+    },
+    {
+     "id": "9.7",
+     "title": "Heavy symmetric top",
+     "page": 399,
+     "end": 415,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "9.7.1",
+       "title": "Euler angles",
+       "page": 399,
+       "end": 400
+      },
+      {
+       "kind": "sub",
+       "id": "9.7.2",
+       "title": "Digression on the components of ω",
+       "page": 400,
+       "end": 403
+      },
+      {
+       "kind": "sub",
+       "id": "9.7.3",
+       "title": "Torque method",
+       "page": 403,
+       "end": 405
+      },
+      {
+       "kind": "sub",
+       "id": "9.7.4",
+       "title": "Lagrangian method",
+       "page": 405,
+       "end": 406
+      },
+      {
+       "kind": "sub",
+       "id": "9.7.5",
+       "title": "Spinning top with θ̇ = 0",
+       "page": 406,
+       "end": 408
+      },
+      {
+       "kind": "example",
+       "title": "The top",
+       "page": 406
+      },
+      {
+       "kind": "sub",
+       "id": "9.7.6",
+       "title": "An “explanation” of precession",
+       "page": 408,
+       "end": 411
+      },
+      {
+       "kind": "topic",
+       "title": "Impulse applied to a dumbbell",
+       "page": 408
+      },
+      {
+       "kind": "topic",
+       "title": "Impulse applied to a symmetric top",
+       "page": 409
+      },
+      {
+       "kind": "sub",
+       "id": "9.7.7",
+       "title": "Nutation",
+       "page": 411,
+       "end": 415
+      },
+      {
+       "kind": "example",
+       "title": "Sideways kick",
+       "page": 412
+      }
+     ]
+    },
+    {
+     "id": "9.8",
+     "title": "Problems",
+     "page": 415,
+     "end": 421,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "9.9",
+     "title": "Exercises",
+     "page": 421,
+     "end": 428,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "9.10",
+     "title": "Solutions",
+     "page": 428,
+     "end": 456,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Rotations as vectors",
+     "sections": [
+      "9.1",
+      "9.2",
+      "9.3"
+     ]
+    },
+    {
+     "title": "Solving rotation problems",
+     "sections": [
+      "9.4",
+      "9.5"
+     ]
+    },
+    {
+     "title": "Tops",
+     "sections": [
+      "9.6",
+      "9.7"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 10,
+   "title": "Accelerating frames of reference",
+   "page": 457,
+   "end": 500,
+   "sections": [
+    {
+     "id": "10.1",
+     "title": "Relating the coordinates",
+     "page": 458,
+     "end": 460,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "10.2",
+     "title": "The fictitious forces",
+     "page": 460,
+     "end": 471,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "10.2.1",
+       "title": "Translation force: −m d²R/dt²",
+       "page": 462,
+       "end": 462
+      },
+      {
+       "kind": "sub",
+       "id": "10.2.2",
+       "title": "Centrifugal force: −mω × (ω × r)",
+       "page": 462,
+       "end": 464
+      },
+      {
+       "kind": "example",
+       "title": "Standing on a carousel",
+       "page": 462
+      },
+      {
+       "kind": "example",
+       "title": "Effective gravity force, mgeff",
+       "page": 463
+      },
+      {
+       "kind": "sub",
+       "id": "10.2.3",
+       "title": "Coriolis force: −2mω × v",
+       "page": 464,
+       "end": 469
+      },
+      {
+       "kind": "example",
+       "title": "Dropped ball",
+       "page": 466
+      },
+      {
+       "kind": "example",
+       "title": "Foucault’s pendulum",
+       "page": 467
+      },
+      {
+       "kind": "sub",
+       "id": "10.2.4",
+       "title": "Azimuthal force: −m(dω/dt) × r",
+       "page": 469,
+       "end": 471
+      },
+      {
+       "kind": "example",
+       "title": "Spinning ice skater",
+       "page": 470
+      }
+     ]
+    },
+    {
+     "id": "10.3",
+     "title": "Tides",
+     "page": 471,
+     "end": 477,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "topic",
+       "title": "Longitudinal tidal force",
+       "page": 471
+      },
+      {
+       "kind": "topic",
+       "title": "Transverse tidal force",
+       "page": 472
+      },
+      {
+       "kind": "topic",
+       "title": "General tidal force",
+       "page": 473
+      }
+     ]
+    },
+    {
+     "id": "10.4",
+     "title": "Problems",
+     "page": 477,
+     "end": 482,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "10.5",
+     "title": "Exercises",
+     "page": 482,
+     "end": 486,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "10.6",
+     "title": "Solutions",
+     "page": 486,
+     "end": 500,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Setting up a moving frame",
+     "sections": [
+      "10.1"
+     ]
+    },
+    {
+     "title": "The fictitious forces",
+     "sections": [
+      "10.2"
+     ]
+    },
+    {
+     "title": "Tides",
+     "sections": [
+      "10.3"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 11,
+   "title": "Relativity (Kinematics)",
+   "page": 501,
+   "end": 583,
+   "sections": [
+    {
+     "id": "11.1",
+     "title": "Motivation",
+     "page": 502,
+     "end": 509,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "11.1.1",
+       "title": "Galilean transformations, Maxwell’s equations",
+       "page": 502,
+       "end": 505
+      },
+      {
+       "kind": "sub",
+       "id": "11.1.2",
+       "title": "Michelson–Morley experiment",
+       "page": 505,
+       "end": 509
+      }
+     ]
+    },
+    {
+     "id": "11.2",
+     "title": "The postulates",
+     "page": 509,
+     "end": 511,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "11.3",
+     "title": "The fundamental effects",
+     "page": 511,
+     "end": 523,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "11.3.1",
+       "title": "Loss of simultaneity",
+       "page": 511,
+       "end": 514
+      },
+      {
+       "kind": "example",
+       "title": "Rear clock ahead",
+       "page": 513
+      },
+      {
+       "kind": "sub",
+       "id": "11.3.2",
+       "title": "Time dilation",
+       "page": 514,
+       "end": 519
+      },
+      {
+       "kind": "example",
+       "title": "Twin paradox",
+       "page": 517
+      },
+      {
+       "kind": "example",
+       "title": "Muon decay",
+       "page": 518
+      },
+      {
+       "kind": "sub",
+       "id": "11.3.3",
+       "title": "Length contraction",
+       "page": 519,
+       "end": 523
+      },
+      {
+       "kind": "example",
+       "title": "Passing trains",
+       "page": 521
+      },
+      {
+       "kind": "example",
+       "title": "Muon decay, again",
+       "page": 521
+      },
+      {
+       "kind": "topic",
+       "title": "Lattice of clocks and meter sticks",
+       "page": 522
+      }
+     ]
+    },
+    {
+     "id": "11.4",
+     "title": "The Lorentz transformations",
+     "page": 523,
+     "end": 529,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "11.4.1",
+       "title": "The derivation",
+       "page": 523,
+       "end": 528
+      },
+      {
+       "kind": "sub",
+       "id": "11.4.2",
+       "title": "The fundamental effects",
+       "page": 528,
+       "end": 529
+      },
+      {
+       "kind": "topic",
+       "title": "Loss of simultaneity",
+       "page": 528
+      },
+      {
+       "kind": "topic",
+       "title": "Time dilation",
+       "page": 528
+      }
+     ]
+    },
+    {
+     "id": "11.5",
+     "title": "Velocity addition",
+     "page": 529,
+     "end": 533,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "topic",
+       "title": "Length contraction",
+       "page": 529
+      },
+      {
+       "kind": "sub",
+       "id": "11.5.1",
+       "title": "Longitudinal velocity addition",
+       "page": 529,
+       "end": 532
+      },
+      {
+       "kind": "example",
+       "title": "Passing trains, again",
+       "page": 531
+      },
+      {
+       "kind": "sub",
+       "id": "11.5.2",
+       "title": "Transverse velocity addition",
+       "page": 532,
+       "end": 533
+      }
+     ]
+    },
+    {
+     "id": "11.6",
+     "title": "The invariant interval",
+     "page": 533,
+     "end": 536,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Time dilation",
+       "page": 535
+      },
+      {
+       "kind": "example",
+       "title": "Passing trains, yet again",
+       "page": 535
+      }
+     ]
+    },
+    {
+     "id": "11.7",
+     "title": "Minkowski diagrams",
+     "page": 536,
+     "end": 539,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Length contraction",
+       "page": 538
+      }
+     ]
+    },
+    {
+     "id": "11.8",
+     "title": "The Doppler effect",
+     "page": 539,
+     "end": 543,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "11.8.1",
+       "title": "Longitudinal Doppler effect",
+       "page": 539,
+       "end": 541
+      },
+      {
+       "kind": "sub",
+       "id": "11.8.2",
+       "title": "Transverse Doppler effect",
+       "page": 541,
+       "end": 543
+      }
+     ]
+    },
+    {
+     "id": "11.9",
+     "title": "Rapidity",
+     "page": 543,
+     "end": 546,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "11.9.1",
+       "title": "Definition",
+       "page": 543,
+       "end": 544
+      },
+      {
+       "kind": "sub",
+       "id": "11.9.2",
+       "title": "Physical meaning",
+       "page": 544,
+       "end": 546
+      }
+     ]
+    },
+    {
+     "id": "11.10",
+     "title": "Relativity without c",
+     "page": 546,
+     "end": 549,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "11.11",
+     "title": "Problems",
+     "page": 549,
+     "end": 556,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "11.12",
+     "title": "Exercises",
+     "page": 556,
+     "end": 565,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "11.13",
+     "title": "Solutions",
+     "page": 565,
+     "end": 583,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Why and what",
+     "sections": [
+      "11.1",
+      "11.2"
+     ]
+    },
+    {
+     "title": "The effects",
+     "sections": [
+      "11.3"
+     ]
+    },
+    {
+     "title": "The mathematics",
+     "sections": [
+      "11.4",
+      "11.5",
+      "11.6",
+      "11.7"
+     ]
+    },
+    {
+     "title": "Further topics",
+     "sections": [
+      "11.8",
+      "11.9",
+      "11.10"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 12,
+   "title": "Relativity (Dynamics)",
+   "page": 584,
+   "end": 633,
+   "sections": [
+    {
+     "id": "12.1",
+     "title": "Energy and momentum",
+     "page": 584,
+     "end": 594,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "12.1.1",
+       "title": "Momentum",
+       "page": 584,
+       "end": 586
+      },
+      {
+       "kind": "sub",
+       "id": "12.1.2",
+       "title": "Energy",
+       "page": 586,
+       "end": 594
+      },
+      {
+       "kind": "topic",
+       "title": "Mass",
+       "page": 590
+      },
+      {
+       "kind": "topic",
+       "title": "Lagrangian method",
+       "page": 591
+      }
+     ]
+    },
+    {
+     "id": "12.2",
+     "title": "Transformations of E and p",
+     "page": 594,
+     "end": 596,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "12.3",
+     "title": "Collisions and decays",
+     "page": 596,
+     "end": 600,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Relativistic billiards",
+       "page": 597
+      },
+      {
+       "kind": "example",
+       "title": "Decay at an angle",
+       "page": 599
+      }
+     ]
+    },
+    {
+     "id": "12.4",
+     "title": "Particle-physics units",
+     "page": 600,
+     "end": 601,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "12.5",
+     "title": "Force",
+     "page": 601,
+     "end": 606,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "12.5.1",
+       "title": "Force in one dimension",
+       "page": 601,
+       "end": 603
+      },
+      {
+       "kind": "sub",
+       "id": "12.5.2",
+       "title": "Force in two dimensions",
+       "page": 603,
+       "end": 604
+      },
+      {
+       "kind": "sub",
+       "id": "12.5.3",
+       "title": "Transformation of forces",
+       "page": 604,
+       "end": 606
+      },
+      {
+       "kind": "example",
+       "title": "Bead on a rod",
+       "page": 605
+      }
+     ]
+    },
+    {
+     "id": "12.6",
+     "title": "Rocket motion",
+     "page": 606,
+     "end": 609,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Relativistic rocket",
+       "page": 606
+      }
+     ]
+    },
+    {
+     "id": "12.7",
+     "title": "Relativistic strings",
+     "page": 609,
+     "end": 611,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Mass connected to a wall",
+       "page": 610
+      },
+      {
+       "kind": "example",
+       "title": "Where the masses meet",
+       "page": 610
+      }
+     ]
+    },
+    {
+     "id": "12.8",
+     "title": "Problems",
+     "page": 611,
+     "end": 615,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "12.9",
+     "title": "Exercises",
+     "page": 615,
+     "end": 619,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "12.10",
+     "title": "Solutions",
+     "page": 619,
+     "end": 633,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Energy, momentum and collisions",
+     "sections": [
+      "12.1",
+      "12.2",
+      "12.3",
+      "12.4"
+     ]
+    },
+    {
+     "title": "Force and applications",
+     "sections": [
+      "12.5",
+      "12.6",
+      "12.7"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 13,
+   "title": "4-vectors",
+   "page": 634,
+   "end": 648,
+   "sections": [
+    {
+     "id": "13.1",
+     "title": "Definition of 4-vectors",
+     "page": 634,
+     "end": 635,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "13.2",
+     "title": "Examples of 4-vectors",
+     "page": 635,
+     "end": 637,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "13.3",
+     "title": "Properties of 4-vectors",
+     "page": 637,
+     "end": 639,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "13.4",
+     "title": "Energy, momentum",
+     "page": 639,
+     "end": 640,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "13.4.1",
+       "title": "Norm",
+       "page": 639,
+       "end": 640
+      },
+      {
+       "kind": "sub",
+       "id": "13.4.2",
+       "title": "Transformations of E and p",
+       "page": 640,
+       "end": 640
+      }
+     ]
+    },
+    {
+     "id": "13.5",
+     "title": "Force and acceleration",
+     "page": 640,
+     "end": 643,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "13.5.1",
+       "title": "Transformation of forces",
+       "page": 640,
+       "end": 641
+      },
+      {
+       "kind": "sub",
+       "id": "13.5.2",
+       "title": "Transformation of accelerations",
+       "page": 641,
+       "end": 643
+      }
+     ]
+    },
+    {
+     "id": "13.6",
+     "title": "The form of physical laws",
+     "page": 643,
+     "end": 645,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "example",
+       "title": "Acceleration for circular motion",
+       "page": 643
+      }
+     ]
+    },
+    {
+     "id": "13.7",
+     "title": "Problems",
+     "page": 645,
+     "end": 645,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "13.8",
+     "title": "Exercises",
+     "page": 645,
+     "end": 646,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "13.9",
+     "title": "Solutions",
+     "page": 646,
+     "end": 648,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "What a 4-vector is",
+     "sections": [
+      "13.1",
+      "13.2",
+      "13.3"
+     ]
+    },
+    {
+     "title": "Energy, momentum and force",
+     "sections": [
+      "13.4",
+      "13.5"
+     ]
+    },
+    {
+     "title": "Form of physical laws",
+     "sections": [
+      "13.6"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 14,
+   "title": "General Relativity",
+   "page": 649,
+   "end": 674,
+   "sections": [
+    {
+     "id": "14.1",
+     "title": "The Equivalence Principle",
+     "page": 649,
+     "end": 650,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "14.2",
+     "title": "Time dilation",
+     "page": 650,
+     "end": 653,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "14.3",
+     "title": "Uniformly accelerating frame",
+     "page": 653,
+     "end": 656,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "sub",
+       "id": "14.3.1",
+       "title": "Uniformly accelerating point particle",
+       "page": 653,
+       "end": 655
+      },
+      {
+       "kind": "sub",
+       "id": "14.3.2",
+       "title": "Uniformly accelerating frame",
+       "page": 655,
+       "end": 656
+      }
+     ]
+    },
+    {
+     "id": "14.4",
+     "title": "Maximal-proper-time principle",
+     "page": 656,
+     "end": 658,
+     "kind": "concept",
+     "topics": [
+      {
+       "kind": "topic",
+       "title": "Consistency with Newtonian physics",
+       "page": 657
+      }
+     ]
+    },
+    {
+     "id": "14.5",
+     "title": "Twin paradox revisited",
+     "page": 658,
+     "end": 660,
+     "kind": "concept",
+     "topics": []
+    },
+    {
+     "id": "14.6",
+     "title": "Problems",
+     "page": 660,
+     "end": 663,
+     "kind": "practice",
+     "practice": "problems"
+    },
+    {
+     "id": "14.7",
+     "title": "Exercises",
+     "page": 663,
+     "end": 666,
+     "kind": "practice",
+     "practice": "exercises"
+    },
+    {
+     "id": "14.8",
+     "title": "Solutions",
+     "page": 666,
+     "end": 674,
+     "kind": "practice",
+     "practice": "solutions"
+    }
+   ],
+   "groups": [
+    {
+     "title": "Equivalence principle and time",
+     "sections": [
+      "14.1",
+      "14.2"
+     ]
+    },
+    {
+     "title": "Accelerating frames",
+     "sections": [
+      "14.3"
+     ]
+    },
+    {
+     "title": "Proper time and the twins",
+     "sections": [
+      "14.4",
+      "14.5"
+     ]
+    }
+   ]
+  }
+ ]
+}

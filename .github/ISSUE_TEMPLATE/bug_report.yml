@@ -1,0 +1,25 @@
+name: Bug report
+description: Something got in the way of studying.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "Please leave out account details, keys, private homework and textbook scans."
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Include what you expected and the steps to reproduce it.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Version, operating system and browser
+    validations:
+      required: true
+  - type: textarea
+    id: capture
+    attributes:
+      label: Screenshot or extra context
+      description: Remove personal information first.

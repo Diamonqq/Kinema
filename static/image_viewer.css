@@ -1,0 +1,40 @@
+/* A quiet inspection surface, shared by viewed images and attachments. */
+#lightbox{position:fixed;inset:0;z-index:1150;display:flex;flex-direction:column;align-items:center;gap:0;padding:22px 32px 20px;background:rgba(16,17,18,.96);backdrop-filter:blur(12px);color:#e7e8ea;overscroll-behavior:contain}
+#lightbox[hidden]{display:none}
+#lightbox .lbbar{display:flex;align-items:center;width:min(1280px,100%);gap:20px;min-height:40px;margin:0 0 14px}
+#lightbox .lbname{font:500 14px/1.5 'Panel Inter','Segoe UI',sans-serif;color:#bfc1c6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#lightbox button{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;border:0;background:transparent;color:#a7aab1;cursor:pointer;border-radius:50%;width:38px;height:38px;transition:background .14s,color .14s}
+#lightbox button:hover{background:#ffffff0c;color:#f5f5f6}
+#lightbox button:focus-visible{outline:2px solid #b8bbc3;outline-offset:3px}
+#lightbox button:disabled{opacity:.3;cursor:default;background:none}
+#lightbox button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#lb-stage{position:relative;flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+#lightbox #lbimg{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:5px;box-shadow:none;cursor:zoom-in;user-select:none;transform-origin:center;opacity:0}
+#lightbox.image-ready #lbimg{opacity:1}
+#lightbox.is-zoomed #lbimg{cursor:grab}
+#lightbox.is-dragging #lbimg{cursor:grabbing}
+#lightbox .lbtools{display:flex;align-items:center;gap:4px;margin-top:18px;padding:3px 6px;border:1px solid #ffffff0c;border-radius:28px;background:#ffffff05}
+#lightbox #lb-scale{width:62px;font:500 12px 'Panel Inter','Segoe UI',sans-serif;font-variant-numeric:tabular-nums;border-radius:20px}
+#lightbox .lb-error{display:none;color:#a7aab1;font:14px/1.7 'Panel Inter','Segoe UI',sans-serif;text-align:center}
+#lightbox.image-error .lb-error{display:block}
+#lightbox.image-error #lbimg{display:none}
+body.lbopen{overflow:hidden}
+@media(max-width:720px){#lightbox{padding:12px 12px 14px}#lightbox .lbbar{margin-bottom:10px}#lightbox .lbname{font-size:13px}#lightbox .lbtools{margin-top:12px}#lightbox button{width:42px;height:42px}}
+@media(prefers-reduced-motion:reduce){#lightbox button{transition:none}}
+
+[data-panel-image]:focus-visible{outline:2px solid #b8bbc3;outline-offset:3px}
+
+#lightbox #lbimg{transition:opacity .2s ease-out}
+#lightbox.is-dragging #lbimg{transition:opacity .2s ease-out}
+@media(prefers-reduced-motion:reduce){#lightbox #lbimg,#lightbox.is-dragging #lbimg{transition:none}}
+
+/* One group at a time: small accessible gallery controls alongside zoom. */
+#lightbox{background:rgba(16,16,16,.96);color:#e8e8e8}
+#lightbox .lbname{color:#c1c1c1}
+#lightbox button{color:#ababab}
+#lightbox .lb-gallery{display:flex;align-items:center;gap:3px;padding-right:7px;margin-right:3px;border-right:1px solid #ffffff18}
+#lightbox .lb-gallery[hidden]{display:none}
+#lightbox .lb-count{min-width:38px;text-align:center;font:12px/1.5 'Panel Inter','Segoe UI',sans-serif;color:var(--dim);font-variant-numeric:tabular-nums}
+@media(max-width:480px){#lightbox .lbtools{gap:2px;max-width:100%;padding:3px 4px}#lightbox .lbtools button{width:38px;height:42px}#lightbox #lb-scale{width:48px}#lightbox .lb-gallery{gap:1px;padding-right:4px;margin-right:0}#lightbox .lb-count{min-width:32px}}
+
+#lightbox .lbbar .grow{flex:1}#lightbox button[data-image-close]:hover{background:none}#lightbox .lb-error button{display:block;width:auto;padding:6px 15px;margin:12px auto;font:inherit;border-radius:999px;background:#ffffff0b}

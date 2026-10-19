@@ -1,0 +1,167 @@
+/* Kinema 1.8: shared quiet surfaces and the homework conversation/artifact. */
+:root{--bg:#181818;--panel:#202020;--panel2:#282828;--panel3:#303030;--line:#303030;--line2:#3b3b3b;--ink:#ececec;--ink2:#b4b4b4;--ink3:#8d8d8d;--accent:#8bb8f4;--route:#8bb8f4;--shadow:0 8px 28px #0003}
+.gridbg{background-image:none}
+body{height:100dvh;overflow:hidden}
+body>header{background:var(--bg);border:0;padding-inline:16px}
+.nav.on{box-shadow:none;background:#2c2c2c}.chip.model{display:none}
+.mark i{background:#8bb8f4}.hbtn{border:0;background:transparent}
+.askbar input{border:0;border-radius:18px;background:#252525}.askbar .dot{background:#8bb8f4;width:6px;height:6px;top:14px;left:14px}
+.v-problem .askbar{display:none}.v-problem header>.menu{margin-left:auto}
+.btn{border-radius:10px}.btn:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #8bb8f4;outline-offset:3px}
+.panel{box-shadow:none;border-color:#303030;border-radius:16px}
+.tile{border:0;border-radius:10px}.tile.cls{box-shadow:inset 0 0 0 1px var(--route)}
+.study-lesson{border-color:#303030}.study-goal input{border:0;border-radius:14px;background:#252525}
+.study-map>summary{border-color:#303030}
+.homecol,.libcol{max-width:848px;padding:38px 24px 60px}
+.hello,.libhead h1{font-size:24px;font-weight:550;letter-spacing:-.025em}
+.composer{border:0;border-radius:24px;background:#282828;box-shadow:none}
+.drop{border:0;background:transparent;min-height:76px;padding:20px 20px 10px;font-size:13px}
+.drop:not(.has) .droptext{color:#aaa}.drop:not(.has) .droptext b{font-weight:500}
+.composer textarea{font-size:16px;background:transparent;padding:14px 22px;min-height:100px}
+.composer textarea:focus-visible{outline:0}.composer:focus-within{box-shadow:0 0 0 1px #52677f}
+.example-browser>summary{cursor:pointer;width:fit-content;font-size:13px;color:#aaa;list-style:none}
+.example-browser>summary::after{content:'⌄';margin-left:8px}.example-browser[open] .pills{margin-top:16px}
+.crow2{border:0;padding:8px 16px 16px}.crow2 .btn{border-radius:999px;height:36px}
+.home .section{margin-top:34px}.home .section>small{display:none}
+.pcard{border:0;background:#232323;border-radius:14px}.pcard:hover{background:#2a2a2a}.pcard .im{border:0}
+.pill{background:transparent;border-color:#353535;padding:7px 12px;color:#aaa}
+.libhead input{background:#252525;border:0;border-radius:18px;min-width:0}
+.lrow{border-color:transparent;border-radius:12px;padding:12px}.lrow .im{border:0}.lrow:hover{background:#242424;border-color:transparent}
+.qa .panel{border-radius:20px}.qa .ft{border:0}.qa .src{opacity:.8}
+.note h3{letter-spacing:0;text-transform:none}.eqbox{border:0;border-radius:12px}.rvcard{box-shadow:none;border-radius:20px}
+
+/* Suggestions belong to the input, never masquerade as the end of a tutor reply. */
+.conversation-actions,.coach-suggestions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:0 5px}
+.conversation-actions:empty,.coach-suggestions:empty{display:none}
+.conversation-actions .btn,.coach-suggestions .btn{height:auto;min-height:32px;padding:6px 11px;border-radius:999px;background:transparent;border:1px solid #343434;color:#bcbcbc;font-size:12px;font-weight:400;white-space:normal;text-align:left}
+.conversation-actions .btn:hover,.coach-suggestions .btn:hover{color:#d8e8ff;border-color:#58759a;background:#1b2532}
+.conversation-actions .btn span,.coach-suggestions .btn span{color:#8bb8f4}
+.work-break{font-size:11px;flex-basis:100%}
+
+/* A normal chat column; the visual occupies room only when requested. */
+#workspace{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:0;height:100%;min-height:0;overflow:hidden!important;padding:0}
+#workspace.visual-open:not(.visual-expanded){grid-template-columns:minmax(0,1fr) minmax(380px,44%);gap:12px;padding-right:16px}
+#pane{grid-column:1;grid-row:1;border:0;background:transparent;padding:0;overflow:hidden;min-width:0;min-height:0}
+#coach{height:100%;min-height:0;display:flex;flex-direction:column}
+.coach-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#3e3e3e transparent}
+.coach-reading{width:100%;max-width:800px;margin:0 auto;padding:28px 30px 32px;font-size:16px;line-height:1.7;overflow-wrap:anywhere}
+.coach-bottom{width:100%;max-width:800px;margin:0 auto;padding:10px 24px 20px;flex:none}
+#coach .chead{padding:0;margin:0 0 18px;border:0}
+#coach .kicker{display:none}#coach .ctitle{font-size:18px;line-height:1.5;font-weight:550;letter-spacing:-.015em}
+#coach .problem{border:0;background:transparent;padding:0;margin:0 0 24px;color:var(--ink);font-size:16px;line-height:1.7}
+#coach .problem details{font-size:12px;color:#aaa;margin-top:12px}
+#coach .artifact-card{max-width:340px;margin:22px 0 26px}
+.lesson-options{margin:12px 0 22px;font-size:13px;color:#aaa}
+.lesson-options>summary{cursor:pointer;font-size:12px;list-style:none;width:fit-content;padding:3px 0}
+.lesson-options>summary::after{content:'⌄';margin-left:8px;color:#777}
+.lesson-options[open]>summary{margin-bottom:12px}
+#coach .plan.lesson{border:0;background:#222;padding:14px;border-radius:12px;margin-top:14px;font-size:14px}
+#coach .preflight{border:0;margin:14px 0;background:#222}
+#coach .modes{background:transparent;padding:0}#coach .modes button.on{box-shadow:none;background:#303030}
+#coach .step{background:transparent;border:0;border-radius:0;padding:0;margin:24px 0 32px;box-shadow:none;cursor:default}
+#coach .step .sh{font-size:14px;gap:9px;color:#bcbcbc;margin-bottom:10px}
+#coach .step .n{background:transparent;color:#8bb8f4;width:auto;height:auto;font-size:12px}
+#coach .step .of,#coach .step .at{display:none}
+#coach .step .q,#coach .step .md,#coach .step.done.open .md{font-size:16px;line-height:1.7;border:0;padding:0;margin-top:12px}
+#coach .step.done{padding:10px 0;margin:8px 0;cursor:pointer}#coach .step.done .sh{margin:0}
+#coach .step.done .mini{font-size:12px;color:#aaa}
+#coach .res{border:0;background:transparent;padding:8px 0}
+#coach .try textarea{background:#232323;border:1px solid #393939;border-radius:12px;padding:10px 12px;font-size:14px;min-width:0}
+#coach .hint{max-width:none;text-align:left;background:#24282d;border:0;border-radius:12px;color:#c3d4eb;padding:12px 14px}
+#coach .ans,#coach .idea{background:#222;border:0;border-radius:14px;padding:14px 16px}
+#coach .ahead,#coach .ihead{font-size:13px}#coach .receipt{font-size:12px}
+#coach .answers{border:0}#coach :is(.answers,.ideas):empty{display:none}
+#coach #cnext{border:0;margin:18px 0}#coach #cnext .btn{color:#aaa;border:0;padding:0;background:transparent;font-size:12px}
+#cmsgs{margin:24px 0 12px;gap:24px}#cmsgs:empty{display:none}
+#cmsgs .msg{font-size:16px;line-height:1.7;max-width:100%;padding:0;border:0;background:transparent}
+#cmsgs .msg.me{align-self:flex-end;background:#2b2b2b;border-radius:24px;padding:12px 18px;max-width:88%;color:#eee}
+#cchat{padding:0;margin:0;border:0}
+#cchat .askbox{display:block;border-radius:24px;padding:14px 16px 10px;background:#282828;border:1px solid #ffffff0b}
+#cchat textarea{display:block;width:100%;background:transparent;border:0;border-radius:0;outline:0;padding:0 2px;resize:none;font:16px/1.55 var(--sans);min-height:32px;max-height:200px}
+.homework-compose-row{display:flex;align-items:center;margin-top:10px;gap:8px;min-height:34px}.homework-compose-row .send-message{margin-left:auto}
+.homework-compose-row .send-message svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#coach .live{border:0;background:transparent;padding:0;margin:24px 0;color:#aaa}.live .nums{display:none}
+.problem-artifact{grid-column:2;grid-row:1;display:grid;grid-template-rows:48px minmax(0,1fr);min-width:0;min-height:0;margin:8px 0 16px;background:#202020;border:1px solid #303030;border-radius:18px;overflow:hidden}
+.problem-artifact>.artifact-toolbar{padding:0 12px 0 18px;gap:4px}
+.problem-artifact .artifact-toolbar button{height:30px;min-width:30px;border-radius:8px;color:#aaa;font-size:20px}
+.problem-artifact .artifact-toolbar [data-artifact-details]{font-size:12px;padding:0 9px;width:auto}
+.problem-artifact .artifact-toolbar button:hover,.problem-artifact .artifact-toolbar [aria-pressed=true]{background:#303030;color:#ddd}
+.problem-artifact .stage{border-radius:0 0 17px 17px;background:#191b1e;container:physics-stage/size}
+.problem-artifact #stitle{display:none!important}
+.problem-artifact:not(.show-details) #readout,.problem-artifact:not(.show-details) #overlays{display:none!important}
+#energy[hidden]{display:none!important}
+.problem-artifact .readout{display:block;top:12px;right:12px;min-width:0;max-width:calc(100% - 24px);z-index:4;font-size:11px;background:#222f;border:0}
+.problem-artifact .overlays{display:flex;z-index:4;bottom:100px;left:12px;right:12px;max-width:100%;justify-content:flex-start;padding:10px;background:#222f;border-radius:12px}
+.problem-artifact .overlays button{font-size:11px;padding:4px 8px;border-color:#444;background:#292929}
+.problem-artifact .transport{left:12px;right:12px;bottom:12px;max-width:none;width:auto;gap:7px;padding:8px;flex-wrap:wrap;box-shadow:none;border:0;background:#262626ed;border-radius:14px}
+.problem-artifact .transport .bar{width:auto;min-width:70px;flex:1}.problem-artifact .transport .t{font-size:10px;min-width:0}
+.problem-artifact .transport .ib{display:none}.problem-artifact .transport .spd{font-size:11px;border:0}
+.problem-artifact .transport .play{background:#a7cafa;color:#172234}
+.problem-artifact .stagehint{left:16px;bottom:70px;font-size:10px}
+.problem-artifact .co{width:max-content;font-size:11px;padding:3px 7px;border:0;background:#26282deb;box-shadow:none}
+.problem-artifact .study-head{display:none}.problem-artifact .study-view{background:#202020;padding:20px 16px 104px}
+#workspace.visual-expanded .problem-artifact{position:absolute;inset:0;z-index:20;grid-column:auto;margin:8px 16px 16px}
+#workspace.visual-expanded #pane{visibility:hidden}
+@media(max-width:1100px){.visual-open .coach-reading{padding-inline:24px}.visual-open .coach-bottom{padding-inline:18px}}
+@media(max-width:900px){
+  #workspace.visual-open:not(.visual-expanded){grid-template-columns:minmax(0,1fr);padding:0}
+  #workspace.visual-open .problem-artifact{position:absolute;inset:0;z-index:20;margin:4px 10px 10px}
+  #workspace.visual-open #pane{visibility:hidden}
+  .problem-artifact [data-artifact-expand]{display:none}
+}
+@media(max-width:600px){
+  body>header{padding-inline:8px}.mark{margin-right:2px}.nav{padding-inline:8px;font-size:12px}
+  .homecol,.libcol{padding:24px 18px 40px}.hello{font-size:22px}.composer textarea{padding-inline:18px}
+  .home .cards{grid-template-columns:1fr 1fr}.home .section{margin-top:28px}
+  .libhead{flex-wrap:wrap;gap:14px}.libhead input{width:100%}
+  .coach-reading,.visual-open .coach-reading{padding:20px 18px 26px}.coach-bottom,.visual-open .coach-bottom{padding:8px 11px 12px}
+  #coach .ctitle{font-size:17px}#coach .step.done .mini{display:none}
+  #coach .crow{gap:4px 12px;flex-wrap:wrap}#coach .crow b{white-space:normal;margin-left:auto;text-align:right}
+  #cchat .askbox{padding:13px 12px 10px}.coach-suggestions,.conversation-actions{gap:6px;margin-bottom:8px}
+  .coach-suggestions .btn,.conversation-actions .btn{font-size:11px;min-height:30px}
+  .problem-artifact .transport .bar{flex-basis:calc(100% - 52px)}
+  .problem-artifact .transport .t{margin-left:40px;margin-right:auto}
+  .problem-artifact .stagehint{bottom:99px;font-size:9px}
+  .problem-artifact .overlays{bottom:126px}.problem-artifact .co{font-size:10px}
+  .problem-artifact .readout{max-height:42%;overflow:auto}
+}
+/* A worked step stays in view; its setup remains available without leading it. */
+.problem-overview { margin: 8px 0 12px; }
+.problem-overview>summary { color:var(--muted,#9da4ae);font-size:12px;cursor:pointer; }
+.problem-overview .problem { margin-top:12px; }
+.earlier-questions { margin:12px 0 24px;font-size:12px;color:#9da4ae; }
+.earlier-questions>summary { cursor:pointer; }
+.earlier-questions .msgs { font-size:16px;color:#e4e8ef; }
+.problem-artifact.has-caption { grid-template-rows:48px auto minmax(0,1fr); }
+.artifact-caption { grid-row:2;margin:0;padding:10px 18px 4px;color:#aeb7c4;font-size:13px;line-height:1.5; }
+.problem-artifact.has-caption #stage,.teaching-visual { grid-row:3;min-height:0; }
+.teaching-visual { display:flex;flex-direction:column;align-items:stretch;overflow:hidden;padding:8px 20px 16px;background:#191d23; }
+.teaching-visual[hidden],#stage[hidden] { display:none!important; }
+.teaching-canvas { flex:1 1 0;min-height:0;position:relative; }
+.teaching-canvas svg { position:absolute;inset:0;margin:auto;width:100%;height:100%;max-width:520px; }
+.teaching-readout { display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:center;font-size:14px; }
+.teaching-readout small { width:100%;text-align:center;font-size:12px;color:#abb5c1; }
+.teaching-controls { margin:16px auto 0;width:100%;max-width:380px;font-size:12px;color:#bfc8d4; }
+.teaching-slider { display:grid;grid-template-columns:1fr auto;gap:7px; }
+.teaching-slider input { grid-column:1/-1;width:100%;accent-color:#8cbcff; }
+.teaching-buttons { display:flex;gap:6px;margin:10px 0; }
+.teaching-buttons button { flex:1;border:0;background:#29323d;color:#d5dfe9;border-radius:7px;min-height:32px;font:inherit;cursor:pointer; }
+.teaching-buttons button:hover { background:#354355; }
+.teaching-square { display:flex;gap:7px;align-items:center; }
+.teaching-square input { accent-color:#8cbcff; }
+.teaching-note { font-size:11px;line-height:1.4;color:#818e9e;text-align:center;margin:12px auto 0;max-width:360px; }
+@media(max-width:600px) { .teaching-visual{padding:4px 12px 12px}.teaching-controls{margin-top:10px}.artifact-caption{padding:8px 12px 2px;font-size:12px} }
+
+/* Short artifacts reserve the view for the apparatus; all transport controls stay on one row. */
+@container physics-stage (max-height:360px) {
+  .problem-artifact .transport{left:8px;right:8px;bottom:8px;padding:5px;gap:5px;flex-wrap:nowrap;border-radius:11px}
+  .problem-artifact .transport .play{width:28px;height:28px}
+  .problem-artifact .transport .bar{flex:1 1 auto;min-width:44px;width:auto}
+  .problem-artifact .transport .t{margin:0;font-size:10px;min-width:0}
+  .problem-artifact .transport .spd{padding:2px 4px;min-width:24px;font-size:11px}
+  .problem-artifact .stagehint{display:none}
+  .problem-artifact .overlays{left:8px;right:8px;bottom:54px;padding:6px;max-height:72px;overflow:auto}
+}
+
+/* 1.28: the Settings row needs no chevron; the whole row opens the account menu */
+.ka-account-caret{display:none!important}

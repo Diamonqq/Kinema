@@ -1,0 +1,21 @@
+/* Library shares the chapter/chat spacing, with one set of categories. */
+.teacher[data-page=library] .tv-pages{overflow-anchor:none}
+.teacher .pg-library .library-layout{display:grid;grid-template-columns:154px minmax(0,1fr);gap:36px;max-width:1320px;padding:20px 32px 48px;margin-inline:auto}
+.library-nav{display:flex;flex-direction:column;align-items:stretch;align-self:start;gap:5px;position:sticky;top:16px;margin:0;background:none;padding:0}
+.library-nav button{display:flex;align-items:center;gap:11px;min-height:42px;padding:10px 14px;border:0;border-radius:999px;background:none;text-align:left;color:#aaa;font:13px/1.5 var(--tv-sans);white-space:nowrap}
+.library-nav button:hover{background:#ffffff05;color:#eee}.library-nav button[aria-current=page]{background:#ffffff0b;color:#eee}
+.library-nav svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.library-content{min-width:0}.library-content>h1{margin:4px 0 24px;color:#e7e7e7;font:550 23px/1.35 var(--tv-sans);letter-spacing:-.02em}
+.library-content .pg-pane{min-width:0}.library-content .tv-gallery{max-width:none;padding:0}
+.book-browser .book-search{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}.book-browser .book-search input{flex:1 1 200px;min-width:100px;margin:0;height:40px;border-radius:999px;padding:9px 15px;background:#ffffff05;border-color:#ffffff0c}
+.book-browser .book-search .choice-trigger{flex:0 1 auto;min-height:38px;width:auto;max-width:180px;border-radius:999px;background:#ffffff06;border:0;padding:8px 13px}
+.book-browser .book-filter[hidden]{display:none}.book-browser .book-count{padding:4px 2px;margin:0 0 12px;color:#888;font-size:12px}
+.book-browser .book-list{display:grid;gap:5px}.book-browser .book-list>li{border:0}.book-browser .book-list button{padding:15px 16px;border:0;border-radius:14px;gap:13px;background:#ffffff03}.book-browser .book-list button:hover{background:#ffffff08}.book-browser .book-list b{color:#a7bedb;font-weight:500}.book-browser .book-list small{color:#8f8f8f}.book-browser .book-list i{color:#777}
+.library-content .vl-search{height:40px;border-radius:999px;padding:9px 15px;background:#ffffff05;border-color:#ffffff0c}.library-content .vl-top{padding:0 0 20px;gap:12px}.library-content .vl-grid,.library-content .lg-grid{gap:16px}.library-content .vl-card{border-radius:18px;background:#ffffff03}.library-content .vl-list{overflow:visible}.library-content .vl-filter{border-radius:999px}
+.library-content .folder-heading{margin-top:0}.library-content .folder-heading h2{font-size:17px}.library-content .folder-list button{border-radius:18px;min-height:105px;background:#ffffff03}
+.library-nav button:focus-visible{outline:2px solid #a9cfff;outline-offset:3px}
+.library-content input.vl-search{height:40px;border-radius:999px;margin:0;background:#ffffff05;padding:9px 15px;border-color:#ffffff0c}
+.book-browser .book-search .choice-trigger span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.library-content .folder-actions button{border-radius:999px}
+@media(max-width:1100px){.teacher .pg-library .library-layout{grid-template-columns:132px minmax(0,1fr);gap:20px;padding-inline:20px}.library-nav button{padding-inline:12px}}
+@media(max-width:800px){.teacher .pg-library .library-layout{display:block;padding:12px 16px 36px}.library-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:4px;margin-bottom:24px}.library-nav button{font-size:12px;min-height:36px;padding:7px 12px;gap:7px}.library-nav svg{width:15px;height:15px}.library-content>h1{font-size:21px;margin-bottom:20px}.book-browser .book-search input{flex-basis:100%}.book-browser .book-search .choice-trigger{max-width:calc(50% - 4px);min-width:0}.book-browser .book-list button{padding:13px 12px;gap:8px}}

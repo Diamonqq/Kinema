@@ -1,0 +1,4 @@
+/* Installed-app (standalone) layout: keep content clear of the notch, status bar and home bar. */
+body{box-sizing:border-box;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.qa{top:calc(56px + env(safe-area-inset-top))}
+html{background:#0f1114;-webkit-text-size-adjust:100%}

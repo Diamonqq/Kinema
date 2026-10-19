@@ -1,0 +1,94 @@
+.study-view{position:absolute;inset:0;overflow:auto;padding:28px 32px 104px;background:var(--paper)}
+.study-head{max-width:850px;margin:0 auto 24px}.study-type{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink2)}
+.study-head h1{font:500 30px/1.2 var(--serif);margin:10px 0}.study-head p{color:var(--ink2);max-width:720px;font-size:13px}
+/* Circuit ink retains its light card; plots and schematics have separate dark palettes. */
+.study-paper{max-width:1000px;margin:auto;background:#f4f5f7;border:1px solid #2c3036;border-radius:10px;padding:16px 12px 8px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+/* study.js draws the figure at its real pixel width (viewBox = px), so these sizes are the on-screen sizes */
+.study-svg{display:block;width:100%;height:auto}.study-svg text{font:12px var(--sans);fill:#565b65}.study-svg .axis-label{font-size:13px;fill:#343c4d}.study-svg .diagram-label{font-size:13px;fill:#343c4d;paint-order:stroke;stroke:#fcfbf8;stroke-width:4px;stroke-linejoin:round}.study-svg .probe-value{font-size:12px;paint-order:stroke;stroke:#fcfbf8;stroke-width:6px}
+.study-controls{display:flex;flex-wrap:wrap;gap:18px;align-items:center;max-width:960px;margin:22px auto 12px}.study-param{min-width:180px;flex:1;font-size:12px;color:var(--ink2)}.study-param span{display:flex;justify-content:space-between;gap:16px}.study-param output{font-variant-numeric:tabular-nums;color:var(--ink)}.study-param input{width:100%;accent-color:#4257a0;margin-top:10px}
+/* Schematics share Kinema's dark paper, including generated diagrams. Plot and
+   circuit colours keep their existing separate rendering contract. */
+.study-view.is-diagram .study-paper{background:#171b22;border-color:#2a313c;box-shadow:none}
+.study-view.is-diagram .study-svg text{fill:#a3acbb}
+.study-view.is-diagram .study-svg .diagram-label{fill:#e2e7f0;stroke:#171b22}
+.study-view.is-diagram .study-svg [stroke="#51565f"],.study-view.is-diagram .study-svg [stroke="#3e485f"]{stroke:#aeb7c7}
+.study-view.is-diagram .study-svg [stroke="#5266a6"]{stroke:#8eabf2}
+.study-view.is-diagram .study-svg [stroke="#ad6942"]{stroke:#f1a35b}
+.study-view.is-diagram .study-svg [fill="#3e485f"]{fill:#aeb7c7}
+.study-view.is-diagram .study-svg [fill="#ad6942"]{fill:#f1a35b}
+.study-view.is-diagram .study-svg [fill="#e4e7ef"],.study-view.is-diagram .study-svg [fill="#f7f4ee"]{fill:#242b36}
+.study-view.is-diagram .study-svg [fill="#d7e2e5"]{fill:#2a3542}
+.study-view.is-diagram .study-status:empty{display:none}
+.study-view.is-plot .study-paper{background:#171b22;border-color:#2a313c;box-shadow:none}
+.study-view.is-plot .study-svg text,.study-view.is-plot .study-svg .axis-label{fill:#b8c7d9}
+.study-view.is-plot .study-svg .probe-value{fill:#e4edfa;stroke:#171b22}
+.study-view.is-plot .study-legend,.study-view.is-plot .study-axis-details{color:#b8c7d9}
+.study-view.is-plot .study-expr,.study-view.is-plot .study-expr code{color:#9eafc6}
+.study-view.is-plot .study-param input{accent-color:#a7cafa}
+.study-plot-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%}
+.study-plot-tools button{min-height:34px;padding:6px 10px;background:#ffffff08;color:#c8d6e8;border:1px solid #ffffff18;border-radius:6px;font-size:12px}
+.study-plot-tools button[aria-pressed=true]{background:#354d6b;color:#edf4ff}
+.study-plot-tools small{color:#93a4bb;font-size:11px;line-height:1.5}
+.study-view.is-plot .study-svg:focus-visible{outline:2px solid #a7cafa;outline-offset:3px}
+.study-view.is-plot-panning .study-svg{cursor:grab;touch-action:none}
+.study-view.is-plot-panning .study-svg:active{cursor:grabbing}
+.study-legend{display:flex;flex-wrap:wrap;gap:8px 22px;margin:8px 12px 12px;font-size:12.5px;line-height:1.4;color:#343c4d}.study-legend>div{display:flex;gap:8px;align-items:center;min-width:0}.study-legend i{flex:none;width:15px;height:3px}.study-legend sub{font-size:75%}
+.study-axis-details{margin:0 12px 6px;color:#343c4d;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.study-axis-details[hidden]{display:none}
+.study-view.is-prepared .study-axis-details{color:#a3acbb}
+.study-expr{flex-basis:100%;font-size:11.5px;color:#656a74}.study-expr summary{cursor:pointer;width:max-content}.study-expr>div{display:flex;gap:8px;align-items:center;margin-top:4px;overflow-wrap:anywhere}.study-expr code{font:11.5px var(--mono);color:#4b505a}
+.study-status{max-width:960px;margin:12px auto;color:var(--ink2);font-size:11px}.study-status.error{color:var(--bad);font-size:13px}.study-empty{padding:70px 40px;max-width:650px;margin:auto}.study-empty h2{font:500 29px/1.3 var(--serif);margin:12px 0}.study-empty p{color:var(--ink2)}
+.problem-context{font-size:12px;margin:12px 0 18px;color:var(--ink2)}.problem-context summary{cursor:pointer;font-weight:600}.problem-context ul{padding-left:18px;margin:6px 0}.problem-context img{display:block;max-width:100%;max-height:220px;border:1px solid var(--hair);border-radius:8px;margin-top:10px;object-fit:contain}.whatif-note{font-size:12px;color:var(--warnink);background:var(--warnbg);border:1px solid rgba(232,154,60,.35);padding:9px 12px;border-radius:8px;margin:10px 0}.verification-note{font-size:11px;color:var(--ink2);margin-top:7px}
+.step:focus-visible,button:focus-visible,.bar:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.crow.na b{color:var(--warn)}
+/* Quiet native controls leave the stage to the diagram; touch keeps comfortable targets. */
+#stage .transport{left:8px;right:8px;bottom:6px;max-width:none;width:auto;padding:3px 5px;gap:5px;flex-wrap:nowrap;border:0;border-radius:7px;background:#242424b8;box-shadow:none;min-height:0}
+#stage .transport .play{width:26px;height:26px;flex:0 0 26px;border-radius:5px;background:#a8bedb;color:#1b2430}
+#stage .transport .bar{flex:1 1 auto;min-width:32px;width:auto}
+#stage .transport .t{margin:0;font-size:10px;min-width:0}
+#stage .transport .spd{padding:2px 4px;min-width:24px;min-height:24px;font-size:11px}
+#stage .stagehint{display:none}
+#stage #hint.camera-tools{display:flex;align-items:center;gap:2px;pointer-events:auto;left:auto;right:8px;bottom:6px;max-width:none}
+#stage .transport #hint.camera-tools{position:static;flex:0 0 auto;margin-left:3px}
+#stage #hint.camera-tools[hidden]{display:none}
+#stage #hint.camera-tools button{min-width:25px;height:26px;padding:0 5px;border:0;border-radius:5px;background:transparent;color:#bdbdbd;font:500 11px/1 system-ui;cursor:pointer}
+#stage #hint.camera-tools button[data-camera-tool="in"],#stage #hint.camera-tools button[data-camera-tool="out"]{font-size:18px}
+#stage #hint.camera-tools button:hover,#stage #hint.camera-tools button[aria-pressed="true"]{background:#ffffff12;color:#eeeeee}
+@container physics-stage (max-width:540px){#stage .transport #tlab{display:none}#stage .transport{flex-wrap:nowrap}#stage .transport .bar{flex:1 1 auto;min-width:32px}#stage .transport #hint.camera-tools{margin-left:0}#stage .transport .spd{padding:2px 3px}}
+@media(pointer:coarse){#stage .transport .play{width:32px;height:32px;flex-basis:32px}#stage #hint.camera-tools button{height:32px;min-width:29px}}
+@container physics-stage (max-width:320px){
+ #stage .transport{left:5px;right:5px;padding:3px;gap:2px}
+ #stage .transport .bar{min-width:14px}
+ #stage .transport .play{width:26px;flex-basis:26px}
+ #stage .transport #views{max-width:47px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ #stage .transport #hint.camera-tools{gap:1px}
+ #stage #hint.camera-tools button{min-width:24px;padding:0 3px}
+ #stage #hint.camera-tools button[data-camera-tool="move"]{width:24px;font-size:0}
+ #stage #hint.camera-tools button[data-camera-tool="move"]::after{content:'↔';font-size:16px}
+}
+/* In-chat viewers use a floating playback pill. The title lives above the
+   rounded canvas, so neither its row nor the transport crops the drawing. */
+.teacher.visual-inline #stage .transport{left:50%;right:auto;bottom:12px;transform:translateX(-50%);width:calc(100% - 28px);max-width:660px;padding:4px 7px;gap:7px;border:1px solid #ffffff12;border-radius:999px;background:#252525cf;backdrop-filter:blur(12px);box-shadow:0 3px 12px #0002}
+.teacher.visual-inline #stage .transport .play{width:26px;height:26px;flex-basis:26px;border-radius:50%;background:#dedede;color:#262626}
+.teacher.visual-inline #stage .transport .play svg{width:12px;height:12px}
+.teacher.visual-inline #stage .transport .bar{height:26px;min-width:32px}
+.teacher.visual-inline #stage .transport .bar .tr{height:2px;margin-top:-1px;background:#ffffff25}
+.teacher.visual-inline #stage .transport .bar .tr i{background:#c6c6c6}
+.teacher.visual-inline #stage .transport .bar b{width:8px;height:8px;background:#e2e2e2;box-shadow:0 0 0 2px #252525}
+.teacher.visual-inline #stage .transport .bar s{top:9px;height:4px;opacity:.45}
+.teacher.visual-inline #stage .transport .spd{color:#b5b5b5;border-radius:7px}
+.teacher.visual-inline #stage #hint.camera-tools button{border-radius:7px}
+@container physics-stage (max-width:420px){
+ .teacher.visual-inline #stage .transport{width:calc(100% - 14px);bottom:8px;padding:3px 5px;gap:3px;border-radius:14px}
+ .teacher.visual-inline #stage .transport .bar{min-width:14px}
+ .teacher.visual-inline #stage .transport #views{max-width:47px}
+}
+@container physics-stage (max-width:320px){
+ .teacher.visual-inline #stage .transport{width:calc(100% - 12px);padding:3px 4px;gap:2px}
+ .teacher.visual-inline #stage .transport .bar{min-width:12px}
+ .teacher.visual-inline #stage .transport #views{max-width:43px}
+ .teacher.visual-inline #stage .transport .spd{padding:2px}
+}
+@media(pointer:coarse){.teacher.visual-inline #stage .transport .play{width:30px;height:30px;flex-basis:30px}.teacher.visual-inline #stage .transport .bar{height:30px}}
+body.math-view #gl,body.math-view #leaders,body.math-view #callouts,body.math-view #stitle{display:none}.transport{max-width:calc(100% - 40px)}.transport .bar{min-width:60px;flex:1}.hint{max-width:200px;text-align:right}.sheet{max-height:calc(100% - 30px);overflow:auto}.remove-photo{font-size:12px;color:var(--ink2)}
+@media(max-width:1150px){body.reading{grid-template-columns:minmax(0,1fr) 380px}.pane{padding:20px}.transport{gap:7px}.transport .bar{width:130px}.hint{display:none}.study-view{padding:22px 18px 95px}.study-head h1{font-size:26px}}
+@media(max-width:780px){body.reading{grid-template-columns:1fr;grid-template-rows:52px minmax(340px,48vh) 1fr}.pane{border-left:0;border-top:1px solid var(--hair)}.study-head{margin-bottom:12px}.study-head h1{font-size:22px}.study-view{padding:18px 14px 95px}.study-paper{padding:2px}.study-status{font-size:10px}.transport{left:12px;bottom:12px;gap:5px;max-width:calc(100% - 24px)}.transport .bar{width:100px}.transport .t{min-width:80px;font-size:10px}.sheet{padding:18px;width:calc(100% - 28px)}.study-head p{font-size:12px}.study-param{min-width:130px}.stitle{max-width:85%}}

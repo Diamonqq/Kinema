@@ -1,0 +1,1970 @@
+{
+ "version": "2026-09-23.1",
+ "note": "Worked examples for example-first practice. Each has 3-6 short steps; 'turn' names the similar problem the student tries next.",
+ "examples": [
+  {
+   "id": "ex.M.vec.components.1",
+   "skill": "M.vec.components",
+   "problem": "A force $\\mathbf F=(3\\text{ N})\\,\\hat{\\mathbf x}+(4\\text{ N})\\,\\hat{\\mathbf y}$ acts on a block. Find the component of $\\mathbf F$ along a unit vector $\\hat{\\mathbf u}$ that points $30^\\circ$ above the $+x$ axis.",
+   "steps": [
+    {
+     "do": "Write the unit vector in Cartesian components",
+     "math": "\\hat{\\mathbf u}=(\\cos 30^\\circ,\\sin 30^\\circ)=\\left(\\tfrac{\\sqrt3}{2},\\tfrac12\\right)",
+     "why": "You can only project with the dot product once $\\hat{\\mathbf u}$ is written in components and has length 1."
+    },
+    {
+     "do": "Project F onto û with the dot product",
+     "math": "F_u=\\mathbf F\\cdot\\hat{\\mathbf u}=F_x\\cos\\phi+F_y\\sin\\phi",
+     "why": "The component along a unit vector is $\\mathbf F\\cdot\\hat{\\mathbf u}$. Multiply matching components and add."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "F_u=3\\cdot\\tfrac{\\sqrt3}{2}+4\\cdot\\tfrac12=2.598+2=4.598\\text{ N}",
+     "why": "$\\phi$ is measured from $+x$, so $\\cos\\phi$ goes with $F_x$ and $\\sin\\phi$ goes with $F_y$."
+    },
+    {
+     "do": "Check using the magnitude and the angle between them",
+     "math": "F=5,\\ \\theta=\\arctan\\tfrac43=53.13^\\circ,\\ 5\\cos 23.13^\\circ=4.598",
+     "why": "$F_u=F\\cos(\\theta-\\phi)$ must give the same result."
+    }
+   ],
+   "answer": {
+    "latex": "F_u\\approx 4.60\\text{ N}",
+    "numeric": true,
+    "value": 4.598076211353316,
+    "unit": "N"
+   },
+   "takeaway": "To get the component along a direction, write that direction as a unit vector $\\hat{\\mathbf u}=(\\cos\\phi,\\sin\\phi)$ and take $\\mathbf F\\cdot\\hat{\\mathbf u}$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.vec.components.t1"
+  },
+  {
+   "id": "ex.3.1.newton.1",
+   "skill": "3.1.newton",
+   "problem": "A block $M_1=2$ kg sits on a plane inclined at $\\theta=30^\\circ$ with kinetic friction coefficient $\\mu=0.2$. A massless string over a massless pulley connects it to a hanging mass $M_2=3$ kg, and $M_1$ moves up the plane. Find the acceleration $a$.",
+   "steps": [
+    {
+     "do": "Write F = ma for the hanging mass",
+     "math": "M_2g-T=M_2a",
+     "why": "Take down as positive for $M_2$. Gravity pulls it down and the tension pulls it up."
+    },
+    {
+     "do": "Write F = ma along the incline for M1",
+     "math": "T-M_1g\\sin\\theta-\\mu M_1g\\cos\\theta=M_1a",
+     "why": "$N=M_1g\\cos\\theta$. $M_1$ moves up the plane, so friction $\\mu N$ points down the plane."
+    },
+    {
+     "do": "Add the equations to eliminate T",
+     "math": "a=\\frac{g(M_2-M_1\\sin\\theta-\\mu M_1\\cos\\theta)}{M_1+M_2}",
+     "why": "The string gives both masses the same $a$, so adding the equations cancels the unknown $T$."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "a=\\frac{9.8(3-1-0.346)}{5}=3.24\\text{ m/s}^2",
+     "why": "$M_1\\sin\\theta=1$ kg and $\\mu M_1\\cos\\theta=0.346$ kg."
+    }
+   ],
+   "answer": {
+    "latex": "a\\approx 3.24\\text{ m/s}^2",
+    "numeric": true,
+    "value": 3.241,
+    "unit": "m/s^2"
+   },
+   "takeaway": "Write $F=ma$ for each body along its own direction of motion, then add the equations so the tension cancels.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.3.1.newton.t1"
+  },
+  {
+   "id": "ex.5.5.momentum.1",
+   "skill": "5.5.momentum",
+   "problem": "A 40 kg sled carrying you slides at 5 m/s along straight frictionless tracks. Then 10 kg of snow falls vertically onto it and comes to rest on the sled. What is the sled's final speed?",
+   "steps": [
+    {
+     "do": "List the external forces and pick the conserved direction",
+     "math": "F_{ext,\\parallel}=0",
+     "why": "Gravity and the track's normal forces have no component along the track, so $P$ along the track is conserved."
+    },
+    {
+     "do": "Find the initial momentum along the track",
+     "math": "P_i=m_0v_0+\\Delta m\\cdot 0=40\\cdot5=200\\text{ kg m/s}",
+     "why": "The snow falls vertically, so it has no momentum along the track."
+    },
+    {
+     "do": "Find the final momentum of sled plus snow",
+     "math": "P_f=(m_0+\\Delta m)v=50\\,v",
+     "why": "The snow ends up at rest on the sled, so both move together at $v$."
+    },
+    {
+     "do": "Set P_i = P_f and solve for v",
+     "math": "v=\\frac{m_0v_0}{m_0+\\Delta m}=\\frac{200}{50}=4\\text{ m/s}",
+     "why": "Momentum along the track is conserved. Kinetic energy is not, because the snow sticks."
+    }
+   ],
+   "answer": {
+    "latex": "v=4\\text{ m/s}",
+    "numeric": true,
+    "value": 4,
+    "unit": "m/s"
+   },
+   "takeaway": "Conserve only the momentum component along which the external force is zero, and include every piece of the system.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.5.5.momentum.t1"
+  },
+  {
+   "id": "ex.5.6.cm.1",
+   "skill": "5.6.cm",
+   "problem": "A 2 kg mass moving at 3 m/s approaches a stationary 4 kg mass along a line. Find the kinetic energy in the CM frame, $K_{CM}$, which is the part of the lab kinetic energy not tied to the motion of the CM.",
+   "steps": [
+    {
+     "do": "Find the total mass and the CM velocity",
+     "math": "u=\\frac{P}{M}=\\frac{2\\cdot3+4\\cdot0}{6}=1\\text{ m/s}",
+     "why": "The CM frame moves at $u=\\sum m_iv_i/M$, a mass-weighted average, not a plain one."
+    },
+    {
+     "do": "Find the lab kinetic energy",
+     "math": "K_S=\\tfrac12(2)(3)^2=9\\text{ J}",
+     "why": "Only the 2 kg mass moves in the lab frame."
+    },
+    {
+     "do": "Subtract the kinetic energy of the CM motion",
+     "math": "K_{CM}=K_S-\\tfrac12Mu^2=9-\\tfrac12(6)(1)^2=6\\text{ J}",
+     "why": "$K_S=K_{CM}+\\tfrac12Mu^2$, because the cross term vanishes in the CM frame."
+    },
+    {
+     "do": "Check with velocities in the CM frame",
+     "math": "v_1'=2,\\ v_2'=-1:\\ \\tfrac12(2)(4)+\\tfrac12(4)(1)=6\\text{ J}",
+     "why": "$v_i'=v_i-u$. Check that $\\sum m_iv_i'=4-4=0$."
+    }
+   ],
+   "answer": {
+    "latex": "K_{CM}=6\\text{ J}",
+    "numeric": true,
+    "value": 6,
+    "unit": "J"
+   },
+   "takeaway": "Split the kinetic energy as $K_S=K_{CM}+\\tfrac12Mu^2$ with $u=P/M$. The energy relative to the CM is what remains.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.5.6.cm.t1"
+  },
+  {
+   "id": "ex.M.calc.derivative.1",
+   "skill": "M.calc.derivative",
+   "problem": "A pendulum bob sits at horizontal position $x=\\ell\\sin\\theta$ with $\\ell=2$ m. At some instant $\\theta=0.5$ rad, $\\dot\\theta=3$ rad/s and $\\ddot\\theta=1$ rad/s$^2$. Find $\\ddot x$.",
+   "steps": [
+    {
+     "do": "Differentiate once with the chain rule",
+     "math": "\\dot x=\\ell\\cos\\theta\\,\\dot\\theta",
+     "why": "$\\theta$ depends on $t$, so the derivative of the outer function picks up a factor of $\\dot\\theta$."
+    },
+    {
+     "do": "Differentiate the product cosθ·θ̇",
+     "math": "\\ddot x=\\ell(\\cos\\theta\\,\\ddot\\theta-\\sin\\theta\\,\\dot\\theta^2)",
+     "why": "Both factors depend on time. Differentiating $\\cos\\theta$ gives $-\\sin\\theta\\,\\dot\\theta$, which produces the $\\dot\\theta^2$ term."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "\\ddot x=2(0.8776\\cdot1-0.4794\\cdot9)",
+     "why": "$\\cos0.5=0.8776$ and $\\sin0.5=0.4794$. Remember to square $\\dot\\theta$."
+    },
+    {
+     "do": "Simplify and check the sign",
+     "math": "\\ddot x=2(0.8776-4.3148)=-6.87\\text{ m/s}^2",
+     "why": "The centripetal $\\dot\\theta^2$ term dominates and points back toward the axis, so $\\ddot x<0$."
+    }
+   ],
+   "answer": {
+    "latex": "\\ddot x\\approx -6.87\\text{ m/s}^2",
+    "numeric": true,
+    "value": -6.8745,
+    "unit": "m/s^2"
+   },
+   "takeaway": "Treat $\\dot f=f'(\\theta)\\dot\\theta$ as a product, so $\\ddot f=f''\\dot\\theta^2+f'\\ddot\\theta$. Never drop the $\\dot\\theta^2$ term.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.calc.derivative.t1"
+  },
+  {
+   "id": "ex.6.1.euler-lagrange.1",
+   "skill": "6.1.euler-lagrange",
+   "problem": "A spring pendulum has $m=0.5$ kg, $k=20$ N/m and $\\ell=1.0$ m. At one instant the stretch is $x=0.1$ m, $\\theta=0.3$ rad and $\\dot\\theta=2$ rad/s. Take $g=9.8$ m/s². Find $\\ddot x$ at that instant.",
+   "steps": [
+    {
+     "do": "Write T with radial and tangential parts",
+     "math": "T=\\tfrac12 m\\left(\\dot x^2+(\\ell+x)^2\\dot\\theta^2\\right)",
+     "why": "The velocity has a radial part $\\dot x$ and a tangential part $(\\ell+x)\\dot\\theta$."
+    },
+    {
+     "do": "Write V from gravity plus the spring",
+     "math": "V=-mg(\\ell+x)\\cos\\theta+\\tfrac12 kx^2",
+     "why": "The mass sits $(\\ell+x)\\cos\\theta$ below the pivot, and the spring is stretched by $x$."
+    },
+    {
+     "do": "Form L = T − V",
+     "math": "L=\\tfrac12 m(\\dot x^2+(\\ell+x)^2\\dot\\theta^2)+mg(\\ell+x)\\cos\\theta-\\tfrac12 kx^2",
+     "why": "Use the minus sign. $T+V$ would be the energy, not the Lagrangian."
+    },
+    {
+     "do": "Apply the E–L equation for x",
+     "math": "m\\ddot x=m(\\ell+x)\\dot\\theta^2+mg\\cos\\theta-kx",
+     "why": "$\\partial L/\\partial\\dot x=m\\dot x$. Get $\\partial L/\\partial x$ by treating $\\dot x$ and $\\dot\\theta$ as independent of $x$."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "\\ddot x=(1.1)(4)+9.8\\cos0.3-\\frac{20(0.1)}{0.5}\\approx9.76",
+     "why": "The three terms are centripetal $4.4$, gravity $9.36$ and spring $-4$."
+    }
+   ],
+   "answer": {
+    "latex": "\\ddot x\\approx 9.76\\ \\text{m/s}^2",
+    "numeric": true,
+    "value": 9.7623,
+    "unit": "m/s^2"
+   },
+   "takeaway": "Write the scalars $T$ and $V$ in the natural coordinates, form $L=T-V$, and apply the E–L equation once for each coordinate.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.6.1.euler-lagrange.t1"
+  },
+  {
+   "id": "ex.6.5.cyclic.1",
+   "skill": "6.5.cyclic",
+   "problem": "A particle of mass $m=2$ kg moves in a plane under a central potential $V(r)$. At $r_1=1$ m it has $\\dot\\theta_1=4$ rad/s. Find $\\dot\\theta_2$ when it reaches $r_2=2$ m.",
+   "steps": [
+    {
+     "do": "Write L in polar coordinates",
+     "math": "L=\\tfrac12 m(\\dot r^2+r^2\\dot\\theta^2)-V(r)",
+     "why": "Polar coordinates match the symmetry of $V(r)$."
+    },
+    {
+     "do": "Check which coordinate is missing from L",
+     "math": "\\frac{\\partial L}{\\partial\\theta}=0",
+     "why": "$\\theta$ does not appear in $L$ (only $\\dot\\theta$ does), so $\\theta$ is cyclic."
+    },
+    {
+     "do": "Compute the conserved generalized momentum",
+     "math": "p_\\theta=\\frac{\\partial L}{\\partial\\dot\\theta}=mr^2\\dot\\theta=C",
+     "why": "The E–L equation becomes $\\frac{d}{dt}p_\\theta=0$."
+    },
+    {
+     "do": "Fix the constant from the initial data",
+     "math": "p_\\theta=2(1)^2(4)=8\\ \\text{kg·m}^2/\\text{s}",
+     "why": "$p_\\theta$ is constant, so its initial value holds at every later time."
+    },
+    {
+     "do": "Solve for the angular speed at r₂",
+     "math": "\\dot\\theta_2=\\frac{p_\\theta}{mr_2^2}=\\frac{8}{2(4)}=1",
+     "why": "$p_\\theta$ is conserved, not $\\dot\\theta$. Doubling $r$ cuts $\\dot\\theta$ by a factor of four."
+    }
+   ],
+   "answer": {
+    "latex": "\\dot\\theta_2=1\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 1,
+    "unit": "rad/s"
+   },
+   "takeaway": "If $q$ is missing from $L$, then $\\partial L/\\partial\\dot q$ (not $\\dot q$) is a constant you can use right away.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.6.5.cyclic.t1"
+  },
+  {
+   "id": "ex.M.vec.cross.1",
+   "skill": "M.vec.cross",
+   "problem": "A force $\\mathbf F=(3,1,0)$ N acts at position $\\mathbf r=(1,2,0)$ m. Find the $z$ component of the torque $\\boldsymbol\\tau=\\mathbf r\\times\\mathbf F$.",
+   "steps": [
+    {
+     "do": "Write both vectors in components",
+     "math": "\\mathbf r=(1,2,0),\\quad \\mathbf F=(3,1,0)",
+     "why": "Keep the order $\\mathbf r$ first, then $\\mathbf F$. Swapping them flips the sign."
+    },
+    {
+     "do": "Note that the x and y components vanish",
+     "math": "\\tau_x=r_yF_z-r_zF_y=0,\\ \\tau_y=0",
+     "why": "Both vectors lie in the $xy$-plane, so only $\\tau_z$ survives."
+    },
+    {
+     "do": "Apply the z-component formula",
+     "math": "\\tau_z=r_xF_y-r_yF_x=1(1)-2(3)",
+     "why": "The $z$ component uses the $x$ and $y$ labels in cyclic order."
+    },
+    {
+     "do": "Evaluate and read off the sense",
+     "math": "\\tau_z=-5\\ \\text{N·m}",
+     "why": "A negative sign means clockwise seen from $+z$. The right-hand rule gives the same sense."
+    }
+   ],
+   "answer": {
+    "latex": "\\tau_z=-5\\ \\text{N·m}",
+    "numeric": true,
+    "value": -5,
+    "unit": "N*m"
+   },
+   "takeaway": "$(\\mathbf a\\times\\mathbf b)_z=a_xb_y-a_yb_x$. Get the other components by cycling $x\\to y\\to z$, and keep the order.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.vec.cross.t1"
+  },
+  {
+   "id": "ex.7.1.L-particle.1",
+   "skill": "7.1.L-particle",
+   "problem": "A particle of mass $2$ kg is at $(x,y)=(3,1)$ m with velocity $(v_x,v_y)=(0.5,4)$ m/s, in the plane $z=0$. Find $L_z$ about the origin.",
+   "steps": [
+    {
+     "do": "Write r and v from the origin",
+     "math": "\\mathbf r=(3,1,0),\\quad \\mathbf v=(0.5,4,0)",
+     "why": "$\\mathbf L$ depends on the origin, so measure $\\mathbf r$ from the chosen point."
+    },
+    {
+     "do": "Keep only L_z for planar motion",
+     "math": "L_x=L_y=0",
+     "why": "$\\mathbf r$ and $\\mathbf v$ both lie in the $xy$-plane, so $\\mathbf r\\times\\mathbf v$ points along $\\hat{\\mathbf z}$."
+    },
+    {
+     "do": "Use the z-component formula",
+     "math": "L_z=m(xv_y-yv_x)",
+     "why": "This is $m(\\mathbf r\\times\\mathbf v)_z$, with $\\mathbf r$ first."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "L_z=2(3\\cdot4-1\\cdot0.5)=23",
+     "why": "A positive result means counterclockwise motion about the origin, seen from $+z$."
+    }
+   ],
+   "answer": {
+    "latex": "L_z=23\\ \\text{kg·m}^2/\\text{s}",
+    "numeric": true,
+    "value": 23,
+    "unit": "kg*m^2/s"
+   },
+   "takeaway": "For planar motion, $L_z=m(xv_y-yv_x)$. Only the velocity component perpendicular to $\\mathbf r$ counts.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.7.1.L-particle.t1"
+  },
+  {
+   "id": "ex.8.1.L-pancake.1",
+   "skill": "8.1.L-pancake",
+   "problem": "A uniform stick of mass $M=2.0$ kg and length $\\ell=1.5$ m lies in the $x$-$y$ plane, pivoted at one end at the origin. It spins about the $z$ axis at $\\omega=4.0$ rad/s. Find $L_z$.",
+   "steps": [
+    {
+     "do": "Put the stick along x from the pivot",
+     "math": "dm=\\lambda\\,dx,\\quad \\lambda=M/\\ell",
+     "why": "Then each piece is a distance $r=x$ from the $z$ axis."
+    },
+    {
+     "do": "Integrate r² dm along the stick",
+     "math": "I_z=\\int_0^\\ell x^2\\lambda\\,dx=\\tfrac13 M\\ell^2",
+     "why": "$I_z$ uses the distance from the rotation axis, here the pivot end."
+    },
+    {
+     "do": "Evaluate the moment of inertia",
+     "math": "I_z=\\tfrac13(2.0)(1.5)^2=1.5\\ \\text{kg·m}^2",
+     "why": "You need a number before multiplying by $\\omega$."
+    },
+    {
+     "do": "Multiply by ω to get L_z",
+     "math": "L_z=I_z\\omega=1.5(4.0)=6",
+     "why": "For a pancake spinning about $z$, $L_z=I_z\\omega$ and $L_x=L_y=0$."
+    }
+   ],
+   "answer": {
+    "latex": "L_z=6\\ \\text{kg·m}^2/\\text{s}",
+    "numeric": true,
+    "value": 6,
+    "unit": "kg*m^2/s"
+   },
+   "takeaway": "Find $I_z=\\int r^2\\,dm$ about the actual rotation axis, then $L_z=I_z\\omega$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.8.1.L-pancake.t1"
+  },
+  {
+   "id": "ex.8.1.parallel-axis.1",
+   "skill": "8.1.parallel-axis",
+   "problem": "A uniform stick has mass $m=2$ kg and length $\\ell=1.5$ m. It rotates about a perpendicular axis through a point $\\ell/6$ from one end. Find its moment of inertia about this axis.",
+   "steps": [
+    {
+     "do": "Start from the CM axis parallel to it",
+     "math": "I^{\\rm CM}=\\tfrac1{12}m\\ell^2=\\tfrac1{12}(2)(1.5)^2=0.375",
+     "why": "The theorem only shifts from an axis through the CM, never between two axes that both miss the CM."
+    },
+    {
+     "do": "Measure the distance from the CM to the axis",
+     "math": "R=\\tfrac{\\ell}{2}-\\tfrac{\\ell}{6}=\\tfrac{\\ell}{3}=0.5\\ \\text{m}",
+     "why": "$R$ is the perpendicular distance between the two parallel axes, measured from the CM, not from the end."
+    },
+    {
+     "do": "Find the shift term",
+     "math": "mR^2=(2)(0.5)^2=0.5",
+     "why": "All of the mass acts as if it sits at the CM, a distance $R$ from the new axis."
+    },
+    {
+     "do": "Add the shift to I^CM",
+     "math": "I=I^{\\rm CM}+mR^2=0.375+0.5=0.875",
+     "why": "$I$ always grows as the axis moves away from the CM, so you add $mR^2$ and never subtract it."
+    }
+   ],
+   "answer": {
+    "latex": "I=\\tfrac{7}{36}m\\ell^2=0.875\\ \\text{kg·m}^2",
+    "numeric": true,
+    "value": 0.875,
+    "unit": "kg*m^2"
+   },
+   "takeaway": "Always shift from the CM: $I=I^{\\rm CM}+MR^2$, where $R$ is the distance from the CM axis.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.8.1.parallel-axis.t1"
+  },
+  {
+   "id": "ex.8.1.plane-motion.1",
+   "skill": "8.1.plane-motion",
+   "problem": "A solid cylinder ($I=\\tfrac12mr^2$) has mass $m=2$ kg and radius $r=0.1$ m. It rolls without slipping with CM speed $V=3$ m/s. Find its total kinetic energy.",
+   "steps": [
+    {
+     "do": "Split T into CM and spin parts",
+     "math": "T=\\tfrac12mV^2+\\tfrac12I^{\\rm CM}\\omega'^2",
+     "why": "About the CM the cross terms vanish, so the kinetic energy splits cleanly into two terms (Theorem 8.2)."
+    },
+    {
+     "do": "Get the spin rate from rolling",
+     "math": "\\omega'=V/r=3/0.1=30\\ \\text{rad/s}",
+     "why": "Rolling without slipping ties the spin rate to the CM speed through $V=\\omega r$."
+    },
+    {
+     "do": "Compute the translational term",
+     "math": "\\tfrac12mV^2=\\tfrac12(2)(3)^2=9\\ \\text{J}",
+     "why": "This is the kinetic energy of the whole mass moving with the CM."
+    },
+    {
+     "do": "Compute the rotational term about the CM",
+     "math": "\\tfrac12\\left(\\tfrac12mr^2\\right)\\omega'^2=\\tfrac12(0.01)(900)=4.5\\ \\text{J}",
+     "why": "Use $I$ about the CM here. Using $I$ about the contact point would count the translation twice."
+    },
+    {
+     "do": "Add the two parts",
+     "math": "T=9+4.5=13.5\\ \\text{J}",
+     "why": "The total is the translational part plus the rotation about the CM."
+    }
+   ],
+   "answer": {
+    "latex": "T=\\tfrac34mV^2=13.5\\ \\text{J}",
+    "numeric": true,
+    "value": 13.5,
+    "unit": "J"
+   },
+   "takeaway": "$T=\\tfrac12MV^2+\\tfrac12I^{\\rm CM}\\omega'^2$: move the CM as a point mass, then add the spin about the CM.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.8.1.plane-motion.t1"
+  },
+  {
+   "id": "ex.8.4.torque.1",
+   "skill": "8.4.torque",
+   "problem": "A force $\\mathbf F=(3,4)$ N acts at the point $\\mathbf r=(2,1)$ m in the $xy$-plane. Find the torque about the origin, including its direction.",
+   "steps": [
+    {
+     "do": "Read off r from the origin, and F",
+     "math": "x=2,\\ y=1,\\ F_x=3,\\ F_y=4",
+     "why": "$\\mathbf r$ must run from the chosen origin to the point where the force acts."
+    },
+    {
+     "do": "Write the z-component of r × F",
+     "math": "\\tau_z=xF_y-yF_x",
+     "why": "For planar $\\mathbf r$ and $\\mathbf F$, the torque $\\mathbf r\\times\\mathbf F$ points only along $z$."
+    },
+    {
+     "do": "Plug in, keeping the order r × F",
+     "math": "\\tau_z=(2)(4)-(1)(3)=5\\ \\text{N·m}",
+     "why": "Writing $\\mathbf F\\times\\mathbf r$ instead would flip the sign, and so the direction."
+    },
+    {
+     "do": "Turn the sign into a direction",
+     "math": "\\boldsymbol\\tau=+5\\,\\hat{\\mathbf z}\\ \\text{N·m}",
+     "why": "A positive $\\tau_z$ means counterclockwise when viewed from $+z$, by the right-hand rule."
+    }
+   ],
+   "answer": {
+    "latex": "\\boldsymbol\\tau=5\\,\\hat{\\mathbf z}\\ \\text{N·m (counterclockwise)}",
+    "numeric": true,
+    "value": 5,
+    "unit": "N*m"
+   },
+   "takeaway": "Torque is $\\mathbf r\\times\\mathbf F$ from a stated origin; in the plane, $\\tau_z=xF_y-yF_x$, and positive means counterclockwise.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.8.4.torque.t1"
+  },
+  {
+   "id": "ex.8.4.tau-dLdt.1",
+   "skill": "8.4.tau-dLdt",
+   "problem": "A uniform solid cylinder ($I=\\tfrac12MR^2$) rolls without slipping down a fixed incline at $\\theta=30^\\circ$. Use $\\tau=dL/dt$ about the contact point, which is fixed on the plane, to find the acceleration of the CM.",
+   "steps": [
+    {
+     "do": "Choose the fixed contact point as origin",
+     "math": "",
+     "why": "A fixed point is a safe origin. Friction and the normal force act there, so they give no torque."
+    },
+    {
+     "do": "Find the torque from gravity at the CM",
+     "math": "\\tau=(Mg\\sin\\theta)R",
+     "why": "Only the component of gravity along the incline has a lever arm $R$ about the contact point."
+    },
+    {
+     "do": "Write L, including the CM term",
+     "math": "L=I\\omega+MvR=\\tfrac12MRv+MRv=\\tfrac32MRv",
+     "why": "About a fixed point, add the angular momentum of the CM as a point mass to the spin term."
+    },
+    {
+     "do": "Set τ = dL/dt and solve",
+     "math": "MgR\\sin\\theta=\\tfrac32MRa\\ \\Rightarrow\\ a=\\tfrac23g\\sin\\theta",
+     "why": "Use the same origin for both the torque and $L$. The factors $M$ and $R$ cancel."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "a=\\tfrac23(9.8)(0.5)\\approx3.27\\ \\text{m/s}^2",
+     "why": "$\\sin30^\\circ=0.5$."
+    }
+   ],
+   "answer": {
+    "latex": "a=\\tfrac23g\\sin\\theta\\approx3.27\\ \\text{m/s}^2",
+    "numeric": true,
+    "value": 3.2667,
+    "unit": "m/s^2"
+   },
+   "takeaway": "Take $\\tau=dL/dt$ only about a fixed point or the CM; about a fixed point, include the $MvR$ term in $L$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.8.4.tau-dLdt.t1"
+  },
+  {
+   "id": "ex.8.6.impulse.1",
+   "skill": "8.6.impulse",
+   "problem": "A uniform stick ($m=2$ kg, $\\ell=1.2$ m) lies at rest on frictionless ice. A hammer gives it an impulse $J=3$ N·s at one end, perpendicular to the stick. Find the angular velocity just after the blow.",
+   "steps": [
+    {
+     "do": "Use the CM as origin",
+     "math": "I_{CM}=\\tfrac1{12}m\\ell^2=\\tfrac1{12}(2)(1.2)^2=0.24",
+     "why": "The stick is free, so the CM is a legal origin. Don't use $I^{\\rm end}=\\tfrac13m\\ell^2$."
+    },
+    {
+     "do": "Find the lever arm of the blow",
+     "math": "d=\\ell/2=0.6\\ \\text{m}",
+     "why": "$d$ is the perpendicular distance from the CM to the line of the blow."
+    },
+    {
+     "do": "Set the angular impulse equal to ΔL",
+     "math": "I_{CM}\\,\\omega=Jd=(3)(0.6)=1.8",
+     "why": "$\\Delta L=R\\times\\Delta p$. You never need the force profile $F(t)$."
+    },
+    {
+     "do": "Solve for ω",
+     "math": "\\omega=1.8/0.24=7.5\\ \\text{rad/s}",
+     "why": "For comparison, the CM also moves off at $V=J/m=1.5$ m/s."
+    }
+   ],
+   "answer": {
+    "latex": "\\omega=\\frac{Jd}{I_{CM}}=7.5\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 7.5,
+    "unit": "rad/s"
+   },
+   "takeaway": "For a blow on a free body, $\\Delta V_{CM}=J/M$ and $\\Delta\\omega=Jd/I_{CM}$, with $d$ measured from the CM.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.8.6.impulse.t1"
+  },
+  {
+   "id": "ex.9.1.general-motion.1",
+   "skill": "9.1.general-motion",
+   "problem": "A rigid disk's center $P$ moves at $\\mathbf V_P=3\\hat{\\mathbf x}$ m/s. The disk rotates with $\\boldsymbol\\omega=8\\hat{\\mathbf z}$ rad/s about an axis through $P$. Point $Q$ of the disk sits at $\\mathbf r-\\mathbf r_P=0.5\\hat{\\mathbf x}$ m. Find $Q$'s speed in the lab frame.",
+   "steps": [
+    {
+     "do": "Take the center P as reference point",
+     "math": "\\mathbf V_P=3\\hat{\\mathbf x}\\ \\text{m/s}",
+     "why": "Chasles: any rigid motion is $P$'s translation plus a rotation about an axis through $P$."
+    },
+    {
+     "do": "Write Q's displacement from P",
+     "math": "\\mathbf r-\\mathbf r_P=0.5\\hat{\\mathbf x}\\ \\text{m}",
+     "why": "The rotation acts on the position measured from $P$, not from the lab origin."
+    },
+    {
+     "do": "Cross ω into the displacement, ω first",
+     "math": "\\boldsymbol\\omega\\times(\\mathbf r-\\mathbf r_P)=8\\hat{\\mathbf z}\\times0.5\\hat{\\mathbf x}=4\\hat{\\mathbf y}\\ \\text{m/s}",
+     "why": "$\\hat{\\mathbf z}\\times\\hat{\\mathbf x}=\\hat{\\mathbf y}$. Writing $\\mathbf r\\times\\boldsymbol\\omega$ would flip the sign."
+    },
+    {
+     "do": "Add P's translation velocity",
+     "math": "\\mathbf v=3\\hat{\\mathbf x}+4\\hat{\\mathbf y}\\ \\text{m/s}",
+     "why": "The lab velocity is $\\mathbf V_P$ plus the rotation about $P$."
+    },
+    {
+     "do": "Take the magnitude",
+     "math": "|\\mathbf v|=\\sqrt{3^2+4^2}=5\\ \\text{m/s}",
+     "why": "The two pieces are perpendicular. Check: the rotational part is $\\omega r'=8(0.5)=4$ m/s."
+    }
+   ],
+   "answer": {
+    "latex": "|\\mathbf v|=5\\ \\text{m/s}",
+    "numeric": true,
+    "value": 5,
+    "unit": "m/s"
+   },
+   "takeaway": "Velocity of any body point: $\\mathbf v=\\mathbf V_P+\\boldsymbol\\omega\\times(\\mathbf r-\\mathbf r_P)$, with $\\boldsymbol\\omega$ first.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.1.general-motion.t1"
+  },
+  {
+   "id": "ex.9.1.omega-vector.1",
+   "skill": "9.1.omega-vector",
+   "problem": "A rigid body's reference point $P$ moves at $\\mathbf V_P=2\\hat{\\mathbf x}$ m/s. The body rotates about an axis through $P$ with $\\boldsymbol\\omega=\\omega_2\\hat{\\mathbf y}+\\omega_3\\hat{\\mathbf z}$, where $\\omega_2=2$ rad/s and $\\omega_3=3$ rad/s. Point $Q$ sits at $\\mathbf r-\\mathbf r_P=x\\hat{\\mathbf x}$ with $x=0.5$ m. Find $Q$'s speed.",
+   "steps": [
+    {
+     "do": "Write ω and Q's position relative to P",
+     "math": "\\boldsymbol\\omega=(0,2,3)\\ \\text{rad/s},\\ \\mathbf r-\\mathbf r_P=(0.5,0,0)\\ \\text{m}",
+     "why": "The components $(\\omega_1,\\omega_2,\\omega_3)$ go into Eq. 9.6 in that order."
+    },
+    {
+     "do": "Apply Eq. 9.6 with ω first",
+     "math": "(\\omega_2z-\\omega_3y,\\ \\omega_3x-\\omega_1z,\\ \\omega_1y-\\omega_2x)=(0,1.5,-1)",
+     "why": "Order matters: $\\mathbf r\\times\\boldsymbol\\omega$ would reverse the velocity."
+    },
+    {
+     "do": "Add the reference point's velocity",
+     "math": "\\mathbf v=(2,\\,1.5,\\,-1)\\ \\text{m/s}",
+     "why": "$P$ is moving, so $\\boldsymbol\\omega\\times(\\mathbf r-\\mathbf r_P)$ alone gives only the velocity relative to $P$."
+    },
+    {
+     "do": "Take the magnitude",
+     "math": "|\\mathbf v|=\\sqrt{4+2.25+1}=\\sqrt{7.25}\\approx2.69\\ \\text{m/s}",
+     "why": "The speed is the length of the full velocity vector."
+    },
+    {
+     "do": "Check the rotational part equals ω r′",
+     "math": "\\omega r'=\\sqrt{13}\\,(0.5)\\approx1.80=\\sqrt{1.5^2+1^2}\\ \\checkmark",
+     "why": "$Q$'s displacement is perpendicular to $\\boldsymbol\\omega$, so $r'=0.5$ m."
+    }
+   ],
+   "answer": {
+    "latex": "|\\mathbf v|=\\sqrt{7.25}\\approx2.69\\ \\text{m/s}",
+    "numeric": true,
+    "value": 2.6926,
+    "unit": "m/s"
+   },
+   "takeaway": "Write $\\boldsymbol\\omega$ with the right-hand rule, compute $\\boldsymbol\\omega\\times(\\mathbf r-\\mathbf r_P)$ in components, then add $\\mathbf V_P$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.1.omega-vector.t1"
+  },
+  {
+   "id": "ex.9.1.instant-axis.1",
+   "skill": "9.1.instant-axis",
+   "problem": "A rigid body pivots about a fixed point at the origin. The body point $C$ at $(0,3,4)$ m is momentarily at rest. Point $Q$ at $(2,0,0)$ m moves with $\\mathbf v_Q=(0,8,-6)$ m/s. Find $\\boldsymbol\\omega$.",
+   "steps": [
+    {
+     "do": "Put the origin at the pivot",
+     "math": "\\mathbf v=\\boldsymbol\\omega\\times\\mathbf r",
+     "why": "The pivot is on the axis, so every point obeys Eq. 9.1 measured from it."
+    },
+    {
+     "do": "Draw the axis through the pivot and C",
+     "math": "\\hat{\\boldsymbol\\omega}=\\pm\\tfrac15(0,3,4)",
+     "why": "$\\mathbf v_C=0$ means $\\boldsymbol\\omega\\times\\mathbf r_C=0$, so $\\boldsymbol\\omega\\parallel\\mathbf r_C$."
+    },
+    {
+     "do": "Find Q's perpendicular distance to the axis",
+     "math": "\\mathbf r_Q\\cdot\\hat{\\boldsymbol\\omega}=0\\ \\Rightarrow\\ r'_Q=2\\ \\text{m}",
+     "why": "The speed depends on the distance from the axis, not from the origin."
+    },
+    {
+     "do": "Get the magnitude from Q's speed",
+     "math": "\\omega=v_Q/r'_Q=10/2=5\\ \\text{rad/s}",
+     "why": "The two points at rest fix only the line. A third point's speed gives $\\omega$."
+    },
+    {
+     "do": "Fix the sign with the right-hand rule",
+     "math": "(0,3,4)\\times(2,0,0)=(0,8,-6)=\\mathbf v_Q\\ \\checkmark",
+     "why": "The plus sign reproduces $\\mathbf v_Q$, so $\\boldsymbol\\omega$ points along $+\\mathbf r_C$."
+    }
+   ],
+   "answer": {
+    "latex": "\\boldsymbol\\omega=3\\hat{\\mathbf y}+4\\hat{\\mathbf z}\\ \\text{rad/s}\\ (\\omega=5\\ \\text{rad/s})",
+    "numeric": true,
+    "value": 5,
+    "unit": "rad/s"
+   },
+   "takeaway": "Two points at rest fix the line of $\\boldsymbol\\omega$. One moving point fixes its size and sign.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.1.instant-axis.t1"
+  },
+  {
+   "id": "ex.9.1.omega-add.1",
+   "skill": "9.1.omega-add",
+   "problem": "A sphere with a fixed center spins at $\\omega_3=3$ rad/s about a stick along $\\hat{\\mathbf z}$, relative to the stick. The stick is turned about $\\hat{\\mathbf y}$ at $\\omega_2=4$ rad/s. Find the sphere's lab-frame angular velocity and its magnitude at this instant.",
+   "steps": [
+    {
+     "do": "Name the frames: sphere, stick, lab",
+     "math": "S_1=\\text{sphere},\\ S_2=\\text{stick},\\ S_3=\\text{lab}",
+     "why": "Thm 9.3 chains rotations of nested frames that share an origin."
+    },
+    {
+     "do": "Write the spin relative to the stick",
+     "math": "\\boldsymbol\\omega_{1,2}=3\\hat{\\mathbf z}\\ \\text{rad/s}",
+     "why": "Right-hand rule along the stick. This vector is fixed in $S_2$."
+    },
+    {
+     "do": "Write the stick's rotation relative to lab",
+     "math": "\\boldsymbol\\omega_{2,3}=4\\hat{\\mathbf y}\\ \\text{rad/s}",
+     "why": "The stick turns about $\\hat{\\mathbf y}$ as seen in the lab."
+    },
+    {
+     "do": "Add the two as vectors",
+     "math": "\\boldsymbol\\omega_{1,3}=4\\hat{\\mathbf y}+3\\hat{\\mathbf z}\\ \\text{rad/s}",
+     "why": "Linear velocities add, so angular velocities add: $\\boldsymbol\\omega_{1,3}=\\boldsymbol\\omega_{1,2}+\\boldsymbol\\omega_{2,3}$."
+    },
+    {
+     "do": "Take the magnitude",
+     "math": "|\\boldsymbol\\omega|=\\sqrt{4^2+3^2}=5\\ \\text{rad/s}",
+     "why": "The pieces are perpendicular. Adding the scalars (7) would be wrong. Over time, $\\boldsymbol\\omega$ traces a cone about $y$."
+    }
+   ],
+   "answer": {
+    "latex": "\\boldsymbol\\omega=4\\hat{\\mathbf y}+3\\hat{\\mathbf z}\\ \\text{rad/s},\\ |\\boldsymbol\\omega|=5\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 5,
+    "unit": "rad/s"
+   },
+   "takeaway": "Spin relative to the frame plus the frame's rotation, added as vectors: $\\boldsymbol\\omega_{1,3}=\\boldsymbol\\omega_{1,2}+\\boldsymbol\\omega_{2,3}$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.1.omega-add.t1"
+  },
+  {
+   "id": "ex.9.1.rolling-3d.1",
+   "skill": "9.1.rolling-3d",
+   "problem": "A wheel of radius $r=0.5$ m sits on a horizontal axle. The axle is pivoted at a fixed point $R=2$ m from the wheel's center. The axle turns about the vertical at $\\Omega=3$ rad/s, and the wheel rolls without slipping. Find the spin $\\omega'$ relative to the axle frame.",
+   "steps": [
+    {
+     "do": "Find the points at rest",
+     "math": "\\mathbf v_{\\rm pivot}=\\mathbf v_{\\rm contact}=0",
+     "why": "Points at rest lie on the axis of $\\boldsymbol\\omega$, so no slip is a condition on the contact point."
+    },
+    {
+     "do": "Find the contact point's speed from precession",
+     "math": "\\Omega R=3(2)=6\\ \\text{m/s}",
+     "why": "The contact point is a horizontal distance $R$ from the vertical precession axis."
+    },
+    {
+     "do": "Find its speed from spin relative to axle",
+     "math": "\\omega' r",
+     "why": "The contact point is on the rim, a distance $r$ from the wheel's axle."
+    },
+    {
+     "do": "Make the two cancel (no slip)",
+     "math": "\\omega' r=\\Omega R\\ \\Rightarrow\\ \\omega'=\\tfrac{R}{r}\\Omega=\\tfrac{2}{0.5}(3)=12\\ \\text{rad/s}",
+     "why": "The total velocity of the contact point must vanish."
+    },
+    {
+     "do": "Check the total ω lies along pivot–contact",
+     "math": "\\boldsymbol\\omega=\\Omega\\hat{\\mathbf z}-\\omega'\\hat{\\mathbf x}\\propto(-R,0,r)",
+     "why": "Theorem 9.3 sum. It points from the contact point up through the pivot, as it should."
+    }
+   ],
+   "answer": {
+    "latex": "\\omega'=\\frac{R}{r}\\Omega=12\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 12,
+    "unit": "rad/s"
+   },
+   "takeaway": "No slip: the contact point's spin speed $\\omega' r$ cancels its precession speed $\\Omega R$, so $\\omega'=(R/r)\\Omega$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.1.rolling-3d.t1"
+  },
+  {
+   "id": "ex.M.lin.matrix-vector.1",
+   "skill": "M.lin.matrix-vector",
+   "problem": "A square of mass $m=2$ kg and side $a=0.5$ m, with one corner at the origin, has $\\mathbf I=ma^2\\begin{pmatrix}1/3&-1/4&0\\\\-1/4&1/3&0\\\\0&0&2/3\\end{pmatrix}$. It rotates with $\\boldsymbol\\omega=(3,1,2)$ rad/s. Is $\\mathbf I$ symmetric? Find $L_x$ of $\\mathbf L=\\mathbf I\\boldsymbol\\omega$.",
+   "steps": [
+    {
+     "do": "Compare mirror entries across the diagonal",
+     "math": "I_{xy}=I_{yx}=-\\tfrac14ma^2,\\quad I_{xz}=I_{zx}=0,\\quad I_{yz}=I_{zy}=0",
+     "why": "All pairs match, so $I_{ij}=I_{ji}$ and $\\mathbf I$ is symmetric, as every inertia tensor is."
+    },
+    {
+     "do": "Compute the prefactor $ma^2$",
+     "math": "ma^2=(2)(0.5)^2=0.5\\ \\text{kg m}^2",
+     "why": "Pull out the common factor so the matrix entries are pure numbers."
+    },
+    {
+     "do": "Dot row $x$ into $\\boldsymbol\\omega$",
+     "math": "\\tfrac13(3)-\\tfrac14(1)+0(2)=\\tfrac34",
+     "why": "$L_x$ is row $x$ times $\\omega_x,\\omega_y,\\omega_z$ in order. Keep the minus sign."
+    },
+    {
+     "do": "Multiply by the prefactor",
+     "math": "L_x=0.5\\times\\tfrac34=0.375\\ \\text{kg m}^2/\\text{s}",
+     "why": "The units are (units of $\\mathbf I$) times (units of $\\boldsymbol\\omega$)."
+    }
+   ],
+   "answer": {
+    "latex": "L_x=0.375\\ \\text{kg\\,m}^2/\\text{s}\\ (\\mathbf I\\text{ symmetric})",
+    "numeric": true,
+    "value": 0.375,
+    "unit": "kg*m^2/s"
+   },
+   "takeaway": "Each component of $\\mathbf I\\mathbf u$ is one row of $\\mathbf I$ dotted into $\\mathbf u$. The matrix is symmetric when $I_{ij}=I_{ji}$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.lin.matrix-vector.t1"
+  },
+  {
+   "id": "ex.9.2.L-tensor.1",
+   "skill": "9.2.L-tensor",
+   "problem": "A uniform solid cube (mass $M$, side $L$) has its origin at a corner and axes along the edges, so $\\mathbf I=ML^2\\begin{pmatrix}2/3&-1/4&-1/4\\\\-1/4&2/3&-1/4\\\\-1/4&-1/4&2/3\\end{pmatrix}$. It spins with $\\boldsymbol\\omega=\\omega\\hat{\\mathbf z}$ about the $z$ edge. Find $\\mathbf L$ and its angle from $\\hat{\\mathbf z}$.",
+   "steps": [
+    {
+     "do": "Put the origin on the axis, at the corner",
+     "math": "\\boldsymbol\\omega=(0,0,\\omega)",
+     "why": "$\\mathbf L=\\mathbf I\\boldsymbol\\omega$ needs the origin on the rotation axis and orthonormal axes."
+    },
+    {
+     "do": "Multiply the tensor by $\\boldsymbol\\omega$",
+     "math": "\\mathbf L=ML^2\\omega\\,\\left(-\\tfrac14,\\,-\\tfrac14,\\,\\tfrac23\\right)",
+     "why": "Only $\\omega_3$ is nonzero, so $\\mathbf L$ is the third column of $\\mathbf I$ times $\\omega$."
+    },
+    {
+     "do": "Notice the nonzero $L_x$ and $L_y$",
+     "math": "L_x=L_y=-\\tfrac14ML^2\\omega\\neq0",
+     "why": "The products of inertia are nonzero because the mass is off-center, so $\\mathbf L\\not\\parallel\\boldsymbol\\omega$."
+    },
+    {
+     "do": "Find the angle from $\\cos\\theta=L_z/|\\mathbf L|$",
+     "math": "\\cos\\theta=\\frac{2/3}{\\sqrt{1/16+1/16+4/9}}\\approx0.883",
+     "why": "$\\boldsymbol\\omega\\cdot\\mathbf L/(\\omega|\\mathbf L|)$ reduces to $L_z/|\\mathbf L|$ when $\\boldsymbol\\omega$ is along $z$."
+    },
+    {
+     "do": "Take the arccosine",
+     "math": "\\theta\\approx27.9^\\circ",
+     "why": "This is the tilt of $\\mathbf L$ away from the spin axis."
+    }
+   ],
+   "answer": {
+    "latex": "\\mathbf L=ML^2\\omega(-\\tfrac14,-\\tfrac14,\\tfrac23),\\ \\theta\\approx27.9^\\circ",
+    "numeric": true,
+    "value": 27.94,
+    "unit": "deg"
+   },
+   "takeaway": "$\\mathbf L=\\mathbf I\\boldsymbol\\omega$ picks up the off-diagonal entries, so $\\mathbf L$ tilts away from $\\boldsymbol\\omega$ unless the products of inertia vanish.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.2.L-tensor.t1"
+  },
+  {
+   "id": "ex.9.2.general-L.1",
+   "skill": "9.2.general-L",
+   "problem": "A uniform disk ($M=2$ kg, radius $b=0.1$ m) lies in the $x$-$y$ plane. Its CM is at $\\mathbf R=(3,0,0)$ m and moves with $\\mathbf V=(0,4,0)$ m/s. It spins with $\\boldsymbol\\omega=(0,0,10)$ rad/s about its symmetry axis. Find $L_z$ about the origin.",
+   "steps": [
+    {
+     "do": "Split the motion into the CM part plus spin",
+     "math": "\\mathbf L=M\\mathbf R\\times\\mathbf V+\\mathbf I_{\\rm CM}\\boldsymbol\\omega",
+     "why": "The cross terms vanish because $\\int\\mathbf r'\\,dm=0$ about the CM."
+    },
+    {
+     "do": "Compute the orbital part $M\\mathbf R\\times\\mathbf V$",
+     "math": "2\\,(3,0,0)\\times(0,4,0)=(0,0,24)\\ \\text{kg m}^2/\\text{s}",
+     "why": "Treat the disk as a point mass $M$ at the CM. Keep the order $\\mathbf R\\times\\mathbf V$."
+    },
+    {
+     "do": "Find $\\mathbf I_{\\rm CM}$ about the disk's axis",
+     "math": "(I_{\\rm CM})_{zz}=\\tfrac12Mb^2=0.01\\ \\text{kg m}^2",
+     "why": "The CM axes are parallel to the fixed axes. A flat disk has $z'=0$, so $I_{xz}=I_{yz}=0$."
+    },
+    {
+     "do": "Compute the spin part",
+     "math": "\\mathbf I_{\\rm CM}\\boldsymbol\\omega=(0,0,0.01\\times10)=(0,0,0.1)",
+     "why": "The spin angular momentum about the CM uses the body's $\\boldsymbol\\omega$."
+    },
+    {
+     "do": "Add the components",
+     "math": "L_z=24+0.1=24.1\\ \\text{kg m}^2/\\text{s}",
+     "why": "The total is the vector sum of the orbital and spin parts."
+    }
+   ],
+   "answer": {
+    "latex": "L_z=24.1\\ \\text{kg\\,m}^2/\\text{s}",
+    "numeric": true,
+    "value": 24.1,
+    "unit": "kg*m^2/s"
+   },
+   "takeaway": "$\\mathbf L$ about any origin is a point mass $M$ at the CM ($M\\mathbf R\\times\\mathbf V$) plus the spin $\\mathbf I_{\\rm CM}\\boldsymbol\\omega$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.2.general-L.t1"
+  },
+  {
+   "id": "ex.M.vec.dot.1",
+   "skill": "M.vec.dot",
+   "problem": "A displacement is $\\mathbf a=(3,4,0)$ m. Find its component along the direction of $\\mathbf b=(1,2,2)$ m.",
+   "steps": [
+    {
+     "do": "Multiply matching components and add",
+     "math": "\\mathbf a\\cdot\\mathbf b=3(1)+4(2)+0(2)=11\\ \\text{m}^2",
+     "why": "This is the component definition of the dot product, Eq. (B.1)."
+    },
+    {
+     "do": "Find the length of $\\mathbf b$",
+     "math": "b=\\sqrt{1^2+2^2+2^2}=3\\ \\text{m}",
+     "why": "$\\mathbf b$ is not a unit vector, so you must divide by its length."
+    },
+    {
+     "do": "Divide the dot product by $b$",
+     "math": "a_\\parallel=\\frac{\\mathbf a\\cdot\\mathbf b}{b}=\\frac{11}{3}\\approx3.67\\ \\text{m}",
+     "why": "$\\mathbf a\\cdot\\hat{\\mathbf n}$ with $\\hat{\\mathbf n}=\\mathbf b/b$ gives $a\\cos\\theta$, the signed length along $\\mathbf b$."
+    }
+   ],
+   "answer": {
+    "latex": "a_\\parallel=\\tfrac{11}{3}\\ \\text{m}\\approx3.67\\ \\text{m}",
+    "numeric": true,
+    "value": 3.6667,
+    "unit": "m"
+   },
+   "takeaway": "The component of $\\mathbf a$ along $\\mathbf b$ is $\\mathbf a\\cdot\\mathbf b/b$: always divide by the length of $\\mathbf b$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.vec.dot.t1"
+  },
+  {
+   "id": "ex.9.2.ke-tensor.1",
+   "skill": "9.2.ke-tensor",
+   "problem": "A point mass $m=2$ kg sits at $\\mathbf r=(1,1,0)$ m on a massless frame. The frame rotates about the origin with $\\boldsymbol\\omega=(2,1,0)$ rad/s. Find its kinetic energy using $T=\\tfrac12\\boldsymbol\\omega\\cdot\\mathbf L$.",
+   "steps": [
+    {
+     "do": "Build the inertia tensor entries",
+     "math": "I_{11}=m(y^2+z^2)=2,\\ I_{22}=2,\\ I_{33}=4,\\ I_{12}=-mxy=-2",
+     "why": "The diagonal entries are squared distances from each axis. The off-diagonal entries carry minus signs."
+    },
+    {
+     "do": "Multiply $\\mathbf I$ by $\\boldsymbol\\omega$ to get $\\mathbf L$",
+     "math": "\\mathbf L=(2\\cdot2-2\\cdot1,\\,-2\\cdot2+2\\cdot1,\\,0)=(2,-2,0)",
+     "why": "Each row dotted into $\\boldsymbol\\omega$ gives one component. $\\mathbf L$ is not parallel to $\\boldsymbol\\omega$."
+    },
+    {
+     "do": "Dot $\\boldsymbol\\omega$ into $\\mathbf L$",
+     "math": "\\boldsymbol\\omega\\cdot\\mathbf L=2(2)+1(-2)=2",
+     "why": "Only the part of $\\mathbf L$ along $\\boldsymbol\\omega$ contributes to $T$."
+    },
+    {
+     "do": "Halve the result",
+     "math": "T=\\tfrac12(2)=1\\ \\text{J}",
+     "why": "$T=\\tfrac12\\boldsymbol\\omega\\cdot\\mathbf I\\boldsymbol\\omega$, Eq. (9.15)."
+    },
+    {
+     "do": "Check with $\\mathbf v=\\boldsymbol\\omega\\times\\mathbf r$",
+     "math": "\\mathbf v=(0,0,1),\\ \\tfrac12mv^2=1\\ \\text{J}",
+     "why": "A direct calculation of the speed confirms the tensor result."
+    }
+   ],
+   "answer": {
+    "latex": "T=1\\ \\text{J}",
+    "numeric": true,
+    "value": 1,
+    "unit": "J"
+   },
+   "takeaway": "Compute $\\mathbf L=\\mathbf I\\boldsymbol\\omega$ first, then take $T=\\tfrac12\\boldsymbol\\omega\\cdot\\mathbf L$. Only the part of $\\mathbf L$ along $\\boldsymbol\\omega$ counts.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.2.ke-tensor.t1"
+  },
+  {
+   "id": "ex.M.calc.integral.1",
+   "skill": "M.calc.integral",
+   "problem": "A particle has velocity $v(t)=v_0\\cos(\\omega t)$ with $v_0=2$ m/s and $\\omega=3$ rad/s. How far does it move between $t=0$ and $T=0.5$ s?",
+   "steps": [
+    {
+     "do": "Write the distance as an integral of velocity",
+     "math": "x=\\int_0^T v_0\\cos(\\omega t)\\,dt",
+     "why": "Position is the integral of velocity. Since $\\omega T=1.5<\\pi/2$, $v>0$ the whole time, so distance equals displacement."
+    },
+    {
+     "do": "Integrate the cosine and keep the $1/\\omega$",
+     "math": "x=\\frac{v_0}{\\omega}\\sin(\\omega t)\\Big|_0^T",
+     "why": "$\\int\\cos(at)\\,dt=\\sin(at)/a$. The $1/a$ comes from the chain rule."
+    },
+    {
+     "do": "Evaluate $F(T)-F(0)$",
+     "math": "x=\\frac{v_0}{\\omega}\\sin(\\omega T)",
+     "why": "$\\sin 0=0$, so the lower limit adds nothing."
+    },
+    {
+     "do": "Plug in numbers, with the angle in radians",
+     "math": "x=\\tfrac{2}{3}\\sin(1.5)\\approx0.665\\ \\text{m}",
+     "why": "These trig formulas only work in radians. Units check: (m/s)/(1/s) = m."
+    }
+   ],
+   "answer": {
+    "latex": "x=\\frac{v_0}{\\omega}\\sin(\\omega T)\\approx0.665\\ \\text{m}",
+    "numeric": true,
+    "value": 0.665,
+    "unit": "m"
+   },
+   "takeaway": "$\\int\\cos(\\omega t)\\,dt=\\sin(\\omega t)/\\omega$: always keep the $1/\\omega$ from the chain rule, and work in radians.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.calc.integral.t1"
+  },
+  {
+   "id": "ex.M.calc.mass-integral.1",
+   "skill": "M.calc.mass-integral",
+   "problem": "A uniform disk has mass $M=2$ kg and radius $R=0.3$ m. Find its moment of inertia about its symmetry axis by integrating over thin rings.",
+   "steps": [
+    {
+     "do": "Cut the disk into thin rings of radius $r$",
+     "math": "dA=2\\pi r\\,dr",
+     "why": "Every point on a ring is the same distance $r$ from the axis. The ring is $2\\pi r$ long and $dr$ wide."
+    },
+    {
+     "do": "Write the ring mass using $\\sigma=M/\\pi R^2$",
+     "math": "dm=\\frac{M}{\\pi R^2}\\,2\\pi r\\,dr=\\frac{2M}{R^2}r\\,dr",
+     "why": "For a uniform sheet, $dm=\\sigma\\,dA$."
+    },
+    {
+     "do": "Check that the rings add up to $M$",
+     "math": "\\int_0^R\\frac{2M}{R^2}r\\,dr=M",
+     "why": "The limits $0$ to $R$ cover the disk exactly once."
+    },
+    {
+     "do": "Integrate $r^2\\,dm$",
+     "math": "I=\\int_0^R r^2\\frac{2M}{R^2}r\\,dr=\\frac{2M}{R^2}\\frac{R^4}{4}=\\tfrac12MR^2",
+     "why": "$I=\\int r_\\perp^2\\,dm$, and $r$ is the perpendicular distance from the axis."
+    },
+    {
+     "do": "Plug in numbers",
+     "math": "I=\\tfrac12(2)(0.3)^2=0.09\\ \\text{kg m}^2",
+     "why": "Units check: kg times m² gives kg m²."
+    }
+   ],
+   "answer": {
+    "latex": "I=\\tfrac12MR^2=0.09\\ \\text{kg m}^2",
+    "numeric": true,
+    "value": 0.09,
+    "unit": "kg*m^2"
+   },
+   "takeaway": "Pick slices on which the distance to the axis is constant (rings, $dm=\\sigma\\,2\\pi r\\,dr$), and check that $\\int dm=M$ before integrating.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.calc.mass-integral.t1"
+  },
+  {
+   "id": "ex.9.2.tensor-compute.1",
+   "skill": "9.2.tensor-compute",
+   "problem": "A point mass $m=0.5$ kg sits at $(x,y,z)=(0.3,0.4,0.2)$ m. It rotates about the $z$ axis, which passes through the origin, with $\\omega_3=10$ rad/s. Find $L_1$, the $x$-component of its angular momentum about the origin.",
+   "steps": [
+    {
+     "do": "Write $\\mathbf L=\\mathbf I\\boldsymbol\\omega$ with only $\\omega_3$ nonzero",
+     "math": "L_1=I_{xz}\\,\\omega_3",
+     "why": "The first row of $\\mathbf I$ times $(0,0,\\omega_3)$ picks out only $I_{xz}$."
+    },
+    {
+     "do": "Compute the product of inertia, including its minus sign",
+     "math": "I_{xz}=-m\\,zx=-(0.5)(0.2)(0.3)=-0.03\\ \\text{kg m}^2",
+     "why": "Off-diagonal entries are $-\\sum m_ix_iz_i$. The minus sign comes from expanding the double cross product."
+    },
+    {
+     "do": "Multiply by $\\omega_3$",
+     "math": "L_1=-0.03\\times10=-0.3\\ \\text{kg m}^2/\\text{s}",
+     "why": "This is nonzero even though $\\boldsymbol\\omega$ points along $z$."
+    },
+    {
+     "do": "Check directly with $\\mathbf r\\times m\\mathbf v$",
+     "math": "\\mathbf v=\\boldsymbol\\omega\\times\\mathbf r=(-4,3,0),\\ m(yv_z-zv_y)=0.5(0-0.6)=-0.3",
+     "why": "The direct cross product confirms the tensor result and its sign."
+    }
+   ],
+   "answer": {
+    "latex": "L_1=-m\\,zx\\,\\omega_3=-0.3\\ \\text{kg m}^2/\\text{s}",
+    "numeric": true,
+    "value": -0.3,
+    "unit": "kg*m^2/s"
+   },
+   "takeaway": "Products of inertia carry a minus sign ($I_{xz}=-\\int zx\\,dm$), and they make $\\mathbf L$ tilt away from $\\boldsymbol\\omega$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.2.tensor-compute.t1"
+  },
+  {
+   "id": "ex.9.2.parallel-axis-tensor.1",
+   "skill": "9.2.parallel-axis-tensor",
+   "problem": "A uniform solid cube has mass $M$ and side $L$, with $\\mathbf I_{\\rm CM}=\\tfrac{ML^2}{6}\\mathbf 1$. Find its inertia tensor about one corner, using axes along the edges.",
+   "steps": [
+    {
+     "do": "Start from the CM tensor",
+     "math": "\\mathbf I_{\\rm CM}=\\tfrac{ML^2}{6}\\mathbf 1",
+     "why": "By symmetry, all CM axes are equivalent and there are no products of inertia."
+    },
+    {
+     "do": "Locate the CM from the corner",
+     "math": "\\mathbf R=(X,Y,Z)=(L/2,\\,L/2,\\,L/2)",
+     "why": "$\\mathbf I_R$ is built from the CM position measured from the new origin."
+    },
+    {
+     "do": "Build the diagonal entries of $\\mathbf I_R$",
+     "math": "M(Y^2+Z^2)=\\tfrac12ML^2",
+     "why": "Use the squared perpendicular distance from each axis, not $R^2=\\tfrac34L^2$."
+    },
+    {
+     "do": "Build the off-diagonal entries of $\\mathbf I_R$",
+     "math": "-MXY=-\\tfrac14ML^2",
+     "why": "$\\mathbf I_R$ is the point-mass tensor, so the minus sign appears just as in $-\\int xy\\,dm$."
+    },
+    {
+     "do": "Add the two matrices entry by entry",
+     "math": "I_{zz}=\\tfrac16ML^2+\\tfrac12ML^2=\\tfrac23ML^2,\\quad I_{xy}=0-\\tfrac14ML^2",
+     "why": "$\\mathbf I=\\mathbf I_R+\\mathbf I_{\\rm CM}$. The shift creates off-diagonal entries even though $\\mathbf I_{\\rm CM}$ is diagonal."
+    }
+   ],
+   "answer": {
+    "latex": "\\mathbf I=ML^2\\begin{pmatrix}2/3&-1/4&-1/4\\\\-1/4&2/3&-1/4\\\\-1/4&-1/4&2/3\\end{pmatrix}",
+    "numeric": false,
+    "value": 0,
+    "unit": ""
+   },
+   "takeaway": "Shifting from the CM adds a whole point-mass tensor $\\mathbf I_R$: $+M(\\text{perp. distance})^2$ on the diagonal and $-MXY$-type terms off the diagonal.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps (2026-09-23)",
+   "turn": "q.9.2.parallel-axis-tensor.t1"
+  },
+  {
+   "id": "ex.M.lin.eigen.1",
+   "skill": "M.lin.eigen",
+   "problem": "Find the eigenvalues and normalized eigenvectors of the symmetric matrix $A=\\begin{pmatrix}5&2\\\\2&2\\end{pmatrix}$.",
+   "steps": [
+    {
+     "do": "Subtract $\\lambda$ from the diagonal entries only",
+     "math": "A-\\lambda\\mathbf 1=\\begin{pmatrix}5-\\lambda&2\\\\2&2-\\lambda\\end{pmatrix}",
+     "why": "$A\\mathbf u=\\lambda\\mathbf u$ is the same as $(A-\\lambda\\mathbf 1)\\mathbf u=0$."
+    },
+    {
+     "do": "Set the determinant to zero",
+     "math": "(5-\\lambda)(2-\\lambda)-4=\\lambda^2-7\\lambda+6=0",
+     "why": "A nonzero $\\mathbf u$ exists only if $\\det(A-\\lambda\\mathbf 1)=0$."
+    },
+    {
+     "do": "Solve the quadratic for $\\lambda$",
+     "math": "\\lambda_1=6,\\quad \\lambda_2=1",
+     "why": "The quadratic factors as $(\\lambda-6)(\\lambda-1)=0$. For a symmetric matrix the roots are real."
+    },
+    {
+     "do": "Put $\\lambda=6$ into the first row",
+     "math": "-u_x+2u_y=0\\Rightarrow\\mathbf u_1=\\tfrac1{\\sqrt5}(2,1)",
+     "why": "The second row gives the same condition, and $\\det=0$ guarantees this redundancy. Normalize at the end."
+    },
+    {
+     "do": "Put $\\lambda=1$ into the first row",
+     "math": "4u_x+2u_y=0\\Rightarrow\\mathbf u_2=\\tfrac1{\\sqrt5}(1,-2)",
+     "why": "Each eigenvector is fixed only up to a constant, so choose unit length."
+    },
+    {
+     "do": "Check orthogonality, the trace and the determinant",
+     "math": "\\mathbf u_1\\cdot\\mathbf u_2=0,\\ \\ 6+1=7,\\ \\ 6\\cdot1=6",
+     "why": "Symmetric matrices have orthogonal eigenvectors. The eigenvalues sum to the trace and multiply to the determinant."
+    }
+   ],
+   "answer": {
+    "latex": "\\lambda=6:\\ \\tfrac1{\\sqrt5}(2,1);\\quad \\lambda=1:\\ \\tfrac1{\\sqrt5}(1,-2)",
+    "numeric": false,
+    "value": 0,
+    "unit": ""
+   },
+   "takeaway": "Solve $\\det(A-\\lambda\\mathbf 1)=0$, put each root back into one row to get the ratio of components, then normalize and check that the eigenvectors are orthogonal.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps (2026-09-23)",
+   "turn": "q.M.lin.eigen.t1"
+  },
+  {
+   "id": "ex.9.3.definition.1",
+   "skill": "9.3.definition",
+   "problem": "About its pivot, a body has inertia tensor (in kg·m²) $\\mathbf I=\\begin{pmatrix}5&2&0\\\\2&5&0\\\\0&0&3\\end{pmatrix}$. Is $\\hat{\\boldsymbol\\omega}=(1,1,0)/\\sqrt2$ a principal axis? If the body spins at $\\omega=2$ rad/s about this axis, find $|\\mathbf L|$.",
+   "steps": [
+    {
+     "do": "Apply the tensor to the candidate axis",
+     "math": "\\mathbf I\\,(1,1,0)=(5+2,\\;2+5,\\;0)=(7,7,0)",
+     "why": "A principal axis is one where $\\mathbf I\\hat{\\boldsymbol\\omega}$ comes out parallel to $\\hat{\\boldsymbol\\omega}$."
+    },
+    {
+     "do": "Compare the result with the axis",
+     "math": "(7,7,0)=7\\,(1,1,0)\\;\\Rightarrow\\;\\mathbf I\\hat{\\boldsymbol\\omega}=7\\,\\hat{\\boldsymbol\\omega}",
+     "why": "It is an eigenvector, so the axis is principal. The eigenvalue is the principal moment."
+    },
+    {
+     "do": "Read off the principal moment",
+     "math": "I=I_{xx}+I_{xy}=5+2=7\\ \\text{kg m}^2",
+     "why": "The eigenvalue $\\lambda$ in $\\mathbf I\\boldsymbol\\omega=\\lambda\\boldsymbol\\omega$ is the moment about this axis."
+    },
+    {
+     "do": "Multiply by ω to get L",
+     "math": "\\mathbf L=I\\boldsymbol\\omega=7\\cdot2\\,\\hat{\\boldsymbol\\omega}=14\\,\\hat{\\boldsymbol\\omega}",
+     "why": "Along a principal axis, $\\mathbf L\\parallel\\boldsymbol\\omega$, so one scalar moment is enough."
+    }
+   ],
+   "answer": {
+    "latex": "|\\mathbf L|=14\\ \\text{kg m}^2/\\text{s},\\ \\mathbf L\\parallel\\boldsymbol\\omega",
+    "numeric": true,
+    "value": 14,
+    "unit": "kg m^2/s"
+   },
+   "takeaway": "To test an axis, apply $\\mathbf I$ to it. If you get a multiple of the axis, it is principal, the multiple is $I$, and $\\mathbf L=I\\boldsymbol\\omega$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.3.definition.t1"
+  },
+  {
+   "id": "ex.M.lin.change-basis.1",
+   "skill": "M.lin.change-basis",
+   "problem": "A vector $\\boldsymbol\\omega=2\\,\\hat{\\mathbf x}$ rad/s lies in the $x$-$y$ plane. New axes are rotated counterclockwise by $\\theta=30^\\circ$: $\\hat{\\mathbf e}_1$ is at $30^\\circ$ from $\\hat{\\mathbf x}$ and $\\hat{\\mathbf e}_2$ is at $120^\\circ$. Find $\\omega_1$ and $\\omega_2$, the components of $\\boldsymbol\\omega$ along $\\hat{\\mathbf e}_1$ and $\\hat{\\mathbf e}_2$.",
+   "steps": [
+    {
+     "do": "Write the new unit vectors in x, y",
+     "math": "\\hat{\\mathbf e}_1=(\\cos30^\\circ,\\sin30^\\circ),\\ \\hat{\\mathbf e}_2=(-\\sin30^\\circ,\\cos30^\\circ)",
+     "why": "You need each new axis in the old basis before you can project onto it."
+    },
+    {
+     "do": "Project ω onto the first new axis",
+     "math": "\\omega_1=\\boldsymbol\\omega\\cdot\\hat{\\mathbf e}_1=2\\cos30^\\circ=\\sqrt3",
+     "why": "For orthonormal axes, a component is just a dot product: $|\\mathbf v|\\cos(\\text{angle})$."
+    },
+    {
+     "do": "Project ω onto the second new axis",
+     "math": "\\omega_2=\\boldsymbol\\omega\\cdot\\hat{\\mathbf e}_2=-2\\sin30^\\circ=-1",
+     "why": "$\\hat{\\mathbf e}_2$ is $120^\\circ$ from $\\hat{\\mathbf x}$, and $\\cos120^\\circ$ is negative, so the minus sign is real."
+    },
+    {
+     "do": "Check that the length is unchanged",
+     "math": "\\omega_1^2+\\omega_2^2=3+1=4=|\\boldsymbol\\omega|^2",
+     "why": "Rotating the axes changes the components, not the vector."
+    }
+   ],
+   "answer": {
+    "latex": "\\boldsymbol\\omega=\\sqrt3\\,\\hat{\\mathbf e}_1-1\\,\\hat{\\mathbf e}_2\\ \\text{rad/s}",
+    "numeric": false,
+    "value": 0,
+    "unit": "rad/s"
+   },
+   "takeaway": "The component along a tilted unit vector is $\\mathbf v\\cdot\\hat{\\mathbf e}_k$. Draw the angle to get the sign of the $\\sin\\theta$ term right.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps (2026-09-23)",
+   "turn": "q.M.lin.change-basis.t1"
+  },
+  {
+   "id": "ex.9.3.L-components.1",
+   "skill": "9.3.L-components",
+   "problem": "A uniform disk ($M=2$ kg, $R=0.5$ m) spins at $\\omega_s=10$ rad/s about its horizontal axle $\\hat{\\boldsymbol\\omega}_3$. The axle turns at $\\Omega=2$ rad/s about the vertical $\\hat{\\mathbf z}$, which lies along a diameter of the disk. Find $|\\mathbf L|$ about the CM.",
+   "steps": [
+    {
+     "do": "Pick the CM origin and principal axes",
+     "math": "\\hat{\\boldsymbol\\omega}_3\\ (\\text{axle}),\\quad \\hat{\\mathbf z}\\ \\text{and other diameters}",
+     "why": "A disk has rotational symmetry about its axle, so every diameter is also principal."
+    },
+    {
+     "do": "Find the principal moments",
+     "math": "I_3=\\tfrac12MR^2=0.25,\\quad I_\\perp=\\tfrac14MR^2=0.125\\ \\text{kg m}^2",
+     "why": "Each component of $\\boldsymbol\\omega$ gets multiplied by its own moment."
+    },
+    {
+     "do": "Write the TOTAL angular velocity",
+     "math": "\\boldsymbol\\omega=10\\,\\hat{\\boldsymbol\\omega}_3+2\\,\\hat{\\mathbf z}",
+     "why": "The disk also turns with the axle, so $\\Omega$ is part of $\\boldsymbol\\omega$."
+    },
+    {
+     "do": "Multiply component by component",
+     "math": "\\mathbf L=I_3\\omega_s\\hat{\\boldsymbol\\omega}_3+I_\\perp\\Omega\\hat{\\mathbf z}=2.5\\,\\hat{\\boldsymbol\\omega}_3+0.25\\,\\hat{\\mathbf z}",
+     "why": "The inertia tensor is diagonal in the principal basis: $L_i=I_i\\omega_i$."
+    },
+    {
+     "do": "Take the magnitude",
+     "math": "|\\mathbf L|=\\sqrt{2.5^2+0.25^2}\\approx2.51\\ \\text{kg m}^2/\\text{s}",
+     "why": "The two principal axes are perpendicular, so the Pythagorean theorem applies."
+    }
+   ],
+   "answer": {
+    "latex": "|\\mathbf L|\\approx2.51\\ \\text{kg m}^2/\\text{s}",
+    "numeric": true,
+    "value": 2.512,
+    "unit": "kg m^2/s"
+   },
+   "takeaway": "Split the total $\\boldsymbol\\omega$ along the principal axes and multiply each piece by its own $I_i$. Never use one scalar $I$ for the whole vector.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.3.L-components.t1"
+  },
+  {
+   "id": "ex.9.3.eigen-method.1",
+   "skill": "9.3.eigen-method",
+   "problem": "A flat plate has inertia tensor about its pivot, in units of $ma^2$, $\\mathbf I=\\begin{pmatrix}5&2&0\\\\2&2&0\\\\0&0&7\\end{pmatrix}$. Find the principal moments and principal axes.",
+   "steps": [
+    {
+     "do": "Spot any axis that is already principal",
+     "math": "I_{xz}=I_{yz}=0\\;\\Rightarrow\\;\\hat{\\mathbf z}\\ \\text{principal},\\ I_3=7ma^2",
+     "why": "With zeros in its row and column, only the $2\\times2$ block is left to diagonalize."
+    },
+    {
+     "do": "Set the block determinant to zero",
+     "math": "(5-\\lambda)(2-\\lambda)-2^2=0\\;\\Rightarrow\\;\\lambda^2-7\\lambda+6=0",
+     "why": "$(\\mathbf I-\\lambda\\mathbf 1)\\mathbf v=0$ has a nonzero solution only if the determinant vanishes."
+    },
+    {
+     "do": "Solve for the roots",
+     "math": "\\lambda=6,\\ 1",
+     "why": "The roots are the in-plane principal moments, in units of $ma^2$."
+    },
+    {
+     "do": "Find the eigenvector for λ = 6",
+     "math": "-v_x+2v_y=0\\;\\Rightarrow\\;\\hat{\\boldsymbol\\omega}_1=(2,1,0)/\\sqrt5",
+     "why": "Substitute the root back into $(\\mathbf I-\\lambda\\mathbf 1)\\mathbf v=0$, then normalize."
+    },
+    {
+     "do": "Find the eigenvector for λ = 1",
+     "math": "4v_x+2v_y=0\\;\\Rightarrow\\;\\hat{\\boldsymbol\\omega}_2=(1,-2,0)/\\sqrt5",
+     "why": "This must be orthogonal to $\\hat{\\boldsymbol\\omega}_1$. Check: $2-2=0$."
+    },
+    {
+     "do": "Check against the trace",
+     "math": "6+1+7=14=5+2+7",
+     "why": "The sum of the principal moments must equal $\\mathrm{tr}\\,\\mathbf I$."
+    }
+   ],
+   "answer": {
+    "latex": "6ma^2\\ \\text{along}\\ (2,1,0)/\\sqrt5,\\ \\ ma^2\\ \\text{along}\\ (1,-2,0)/\\sqrt5,\\ \\ 7ma^2\\ \\text{along}\\ \\hat{\\mathbf z}",
+    "numeric": false,
+    "value": 0,
+    "unit": ""
+   },
+   "takeaway": "Solve $\\det(\\mathbf I-\\lambda\\mathbf 1)=0$ for the moments, then substitute each root back to get its normalized axis.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps (2026-09-23)",
+   "turn": "q.9.3.eigen-method.t1"
+  },
+  {
+   "id": "ex.9.3.symmetry.1",
+   "skill": "9.3.symmetry",
+   "problem": "A uniform square plate ($M=2$ kg, side $a=0.5$ m) is pivoted at a corner. It rotates at $\\omega=4$ rad/s about one of its sides. About the corner, the principal moments are $Ma^2/12$ (diagonal), $7Ma^2/12$ (in-plane, perpendicular to the diagonal) and $2Ma^2/3$ ($z$). Find the kinetic energy.",
+   "steps": [
+    {
+     "do": "Put the origin at the corner pivot",
+     "math": "\\int xy\\,dm>0\\;\\Rightarrow\\;x,y\\ \\text{(sides) not principal}",
+     "why": "About the corner, the sides are not symmetry axes, so the product of inertia does not cancel."
+    },
+    {
+     "do": "Name the principal axes by symmetry",
+     "math": "\\hat{\\boldsymbol\\omega}_d=\\tfrac{\\hat{\\mathbf x}+\\hat{\\mathbf y}}{\\sqrt2},\\ \\hat{\\boldsymbol\\omega}_p=\\tfrac{\\hat{\\mathbf x}-\\hat{\\mathbf y}}{\\sqrt2},\\ \\hat{\\mathbf z}",
+     "why": "The diagonal is a mirror line through the corner, so $\\int$(product)$\\,dm$ cancels in pairs."
+    },
+    {
+     "do": "Project ω onto the principal axes",
+     "math": "\\omega_d=\\omega_p=\\omega/\\sqrt2,\\quad \\omega_z=0",
+     "why": "$\\hat{\\mathbf x}$ is $45^\\circ$ from both in-plane principal axes."
+    },
+    {
+     "do": "Sum the principal-axis energies",
+     "math": "T=\\tfrac12\\left(\\tfrac{Ma^2}{12}+\\tfrac{7Ma^2}{12}\\right)\\tfrac{\\omega^2}{2}=\\tfrac{Ma^2\\omega^2}{6}",
+     "why": "In the principal basis, $T=\\tfrac12\\sum I_k\\omega_k^2$ with no cross terms."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "T=\\tfrac{2(0.5)^2(4)^2}{6}=\\tfrac43\\approx1.33\\ \\text{J}",
+     "why": "Check: this equals $\\tfrac12(Ma^2/3)\\omega^2$, using the moment about a side."
+    }
+   ],
+   "answer": {
+    "latex": "T=\\tfrac{Ma^2\\omega^2}{6}\\approx1.33\\ \\text{J}",
+    "numeric": true,
+    "value": 1.3333,
+    "unit": "J"
+   },
+   "takeaway": "Use mirror lines through the chosen origin to find the principal axes. Then split $\\boldsymbol\\omega$ along them and give each piece its own moment.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.3.symmetry.t1"
+  },
+  {
+   "id": "ex.9.5.stability.1",
+   "skill": "9.5.stability",
+   "problem": "A free rectangular block has principal moments $I_1=0.005$, $I_2=0.004$, $I_3=0.002$ kg m$^2$. It spins at $\\omega_2=10$ rad/s about the intermediate axis 2 with a tiny wobble. Find the exponential growth rate of the small components $\\omega_1$ and $\\omega_3$.",
+   "steps": [
+    {
+     "do": "Set all torques to zero",
+     "math": "\\tau_1=\\tau_2=\\tau_3=0",
+     "why": "The body is free, with the origin at the CM. Each $\\omega_i$ is measured along a principal axis."
+    },
+    {
+     "do": "Treat $\\omega_2$ as large, $\\omega_1,\\omega_3$ as small",
+     "math": "I_2\\dot\\omega_2=-(I_1-I_3)\\omega_1\\omega_3\\approx0\\ \\Rightarrow\\ \\omega_2=\\text{const}",
+     "why": "The right side is a product of two small quantities, so drop it to first order."
+    },
+    {
+     "do": "Combine the $\\omega_1$ and $\\omega_3$ equations",
+     "math": "\\ddot\\omega_1+\\frac{(I_2-I_1)(I_2-I_3)}{I_1I_3}\\,\\omega_2^2\\,\\omega_1=0",
+     "why": "This is the linearized equation with spin axis $a=2$, obtained by cyclic relabeling."
+    },
+    {
+     "do": "Evaluate the coefficient $K$",
+     "math": "K=\\frac{(-0.001)(0.002)}{(0.005)(0.002)}(10)^2=-20\\ \\text{s}^{-2}",
+     "why": "$K<0$ because $I_2$ is the intermediate moment. The solutions are exponentials, not oscillations."
+    },
+    {
+     "do": "Take the growth rate $\\lambda=\\sqrt{-K}$",
+     "math": "\\lambda=\\sqrt{20}\\approx4.47\\ \\text{s}^{-1}",
+     "why": "Since $\\omega_1\\propto e^{\\lambda t}$, the wobble grows and spin about axis 2 is unstable."
+    }
+   ],
+   "answer": {
+    "latex": "\\lambda=\\sqrt{20}\\ \\text{s}^{-1}\\approx4.47\\ \\text{s}^{-1}",
+    "numeric": true,
+    "value": 4.47214,
+    "unit": "1/s"
+   },
+   "takeaway": "Linearize Euler's equations about the spin axis. The sign of $(I_a-I_b)(I_a-I_c)$ tells you whether the wobble oscillates (stable) or grows (unstable, intermediate axis).",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.5.stability.t1"
+  },
+  {
+   "id": "ex.9.6.body-frame.1",
+   "skill": "9.6.body-frame",
+   "problem": "Model the earth as a torque-free symmetric top with $(I_3-I)/I=1/320$. It spins at $\\omega_3=2\\pi$ rad/day, and $\\boldsymbol\\omega$ is tilted slightly from $\\hat{\\mathbf x}_3$. Seen from the earth, what is the period of the precession of $\\boldsymbol\\omega$ about $\\hat{\\mathbf x}_3$?",
+   "steps": [
+    {
+     "do": "Set $I_1=I_2=I$ and all $\\tau_i=0$",
+     "math": "0=I\\dot\\omega_1+(I_3-I)\\omega_3\\omega_2,\\ 0=I\\dot\\omega_2+(I-I_3)\\omega_1\\omega_3,\\ 0=I_3\\dot\\omega_3",
+     "why": "These are Euler's equations for a free symmetric top about its CM."
+    },
+    {
+     "do": "Use the third equation for $\\omega_3$",
+     "math": "\\dot\\omega_3=0\\ \\Rightarrow\\ \\omega_3=\\text{const}",
+     "why": "A constant $\\omega_3$ makes the precession rate $\\Omega$ constant."
+    },
+    {
+     "do": "Define $\\Omega$ and solve the transverse equations",
+     "math": "\\Omega=\\frac{I_3-I}{I}\\omega_3,\\ \\ \\omega_1=A\\cos(\\Omega t+\\phi),\\ \\omega_2=A\\sin(\\Omega t+\\phi)",
+     "why": "$\\dot\\omega_1=-\\Omega\\omega_2$ and $\\dot\\omega_2=\\Omega\\omega_1$ mean the transverse part moves in a circle at rate $\\Omega$."
+    },
+    {
+     "do": "Insert the earth's numbers",
+     "math": "\\Omega=\\frac{1}{320}\\cdot2\\pi\\ \\text{rad/day}",
+     "why": "Only $(I_3-I)/I$ and $\\omega_3$ matter. The tilt size $A$ does not enter."
+    },
+    {
+     "do": "Convert the rate to a period",
+     "math": "T=\\frac{2\\pi}{\\Omega}=320\\ \\text{days}",
+     "why": "The observed Chandler wobble is about 430 days because the real earth is not rigid."
+    }
+   ],
+   "answer": {
+    "latex": "T=320\\ \\text{days}",
+    "numeric": true,
+    "value": 320,
+    "unit": "days"
+   },
+   "takeaway": "For a free symmetric top, $\\omega_3$ stays constant, and in the body frame $\\boldsymbol\\omega$ circles $\\hat{\\mathbf x}_3$ at $\\Omega=(I_3-I)\\omega_3/I$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.6.body-frame.t1"
+  },
+  {
+   "id": "ex.9.6.fixed-frame.1",
+   "skill": "9.6.fixed-frame",
+   "problem": "A thrown plate (disk) has $I=0.01$ kg m$^2$ and $I_3=0.02$ kg m$^2$ about its CM. It spins with $\\omega_3=12$ rad/s and has transverse part $A=10$ rad/s. Seen from the ground, how fast does its symmetry axis precess around $\\mathbf L$?",
+   "steps": [
+    {
+     "do": "List the moments and the parts of $\\boldsymbol\\omega$",
+     "math": "I=0.01,\\ I_3=0.02,\\ \\omega_3=12,\\ A=10",
+     "why": "$I$ is the transverse moment, and $A=\\sqrt{\\omega_1^2+\\omega_2^2}$."
+    },
+    {
+     "do": "Compute the conserved $L$",
+     "math": "L=\\sqrt{(IA)^2+(I_3\\omega_3)^2}=\\sqrt{0.1^2+0.24^2}=0.26\\ \\text{kg m}^2/\\text{s}",
+     "why": "With no torque, $\\mathbf L$ is fixed in space. It is the axis of the precession."
+    },
+    {
+     "do": "Divide $L$ by the transverse moment $I$",
+     "math": "\\tilde\\omega=\\frac{L}{I}=\\frac{0.26}{0.01}=26\\ \\text{rad/s}",
+     "why": "$\\dot{\\hat{\\mathbf x}}_3=(\\frac{L}{I}\\hat{\\mathbf L})\\times\\hat{\\mathbf x}_3$, because the $\\Omega\\hat{\\mathbf x}_3$ part of $\\boldsymbol\\omega$ drops out."
+    },
+    {
+     "do": "Compare with the body-frame rate",
+     "math": "\\Omega=\\frac{I_3-I}{I}\\omega_3=12\\ \\text{rad/s}\\neq\\tilde\\omega",
+     "why": "The two frames give different rates. They agree through $\\boldsymbol\\omega=\\frac{L}{I}\\hat{\\mathbf L}-\\Omega\\hat{\\mathbf x}_3$."
+    }
+   ],
+   "answer": {
+    "latex": "\\tilde\\omega=L/I=26\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 26,
+    "unit": "rad/s"
+   },
+   "takeaway": "In the fixed frame, $\\hat{\\mathbf x}_3$ and $\\boldsymbol\\omega$ precess around the fixed $\\mathbf L$ at $L/I$, with the transverse moment $I$ in the denominator.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.6.fixed-frame.t1"
+  },
+  {
+   "id": "ex.9.7.euler-angles.1",
+   "skill": "9.7.euler-angles",
+   "problem": "A top precesses steadily with tilt $\\theta=\\pi/3$ ($\\dot\\theta=0$), precession rate $\\dot\\phi=2$ rad/s and spin rate $\\dot\\psi=50$ rad/s. Find the magnitude of its angular velocity $\\boldsymbol\\omega$.",
+   "steps": [
+    {
+     "do": "Name the angles and their rates",
+     "math": "\\theta=\\pi/3,\\ \\ \\Omega=\\dot\\phi=2,\\ \\ \\omega'=\\dot\\psi=50",
+     "why": "$\\theta$ is the tilt from $\\hat{\\mathbf z}$, $\\phi$ is the precession about $\\hat{\\mathbf z}$, and $\\psi$ is the spin about $\\hat{\\mathbf x}_3$."
+    },
+    {
+     "do": "Add the rotations as vectors",
+     "math": "\\boldsymbol\\omega=\\dot\\phi\\,\\hat{\\mathbf z}+\\dot\\psi\\,\\hat{\\mathbf x}_3",
+     "why": "Angular velocities add as vectors, and $\\dot\\theta=0$ removes the $\\hat{\\mathbf x}_1$ term."
+    },
+    {
+     "do": "Project $\\hat{\\mathbf z}$ onto the orthogonal axes",
+     "math": "\\hat{\\mathbf z}=\\cos\\theta\\,\\hat{\\mathbf x}_3+\\sin\\theta\\,\\hat{\\mathbf x}_2",
+     "why": "$\\hat{\\mathbf z}$ and $\\hat{\\mathbf x}_3$ are not orthogonal, so we need orthogonal components first."
+    },
+    {
+     "do": "Collect the components",
+     "math": "\\omega_3=50+2\\cdot\\tfrac12=51,\\ \\ \\omega_2=2\\sin\\tfrac{\\pi}{3}=\\sqrt3",
+     "why": "$\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta$, not just $\\dot\\psi$."
+    },
+    {
+     "do": "Take the magnitude",
+     "math": "|\\boldsymbol\\omega|=\\sqrt{51^2+3}=\\sqrt{2604}\\approx51.03\\ \\text{rad/s}",
+     "why": "Pythagoras only works on orthogonal components."
+    }
+   ],
+   "answer": {
+    "latex": "|\\boldsymbol\\omega|=\\sqrt{2604}\\approx51.03\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 51.0294,
+    "unit": "rad/s"
+   },
+   "takeaway": "Write $\\boldsymbol\\omega=\\dot\\phi\\hat{\\mathbf z}+\\dot\\theta\\hat{\\mathbf x}_1+\\dot\\psi\\hat{\\mathbf x}_3$, then project onto orthogonal axes before computing magnitudes or $\\mathbf L$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.7.euler-angles.t1"
+  },
+  {
+   "id": "ex.9.7.omega-euler.1",
+   "skill": "9.7.omega-euler",
+   "problem": "A symmetric top has its axis at $\\theta=0.5$ rad from the vertical, with $\\dot\\theta=0$. It precesses at $\\dot\\phi=2$ rad/s and spins at $\\dot\\psi=50$ rad/s relative to the precessing frame. Find $\\omega_3$, the component of $\\boldsymbol\\omega$ along the symmetry axis.",
+   "steps": [
+    {
+     "do": "Write $\\boldsymbol\\omega$ as spin plus frame rotation",
+     "math": "\\boldsymbol\\omega=\\dot\\psi\\,\\hat{\\mathbf x}_3+\\dot\\phi\\,\\hat{\\mathbf z}+\\dot\\theta\\,\\hat{\\mathbf x}_1",
+     "why": "The body's rotation relative to $S$ adds to the rotation of $S$ relative to the fixed frame."
+    },
+    {
+     "do": "Rewrite $\\hat{\\mathbf z}$ in the $S$ basis",
+     "math": "\\hat{\\mathbf z}=\\cos\\theta\\,\\hat{\\mathbf x}_3+\\sin\\theta\\,\\hat{\\mathbf x}_2",
+     "why": "$\\theta$ is measured from the vertical, so $\\cos\\theta$ goes with $\\hat{\\mathbf x}_3$."
+    },
+    {
+     "do": "Read off the $\\hat{\\mathbf x}_3$ component",
+     "math": "\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta",
+     "why": "The precession also contributes along the symmetry axis."
+    },
+    {
+     "do": "Insert the numbers",
+     "math": "\\omega_3=50+2\\cos0.5\\approx50+1.755=51.755\\ \\text{rad/s}",
+     "why": "Setting $\\omega_3=\\dot\\psi=50$ would miss $1.76$ rad/s."
+    }
+   ],
+   "answer": {
+    "latex": "\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta\\approx51.76\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 51.755165,
+    "unit": "rad/s"
+   },
+   "takeaway": "The spin component is $\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta$ because the precession $\\dot\\phi\\hat{\\mathbf z}$ has a part along $\\hat{\\mathbf x}_3$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.7.omega-euler.t1"
+  },
+  {
+   "id": "ex.9.7.steady-top.1",
+   "skill": "9.7.steady-top",
+   "problem": "A top has $M=0.5$ kg, with its CM at $\\ell=0.05$ m from the pivot. About the pivot, $I=2\\times10^{-3}$ kg·m² and $I_3=10^{-3}$ kg·m². It spins with $\\omega_3=100$ rad/s, and its axis is at $\\theta=\\pi/3$ from the vertical. Find the slow steady-precession rate $\\Omega$. Use $g=9.8$ m/s².",
+   "steps": [
+    {
+     "do": "Put the origin at the pivot",
+     "math": "I=2\\times10^{-3},\\quad I_3=10^{-3}\\ \\text{kg m}^2",
+     "why": "Take both the torque and $\\mathbf L$ about the fixed pivot, so $I$ must also be about the pivot."
+    },
+    {
+     "do": "Write L with both parts",
+     "math": "\\mathbf L=I_3\\omega_3\\hat{\\mathbf x}_3+I\\Omega\\sin\\theta\\,\\hat{\\mathbf x}_2",
+     "why": "The $\\Omega\\sin\\theta$ part of the precession lies along $\\hat{\\mathbf x}_2$. The $\\Omega\\cos\\theta$ part is already in $\\omega_3$."
+    },
+    {
+     "do": "Keep only the horizontal part of L",
+     "math": "L_\\perp=I_3\\omega_3\\sin\\theta-I\\Omega\\sin\\theta\\cos\\theta",
+     "why": "The vertical part stays constant. The horizontal parts of $\\mathbf L_3$ and $\\mathbf L_2$ point in opposite directions."
+    },
+    {
+     "do": "Set Ω L_⊥ equal to gravity's torque",
+     "math": "\\Omega L_\\perp=Mg\\ell\\sin\\theta\\ \\Rightarrow\\ I\\Omega^2\\cos\\theta-I_3\\omega_3\\Omega+Mg\\ell=0",
+     "why": "$L_\\perp$ turns at rate $\\Omega$, so $|d\\mathbf L/dt|=\\Omega L_\\perp$. Then $\\sin\\theta$ cancels."
+    },
+    {
+     "do": "Put in the numbers",
+     "math": "10^{-3}\\,\\Omega^2-0.1\\,\\Omega+0.245=0",
+     "why": "$I\\cos\\theta=10^{-3}$, $I_3\\omega_3=0.1$ and $Mg\\ell=0.245$ J."
+    },
+    {
+     "do": "Take the minus (slow) root",
+     "math": "\\Omega_-=\\frac{0.1-\\sqrt{0.01-0.00098}}{0.002}\\approx2.51\\ \\text{rad/s}",
+     "why": "The plus root, about $97.5$ rad/s, is the fast precession."
+    }
+   ],
+   "answer": {
+    "latex": "\\Omega\\approx2.51\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 2.5132,
+    "unit": "rad/s"
+   },
+   "takeaway": "Include $\\mathbf L_2=I\\Omega\\sin\\theta\\,\\hat{\\mathbf x}_2$, take $L_\\perp$, and set $\\Omega L_\\perp=Mg\\ell\\sin\\theta$. This gives $I\\Omega^2\\cos\\theta-I_3\\omega_3\\Omega+Mg\\ell=0$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.7.steady-top.t1"
+  },
+  {
+   "id": "ex.M.series.small.1",
+   "skill": "M.series.small",
+   "problem": "A conical pendulum has string length $\\ell=1.0$ m and swings at a constant angle $\\theta=0.2$ rad from the vertical, with $g=9.8$ m/s². Use small-angle approximations to estimate $\\omega=\\sqrt{g/(\\ell\\cos\\theta)}$.",
+   "steps": [
+    {
+     "do": "Identify the small dimensionless parameter",
+     "math": "\\theta=0.2\\ \\text{rad}\\ll1",
+     "why": "The angle is dimensionless and given in radians, so the expansions apply."
+    },
+    {
+     "do": "Expand cos θ to second order",
+     "math": "\\cos\\theta\\approx1-\\frac{\\theta^2}{2}",
+     "why": "Using $\\cos\\theta\\approx1$ would throw away the correction we want."
+    },
+    {
+     "do": "Factor out the leading piece",
+     "math": "\\omega\\approx\\sqrt{\\frac{g}{\\ell}}\\left(1-\\frac{\\theta^2}{2}\\right)^{-1/2}",
+     "why": "Now the correction has the form $(1+x)^n$ with $x=-\\theta^2/2$ and $n=-1/2$."
+    },
+    {
+     "do": "Apply the binomial approximation",
+     "math": "\\omega\\approx\\sqrt{\\frac{g}{\\ell}}\\left(1+\\frac{\\theta^2}{4}\\right)",
+     "why": "$nx=(-\\tfrac12)(-\\tfrac{\\theta^2}{2})=+\\theta^2/4$. Watch the signs."
+    },
+    {
+     "do": "Put in the numbers",
+     "math": "\\omega\\approx3.1305\\times1.01\\approx3.162\\ \\text{rad/s}",
+     "why": "$\\theta^2/4=0.01$, so the correction is 1%. The dropped terms are of order $\\theta^4\\sim10^{-3}$."
+    },
+    {
+     "do": "Check the θ → 0 limit",
+     "math": "\\omega\\to\\sqrt{g/\\ell}",
+     "why": "At zero angle it reduces to the simple-pendulum result, as it should."
+    }
+   ],
+   "answer": {
+    "latex": "\\omega\\approx3.162\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 3.1618,
+    "unit": "rad/s"
+   },
+   "takeaway": "First expand the inner function to the order that survives. Then apply $(1+x)^n\\approx1+nx$ with the correct $n$ and sign.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.series.small.t1"
+  },
+  {
+   "id": "ex.9.7.fast-top.1",
+   "skill": "9.7.fast-top",
+   "problem": "A top has $M=0.5$ kg, with its CM at $\\ell=0.04$ m from the pivot. It has $I_3=2\\times10^{-4}$ kg·m² and spins at $\\omega_3=200$ rad/s. Use $g=9.8$ m/s². Estimate its slow precession frequency.",
+   "steps": [
+    {
+     "do": "Write the steady-precession condition",
+     "math": "I\\Omega^2\\cos\\theta-I_3\\omega_3\\Omega+Mg\\ell=0",
+     "why": "This comes from $\\tau=d\\mathbf L/dt$ for constant $\\theta$ and constant $\\Omega$."
+    },
+    {
+     "do": "Pick the minus (slow) root",
+     "math": "\\Omega_-=\\frac{I_3\\omega_3}{2I\\cos\\theta}\\left(1-\\sqrt{1-x}\\right),\\ x=\\frac{4MIg\\ell\\cos\\theta}{I_3^2\\omega_3^2}",
+     "why": "For a fast top the plus root is huge. The gentle precession you see is $\\Omega_-$."
+    },
+    {
+     "do": "Expand the square root for x ≪ 1",
+     "math": "\\sqrt{1-x}\\approx1-\\tfrac{x}{2}\\ \\Rightarrow\\ \\Omega_-\\approx\\frac{Mg\\ell}{I_3\\omega_3}",
+     "why": "A fast spin makes $x$ small. Both $I$ and $\\theta$ drop out."
+    },
+    {
+     "do": "Put in the numbers",
+     "math": "\\Omega\\approx\\frac{0.5\\cdot9.8\\cdot0.04}{2\\times10^{-4}\\cdot200}=\\frac{0.196}{0.04}=4.9\\ \\text{rad/s}",
+     "why": "Here $Mg\\ell=0.196$ J and $L_3=0.04$ kg·m²/s."
+    },
+    {
+     "do": "Check it with torque and L",
+     "math": "\\Omega\\,(I_3\\omega_3\\sin\\theta)=Mg\\ell\\sin\\theta",
+     "why": "A fixed torque turns a larger $L_3$ more slowly, so a faster spin gives slower precession."
+    }
+   ],
+   "answer": {
+    "latex": "\\Omega\\approx4.9\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 4.9,
+    "unit": "rad/s"
+   },
+   "takeaway": "For a fast top, take the minus root, $\\Omega\\approx Mg\\ell/(I_3\\omega_3)$. The fixed torque turns a bigger $L$ more slowly.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.7.fast-top.t1"
+  },
+  {
+   "id": "ex.9.7.lagrangian-top.1",
+   "skill": "9.7.lagrangian-top",
+   "problem": "A top has $I=2\\times10^{-3}$ kg·m² about the pivot, $I_3=10^{-4}$ kg·m² and $\\omega_3=200$ rad/s. It is released at $\\theta_0=60^\\circ$ with $\\dot\\phi=0$ and $\\dot\\theta=0$. Later its axis passes the horizontal ($\\theta=90^\\circ$). Find $\\dot\\phi$ there.",
+   "steps": [
+    {
+     "do": "Write the Lagrangian in Euler angles",
+     "math": "\\mathcal L=\\tfrac12 I_3(\\dot\\psi+\\dot\\phi\\cos\\theta)^2+\\tfrac12 I(\\dot\\phi^2\\sin^2\\theta+\\dot\\theta^2)-Mg\\ell\\cos\\theta",
+     "why": "$I$ and $I_3$ are about the pivot, and $\\theta$ is measured from the upward vertical."
+    },
+    {
+     "do": "Use that ψ is cyclic",
+     "math": "L_3=I_3(\\dot\\psi+\\dot\\phi\\cos\\theta)=I_3\\omega_3=0.02",
+     "why": "$\\psi$ does not appear in $\\mathcal L$, so its momentum stays constant."
+    },
+    {
+     "do": "Use that φ is cyclic",
+     "math": "L_z=I_3\\omega_3\\cos\\theta+I\\dot\\phi\\sin^2\\theta",
+     "why": "$\\phi$ does not appear either. Keep the spin term, not just $I\\dot\\phi\\sin^2\\theta$."
+    },
+    {
+     "do": "Evaluate L_z at the release",
+     "math": "L_z=0.02\\cdot\\tfrac12+0=0.01\\ \\text{kg m}^2/\\text{s}",
+     "why": "At release $\\dot\\phi=0$, so only the spin term contributes."
+    },
+    {
+     "do": "Solve for φ̇ at θ = 90°",
+     "math": "\\dot\\phi=\\frac{L_z-L_3\\cos\\theta}{I\\sin^2\\theta}=\\frac{0.01}{2\\times10^{-3}}=5\\ \\text{rad/s}",
+     "why": "At $90^\\circ$, $\\cos\\theta=0$ and $\\sin^2\\theta=1$."
+    }
+   ],
+   "answer": {
+    "latex": "\\dot\\phi=5\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 5,
+    "unit": "rad/s"
+   },
+   "takeaway": "Because $\\psi$ and $\\phi$ are cyclic, $I_3\\omega_3$ and $L_z=I_3\\omega_3\\cos\\theta+I\\dot\\phi\\sin^2\\theta$ are constant. Solve $L_z$ for $\\dot\\phi(\\theta)$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.7.lagrangian-top.t1"
+  },
+  {
+   "id": "ex.9.7.sleeping-top.1",
+   "skill": "9.7.sleeping-top",
+   "problem": "A top has $M=0.2$ kg and $\\ell=0.04$ m. Its moment about a horizontal axis through the pivot is $I=5\\times10^{-4}$ kg·m², and its moment about the symmetry axis is $I_3=2\\times10^{-4}$ kg·m². Take $g=9.8$ m/s². What is the minimum spin $\\omega_3$ for it to sleep stably upright?",
+   "steps": [
+    {
+     "do": "Fix L_z by the vertical start",
+     "math": "I\\dot\\phi\\sin^2\\theta=I_3\\omega_3(1-\\cos\\theta)",
+     "why": "The top starts at $\\theta=0$, so $L_z=I_3\\omega_3$ for all later times."
+    },
+    {
+     "do": "Expand for small θ to get φ̇",
+     "math": "\\dot\\phi=\\frac{I_3\\omega_3}{2I}",
+     "why": "$\\sin^2\\theta\\approx\\theta^2$ and $1-\\cos\\theta\\approx\\theta^2/2$. This $\\dot\\phi$ is not small."
+    },
+    {
+     "do": "Substitute into the exact θ equation",
+     "math": "\\ddot\\theta+\\Big(\\frac{I_3^2\\omega_3^2}{4I^2}-\\frac{Mg\\ell}{I}\\Big)\\theta=0",
+     "why": "Keep the $I\\dot\\phi^2\\cos\\theta$ term. It supplies half of the $\\omega_3^2$ coefficient."
+    },
+    {
+     "do": "Require a positive coefficient",
+     "math": "\\omega_3>\\frac{2\\sqrt{IMg\\ell}}{I_3}",
+     "why": "A positive coefficient gives oscillation, so $\\theta$ stays small. A negative one makes $\\theta$ grow exponentially."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "\\omega_3>\\frac{2\\sqrt{3.92\\times10^{-5}}}{2\\times10^{-4}}\\approx62.6\\ \\text{rad/s}",
+     "why": "$IMg\\ell=5\\times10^{-4}\\cdot0.0784$ J·kg·m²."
+    }
+   ],
+   "answer": {
+    "latex": "\\omega_3\\approx 62.6\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 62.61,
+    "unit": "rad/s"
+   },
+   "takeaway": "Fix $L_z=I_3\\omega_3$, which forces $\\dot\\phi=I_3\\omega_3/2I$. Keep every term in the $\\theta$ equation, then require $I_3^2\\omega_3^2>4IMg\\ell$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)"
+  },
+  {
+   "id": "ex.9.4.blow.1",
+   "skill": "9.4.blow",
+   "problem": "Morin's triangle floats freely. It has $m=1$ kg at $A$ and at $B$, and $2m$ at the right-angle vertex $C$. The hypotenuse is $4a$, with $a=0.5$ m. With the CM at the origin, $\\mathbf r_B=(2a,-a,0)$. $B$ gets an impulse $P=2$ N·s into the page. Find $|\\boldsymbol\\omega|$ just after the blow.",
+   "steps": [
+    {
+     "do": "Put the origin at the CM; write r and P",
+     "math": "\\mathbf r_B=(2a,-a,0),\\quad \\mathbf P=(0,0,-P)",
+     "why": "For a free body, measure from the CM. Into the page is $-z$."
+    },
+    {
+     "do": "Take the cross product r × P",
+     "math": "\\mathbf L=\\mathbf r_B\\times\\mathbf P=aP(1,2,0)",
+     "why": "The blow is so quick that $\\mathbf r$ stays fixed, so $\\mathbf L=\\int\\boldsymbol\\tau\\,dt=\\mathbf r\\times\\mathbf P$."
+    },
+    {
+     "do": "Find the principal moments about the CM",
+     "math": "I_x=4ma^2,\\quad I_y=8ma^2,\\quad I_z=12ma^2",
+     "why": "Mirror symmetry about the $y$ axis makes $x,y,z$ principal. For a flat body, $I_z=I_x+I_y$."
+    },
+    {
+     "do": "Solve I_k ω_k = L_k one component at a time",
+     "math": "\\boldsymbol\\omega=\\left(\\frac{aP}{4ma^2},\\frac{2aP}{8ma^2},0\\right)=\\frac{P}{4ma}(1,1,0)",
+     "why": "Each component has its own $I_k$. So $\\boldsymbol\\omega\\propto(1,1,0)$ even though $\\mathbf L\\propto(1,2,0)$."
+    },
+    {
+     "do": "Take the magnitude and plug in the numbers",
+     "math": "|\\boldsymbol\\omega|=\\frac{\\sqrt2\\,P}{4ma}=\\frac{\\sqrt2(2)}{4(1)(0.5)}\\approx1.41\\ \\text{rad/s}",
+     "why": "The vector $(1,1,0)$ has length $\\sqrt2$."
+    }
+   ],
+   "answer": {
+    "latex": "|\\boldsymbol\\omega|=\\sqrt2\\approx1.41\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 1.4142135623730951,
+    "unit": "rad/s"
+   },
+   "takeaway": "Get $\\mathbf L=\\mathbf r\\times\\mathbf P$ from the blow, then divide each component by its own principal moment; $\\boldsymbol\\omega$ need not be parallel to $\\mathbf L$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.4.blow.t1"
+  },
+  {
+   "id": "ex.M.vec.rotating.1",
+   "skill": "M.vec.rotating",
+   "problem": "A rigid rod of length $A=2$ m points out from a fixed pivot at angle $\\theta=\\pi/3$ to a vertical axis. It turns about that axis at $\\Omega=3$ rad/s. Find the speed of its tip, $|d\\vec A/dt|$.",
+   "steps": [
+    {
+     "do": "Point Ω along the rotation axis",
+     "math": "\\vec\\Omega=\\Omega\\hat z,\\quad \\Omega=3\\ \\text{rad/s}",
+     "why": "By the right-hand rule, $\\vec\\Omega$ lies along the axis, and its size is the turning rate."
+    },
+    {
+     "do": "Split A into parts along and across the axis",
+     "math": "A_\\parallel=A\\cos\\theta=1\\ \\text{m},\\quad A_\\perp=A\\sin\\theta=\\sqrt3\\ \\text{m}",
+     "why": "Only $\\vec A_\\perp$ moves. The part along the axis stays fixed."
+    },
+    {
+     "do": "Use dA/dt = Ω × A",
+     "math": "\\frac{d\\vec A}{dt}=\\vec\\Omega\\times\\vec A,\\quad \\left|\\frac{d\\vec A}{dt}\\right|=\\Omega A\\sin\\theta",
+     "why": "The tip moves on a circle of radius $A\\sin\\theta$, at rate $\\Omega$."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "\\left|\\frac{d\\vec A}{dt}\\right|=3(2)\\tfrac{\\sqrt3}{2}=3\\sqrt3\\approx5.20\\ \\text{m/s}",
+     "why": "$\\sin(\\pi/3)=\\sqrt3/2$. Use $\\sin\\theta$, not the full length $A$."
+    }
+   ],
+   "answer": {
+    "latex": "\\left|\\frac{d\\vec A}{dt}\\right|=3\\sqrt3\\approx5.20\\ \\text{m/s}",
+    "numeric": true,
+    "value": 5.196152422706632,
+    "unit": "m/s"
+   },
+   "takeaway": "For a fixed-length vector turning about $\\vec\\Omega$, $d\\vec A/dt=\\vec\\Omega\\times\\vec A$, and only $\\vec A_\\perp$ moves: the speed is $\\Omega A\\sin\\theta$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.vec.rotating.t1"
+  },
+  {
+   "id": "ex.9.4.steady-precession.1",
+   "skill": "9.4.steady-precession",
+   "problem": "A uniform stick of length $\\ell=0.6$ m is pivoted at its top end. It swings around the vertical axis at a constant $\\theta=60^\\circ$ from the vertical. Find its angular frequency $\\omega$. Use $g=9.8$ m/s².",
+   "steps": [
+    {
+     "do": "Put the origin at the pivot",
+     "math": "I_x=I_z=\\tfrac13 m\\ell^2,\\quad I_y=0",
+     "why": "The unknown pivot force then gives no torque. $y$ is along the stick."
+    },
+    {
+     "do": "Write L in principal axes",
+     "math": "\\mathbf L=\\left(\\tfrac13 m\\ell^2\\omega\\sin\\theta,0,0\\right)",
+     "why": "$\\boldsymbol\\omega=(\\omega\\sin\\theta,\\omega\\cos\\theta,0)$ and $I_y=0$, so $\\mathbf L$ is perpendicular to the stick, not vertical."
+    },
+    {
+     "do": "Rotate only the horizontal part of L",
+     "math": "\\left|\\frac{d\\mathbf L}{dt}\\right|=(L\\cos\\theta)\\omega=\\tfrac13 m\\ell^2\\omega^2\\sin\\theta\\cos\\theta",
+     "why": "$d\\mathbf L/dt=\\boldsymbol\\omega\\times\\mathbf L$. The vertical part of $\\mathbf L$ does not change."
+    },
+    {
+     "do": "Find gravity's torque, acting at the CM",
+     "math": "\\tau=\\tfrac{\\ell}{2}mg\\sin\\theta",
+     "why": "The CM is at $\\ell/2$ from the pivot. The torque points into the page, the same way as $d\\mathbf L/dt$."
+    },
+    {
+     "do": "Set τ equal to |dL/dt| and solve",
+     "math": "\\omega=\\sqrt{\\frac{3g}{2\\ell\\cos\\theta}}=\\sqrt{\\frac{3(9.8)}{2(0.6)(0.5)}}=7\\ \\text{rad/s}",
+     "why": "The factors $m$ and $\\sin\\theta$ cancel from both sides."
+    }
+   ],
+   "answer": {
+    "latex": "\\omega=\\sqrt{\\frac{3g}{2\\ell\\cos\\theta}}=7\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 7,
+    "unit": "rad/s"
+   },
+   "takeaway": "Take torques about the pivot, and set $\\tau$ equal to $\\omega$ times the part of $\\mathbf L$ perpendicular to $\\boldsymbol\\omega$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.4.steady-precession.t1"
+  },
+  {
+   "id": "ex.9.5.euler.1",
+   "skill": "9.5.euler",
+   "problem": "A torque-free symmetric body has $I_1=I_2=I=2$ kg·m² and $I_3=3$ kg·m². It spins with $\\omega_3=4$ rad/s plus a small wobble. Seen from the body, at what rate $\\Omega$ does $\\boldsymbol\\omega$ circle the $\\hat{\\mathbf x}_3$ axis?",
+   "steps": [
+    {
+     "do": "Write Euler's equations with zero torque",
+     "math": "0=I_1\\dot\\omega_1+(I_3-I_2)\\omega_3\\omega_2\\quad(\\text{and cyclic})",
+     "why": "No torque means $\\tau_i=0$. The axes are principal and fixed in the body, with the origin at the CM."
+    },
+    {
+     "do": "Use I_1 = I_2 in the third equation",
+     "math": "I_3\\dot\\omega_3=(I_1-I_2)\\omega_1\\omega_2=0\\ \\Rightarrow\\ \\omega_3=\\text{const}",
+     "why": "The symmetry makes the $\\omega\\omega$ term vanish."
+    },
+    {
+     "do": "Rewrite the first two equations with Ω",
+     "math": "\\dot\\omega_1+\\Omega\\omega_2=0,\\quad \\dot\\omega_2-\\Omega\\omega_1=0,\\quad \\Omega=\\frac{I_3-I}{I}\\omega_3",
+     "why": "Dividing by $I$ puts both equations in the same form."
+    },
+    {
+     "do": "Differentiate once to get SHM",
+     "math": "\\ddot\\omega_1+\\Omega^2\\omega_1=0\\ \\Rightarrow\\ \\omega_1=A\\cos(\\Omega t+\\phi)",
+     "why": "$(\\omega_1,\\omega_2)$ goes around a circle at frequency $\\Omega$."
+    },
+    {
+     "do": "Plug in the numbers",
+     "math": "\\Omega=\\frac{3-2}{2}(4)=2\\ \\text{rad/s}",
+     "why": "$I_3>I$, so the motion is counterclockwise, looking down from $+\\hat{\\mathbf x}_3$."
+    }
+   ],
+   "answer": {
+    "latex": "\\Omega=2\\ \\text{rad/s}",
+    "numeric": true,
+    "value": 2,
+    "unit": "rad/s"
+   },
+   "takeaway": "In principal body axes, use $\\tau_1=I_1\\dot\\omega_1+(I_3-I_2)\\omega_3\\omega_2$ and its cyclic versions. For a free symmetric top, $\\boldsymbol\\omega$ circles $\\hat{\\mathbf x}_3$ at $\\Omega=(I_3-I)\\omega_3/I$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.9.5.euler.t1"
+  },
+  {
+   "id": "ex.M.ode.harmonic.1",
+   "skill": "M.ode.harmonic",
+   "problem": "A $0.5$ kg mass on a spring with $k=200$ N/m is pulled to $x_0=0.1$ m and released from rest at $t=0$. Find its position at $t=0.1$ s.",
+   "steps": [
+    {
+     "do": "Write F = ma",
+     "math": "0.5\\,\\ddot x=-200\\,x",
+     "why": "A linear restoring force, with $x$ measured from equilibrium."
+    },
+    {
+     "do": "Divide by the coefficient of ẍ",
+     "math": "\\ddot x=-400\\,x",
+     "why": "$\\ddot x$ must have coefficient 1 before you read off $\\omega^2$."
+    },
+    {
+     "do": "Read off ω",
+     "math": "\\omega=\\sqrt{400}=20\\ \\text{rad/s}",
+     "why": "The factor multiplying $-x$ is $\\omega^2=k/m$."
+    },
+    {
+     "do": "Fix the constants from the initial conditions",
+     "math": "C_1=x_0=0.1,\\ C_2=\\frac{v_0}{\\omega}=0\\ \\Rightarrow\\ x=0.1\\cos 20t",
+     "why": "A second-order equation needs both $x_0$ and $v_0$."
+    },
+    {
+     "do": "Evaluate in radians",
+     "math": "x(0.1)=0.1\\cos(2)\\approx-0.0416\\ \\text{m}",
+     "why": "$\\omega t=2$ is in radians, not degrees."
+    }
+   ],
+   "answer": {
+    "latex": "x(0.1\\ \\text{s})=0.1\\cos 2\\approx-0.0416\\ \\text{m}",
+    "numeric": true,
+    "value": -0.0416146836547142,
+    "unit": "m"
+   },
+   "takeaway": "Divide until $\\ddot x$ stands alone. Whatever multiplies $-x$ is $\\omega^2$, and then $x=C_1\\cos\\omega t+C_2\\sin\\omega t$.",
+   "review": "Opus 5.5 wrote it from the confirmed note; Fable 5.1 solved it blind and checked the steps; code recomputed the answer (2026-09-23)",
+   "turn": "q.M.ode.harmonic.t1"
+  }
+ ]
+}

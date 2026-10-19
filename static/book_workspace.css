@@ -1,0 +1,78 @@
+/* A selected question is the opening of its conversation. */
+.tv-book-question{padding:0 0 18px}
+.tv-book-reading{padding:0;background:transparent;border:0;border-radius:0}
+.tv-book-reading>header{align-items:flex-start;gap:12px;padding:0;margin:0 0 24px;border:0;background:transparent}
+.tv-book-reading>header>div{min-width:0}
+.tv-book-kicker{font-size:12px;font-weight:500;line-height:1.5;color:var(--tv-dim,#aaa);margin:0 0 7px}
+.tv-book-question h2{font-size:calc(18px * var(--read,1.2));line-height:1.35;letter-spacing:-.025em;font-weight:550;overflow-wrap:anywhere}
+.tv-book-reading>header>.tv-book-heading-actions{flex:0 0 auto;align-self:flex-start;padding-top:1px}
+.tv-book-folder{min-height:30px;padding:4px 0;color:var(--tv-dim,#aaa);font:12px/1.5 var(--tv-sans);white-space:nowrap;background:transparent;border:0;border-radius:0}
+.tv-book-folder:hover{color:#eee;text-decoration:underline;text-underline-offset:4px}
+.tv-book-folder:focus-visible,.tv-book-back:focus-visible,.tv-book-image:focus-visible{outline:2px solid #91bdf3;outline-offset:4px;border-radius:5px}
+.tv-book-statement{color:#dedede}
+.teacher .tv-col .tv-book-statement.mdb{font-size:calc(16px * var(--read,1.2));line-height:1.75}
+.tv-book-statement p{margin:0 0 16px}
+/* KaTeX positions equation tags over the formula's right edge. In a reading
+   pane, give the intact tag its own line without reducing the equation size. */
+.teacher .tv-book-statement .katex-display>.katex>.katex-html:has(>.tag){min-width:max-content}
+.teacher .tv-book-statement .katex-display>.katex>.katex-html>.tag{
+  position:static;display:block;margin-top:.3em;text-align:right
+}
+.tv-book-part+.tv-book-part{margin-top:24px;padding-top:0;border:0}
+.tv-book-part-label{display:inline;padding:0;margin:0 9px 0 0;border:0;border-radius:0;background:none;font:600 15px/1.75 var(--tv-sans)}
+.tv-book-assumption{margin:20px 0 0;padding:0;border:0;color:#b8b8b8}
+.tv-book-figures{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;margin:26px 0 22px}
+.tv-book-figures>.tv-book-media{flex:0 1 390px;max-width:100%;min-width:0}
+.tv-book-media{margin:0;min-width:0;max-width:100%}
+.tv-book-image{display:flex;align-items:center;gap:9px;overflow:visible;border-radius:7px}
+.tv-book-image img{width:auto;height:auto;max-width:100%;max-height:270px;object-fit:contain;border-radius:7px;background:#fff}
+.tv-book-image-label{font-size:11px;color:#8f8f8f;line-height:1.5}
+.tv-book-image:hover .tv-book-image-label{color:#ddd}
+.tv-book-image-failed{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 12px;padding:22px 12px;color:#aaa;font:13px/1.6 var(--tv-sans);border:0;border-radius:10px;background:#ffffff04}
+.tv-book-image-failed button{font:inherit;background:transparent;border:0;padding:4px;color:#c7dcf6;text-decoration:underline;text-underline-offset:3px}
+.tv-book-image-failed button:disabled{color:#888;cursor:wait;text-decoration:none}
+.tv-book-media [hidden]{display:none!important}
+.tv-book-source-images{margin:0;gap:16px}
+.tv-book-source-images .tv-book-media{display:flex;justify-content:center}
+.tv-book-source-images img{width:auto;max-height:calc(80dvh - 150px);object-fit:contain}
+.tv-book-source-images.is-zoomed img{max-height:none;width:100%}
+.tv-book-source-images .tv-book-image-failed{width:100%}
+.tv-book-scans .tv-book-image img{width:100%;max-height:none}
+.tv-book-related{margin:18px 0 0;gap:5px 9px;font-size:12px;color:#999}
+.tv-book-related button{color:#b9b9b9}
+/* Mounted by Teacher in its navigation bar, outside the reading column. */
+#tv-book-return{flex:0 1 auto;min-width:0;max-width:45%}
+#tv-book-return[hidden]{display:none}
+#tv-book-return:not([hidden])+.tv-crumb{flex:0 1 auto;min-width:0}
+.tv-book-back{display:inline-flex;align-items:center;gap:6px;min-height:32px;max-width:100%;padding:4px 0;margin:0;background:transparent;border:0;border-radius:0;color:#aaa;font:400 12px/1.5 var(--tv-sans)}
+.tv-book-back span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tv-book-back svg{width:15px;height:15px}
+.tv-book-back:hover{color:#eee;background:transparent;border:0}
+@media(max-width:600px){
+  #tv-book-return{max-width:50%}
+  .tv-book-thread:not(.tv-paged) #tv-book-return:not([hidden])+.tv-crumb{display:none}
+  .tv-book-question{padding-bottom:12px}
+  .tv-book-reading{padding:0;border:0;border-radius:0}
+  .tv-book-reading>header{gap:9px;margin-bottom:20px;padding:0}
+  .tv-book-question h2{font-size:calc(17px * var(--read,1.2))}
+  .tv-book-reading>header>.tv-book-heading-actions{flex:0 0 100%;padding:0}
+  .tv-book-folder{min-height:26px;padding:2px 0}
+  .teacher .tv-col .tv-book-statement.mdb{font-size:calc(15px * var(--read,1.2));line-height:1.75}
+  .tv-book-figures{gap:18px;margin:22px 0 18px}
+  .tv-book-figures>.tv-book-media{flex:1 1 100%}
+  .tv-book-image img{max-height:230px}
+}
+
+.tv-book-question .tv-book-folder{width:34px;min-width:34px;height:34px;padding:7px;border:0;background:transparent;border-radius:0;color:#999}
+.tv-book-question .tv-book-folder:hover{color:#eee;background:transparent;text-decoration:none}
+.tv-book-folder svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+dialog.tv-dialog>header{display:flex;justify-content:space-between;align-items:center;gap:20px;width:auto}
+dialog.tv-dialog>header>button{background:none;border:0;color:#999;padding:4px}
+dialog.tv-dialog>header>button:hover{background:none;color:#eee}
+.book-filter button,.folder-button,.vl-filter{border-radius:999px}
+/* Diagram itself is the opener, using the available column without distortion. */
+.tv-book-figures>.tv-book-media{flex:1 1 420px}.tv-book-image{cursor:zoom-in}
+.tv-book-figures .tv-book-image img{width:100%;max-width:520px;max-height:440px;background:transparent;object-fit:contain}
+.tv-book-figures .tv-book-image:hover img{filter:brightness(.98)}
+@media(max-width:800px){.tv-book-figures .tv-book-image img{max-height:380px}}

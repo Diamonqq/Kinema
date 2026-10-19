@@ -1,0 +1,36 @@
+/* 1.21 shared composer parts: attachment tiles, primary action states, dictation status. Used by the tutor chat and Daily. */
+.at-row{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;min-width:0}
+.at-row:empty,.at-row[hidden]{display:none}
+.at-tile{position:relative;display:inline-flex;align-items:center;gap:9px;max-width:min(260px,100%);min-width:0;height:48px;padding:0 30px 0 8px;border:1px solid #ffffff24;border-radius:12px;background:#ffffff0a;color:#e8e8ea;overflow:hidden;box-sizing:border-box}
+.at-tile img{flex:none;width:32px;height:32px;border-radius:8px;object-fit:cover;display:block}
+.at-tile.at-image{height:56px}.at-tile.at-image img{width:40px;height:40px}
+.at-ext{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#ffffff16;color:#c9c9cd;font:600 9px/1 system-ui,sans-serif;font-style:normal;letter-spacing:.02em}
+.at-copy{display:block;min-width:0}
+.at-copy strong{display:block;font:500 12.5px/1.3 system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.at-copy small{display:block;margin-top:1px;font:400 11px/1.3 system-ui,sans-serif;color:#a6a6a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.at-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffffff14}
+.at-bar b{display:block;height:100%;background:#a7cafa;transition:width .15s linear}
+.at-x{position:absolute;right:5px;top:50%;margin-top:-11px;display:grid;place-items:center;width:22px;height:22px;border:0;border-radius:50%;background:transparent;color:#a6a6a6;cursor:pointer}
+.at-x::before{content:"";position:absolute;inset:-6px}
+.at-x:hover,.at-x:focus-visible{background:#ffffff1f;color:#fff}.at-x:focus-visible{outline:2px solid #a7cafa;outline-offset:1px}
+.at-error{border-color:#f8717166;background:#f871710f}.at-error .at-copy small{color:#f4b4b4;white-space:normal;line-height:1.25}
+.at-error{height:auto;min-height:48px;padding-top:4px;padding-bottom:4px}
+@media (pointer:coarse){.at-x{width:28px;height:28px;margin-top:-14px}}
+@media (max-width:420px){.at-tile{max-width:100%;flex:1 1 150px}}
+
+/* the primary action: mic → stop → working → send, one button */
+.act-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.act-btn[data-action="dictating"]{background:#e56767!important;color:#fff!important}
+.act-btn[data-action="dictating"] svg{stroke:none}
+.act-btn[data-action="transcribing"]{opacity:.7;cursor:progress}
+.act-dots{display:inline-flex;gap:2px;font-weight:700;letter-spacing:1px;line-height:1}
+.act-dots i{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.4;animation:act-dot 1s ease-in-out infinite}
+.act-dots i:nth-child(2){animation-delay:.15s}.act-dots i:nth-child(3){animation-delay:.3s}
+@keyframes act-dot{50%{opacity:1}}
+.dict-note{margin:4px 2px 0;color:#a6a6a6;font-size:12px;line-height:1.5}.dict-note:empty{display:none}
+.tool-secondary[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){.act-dots i{animation:none;opacity:.8}.at-bar b{transition:none}}
+.act-btn[aria-disabled="true"]:not(:disabled){opacity:.5}
+.at-retry{flex:none;margin-left:2px;padding:3px 9px;border:1px solid #ffffff30;border-radius:999px;background:transparent;color:#e8e8ea;font:500 11.5px system-ui,sans-serif;cursor:pointer}
+.at-retry:hover,.at-retry:focus-visible{background:#ffffff18}
+.at-error{padding-right:34px}

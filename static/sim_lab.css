@@ -1,0 +1,42 @@
+/* Teacher owns the chat/composer. Only the assembly viewer is specialized. */
+.sim-lab-viewer{display:flex;flex-direction:column;min-width:0;min-height:0;width:100%;height:100%;overflow:hidden;color:var(--tv-ink,#ddd);background:var(--tv-base,#1b1b1b)}
+.sim-lab-viewer *{box-sizing:border-box}
+.sl-canvas{position:relative;flex:1;min-height:180px;min-width:0;overflow:hidden}
+.sl-canvas canvas{display:block;width:100%;height:100%}
+/* One small playback row; only actual errors add another row. */
+.sl-transport{display:flex;align-items:center;gap:6px;padding:8px 10px;flex-wrap:wrap;min-width:0;flex:none}
+.sl-transport>button{display:grid;place-items:center;width:32px;height:32px;flex:none;padding:6px;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer}
+.sl-transport>button:hover{background:#ffffff14}
+.sl-transport>button:disabled{opacity:.45;cursor:wait}
+.sl-transport svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sl-transport [data-sl=run] svg path{fill:currentColor;stroke-width:1.5}
+.sl-transport button:focus-visible,.sl-playback select:focus-visible{outline:2px solid #8daac9;outline-offset:2px}
+.sl-playback{display:flex;align-items:center;gap:6px;flex:1;min-width:150px}
+.sl-playback[hidden],.sl-mode[hidden],.sl-error[hidden]{display:none}
+.sl-playback select{font:inherit;font-size:12px;color:inherit;background:#ffffff08;border:0;border-radius:20px;padding:5px;cursor:pointer}
+.sl-seek{flex:1;min-width:25px;width:0;accent-color:#9aafc5}
+.sl-time{font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sl-mode{font-size:11px;color:#aaa;margin-left:auto}
+.sl-error{font-size:12px;color:#f4b4b4;padding:0 12px 8px;overflow-wrap:anywhere}
+/* Reuse lesson splitter interactions, with an independent saved lab width. */
+.teacher.tv-simulation-thread:not(.tv-paged).visual-open:not(.visual-expanded){grid-template-columns:0 minmax(0,1fr) var(--sl-width,40%)}
+.teacher.tv-simulation-thread.tv-side-open:not(.tv-paged).visual-open:not(.visual-expanded){grid-template-columns:200px minmax(0,1fr) var(--sl-width,40%)}
+.sl-divider{position:absolute;top:8px;bottom:8px;width:12px;z-index:15;cursor:col-resize;touch-action:none;outline:none}
+.sl-divider[hidden]{display:none!important}
+.sl-divider::after{content:"";position:absolute;left:5px;top:18px;bottom:18px;width:2px;border-radius:2px;background:#ffffff16}
+.sl-divider:hover::after,.sl-divider:focus-visible::after{background:#8daac9}
+.tv-simulation-thread:not(.tv-paged) .artifact-toolbar{background:none;border:0}
+.tv-simulation-thread .tv-card-slot:has(.tv-inline-visual:empty){margin:0}
+.tv-simulation-thread:not(.visual-inline) .tv-card-slot .tv-inline-reopen{display:none}
+.tv-simulation-thread .artifact-scene{min-width:0}
+@media(max-width:900px){
+ .tv-simulation-thread.visual-inline:not(.visual-expanded) .artifact-scene{height:300px;min-height:300px;max-height:50vh;position:relative}
+ .tv-simulation-thread.visual-inline:not(.visual-expanded) .problem-artifact{min-width:0;max-width:100%;overflow:hidden}
+ .sim-lab-viewer .sl-canvas{min-height:150px}
+ .sl-transport{gap:4px;padding:5px 8px}
+ .teacher.tv-simulation-thread:not(.tv-paged).visual-open:not(.visual-expanded),.teacher.tv-simulation-thread.tv-side-open:not(.tv-paged).visual-open:not(.visual-expanded){grid-template-columns:0 minmax(0,1fr) 0}
+}
+
+/* A separator is focused through its center line, never an outer rectangle. */
+.teacher .sl-divider,.teacher .sl-divider:focus,.teacher .sl-divider:focus-visible{outline:0!important;box-shadow:none;border:0;background:transparent}
+.teacher .sl-divider:focus-visible::after{background:#8daac9}

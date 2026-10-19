@@ -1,0 +1,229 @@
+.ka-account{flex:none;margin-top:auto;padding:15px 3px 0}
+.ka-account-button{display:flex;align-items:center;gap:9px;width:100%;padding:10px 8px;color:#c8c8ce;background:transparent;border:0;border-radius:10px;font:13px/1.5 var(--tv-sans,system-ui);text-align:left}
+.ka-account-button:hover{background:#ffffff09;color:#fff}
+.ka-account-button>svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.ka-account-status{flex:1;text-align:right;font-size:10px;color:#93939e;white-space:nowrap}.ka-account-caret{font-size:14px;color:#888}
+.ka-account-menu{position:fixed;inset:auto;margin:0;padding:9px;width:230px;max-width:calc(100vw - 20px);border:1px solid #ffffff14;border-radius:15px;background:#252528;color:#eaeaf0;box-shadow:0 14px 40px #0006;font:13px/1.5 var(--tv-sans,system-ui)}
+.ka-account-menu::backdrop{background:transparent}
+.ka-account-menu p{padding:4px 10px 9px;margin:0;color:#93939f;font-size:11px;letter-spacing:.04em}
+.ka-account-menu button{display:flex;align-items:center;gap:11px;width:100%;padding:10px;border:0;border-radius:8px;background:transparent;color:inherit;text-align:left;font:inherit}
+.ka-account-menu button:hover{background:#ffffff08}
+.ka-account-menu svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ka-dialog{position:fixed;inset:0;margin:auto;width:min(510px,calc(100vw - 28px));max-width:calc(100vw - 20px);height:fit-content;max-height:calc(100dvh - 28px);box-sizing:border-box;padding:0;overflow:auto;border:1px solid #ffffff12;border-radius:26px;background:#202124;color:#eeeff4;box-shadow:0 24px 90px #0008;font:14px/1.5 var(--tv-sans,system-ui)}
+.ka-dialog::backdrop{background:#07080ab0;backdrop-filter:blur(7px)}
+.ka-dialog.is-expanded{width:min(800px,calc(100vw - 28px))}
+.ka-dialog button,.ka-dialog input,.ka-dialog select{font:inherit}
+.ka-dialog button{cursor:pointer}.ka-dialog button:disabled{cursor:wait;opacity:.5}
+.ka-dialog [hidden]{display:none!important}
+.ka-dialog button:focus-visible,.ka-dialog input:focus-visible,.ka-dialog select:focus-visible,.ka-account-button:focus-visible,.ka-account-menu button:focus-visible{outline:2px solid #8ab6f4;outline-offset:3px}
+.ka-top{display:flex;align-items:center;gap:6px;position:sticky;top:0;padding:16px 17px 4px;background:#202124e8;z-index:2;border:0;min-height:0}
+.ka-brand-label{padding-left:12px;color:#a5aab7;font-size:10px;font-weight:600;letter-spacing:.14em}
+.ka-top-space{flex:1}.ka-icon{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;padding:6px;background:transparent;color:#9297a4}
+.ka-icon:hover{background:#ffffff09;color:#fff}.ka-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ka-content{padding:17px 32px 30px}
+.ka-dialog h1{font-size:27px;line-height:1.2;letter-spacing:-.035em;font-weight:600;margin:0 0 12px;color:#f0f1f7}
+.ka-dialog h2{font-size:15px;line-height:1.4;font-weight:550;margin:27px 0 8px;color:#e4e7f0}
+.ka-intro{margin:0 0 20px;color:#a9adb9;font-size:14px;line-height:1.6}
+.ka-billing{font-size:12px;line-height:1.65;color:#9298a7;margin:0 0 18px;max-width:55ch}
+.ka-welcome-mark{width:64px;height:64px;margin:0 0 17px;color:#91b9f1}
+.ka-welcome-mark svg{display:block;width:100%;height:100%}
+.kinema-mark{display:inline-flex;width:24px;height:24px;flex:none;color:#a8cbfb}.kinema-mark svg{width:100%;height:100%;stroke-width:2}
+.ka-welcome .ka-intro{margin-bottom:0}.ka-welcome .ka-content{padding-top:9px}
+.ka-providers{display:grid;gap:2px;margin:0 -8px}
+.ka-provider-row{display:flex;align-items:center;gap:12px;width:100%;padding:11px 8px;background:transparent;border:0;border-radius:12px;color:#e0e4ed;text-align:left}
+.ka-provider-row:hover{background:#ffffff06}.ka-provider-icon{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#ffffff09;color:#dde4f0;font-size:15px;font-weight:600;line-height:1}
+.ka-provider-row .ka-provider-name{flex:1;font-size:14px;font-weight:500}.ka-provider-row>svg{flex:none;width:15px;height:15px;fill:none;stroke:#8b93a4;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ka-provider-name small{display:block;margin-top:2px;font-size:10px;line-height:1.4;font-weight:400;color:#8e98a9}
+.ka-provider-icon svg{width:23px;height:23px;fill:currentColor;stroke:none}.ka-provider-heading .ka-provider-icon svg{width:29px;height:29px}
+.ka-provider-icon[data-provider-brand="claude"],.ka-provider-icon[data-provider-brand="anthropic"]{color:#db9c7d}
+.ka-provider-icon[data-provider-brand="gemini"],.ka-provider-icon[data-provider-brand="gemini-cli"]{color:#9bafff}
+.ka-provider-icon[data-provider-brand="kimi"],.ka-provider-icon[data-provider-brand="kimi-cli"]{color:#f1f1f5}
+.ka-provider-icon[data-provider-brand="openrouter"]{color:#c6b7ff}
+.ka-advanced-toggle{display:flex;justify-content:space-between;gap:12px;align-items:center;width:100%;margin-top:14px;padding:10px 0;background:transparent;border:0;color:#9ba7bb;font-size:12px!important;text-align:start}
+.ka-advanced-toggle:hover{color:#e0e9f6}.ka-advanced-toggle>span:last-child{font-size:17px;color:#8996ac}.ka-advanced{padding-top:9px}
+.ka-advanced .ka-provider-row{padding-block:8px}.ka-advanced .ka-provider-icon{width:29px;height:29px}.ka-advanced .ka-provider-icon svg{width:20px;height:20px}
+.ka-advanced .ka-provider-name{font-size:12px}.ka-command{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:10px;background:#13161b;margin:16px 0 12px;color:#d4e2f4;max-width:100%;box-sizing:border-box}
+.ka-command code{flex:1;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap;font:12px/1.7 ui-monospace,Consolas,monospace;user-select:all}.ka-command button,.ka-device-code button{flex:none;border:0;background:transparent;color:#a8c3e8;padding:4px;font-size:11px}
+.ka-guide{font-size:12px;text-decoration:none;color:#a8c3e8}.ka-guide:hover{text-decoration:underline}.ka-after-command{margin-top:23px}
+.ka-cli-models{margin-top:27px}.ka-account-ready{color:#a7c7b6;margin:0 0 15px;font-size:13px}
+.ka-device-code{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;margin-top:18px;border-radius:12px;background:#151921;color:#d7e8ff}
+.ka-device-code strong{letter-spacing:.1em;font:600 23px/1.4 ui-monospace,monospace;overflow-wrap:anywhere}.ka-login-link{box-sizing:border-box;text-decoration:none}
+.ka-subtle{display:block;border:0;background:transparent;color:#a4b8d1;font-size:12px!important;margin:14px auto 0;padding:6px 0}
+[dir="rtl"] .ka-provider-row,[dir="rtl"] .ka-account-button,[dir="rtl"] .ka-account-menu button{text-align:right}
+[dir="rtl"] .ka-provider-row>svg,[dir="rtl"] [data-ka="back"]>svg{transform:scaleX(-1)}
+[dir="rtl"] .ka-account-status{text-align:left}
+.ka-connect-label{font-size:11px;color:#969faf}.ka-connected{display:flex;align-items:center;gap:6px;color:#94bca9;font-size:11px;white-space:nowrap}
+.ka-connected i{width:5px;height:5px;background:#8abb9c;border-radius:50%;display:inline-block}
+.ka-primary{display:block;width:100%;min-height:42px;padding:10px 18px;margin-top:21px;border:1px solid #90b8f338;border-radius:12px;background:#aac9f0;color:#152032;font-weight:600!important;text-align:center}
+.ka-primary:hover:not(:disabled){background:#c0d8f7}.ka-primary:disabled{cursor:not-allowed!important;background:#344153;color:#a4b2c8;border-color:transparent}
+.ka-skip{display:block;width:100%;padding:12px 4px;margin-top:19px;border:0;border-radius:9px;background:transparent;color:#b9c8dc;font-size:13px!important}.ka-skip:hover{color:#fff;background:#ffffff05}
+.ka-browse-note{font-size:11px;color:#858c9b;text-align:center;margin:8px 0 0;line-height:1.6}
+.ka-legacy{margin:17px 0 0;color:#9eaab8;font-size:12px;line-height:1.6}
+.ka-provider-heading{display:flex;align-items:center;gap:14px;margin:5px 0 25px}.ka-provider-heading .ka-provider-icon{width:45px;height:45px;border-radius:13px;font-size:21px}
+.ka-provider-heading h1{font-size:25px;margin:0 0 7px}.ka-provider-heading p{margin:0;color:#a3acba;font-size:12px}
+.ka-field{display:block;margin:0 0 18px;color:#c3cad6;font-size:12px}
+.ka-field input,.ka-field select{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:11px 12px;border:1px solid #ffffff16;border-radius:10px;background:#292b30;color:#e5e8ee;min-width:0;font-size:14px;line-height:1.4;color-scheme:dark}
+.ka-field input::placeholder{color:#858e9f}.ka-field input[type=password]{font-family:ui-monospace,monospace;letter-spacing:.025em}.ka-field select{padding-right:25px}
+.ka-field-note{margin:-7px 0 18px;color:#9099a8;font-size:12px;line-height:1.6}
+.ka-dialog form+.ka-billing{margin-top:17px;margin-bottom:0}.ka-current{margin:0 0 22px;font-size:13px;color:#a5adbc}.ka-current strong{font-weight:500;color:#d4e1f3}
+.ka-model-fields .ka-primary{margin-top:22px}.ka-same-model{display:flex;align-items:flex-start;gap:9px;color:#b6bfce;font-size:12px;line-height:1.6}.ka-same-model input{margin:3px 0 0;accent-color:#aac9f0;width:14px;height:14px;flex:none}
+.ka-connection-actions{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:25px}
+.ka-connection-actions button{border:0;padding:5px 0;background:transparent;color:#9ba5b6;font-size:12px}.ka-connection-actions button:hover{color:#dde4ef}
+.ka-error,.ka-notice{font-size:12px;line-height:1.65;margin:19px 0 0;overflow-wrap:anywhere}.ka-error{color:#efb4af}.ka-notice{color:#a7c3de}
+.ka-loading{padding:40px 0;text-align:center;color:#a8b2c2;font-size:13px}
+/* Connected API catalogs can be much larger than the local runtime list. */
+.km-catalog-filters{display:grid;gap:7px;padding:0 4px 10px}
+.km-catalog-filters input,.km-catalog-filters select{box-sizing:border-box;width:100%;min-width:0;background:#ffffff07;color:#ddd;border:1px solid #ffffff15;border-radius:9px;font:12px/1.5 system-ui;padding:8px 9px;color-scheme:dark}
+.km-catalog-filters input::placeholder{color:#949494}.km-catalog-results{max-height:290px;overflow-y:auto;scrollbar-width:thin}
+.km-provider-label{padding:13px 6px 5px;color:#8e98a7;font-size:10px;font-weight:500;letter-spacing:.02em}
+.km-provider-label:first-child{padding-top:3px}.km-model-row>span:first-child{min-width:0;overflow-wrap:anywhere}
+.km-show-more{display:block;width:100%;padding:11px 6px;text-align:left;color:#a9bbd3!important;font-size:11px!important}
+@media(max-width:600px){
+ .ka-dialog{width:calc(100vw - 20px);max-height:calc(100dvh - 20px);border-radius:21px}.ka-dialog.is-expanded{width:calc(100vw - 20px)}
+ .ka-top{padding:11px 11px 3px}.ka-brand-label{padding-left:7px}.ka-content{padding:14px 20px 23px}
+ .ka-dialog h1{font-size:25px}.ka-welcome-mark{width:54px;height:54px;margin-bottom:14px}.ka-dialog h2{margin-top:23px}
+ .ka-provider-row{gap:10px;padding:10px 5px}.ka-provider-icon{width:30px;height:30px;font-size:13px}.ka-provider-row .ka-provider-name{font-size:13px}
+ .ka-connected{font-size:10px}.ka-connect-label{font-size:10px}.ka-provider-heading h1{font-size:22px}.ka-provider-heading{gap:11px}
+ .ka-account-menu{width:230px}.ka-catalog-results{max-height:220px}
+}
+
+/* 1.48 guided welcome: Welcome, Account, Ready. Full screen, nothing of the app behind it */
+html.ka-first-run-check body>*:not(dialog){visibility:hidden}
+.kw-screen{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;box-sizing:border-box;overflow:auto;background:radial-gradient(1200px 700px at 50% -10%,#1d2a3d 0,#141518 62%) #141518;color:#eeeff4;font:14px/1.5 var(--tv-sans,system-ui)}
+.kw-screen::backdrop{background:#141518}
+.kw-screen button{font:inherit;cursor:pointer}.kw-screen button:disabled{cursor:wait;opacity:.55}
+.kw-screen [hidden]{display:none!important}
+.kw-screen button:focus-visible,.kw-screen a:focus-visible{outline:2px solid #8ab6f4;outline-offset:3px}
+.kw-inner{display:flex;flex-direction:column;min-height:100%;box-sizing:border-box;width:min(760px,100%);margin:0 auto;padding:22px 28px 40px;text-align:center}
+.kw-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;width:100%}
+.kw-top-side{min-height:32px}.kw-end{display:flex;justify-content:flex-end}
+.kw-steps{display:flex;gap:22px;margin:0;padding:0;list-style:none;font-size:12px;color:#7d8594}
+.kw-steps li{position:relative;padding-left:14px}
+.kw-steps li::before{content:'';position:absolute;left:0;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#3a4150}
+.kw-steps li.is-done::before{background:#8abb9c}
+.kw-steps li.is-current{color:#e3e9f4}.kw-steps li.is-current::before{background:#aac9f0;box-shadow:0 0 0 3px #aac9f026}
+.kw-body{display:flex;flex-direction:column;align-items:center;width:100%;margin:auto;padding-top:34px}
+.kw-intro,.kw-done{display:flex;flex-direction:column;align-items:center;width:100%}
+.kw-mark{width:56px;height:56px;color:#9cc2f5;margin-bottom:20px}.kw-mark svg{display:block;width:100%;height:100%}
+.kw-screen h1{margin:0 0 12px;font-size:clamp(28px,4.2vw,40px);line-height:1.1;letter-spacing:-.035em;font-weight:600;color:#f3f4f8}
+.kw-lead{margin:0;max-width:44ch;color:#b4bac6;font-size:16px;line-height:1.6}
+.kw-panes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;margin:30px 0 0}
+.kw-pane{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 12px 16px;border:1px solid #ffffff12;border-radius:16px;background:#1b1d21;text-align:center}
+.kw-pane-art{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:#aac9f00d}
+.kw-pane-art svg{width:26px;height:26px;fill:none;stroke:#aac9f0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.kw-pane b{display:block;font-size:13px;font-weight:600;color:#e6ecf6}.kw-pane small{display:block;margin-top:2px;color:#8f97a6;font-size:12px;line-height:1.45}
+.kw-primary{width:min(340px,100%);margin:30px auto 0}
+.kw-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;margin-top:30px}
+.kw-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:150px;padding:20px 14px;border:1px solid #ffffff14;border-radius:18px;background:#1f2125;color:#e8ebf2;transition:border-color .15s,background .15s}
+.kw-card:hover:not(:disabled){border-color:#aac9f05c;background:#23262c}
+.kw-card b{margin-top:8px;font-size:16px;font-weight:600}.kw-card small.kw-tool{color:#8a93a2;font-size:12px}
+.kw-card em{margin-top:6px;font-style:normal;color:#9aa6b8;font-size:12px}
+.kw-card-mark{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#ffffff0a}.kw-card-mark svg{width:28px;height:28px}
+.kw-flow{width:min(440px,100%);margin-top:30px;text-align:left;padding:26px 28px 28px;border:1px solid #ffffff12;border-radius:22px;background:#1f2125;box-sizing:border-box}
+.kw-flow h2{margin:0 0 4px;font-size:20px;font-weight:600;letter-spacing:-.02em}.kw-flow .ka-provider-heading{margin:4px 0 18px}.kw-flow .ka-provider-heading p{margin:0}
+.kw-flow .ka-primary{margin-top:14px}
+.kw-back{display:inline-flex;align-items:center;gap:4px;margin:0 0 0 -6px;padding:5px 8px 5px 4px;border:0;border-radius:8px;background:transparent;color:#9aa3b2;font-size:12px!important}
+.kw-back:hover{background:#ffffff09;color:#e5e8ee}.kw-back svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.kw-quiet{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.kw-skip{padding:8px 14px;border:0;border-radius:10px;background:transparent;color:#c3cfe0;font-size:14px!important;text-decoration:underline;text-decoration-color:#c3cfe055;text-underline-offset:4px}
+.kw-skip:hover{color:#fff;background:#ffffff08}
+.kw-quiet p{margin:0;color:#868e9c;font-size:12px;max-width:46ch;line-height:1.55}
+.kw-close{width:34px;height:34px;justify-self:end}
+.kw-screen .ka-error,.kw-screen .ka-notice{margin-top:16px}
+.kw-screen .kp-ask{width:min(560px,100%)}
+.kw-done .ka-models{width:100%;margin-top:4px}
+.kw-done .ka-account-ready{justify-content:center}
+.kw-why{margin:12px 0 0;max-width:46ch;color:#9aa2b0;font-size:12.5px;line-height:1.6}
+
+/* Account: the one signed-in account, its usage and models */
+.ka-section{font-size:11px!important;font-weight:600!important;letter-spacing:.08em;text-transform:uppercase;color:#8f97a6!important;margin:28px 0 8px!important}
+.ka-current-account,.ka-mount-card{padding:16px 16px 14px;border:1px solid #ffffff12;border-radius:16px;background:#ffffff05;margin-bottom:6px}
+.ka-current-head{display:flex;align-items:center;gap:12px}.ka-current-head>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.ka-current-head b{font-weight:600;font-size:15px;color:#eef0f5}.ka-current-head small{color:#959dab;font-size:12px}
+.ka-account-ready{display:flex;align-items:center;gap:8px;margin:0 0 14px;color:#b8d8c5;font-size:14px}
+.ka-account-ready i{width:7px;height:7px;border-radius:50%;background:#8abb9c;display:inline-block}
+.ka-models{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px}
+.ka-models div{min-width:0;padding:9px 11px;border-radius:11px;background:#ffffff07}
+.ka-models dt{color:#8d95a4;font-size:11px}.ka-models dd{margin:2px 0 0;color:#e2e6ee;font-size:13px;overflow-wrap:anywhere}
+.ka-current-account .ka-connection-actions,.ka-mount-card .ka-connection-actions{margin-top:12px}
+.ka-danger{background:#e8a6a0!important;border-color:#e8a6a055!important;color:#2c1513!important}
+.ka-waiting{display:flex;align-items:center;gap:9px;margin:16px 0 4px;color:#a8b0bd;font-size:13px}
+.ka-spinner{width:13px;height:13px;border-radius:50%;border:2px solid #aac9f033;border-top-color:#aac9f0;animation:ka-spin .9s linear infinite}
+@keyframes ka-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ka-spinner{animation-duration:3s}}
+.ka-center{text-align:center;margin-top:10px}
+.ka-login-link{text-decoration:none;box-sizing:border-box}
+.ka-language-row .ka-provider-icon svg{fill:none;stroke:currentColor;stroke-width:1.5}
+
+/* Plan usage bars (Account and the composer context popover) */
+.ku-usage{display:grid;gap:10px;margin:14px 0 2px}
+.ku-line{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:12.5px;color:#d9dee8}
+.ku-line small{color:#8f97a5;font-size:11px;white-space:nowrap}
+.ku-bar{height:5px;margin-top:5px;border-radius:3px;background:#ffffff12;overflow:hidden}
+.ku-bar i{display:block;height:100%;border-radius:inherit;background:#aac9f0}
+.ku-bar.is-mid i{background:#e8c27a}.ku-bar.is-high i{background:#ea8f86}
+.ku-stale{color:#7f8795;font-size:11px}
+.ku-usage.is-compact{gap:8px;margin:6px 0 0}.ku-usage.is-compact .ku-line{font-size:12px}
+.km-usage .ku-usage{margin-top:8px}
+
+/* Apps and updates */
+.ka-updates{display:grid;gap:2px}
+.ka-update-row{display:flex;align-items:center;gap:12px;padding:8px 4px}
+.ka-update-name{flex:1;min-width:0;display:flex;flex-direction:column;color:#e0e4ed;font-size:13px}
+.ka-update-name small{color:#929aa9;font-size:11.5px}
+.ka-update-row button{flex:none;padding:6px 13px;border:1px solid #ffffff1a;border-radius:9px;background:#ffffff08;color:#dbe4f1;font:inherit;font-size:12px;cursor:pointer}
+.ka-update-row button:hover{background:#ffffff12}
+.ka-update-row>small{flex:none;color:#8a92a0;font-size:11px;max-width:40%;text-align:right}
+.ka-update-state{flex:none;color:#aac9f0;font-size:12px}
+.ka-update-error{color:#eda39b!important}.ka-update-done{color:#94bca9!important}
+.ka-update-foot{margin:8px 0 0!important}
+.ka-updates .ka-provider-icon{width:30px;height:30px}
+
+/* Settings page slot */
+.ka-mounted{font:13px/1.5 var(--tv-sans,system-ui);color:#e6e9f0}
+.ka-mounted button{font:inherit;cursor:pointer}
+.ka-mounted .ka-intro{margin:0 0 12px}
+.ka-mount-signin{display:flex;flex-wrap:wrap;gap:8px}
+.ka-mount-signin button{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border:1px solid #ffffff18;border-radius:12px;background:#ffffff07;color:#e6eaf2}
+.ka-mount-signin button:hover{background:#ffffff10}.ka-mount-signin .ka-provider-icon{width:28px;height:28px}
+.ka-mounted .ka-connection-actions button{padding:7px 12px;border:1px solid #ffffff18;border-radius:9px;background:#ffffff07;color:#dbe3ef}
+.ka-mounted .ka-subtle{margin-top:10px;border:0;background:transparent;color:#9aa6b8;padding:4px 0}
+
+@media(max-width:600px){
+ .kw-inner{padding:16px 18px 28px}
+ .kw-steps{gap:12px;font-size:11px}
+ .kw-back span{display:none}
+ .kw-body{padding-top:26px}
+ .kw-mark{width:50px;height:50px;margin-bottom:16px}
+ .kw-lead{font-size:14.5px}
+ .kw-panes{grid-template-columns:1fr;gap:8px;margin-top:24px}
+ .kw-pane{flex-direction:row;text-align:left;padding:12px 14px;gap:12px}
+ .kw-pane-art{flex:none;width:38px;height:38px}
+ .kw-cards{grid-template-columns:1fr;gap:10px}
+ .kw-card{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center;min-height:0;padding:14px 16px;text-align:left}
+ .kw-card-mark{grid-row:span 3}
+ .kw-card b,.kw-card small.kw-tool,.kw-card em{grid-column:2;margin:0}
+ .kw-card b{margin-top:0}
+ .kw-flow{padding:20px 18px 22px;border-radius:18px}
+ .ka-models{grid-template-columns:1fr}
+ .ka-current-account,.ka-mount-card{padding:13px 12px 12px}
+}
+.ka-current-account .ka-connection-actions,.ka-mount-card .ka-connection-actions{justify-content:flex-start;gap:8px 20px}
+/* 1.29 Settings › Account: every signed-in account in one list; the one in use is marked */
+.ka-account-list{display:flex;flex-direction:column}
+.ka-account-item{padding:11px 0;border-top:1px solid #ffffff0d}.ka-account-item:first-child{border-top:0;padding-top:2px}
+.ka-account-row{display:flex;align-items:center;gap:12px;min-width:0}
+.ka-account-text{flex:1;min-width:0;display:flex;flex-direction:column}
+.ka-account-text b{font-weight:600;font-size:14px;color:#eef0f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ka-account-text small{color:#959dab;font-size:12px}
+.ka-use-btn{flex:none;padding:6px 12px;border:1px solid #ffffff18;border-radius:9px;background:#ffffff07;color:#dbe3ef;font:inherit;font-size:12px}
+.ka-use-btn:hover{background:#ffffff12}
+.ka-using{flex:none;display:flex;align-items:center;gap:6px;color:#94bca9;font-size:12px;white-space:nowrap}
+.ka-using i{width:5px;height:5px;border-radius:50%;background:#8abb9c;display:inline-block}
+.ka-mounted .ka-mount-signin{margin-top:12px}
+@media(max-width:600px){.ka-account-row{gap:10px;flex-wrap:wrap}.ka-account-text{flex:1 1 140px}.ka-using,.ka-use-btn{margin-left:auto}.ka-use-btn{padding:6px 10px}}
+
+.kw-card:disabled{opacity:.5;cursor:default;transform:none}
+.kw-card:disabled:hover{background:inherit;border-color:#ffffff14}
+
+.ka-welcome-link{margin:20px 0 0;text-align:center}

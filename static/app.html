@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kinema</title>
+<meta name="theme-color" content="#0f1114">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kinema">
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/icons/kinema.svg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/app.css">
+<link rel="stylesheet" href="/study.css">
+<link rel="stylesheet" href="/workspace.css">
+<link rel="stylesheet" href="/app-polish.css">
+<link rel="stylesheet" href="/learning-controls.css">
+<link rel="stylesheet" href="/teacher.css">
+<link rel="stylesheet" href="/daily.css">
+<link rel="stylesheet" href="/composer.css">
+<link rel="stylesheet" href="/standalone.css">
+<link rel="stylesheet" href="/topic_companion.css">
+<link rel="stylesheet" href="/refresher_card.css">
+<link rel="stylesheet" href="/book_workspace.css">
+<link rel="stylesheet" href="/lesson_reader.css">
+<link rel="stylesheet" href="/chat_polish.css">
+<link rel="stylesheet" href="/account_panel.css">
+<link rel="stylesheet" href="/language_panel.css">
+<link rel="stylesheet" href="/settings.css">
+<link rel="stylesheet" href="/chapter_browser.css">
+<link rel="stylesheet" href="/image_viewer.css">
+<link rel="stylesheet" href="/library_browser.css">
+<link rel="stylesheet" href="/sim_lab.css">
+</head>
+<body class="v-teacher">
+<header class="lbar" id="lbar" hidden>
+  <button type="button" class="lback" id="lback">&#8249; Back</button>
+  <span class="ltitle" id="ltitle"></span>
+</header>
+<input id="askin" hidden aria-hidden="true" tabindex="-1">
+
+<main id="main">
+  <!-- the continuing tutor: one conversation per course, its own visual beside it (teacher.js) -->
+  <section class="teacher" id="teacher"></section>
+
+  <section class="daily" id="daily" hidden></section>
+  <section class="sim-lab" id="sim-lab" hidden></section>
+
+  <!-- one skill: its confirmed note, your evidence, what it needs and leads to -->
+  <section class="gridbg" id="skill" hidden><div class="wrap" id="skillbody"></div></section>
+
+  <!-- a 30-minute session: placement, refreshers, checks, cards -->
+  <section class="gridbg" id="session" hidden><div class="sess" id="sessbody"></div></section>
+
+  <!-- a problem: the visual on the left, the coach on the right -->
+  <section class="workspace" id="workspace" hidden>
+    <aside class="problem-artifact" id="problem-artifact" aria-label="Physics visual" hidden>
+      <div class="artifact-toolbar"><h2 class="artifact-name">Visual</h2><button data-artifact-details aria-label="Show quantities and layers" aria-pressed="false" title="Quantities and layers">Layers</button><button data-artifact-expand aria-label="Expand visual" title="Expand visual">↗</button><button data-artifact-close aria-label="Close visual" title="Close visual">×</button></div>
+    <div class="stage" id="stage">
+      <div id="gl"></div><svg id="leaders"></svg><div id="callouts"></div>
+      <section class="study-view" id="study" hidden></section>
+      <div class="shotview" id="shotview" hidden><img id="shotimg" alt="Your problem"><p id="shotcap"></p></div>
+      <div class="stitle" id="stitle" hidden><div class="kicker" id="skicker"></div><h1 id="title"></h1></div>
+      <div class="inspector" id="inspector" hidden></div>
+      <div class="readout" id="readout" hidden></div>
+      <div class="overlays" id="overlays" hidden></div>
+      <div class="transport" id="transport" hidden>
+        <button class="play" id="playbtn" title="Play / pause (space)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+        <button class="ib" id="back" title="Back a frame (←)"><svg viewBox="0 0 24 24"><path d="M14 6l-8 6 8 6zM16 6h2v12h-2z"/></svg></button>
+        <button class="ib" id="fwd" title="Forward a frame (→)"><svg viewBox="0 0 24 24"><path d="M10 6l8 6-8 6zM6 6h2v12H6z"/></svg></button>
+        <div class="bar" id="bar" role="slider" tabindex="0" aria-label="Time" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0"><div class="tr"><i id="tbar"></i></div><b id="tknob"></b></div>
+        <span class="t num" id="tlab">0.00 s</span>
+        <button class="spd" id="spd" title="Speed ([ and ])">1×</button>
+        <button class="spd" id="views" title="Camera (1-4)">view</button>
+      </div>
+      <div class="stagehint" id="hint" hidden>drag to orbit · scroll to zoom · click the body</div>
+      <div class="energy" id="energy" hidden></div>
+    </div>
+    </aside>
+    <section class="pane" id="pane" aria-label="Problem conversation"><div id="coach"></div></section>
+  </section>
+
+  <section class="reviewview gridbg" id="review" hidden></section>
+
+  <!-- pages hosted inside the tutor shell (app.js moves them next to the chat) -->
+  <section class="pg pg-library" id="library" hidden>
+    <div class="pg-col library-layout"><nav class="library-nav" id="libtabs" aria-label="Library categories"><button type="button" data-tab="problems" data-collection="catalog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h12a2 2 0 0 1 2 2v16H6a2 2 0 0 1-2-2V3Zm0 14h14"/></svg><span>Problems</span></button><button type="button" data-tab="problems" data-collection="folders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V5h6l2 2h10v13H3z"/></svg><span>Folders</span></button><button type="button" data-tab="simulations"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8v9l9 5 9-5V8l-9-5Zm-9 5 9 5 9-5m-9 5v9"/></svg><span>Visuals</span></button><button type="button" data-tab="graphs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v17h17M6 15l4-7 5 4 5-8"/></svg><span>Graphs</span></button><button type="button" data-tab="materials"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l5 5v13H6zM14 3v6h5"/></svg><span>Materials</span></button></nav><div class="library-content"><h1 id="library-title">Problems</h1>
+      <div class="pg-pane" data-pane="problems">
+        <div id="libcatalog"></div>
+        <div id="libfolders" hidden></div>
+        <div id="libwork" hidden><input type="search" id="libsearch" placeholder="Search saved problems" aria-label="Search saved problems"><div id="liblist"></div></div>
+      </div>
+      <div class="pg-pane" data-pane="simulations" hidden id="libvisuals"></div>
+      <div class="pg-pane" data-pane="graphs" hidden id="libgraphs"></div>
+      <div class="pg-pane" data-pane="materials" hidden id="libmaterials"></div>
+    </div></div>
+  </section>
+  <!-- Settings under the bottom-left profile chip (settings_page.js) -->
+  <section class="pg pg-settings" id="settings" hidden></section>
+</main>
+
+<div class="shade" id="qa-shade" hidden></div>
+<div class="qa" id="qa" hidden></div>
+<div class="tip" id="tip"></div>
+<div class="modal" id="zoom" hidden><img id="zoomimg" alt=""></div>
+<div id="toast"></div>
+    <div id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lbname" hidden>
+      <div class="lbbar"><span id="lbname" class="lbname">Image</span><span class="grow"></span>
+        <button type="button" data-image-close aria-label="Close image" title="Close (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <div id="lb-stage"><img id="lbimg" alt="" draggable="false"><p class="lb-error" role="status">This image could not load.<button type="button" data-image-retry>Try again</button></p></div>
+      <div class="lbtools" role="group" aria-label="Image zoom">
+        <button type="button" data-image-zoom="out" aria-label="Zoom out" title="Zoom out (−)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg></button>
+        <button type="button" id="lb-scale" aria-label="Fit image to view" title="Fit image (0)">Fit</button>
+        <button type="button" data-image-zoom="in" aria-label="Zoom in" title="Zoom in (+)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12M12 6v12"/></svg></button>
+      </div>
+    </div>
+<script src="/js/image_viewer.js"></script>
+<script>window.__errs=[];addEventListener('error',e=>window.__errs.push((e.message||'')+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));addEventListener('unhandledrejection',e=>window.__errs.push('promise: '+(e.reason&&e.reason.message||e.reason)));</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/planck@1.5.0/dist/planck.min.js"></script>
+<script src="/js/engine2d.js"></script><script src="/js/presets.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/","three/examples/jsm/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

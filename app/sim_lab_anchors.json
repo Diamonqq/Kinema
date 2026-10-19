@@ -1,0 +1,1758 @@
+{
+  "version": 1,
+  "source_sha256": {
+    "static/js/prop_library.js": "2a5679095df984e94f54b38412b3ee65ebdd48290bb0364f6ee969d64d1d1cbf",
+    "static/js/sim_lab_geometry.js": "6bbadccd84dc1d6bcddaa00dd5432dbedb7bc7981b22344d137a559e4ab5fae5"
+  },
+  "coordinate_system": "bounding-box center, full extents; point coordinates normalized by width/height/depth; direction vectors unit length",
+  "parts": {
+    "point_mass": {
+      "default_dimensions": [
+        0.16,
+        0.16,
+        0.16
+      ],
+      "description": "Small two-tone bead for a particle or point mass.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.5000000111758711,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.5000000111758711,
+            0
+          ]
+        }
+      }
+    },
+    "sphere": {
+      "default_dimensions": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "description": "Solid ball with spin sectors.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.5000000085149494,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.5000000085149494,
+            0
+          ]
+        }
+      }
+    },
+    "shell": {
+      "default_dimensions": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "description": "Thin hollow sphere, cut away to show it is hollow.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            -0.000026953949949551222,
+            0,
+            0.006524110363511327
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            -0.000026953949949551222,
+            0.4999999925494195,
+            0.006524110363511327
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            -0.000026953949949551222,
+            -0.4999999925494195,
+            0.006524110363511327
+          ]
+        }
+      }
+    },
+    "rod": {
+      "default_dimensions": [
+        0.08,
+        2,
+        0.08
+      ],
+      "description": "Slender steel rod along its axis.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "end_top": {
+          "kind": "point",
+          "description": "end top attachment point",
+          "normalized": [
+            0,
+            0.5,
+            0
+          ]
+        },
+        "end_bottom": {
+          "kind": "point",
+          "description": "end bottom attachment point",
+          "normalized": [
+            0,
+            -0.5,
+            0
+          ]
+        }
+      }
+    },
+    "disk": {
+      "default_dimensions": [
+        1,
+        1,
+        0.12
+      ],
+      "description": "Thin uniform disk with spin sectors and a centre mark.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            1.3322676295501878e-17,
+            0.4980079641066055
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -1.3322676295501878e-17,
+            -0.4980079641066055
+          ]
+        },
+        "rim": {
+          "kind": "point",
+          "description": "rim attachment point",
+          "normalized": [
+            0.5,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "ring": {
+      "default_dimensions": [
+        1,
+        1,
+        0.08
+      ],
+      "description": "Thin hoop; all mass at the radius.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "rim": {
+          "kind": "point",
+          "description": "rim attachment point",
+          "normalized": [
+            0.47619049781574513,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "cylinder": {
+      "default_dimensions": [
+        0.8,
+        0.8,
+        1.2
+      ],
+      "description": "Solid cylinder with spin sectors.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            1.6653345121223162e-16,
+            0.49800796410660564
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -1.6653345121223162e-16,
+            -0.49800796410660564
+          ]
+        },
+        "rim": {
+          "kind": "point",
+          "description": "rim attachment point",
+          "normalized": [
+            0.4999999925494195,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "tube": {
+      "default_dimensions": [
+        0.8,
+        0.8,
+        1.2
+      ],
+      "description": "Hollow cylinder; the open ends show the wall.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            1.6653345121223162e-16,
+            0.4999999801317858
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -1.6653345121223162e-16,
+            -0.4999999801317858
+          ]
+        },
+        "rim": {
+          "kind": "point",
+          "description": "rim attachment point",
+          "normalized": [
+            0.4999999925494195,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "box": {
+      "default_dimensions": [
+        1,
+        0.7,
+        0.6
+      ],
+      "description": "Rectangular solid with crisp edges (exact physics size).",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.5000000085149494,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.5000000085149494,
+            0
+          ]
+        },
+        "left": {
+          "kind": "point",
+          "description": "left attachment point",
+          "normalized": [
+            -0.5,
+            0,
+            0
+          ]
+        },
+        "right": {
+          "kind": "point",
+          "description": "right attachment point",
+          "normalized": [
+            0.5,
+            0,
+            0
+          ]
+        },
+        "front": {
+          "kind": "point",
+          "description": "front attachment point",
+          "normalized": [
+            0,
+            0,
+            0.49999998013178587
+          ]
+        }
+      }
+    },
+    "cone": {
+      "default_dimensions": [
+        0.9,
+        1.4,
+        0.9
+      ],
+      "description": "Solid cone: base centred at the origin, apex up the axis.",
+      "art_anchors": {
+        "base_center": {
+          "kind": "point",
+          "description": "base center attachment point",
+          "normalized": [
+            0,
+            -0.5000000132454769,
+            0
+          ]
+        },
+        "apex": {
+          "kind": "point",
+          "description": "apex attachment point",
+          "normalized": [
+            0,
+            0.500000013245477,
+            0
+          ]
+        },
+        "rim": {
+          "kind": "point",
+          "description": "rim attachment point",
+          "normalized": [
+            0.5000000132454769,
+            -0.5000000132454769,
+            0
+          ]
+        }
+      }
+    },
+    "block": {
+      "default_dimensions": [
+        0.8,
+        0.6,
+        0.6
+      ],
+      "description": "Sliding block with softened edges.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            -0.0002498651758139517,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.4995002497900867,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.4999999801417147,
+            0
+          ]
+        },
+        "left": {
+          "kind": "point",
+          "description": "left attachment point",
+          "normalized": [
+            -0.4999999925494195,
+            -0.0002498651758139517,
+            0
+          ]
+        },
+        "right": {
+          "kind": "point",
+          "description": "right attachment point",
+          "normalized": [
+            0.4999999925494195,
+            -0.0002498651758139517,
+            0
+          ]
+        },
+        "front": {
+          "kind": "point",
+          "description": "front attachment point",
+          "normalized": [
+            0,
+            -0.0002498651758139517,
+            0.49999998013178587
+          ]
+        }
+      }
+    },
+    "beam": {
+      "default_dimensions": [
+        2,
+        0.15,
+        0.3
+      ],
+      "description": "Wooden plank along its longest side.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.49662296389668636,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.49662296389668636,
+            0
+          ]
+        },
+        "left": {
+          "kind": "point",
+          "description": "left attachment point",
+          "normalized": [
+            -0.49950049940569424,
+            0,
+            0
+          ]
+        },
+        "right": {
+          "kind": "point",
+          "description": "right attachment point",
+          "normalized": [
+            0.49950049940569424,
+            0,
+            0
+          ]
+        },
+        "front": {
+          "kind": "point",
+          "description": "front attachment point",
+          "normalized": [
+            0,
+            0,
+            0.49915144256050864
+          ]
+        }
+      }
+    },
+    "ladder": {
+      "default_dimensions": [
+        0.55,
+        2.5,
+        0.12
+      ],
+      "description": "Two rails and rungs along its longest side.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.5,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.5,
+            0
+          ]
+        },
+        "left": {
+          "kind": "point",
+          "description": "left attachment point",
+          "normalized": [
+            -0.5000000003251163,
+            0,
+            0
+          ]
+        },
+        "right": {
+          "kind": "point",
+          "description": "right attachment point",
+          "normalized": [
+            0.5000000003251163,
+            0,
+            0
+          ]
+        },
+        "front": {
+          "kind": "point",
+          "description": "front attachment point",
+          "normalized": [
+            0,
+            0,
+            0.5000000111758711
+          ]
+        }
+      }
+    },
+    "wheel": {
+      "default_dimensions": [
+        1,
+        1,
+        0.25
+      ],
+      "description": "Tyre, rim, spokes and hub; one coloured spoke shows the turning.",
+      "art_anchors": {
+        "axle": {
+          "kind": "point",
+          "description": "axle attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "contact": {
+          "kind": "point",
+          "description": "contact attachment point",
+          "normalized": [
+            0,
+            -0.5,
+            1.2335811711511372e-16
+          ]
+        },
+        "rim_top": {
+          "kind": "point",
+          "description": "rim top attachment point",
+          "normalized": [
+            0,
+            0.5,
+            -1.2335811711511372e-16
+          ]
+        }
+      }
+    },
+    "pulley": {
+      "default_dimensions": [
+        0.8,
+        0.8,
+        0.2
+      ],
+      "description": "Grooved pulley: rope seats at the groove radius; flanges, hub, axle, optional ceiling bracket.",
+      "art_anchors": {
+        "axle": {
+          "kind": "point",
+          "description": "axle attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "groove_top": {
+          "kind": "point",
+          "description": "groove top attachment point",
+          "normalized": [
+            0,
+            0.44642855764879896,
+            -7.401486536725727e-17
+          ]
+        },
+        "groove_left": {
+          "kind": "point",
+          "description": "groove left attachment point",
+          "normalized": [
+            -0.4464285576487991,
+            0,
+            0
+          ]
+        },
+        "groove_right": {
+          "kind": "point",
+          "description": "groove right attachment point",
+          "normalized": [
+            0.4464285576487991,
+            0,
+            0
+          ]
+        },
+        "groove_bottom": {
+          "kind": "point",
+          "description": "groove bottom attachment point",
+          "normalized": [
+            0,
+            -0.44642855764879896,
+            7.401486536725727e-17
+          ]
+        }
+      }
+    },
+    "spool": {
+      "default_dimensions": [
+        0.8,
+        0.8,
+        0.5
+      ],
+      "description": "Flanges, core and wound thread; thread leaves at the wound radius.",
+      "art_anchors": {
+        "axle": {
+          "kind": "point",
+          "description": "axle attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "thread_top": {
+          "kind": "point",
+          "description": "thread top attachment point",
+          "normalized": [
+            0,
+            0.2999999955296516,
+            -6.634798952277049e-17
+          ]
+        },
+        "thread_bottom": {
+          "kind": "point",
+          "description": "thread bottom attachment point",
+          "normalized": [
+            0,
+            -0.2999999955296516,
+            6.634798952277049e-17
+          ]
+        },
+        "rim_bottom": {
+          "kind": "point",
+          "description": "rim bottom attachment point",
+          "normalized": [
+            0,
+            -0.49999999254941946,
+            1.1057998253795082e-16
+          ]
+        }
+      }
+    },
+    "gyroscope": {
+      "default_dimensions": [
+        1.2,
+        1.2,
+        0.6
+      ],
+      "description": "Flywheel rotor on an axle in a gimbal ring.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "axle_top": {
+          "kind": "point",
+          "description": "axle top attachment point",
+          "normalized": [
+            0,
+            0.4739336494229794,
+            0
+          ]
+        },
+        "foot": {
+          "kind": "point",
+          "description": "foot attachment point",
+          "normalized": [
+            0,
+            -0.4739336494229794,
+            0
+          ]
+        }
+      }
+    },
+    "turntable": {
+      "default_dimensions": [
+        1.5,
+        0.3,
+        1.5
+      ],
+      "description": "Rotating platform with a reference stripe, spindle and pedestal.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0.0528455215278715,
+            0
+          ]
+        },
+        "center_top": {
+          "kind": "point",
+          "description": "center top attachment point",
+          "normalized": [
+            0,
+            0.45934958111851915,
+            0
+          ]
+        },
+        "rim_top": {
+          "kind": "point",
+          "description": "rim top attachment point",
+          "normalized": [
+            0.5,
+            0.45934958111851915,
+            0
+          ]
+        }
+      }
+    },
+    "top": {
+      "default_dimensions": [
+        0.7,
+        1.2,
+        0.7
+      ],
+      "description": "Top with its tip at the pivot.",
+      "art_anchors": {
+        "tip": {
+          "kind": "point",
+          "description": "tip attachment point",
+          "normalized": [
+            0,
+            -0.5,
+            0
+          ]
+        },
+        "crown": {
+          "kind": "point",
+          "description": "crown attachment point",
+          "normalized": [
+            0,
+            0.5000000170298987,
+            0
+          ]
+        }
+      }
+    },
+    "bead_hoop": {
+      "default_dimensions": [
+        1.5,
+        2,
+        0.5
+      ],
+      "description": "Vertical hoop turning about a spindle, with a bead on it.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "spindle_top": {
+          "kind": "point",
+          "description": "spindle top attachment point",
+          "normalized": [
+            0,
+            0.5,
+            0
+          ]
+        },
+        "bead": {
+          "kind": "point",
+          "description": "bead attachment point",
+          "normalized": [
+            0.3151749953247636,
+            -0.3059368749137954,
+            0
+          ]
+        }
+      }
+    },
+    "cart": {
+      "default_dimensions": [
+        1.4,
+        0.7,
+        0.8
+      ],
+      "description": "Wheeled cart; wheels roll on the base of its size.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            -0.0004995051293402086,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.49900099909840673,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.5000000093570871,
+            0
+          ]
+        },
+        "left": {
+          "kind": "point",
+          "description": "left attachment point",
+          "normalized": [
+            -0.5000000085149494,
+            -0.0004995051293402086,
+            0
+          ]
+        },
+        "right": {
+          "kind": "point",
+          "description": "right attachment point",
+          "normalized": [
+            0.5000000085149494,
+            -0.0004995051293402086,
+            0
+          ]
+        },
+        "front": {
+          "kind": "point",
+          "description": "front attachment point",
+          "normalized": [
+            0,
+            -0.0004995051293402086,
+            0.5070993913964299
+          ]
+        },
+        "contact_front": {
+          "kind": "point",
+          "description": "contact front attachment point",
+          "normalized": [
+            0.31250000532184335,
+            -0.5000000093570871,
+            0
+          ]
+        },
+        "contact_back": {
+          "kind": "point",
+          "description": "contact back attachment point",
+          "normalized": [
+            -0.31250000532184335,
+            -0.5000000093570871,
+            0
+          ]
+        },
+        "deck": {
+          "kind": "point",
+          "description": "deck attachment point",
+          "normalized": [
+            0,
+            0.49900099909840673,
+            0
+          ]
+        }
+      }
+    },
+    "train": {
+      "default_dimensions": [
+        2,
+        1,
+        1
+      ],
+      "description": "Rail car with window band and bogies (frames, relativity, momentum).",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            -2.4139881218037117e-9,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.49999999785423277,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.500000002682209,
+            0
+          ]
+        },
+        "left": {
+          "kind": "point",
+          "description": "left attachment point",
+          "normalized": [
+            -0.5,
+            -2.4139881218037117e-9,
+            0
+          ]
+        },
+        "right": {
+          "kind": "point",
+          "description": "right attachment point",
+          "normalized": [
+            0.5,
+            -2.4139881218037117e-9,
+            0
+          ]
+        },
+        "front": {
+          "kind": "point",
+          "description": "front attachment point",
+          "normalized": [
+            0,
+            -2.4139881218037117e-9,
+            0.5263157960780771
+          ]
+        },
+        "contact_front": {
+          "kind": "point",
+          "description": "contact front attachment point",
+          "normalized": [
+            0.36,
+            -0.500000002682209,
+            0
+          ]
+        },
+        "contact_back": {
+          "kind": "point",
+          "description": "contact back attachment point",
+          "normalized": [
+            -0.36,
+            -0.500000002682209,
+            0
+          ]
+        }
+      }
+    },
+    "elevator": {
+      "default_dimensions": [
+        1.2,
+        2,
+        1
+      ],
+      "description": "Cage hung on a cable (accelerating frames, apparent weight).",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0,
+            -0.20588235218838424,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.08823529601767398,
+            0
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.5000000003944425,
+            0
+          ]
+        },
+        "left": {
+          "kind": "point",
+          "description": "left attachment point",
+          "normalized": [
+            -0.49999998013178587,
+            -0.20588235218838424,
+            0
+          ]
+        },
+        "right": {
+          "kind": "point",
+          "description": "right attachment point",
+          "normalized": [
+            0.49999998013178587,
+            -0.20588235218838424,
+            0
+          ]
+        },
+        "front": {
+          "kind": "point",
+          "description": "front attachment point",
+          "normalized": [
+            0,
+            -0.20588235218838424,
+            0.4999999998509884
+          ]
+        },
+        "floor_top": {
+          "kind": "point",
+          "description": "floor top attachment point",
+          "normalized": [
+            0,
+            -0.4647058826097155,
+            0
+          ]
+        },
+        "cable_top": {
+          "kind": "point",
+          "description": "cable top attachment point",
+          "normalized": [
+            0,
+            0.5000000035061555,
+            0
+          ]
+        }
+      }
+    },
+    "projectile": {
+      "default_dimensions": [
+        1.3,
+        0.8,
+        0.7
+      ],
+      "description": "Ball at the launch point with a cannon at the launch angle.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0.3646533250280274,
+            0.3287665804270597,
+            0
+          ]
+        },
+        "launch_dir": {
+          "kind": "direction",
+          "description": "launch dir orientation vector, not a connection point",
+          "normalized": [
+            0.885207644127916,
+            0.4651961164686402,
+            0
+          ]
+        },
+        "muzzle": {
+          "kind": "point",
+          "description": "muzzle attachment point",
+          "normalized": [
+            0.3646533250280274,
+            0.3287665804270597,
+            0
+          ]
+        },
+        "ground": {
+          "kind": "point",
+          "description": "ground attachment point",
+          "normalized": [
+            -0.1872543882642796,
+            -0.4999999884736127,
+            0
+          ]
+        }
+      }
+    },
+    "rocket": {
+      "default_dimensions": [
+        0.7,
+        2,
+        0.7
+      ],
+      "description": "Rocket body, nozzle and fins (variable mass, thrust).",
+      "art_anchors": {
+        "base": {
+          "kind": "point",
+          "description": "base attachment point",
+          "normalized": [
+            0,
+            -0.5,
+            0
+          ]
+        },
+        "nose": {
+          "kind": "point",
+          "description": "nose attachment point",
+          "normalized": [
+            0,
+            0.5000000170298987,
+            0
+          ]
+        }
+      }
+    },
+    "pendulum": {
+      "default_dimensions": [
+        1,
+        2,
+        0.3
+      ],
+      "description": "Pivot pin, string or rod and bob; ceiling block above the pin.",
+      "art_anchors": {
+        "pivot": {
+          "kind": "point",
+          "description": "pivot attachment point",
+          "normalized": [
+            -0.2736005602205534,
+            0.41817304226072466,
+            0
+          ]
+        },
+        "bob": {
+          "kind": "point",
+          "description": "bob attachment point",
+          "normalized": [
+            0.16407035468998982,
+            -0.25165283493569535,
+            0
+          ]
+        }
+      }
+    },
+    "spring": {
+      "default_dimensions": [
+        0.2,
+        1,
+        0.2
+      ],
+      "description": "Coil spring along +y with closed ends; length can change.",
+      "art_anchors": {
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            -0.00008688956566623772,
+            -0.5,
+            0.000015053094273851971
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            -0.00008688956566623772,
+            0.5001585138731235,
+            0.000015053094273851971
+          ]
+        }
+      }
+    },
+    "rope": {
+      "default_dimensions": [
+        2,
+        0.04,
+        0.04
+      ],
+      "description": "Rope segment between two points.",
+      "art_anchors": {
+        "from": {
+          "kind": "point",
+          "description": "from attachment point",
+          "normalized": [
+            0,
+            0.5,
+            0
+          ]
+        },
+        "to": {
+          "kind": "point",
+          "description": "to attachment point",
+          "normalized": [
+            0,
+            -0.5,
+            0
+          ]
+        }
+      }
+    },
+    "hinge": {
+      "default_dimensions": [
+        0.3,
+        0.5,
+        0.3
+      ],
+      "description": "Knuckled barrel on the axis with a fixed leaf.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            0.2656249939609553,
+            0,
+            0
+          ]
+        },
+        "axis_top": {
+          "kind": "point",
+          "description": "axis top attachment point",
+          "normalized": [
+            0.2656249939609553,
+            0.42372881227510817,
+            0
+          ]
+        },
+        "axis_bottom": {
+          "kind": "point",
+          "description": "axis bottom attachment point",
+          "normalized": [
+            0.2656249939609553,
+            -0.42372881227510817,
+            0
+          ]
+        },
+        "leaf_end": {
+          "kind": "point",
+          "description": "leaf end attachment point",
+          "normalized": [
+            -0.4999999953433871,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "pivot_stand": {
+      "default_dimensions": [
+        0.5,
+        1,
+        0.5
+      ],
+      "description": "Pedestal and socket; origin at the pivot point.",
+      "art_anchors": {
+        "pivot": {
+          "kind": "point",
+          "description": "pivot attachment point",
+          "normalized": [
+            0,
+            0.5,
+            0
+          ]
+        },
+        "base": {
+          "kind": "point",
+          "description": "base attachment point",
+          "normalized": [
+            0,
+            -0.4999999994635582,
+            0
+          ]
+        }
+      }
+    },
+    "support": {
+      "default_dimensions": [
+        3,
+        0.2,
+        1
+      ],
+      "description": "Hatched ceiling, floor or wall slab; origin on its working face.",
+      "art_anchors": {
+        "face": {
+          "kind": "point",
+          "description": "face attachment point",
+          "normalized": [
+            0.010443865905890413,
+            -0.5000000111758712,
+            -0.0012468852950624947
+          ]
+        },
+        "face_left": {
+          "kind": "point",
+          "description": "face left attachment point",
+          "normalized": [
+            -0.47911226818821917,
+            -0.5000000111758712,
+            -0.0012468852950624947
+          ]
+        },
+        "face_right": {
+          "kind": "point",
+          "description": "face right attachment point",
+          "normalized": [
+            0.5,
+            -0.5000000111758712,
+            -0.0012468852950624947
+          ]
+        }
+      }
+    },
+    "wedge": {
+      "default_dimensions": [
+        2,
+        1,
+        1
+      ],
+      "description": "Movable right-triangle wedge (slope from base/height or angle).",
+      "art_anchors": {
+        "low": {
+          "kind": "point",
+          "description": "low attachment point",
+          "normalized": [
+            0.49999998013178587,
+            -0.49999998916279215,
+            0
+          ]
+        },
+        "high": {
+          "kind": "point",
+          "description": "high attachment point",
+          "normalized": [
+            -0.49999998013178587,
+            0.49999998916279215,
+            0
+          ]
+        },
+        "slope_mid": {
+          "kind": "point",
+          "description": "slope mid attachment point",
+          "normalized": [
+            0,
+            0,
+            0
+          ]
+        },
+        "corner": {
+          "kind": "point",
+          "description": "corner attachment point",
+          "normalized": [
+            -0.49999998013178587,
+            -0.49999998916279215,
+            0
+          ]
+        },
+        "slope_dir": {
+          "kind": "direction",
+          "description": "slope dir orientation vector, not a connection point",
+          "normalized": [
+            0.8944271877688846,
+            -0.4472136019620202,
+            0
+          ]
+        },
+        "slope_normal": {
+          "kind": "direction",
+          "description": "slope normal orientation vector, not a connection point",
+          "normalized": [
+            0.44721360196202026,
+            0.8944271877688847,
+            0
+          ]
+        }
+      }
+    },
+    "ramp": {
+      "default_dimensions": [
+        2.5,
+        1,
+        1
+      ],
+      "description": "Fixed incline with a running strip and hatch.",
+      "art_anchors": {
+        "low": {
+          "kind": "point",
+          "description": "low attachment point",
+          "normalized": [
+            0.4999999804414621,
+            -0.49999998916279215,
+            -0.0004994940750540982
+          ]
+        },
+        "high": {
+          "kind": "point",
+          "description": "high attachment point",
+          "normalized": [
+            -0.48441345876880515,
+            0.49999998916279215,
+            -0.0004994940750540982
+          ]
+        },
+        "slope_mid": {
+          "kind": "point",
+          "description": "slope mid attachment point",
+          "normalized": [
+            0.007793260836328507,
+            0,
+            -0.0004994940750540982
+          ]
+        },
+        "corner": {
+          "kind": "point",
+          "description": "corner attachment point",
+          "normalized": [
+            -0.48441345876880515,
+            -0.49999998916279215,
+            -0.0004994940750540982
+          ]
+        },
+        "slope_dir": {
+          "kind": "direction",
+          "description": "slope dir orientation vector, not a connection point",
+          "normalized": [
+            0.9264396548216061,
+            -0.3764433104386677,
+            0
+          ]
+        },
+        "slope_normal": {
+          "kind": "direction",
+          "description": "slope normal orientation vector, not a connection point",
+          "normalized": [
+            0.3764433104386677,
+            0.9264396548216061,
+            0
+          ]
+        }
+      }
+    },
+    "rail": {
+      "default_dimensions": [
+        3,
+        0.15,
+        0.3
+      ],
+      "description": "I-profile rail along x; running surface at y = 0.",
+      "art_anchors": {
+        "start": {
+          "kind": "point",
+          "description": "start attachment point",
+          "normalized": [
+            -0.4999999801317858,
+            0.5,
+            0
+          ]
+        },
+        "end": {
+          "kind": "point",
+          "description": "end attachment point",
+          "normalized": [
+            0.4999999801317858,
+            0.5,
+            0
+          ]
+        },
+        "top": {
+          "kind": "point",
+          "description": "top attachment point",
+          "normalized": [
+            0,
+            0.5,
+            0
+          ]
+        }
+      }
+    },
+    "track": {
+      "default_dimensions": [
+        3,
+        1.5,
+        1
+      ],
+      "description": "Twin-rail track: loop-the-loop, quarter bowl, half-pipe or custom path.",
+      "art_anchors": {
+        "start": {
+          "kind": "point",
+          "description": "start attachment point",
+          "normalized": [
+            -0.4956383822597481,
+            -0.4701731587782519,
+            -0.34010796231159857
+          ]
+        },
+        "end": {
+          "kind": "point",
+          "description": "end attachment point",
+          "normalized": [
+            0.4956383822597481,
+            -0.4701731587782519,
+            0.34010796231159873
+          ]
+        },
+        "bottom": {
+          "kind": "point",
+          "description": "bottom attachment point",
+          "normalized": [
+            0,
+            -0.4701731587782519,
+            -0.34010796231159857
+          ]
+        }
+      }
+    },
+    "planet": {
+      "default_dimensions": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "description": "Banded planet with axis and equator; moon (lit half) or star.",
+      "art_anchors": {
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            -0.00012412257849785991,
+            0,
+            0
+          ]
+        },
+        "north": {
+          "kind": "point",
+          "description": "north attachment point",
+          "normalized": [
+            -0.00012412257849785991,
+            0.3846153752103127,
+            0
+          ]
+        },
+        "south": {
+          "kind": "point",
+          "description": "south attachment point",
+          "normalized": [
+            -0.00012412257849785991,
+            -0.3846153752103127,
+            0
+          ]
+        }
+      }
+    },
+    "orbit": {
+      "default_dimensions": [
+        3,
+        2,
+        0.1
+      ],
+      "description": "Ellipse with the attracting body at a focus; diagram only.",
+      "art_anchors": {
+        "focus": {
+          "kind": "point",
+          "description": "focus attachment point",
+          "normalized": [
+            0.22233201578736062,
+            -0.009532457105804602,
+            0
+          ]
+        },
+        "periapsis": {
+          "kind": "point",
+          "description": "periapsis attachment point",
+          "normalized": [
+            0.4940711461941347,
+            -0.009532457105804602,
+            0
+          ]
+        },
+        "apoapsis": {
+          "kind": "point",
+          "description": "apoapsis attachment point",
+          "normalized": [
+            -0.4940711461941347,
+            -0.009532457105804602,
+            0
+          ]
+        },
+        "center": {
+          "kind": "point",
+          "description": "center attachment point",
+          "normalized": [
+            -2.7426458115383508e-17,
+            -0.009532457105804602,
+            0
+          ]
+        },
+        "body": {
+          "kind": "point",
+          "description": "body attachment point",
+          "normalized": [
+            -0.03506366807141024,
+            0.475497403699168,
+            0
+          ]
+        }
+      }
+    },
+    "reference_frame": {
+      "default_dimensions": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "description": "x y z axis triad (problem axes or body axes).",
+      "art_anchors": {
+        "origin": {
+          "kind": "point",
+          "description": "origin attachment point",
+          "normalized": [
+            -0.45271275831433155,
+            -0.45201827867791433,
+            0.45201827867791433
+          ]
+        },
+        "x": {
+          "kind": "point",
+          "description": "x attachment point",
+          "normalized": [
+            0.5000000002839307,
+            -0.45201827867791433,
+            0.45201827867791433
+          ]
+        },
+        "y": {
+          "kind": "point",
+          "description": "y attachment point",
+          "normalized": [
+            -0.45271275831433155,
+            -0.45201827867791433,
+            -0.5000000002837237
+          ]
+        },
+        "z": {
+          "kind": "point",
+          "description": "z attachment point",
+          "normalized": [
+            -0.45271275831433155,
+            0.5000000002837237,
+            0.45201827867791433
+          ]
+        }
+      }
+    }
+  }
+}

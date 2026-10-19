@@ -1,0 +1,102 @@
+
+.vl{display:flex;flex-direction:column;min-height:0;height:100%}
+.vl-top{display:flex;flex-direction:column;gap:8px;padding:6px 0 10px}
+.vl-search{width:100%;height:34px;padding:0 11px;border:1px solid #ffffff1c;border-radius:9px;background:#262626;color:var(--tv-ink,#eee);font:inherit;font-size:13px}
+.vl-search:focus-visible{outline:1px solid #a7b4c9;outline-offset:1px}
+.vl-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.vl-bar select{height:28px;max-width:150px;padding:0 6px;border:1px solid #ffffff1a;border-radius:7px;background:#262626;color:#d9d9dc;font:inherit;font-size:12px}
+.vl-count{margin-left:auto;color:var(--tv-faint,#7c7c7c);font-size:11.5px}
+.vl-list{flex:1;min-height:0;overflow:auto;padding:0 0 16px;scrollbar-width:thin}
+.vl-detail{margin:2px 0 10px 38px;padding:2px 0 4px;color:#cfd2d7;font-size:13px;line-height:1.5}
+.vl-detail p{margin:4px 0}.vl-detail dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;margin:6px 0;font-size:12.5px}
+.vl-detail dt{color:var(--tv-faint,#8a8a8a)}.vl-detail dd{margin:0}
+.vl-refs{margin:6px 0;padding:0;list-style:none;font-size:12px;color:#aab1bb}.vl-refs li{padding:1px 0}
+.vl-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.vl-btn{padding:5px 12px;border:1px solid #ffffff22;border-radius:8px;color:#e6e8ea;font-size:12.5px}
+.vl-btn:hover{background:var(--tv-wash,rgba(255,255,255,.08))}.vl-btn.primary{background:#e6e8e6;border-color:#e6e8e6;color:#1b1b1b}
+.vl-btn:disabled{opacity:.5;cursor:default}
+.vl-msg{margin:6px 0;color:#c3c6cb;font-size:12.5px}.vl-msg.err{color:#f0b2a8}
+.vl-empty{padding:28px 8px;color:var(--tv-dim,#a6a6a6);text-align:center;font-size:13px}
+.teacher.tv-browsing .tv-scroll,.teacher.tv-browsing .tv-composer,.teacher.tv-browsing .tv-latest{display:none}
+.tv-gallery{flex:1;min-height:0;width:100%;max-width:760px;margin:0 auto;padding:0 22px 6px;display:flex;flex-direction:column}
+.tv-gallery[hidden]{display:none}
+@media(max-width:720px){.tv-gallery{padding:0}}
+.vl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
+.vl-card{display:flex;flex-direction:column;gap:0;padding:0;border:1px solid #ffffff12;border-radius:14px;overflow:hidden;background:#222;text-align:left;color:#e6e8ea;transition:border-color .15s,transform .15s}
+.vl-card:hover{border-color:#a7cafa66;transform:translateY(-1px)}.vl-card:focus-visible{outline:2px solid #a7cafa;outline-offset:2px}
+.vl-card .im{aspect-ratio:4/3;background:#14171c center/cover no-repeat;display:grid;place-items:center}
+.vl-card .im img{width:100%;height:100%;object-fit:cover;display:block}
+.vl-card .im svg{width:36px;height:36px;fill:none;stroke:#b9c3d0;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.vl-card b{font-weight:500;font-size:13px;padding:8px 10px 0;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.vl-card small{display:flex;align-items:center;gap:6px;min-width:0;padding:3px 10px 9px;color:#8a8f98;font-size:11.5px;white-space:nowrap}
+.vl-card small span:last-child{overflow:hidden;text-overflow:ellipsis}
+.vl-badge{flex:none;display:inline-flex;align-items:center;gap:4px;padding:0 6px;border-radius:5px;font-size:11px;line-height:17px}
+.vl-badge.moving{background:#2a3b33;color:#a9dcc0}.vl-badge.moving::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.vl-badge.still{background:#2c2f37;color:#b8c0d0}
+.vl-pop{margin:auto;width:min(860px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:0;border:1px solid #363636;border-radius:22px;background:#1d1d1d;color:#eee;overflow:auto;box-shadow:0 24px 90px #000a}
+.vl-pop::backdrop{background:#080808b0;backdrop-filter:blur(3px)}
+.vl-pop header{display:flex;align-items:center;gap:8px;padding:14px 14px 10px 20px}
+.vl-pop h2{flex:1;min-width:0;margin:0;font:550 17px/1.3 system-ui;letter-spacing:-.01em}
+.vl-ib{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#b6bac2;font:600 16px/1 Georgia,serif;border:1px solid #ffffff22}
+.vl-ib:hover,.vl-ib[aria-pressed=true]{background:#ffffff18;color:#fff}
+.vl-x{width:34px;height:34px;border-radius:50%;font-size:22px;color:#b6bac2}.vl-x:hover{background:#ffffff14;color:#fff}
+.vl-big{background:#14171c;display:grid;place-items:center}.vl-big img{display:block;width:100%;max-height:min(62dvh,640px);object-fit:contain}
+.vl-pop .vl-detail{margin:0;padding:14px 20px}
+.vl-pop .vl-acts{padding:12px 20px 16px;margin:0}
+#stage>.vl-ph{position:absolute;inset:0;z-index:40;width:100%;height:100%;object-fit:contain;background:#1b1b1b;pointer-events:none;transition:opacity .18s}
+#stage>.vl-ph.gone{opacity:0}
+@media(max-width:420px){.vl-bar select{max-width:118px}.vl-detail{margin-left:4px}}
+/* Library browse space and the shared native/prepared viewer lifecycle. */
+.teacher .tv-gallery,.teacher .pg-col:has(#libvisuals),.teacher .pg-col:has([data-pane="graphs"]){max-width:1440px;width:100%;box-sizing:border-box}
+.vl-grid,.lg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:16px}
+.vl-card .im{aspect-ratio:16/10;overflow:hidden}
+.vl-card b{font-size:14px;padding:11px 12px 0}
+.vl-card .vl-purpose{display:block;padding:7px 12px 0;color:#bdc3cc;font-size:12.5px;line-height:1.5;white-space:normal}
+.vl-card small{margin-top:auto;padding:10px 12px 12px;white-space:normal;flex-wrap:wrap}
+.vl-filter{border:1px solid #ffffff20;border-radius:8px;padding:5px 9px;color:#bfc6ce;font-size:12px}
+.vl-filter[aria-pressed=true]{color:#dcecff;background:#28405c;border-color:#7199c266}
+.vl-context{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+.vl-context button{font-size:12px;color:#b6d3f5;text-decoration:underline;text-underline-offset:3px}
+.teacher .problem-artifact #stage[hidden],.problem-artifact .teaching-visual[hidden],.problem-artifact .artifact-caption[hidden]{display:none!important}
+.problem-artifact.has-scene{grid-template-rows:48px minmax(0,1fr)!important}
+.problem-artifact.has-scene>.artifact-scene{grid-row:2 / -1;display:flex;min-height:0;height:100%;width:100%}
+.problem-artifact.has-scene .artifact-scene>.dv{flex:1;min-height:0;height:100%}
+.teacher:not(.visual-inline) .problem-artifact.has-caption:not(.has-scene){grid-template-rows:48px auto minmax(0,1fr)}
+.teacher.visual-inline:not(.visual-expanded) .problem-artifact.has-scene>.artifact-scene{height:min(55dvh,430px);min-height:300px}
+.teacher .problem-artifact .artifact-caption{-webkit-line-clamp:4;line-height:1.45;padding:8px 14px;color:#bac8d9}
+/* Library cameras get their own row above the native stage; its symbol key keeps
+   the complete canvas width, including when the phone key wraps or shows names. */
+#problem-artifact:has(>.library-views):has(>#stage:not([hidden])){grid-template-rows:48px auto auto minmax(0,1fr)}
+#problem-artifact:has(>.library-views)>#stage{grid-row:4}
+#problem-artifact:has(>#stage[hidden])>.library-views{display:none}
+#problem-artifact>.library-views{position:static;grid-row:3;display:flex;flex-wrap:wrap;gap:4px;padding:4px 12px 8px;min-width:0}
+.library-views button{min-height:30px;padding:5px 9px;border-radius:5px;background:#292929;color:#c3cbd7;font-size:12px;line-height:1.25}
+.library-views button[aria-pressed=true]{background:#395471;color:#fff}
+.library-views [data-library-view=forces]{min-width:96px}
+/* named camera subjects read as buttons, not as quiet chips: Full setup and each close-up keep an outline;
+   Breakdown is a drawing layer like Forces */
+body .library-views button.lv-full,body .library-views button.lv-closeup{border:1px solid #ffffff2e;color:#dfe6ef}
+body .library-views button.lv-full[aria-pressed=true],body .library-views button.lv-closeup[aria-pressed=true]{border-color:#89b6ec99;background:#395471aa;color:#fff}
+body .library-views button.lv-breakdown{border:1px solid #ffffff1c}
+body .library-views button.lv-breakdown[aria-pressed=true]{background:#395471aa;color:#fff}
+.native-force-note{flex-basis:100%;color:#bdc6d3;font:11px/1.4 system-ui}
+.library-views select{max-width:150px;min-height:30px;background:#25282d;border:1px solid #424750;border-radius:5px;color:#dce3ed;font:12px system-ui;padding:3px 6px}
+.lg-grid{margin-bottom:24px}
+.lg-card{display:flex;flex-direction:column;min-width:0;text-align:left;border:1px solid #ffffff18;border-radius:14px;background:#222;color:#e8eaed;overflow:hidden}
+.lg-card:hover,.lg-card.on{border-color:#89b6ec88}
+.lg-card:focus-visible{outline:2px solid #a7cafa;outline-offset:3px}
+.lg-preview{display:block;width:100%;aspect-ratio:16/10;background:#141a22;overflow:hidden}
+.lg-preview svg{display:block;width:100%;height:100%}
+.lg-card b{padding:12px 13px 0;font-size:14px;font-weight:550;line-height:1.35}
+.lg-card p{margin:7px 13px 0;font-size:12.5px;line-height:1.5;color:#b8c3d2}
+.lg-card small{padding:10px 13px 13px;margin-top:auto;color:#91b5df;font-size:12px;line-height:1.5}
+.lg-fallback{display:grid;place-items:center;height:100%;padding:18px;box-sizing:border-box;color:#b7c0cd;font-size:12px}
+.lg-retry{padding:7px 12px;border:1px solid #ffffff30;border-radius:8px;color:#dce8f8;font-size:12px;margin:4px 0 14px}
+@media(max-width:900px){.teacher .problem-artifact [data-artifact-expand]{display:inline-flex}}
+@media(max-width:600px){.teacher .tv-gallery{padding:0 10px 12px}.vl-grid,.lg-grid{gap:12px}.vl-count{width:100%;margin:2px 0}.vl-pop{max-height:calc(100dvh - 12px)}.teacher .problem-artifact .artifact-caption{font-size:12px}.teacher .problem-artifact [data-artifact-expand]{display:inline-flex}}
+
+/* One compact preview info action beside the existing expand/close icons. */
+.teacher .problem-artifact .artifact-toolbar .vl-preview-info{flex:0 0 30px;width:30px;min-width:30px;height:30px;min-height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font:600 14px/1 system-ui;color:var(--muted,#999);background:transparent;border:1px solid var(--line,#ffffff18)}
+.teacher .problem-artifact .artifact-toolbar .vl-preview-info:hover{color:var(--text,#eee);background:var(--surface-hover,#ffffff08)}
+.teacher .problem-artifact .artifact-toolbar .vl-preview-info:focus-visible{outline:2px solid var(--accent,#8aacc8);outline-offset:2px}
+.teacher .problem-artifact .artifact-toolbar .artifact-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

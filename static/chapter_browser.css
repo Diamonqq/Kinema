@@ -1,0 +1,57 @@
+/* Chapter browsing: stable card geometry, then a single unambiguous reading order. */
+.teacher .pg-col.pp2-overview{max-width:1240px}
+.pp2-overview>ol.pp2-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));grid-auto-rows:1fr;gap:14px;margin-top:24px}
+.pp2-overview>ol.pp2-list .pp2-ch{height:100%;min-height:164px;display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:20px 22px;border-radius:20px;background:#ffffff04;transition:background .15s}
+.pp2-overview>ol.pp2-list .pp2-ch:hover{background:#ffffff09}
+.pp2-ch .pp2-ch-number{font-size:10px;letter-spacing:.1em;line-height:1.5;color:#aaa}
+.pp2-ch .pp2-ch-title{flex:0;font-size:16px;line-height:1.4;letter-spacing:-.012em;color:#eee}
+.pp2-ch .pp2-ch-meta{flex:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:4px;min-height:36px;margin-top:auto;font-size:11px;line-height:1.5}
+.pp2-ch-meta>span{flex:0}.pp2-ch-meta .reading-history{margin:0;color:#a8a8a8;font-size:11px}.pp2-ch-meta .pp2-supp{margin:0;color:#aaa}
+.pp2-ch-meta em{font-size:11px;font-style:normal;color:#b3c4df}.pp2-ch-meta .lp-complete,.pp2-ch-meta .lp-due{font-size:11px}
+.pp2-overview .pp2-foot{font-size:12px;margin:22px 4px 0;color:#929292}
+.teacher .pg-col.pp2-detail{max-width:820px;margin-left:auto;margin-right:auto}
+.pp2-detail .pp-back{padding:6px 0;margin:0 0 23px;min-height:30px;color:#b4b4b4}
+.pp2-detail .pp2-heading{display:block;position:static;height:auto;min-height:0;margin:0 0 22px;padding:0;background:none;border:0;box-shadow:none}.pp2-eyebrow{font-size:12px;color:#aaa;display:block;margin-bottom:8px}
+.pp2-heading .pg-h{font-size:26px;line-height:1.3;letter-spacing:-.025em;font-weight:550;margin:0}
+.pp2-detail .pp-workspace-tabs{margin:0 0 25px;gap:5px}
+.pp2-detail .pp-workspace-tabs button{border-radius:999px;padding:8px 15px}
+.pp2-detail .pp2-groups{column-count:1;max-width:none}
+.pp2-detail .pp2-grp{margin:0 0 28px;display:block}
+.pp2-detail .pp2-grp h2{font-size:12px;font-weight:500;letter-spacing:0;margin:0 14px 10px;color:#aaa}
+.pp2-detail .pp2-grp>.pp2-list{display:grid;gap:10px}
+.pp2-section{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;border-radius:18px;background:#ffffff04;overflow:hidden}
+.pp2-section>.pp2-row{align-items:flex-start;min-height:66px;padding:18px;gap:12px;border-radius:18px}
+.pp2-section>.pp2-row>b{font-size:13px;line-height:21px;color:#999;min-width:32px}
+.pp2-section>.pp2-row>span{font-size:15px;line-height:1.45;color:#eee}
+.pp2-lesson-meta{display:flex;flex-wrap:wrap;gap:5px 9px;align-items:center;margin-top:5px}
+.pp2-lesson-meta:empty{display:none}.pp2-lesson-meta .reading-history{margin:0;font-size:11px;color:#aaa}
+.pp2-lesson-meta em{font-size:11px;font-style:normal;color:#b3c4df}
+.pp2-examples{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:36px;margin:8px 14px 8px 0;padding:5px 9px;border-radius:999px;font:12px/1.4 var(--tv-sans);color:#bbb}
+.pp2-examples>span{font-size:11px;color:#999}.pp2-examples:hover{color:#fff;background:#ffffff07}
+.pp2-examples:focus-visible{outline:2px solid #a8cbfb88;outline-offset:2px}
+.pp2-section .pp2-sub{grid-column:1/-1;margin:0 12px 12px;padding:0 0 0 36px}
+.pp2-section .pp2-subrow{padding:10px;align-items:flex-start;border-radius:10px;gap:10px}
+.pp2-section .pp2-subrow b{font-size:12px;min-width:40px}
+.pp2-section .pp2-subrow>span{font-size:13px}
+@media(max-width:700px){.teacher .pg-col.pp2-detail{margin:0 auto}.pp2-heading .pg-h{font-size:23px}.pp2-overview>ol.pp2-list{gap:10px}.pp2-overview>ol.pp2-list .pp2-ch{min-height:152px}}
+@media(max-width:420px){.pp2-overview>ol.pp2-list{grid-template-columns:1fr}.pp2-section{grid-template-columns:minmax(0,1fr)}.pp2-section>.pp2-row{padding:15px 14px 8px;min-height:62px}.pp2-examples{justify-self:start;margin:0 0 10px 50px;min-height:34px}.pp2-section .pp2-sub{padding-left:24px;margin-left:10px}.pp2-detail .pp-workspace-tabs{gap:3px}.pp2-detail .pp-workspace-tabs button{padding:8px 12px}}
+
+.pp2-section>.pp2-row{width:100%;box-sizing:border-box;align-items:center}
+.pp2-reading-history{margin:24px 4px;color:#a6a6a6;font-size:12px}
+.pp2-reading-history>summary{cursor:pointer;width:fit-content;padding:8px 0}
+.pp2-reading-history>div{display:grid;gap:14px;padding:15px 0;max-width:100%}
+.pp2-reading-history>div>div{display:flex;flex-wrap:wrap;gap:5px 20px;justify-content:space-between}
+.pp2-reading-history .reading-history{font-size:11px;margin:0}
+.pp2-reading-history [data-reading-record]:empty:after{content:'Not viewed';color:#777}
+
+/* Subsections describe the lesson contents, not a second lesson destination. */
+.pp2-section .pp2-static.pp2-subrow{cursor:default;color:#a9a9a9;padding-block:7px;min-height:30px}
+.pp2-section .pp2-static.pp2-subrow:hover{background:transparent;color:#a9a9a9}
+.pp2-section .pp2-subrow>span{color:inherit}
+.book-browser .book-filter{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 16px}
+.book-browser .book-filter button{padding:7px 13px;border:0;border-radius:999px;background:transparent;color:#aaa;font:13px/1.5 var(--tv-sans)}
+.book-browser .book-filter button:hover{background:#ffffff06;color:#eee}
+.book-browser .book-filter button[aria-pressed=true]{background:#ffffff0d;color:#eee}
+.book-browser .book-more,.book-browser .book-error button{border:0;border-radius:999px;background:#ffffff09;padding:9px 16px;color:#ddd}
+.book-browser .book-more:hover,.book-browser .book-error button:hover{background:#ffffff10}
+.teacher[data-page=path] .tv-pages{overflow-anchor:none}

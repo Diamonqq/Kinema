@@ -1,0 +1,2263 @@
+{
+  "version": 1,
+  "source": {
+    "id": "morin",
+    "title": "Introduction to Classical Mechanics",
+    "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+    "chapter_map_sha256": "b594326f3536f5058cf24a9c8336962ed0a493644055c45788266574ba1abeb9",
+    "page_numbering": "printed book pages",
+    "preparation": "Original compact teaching references, checked against the supplied Morin chapter/source ranges; illustrative worked relations are explicitly scoped. Not complete textbook solutions or mastery evidence."
+  },
+  "references": {
+    "1.1": {
+      "summary": "Turn a situation into a small set of unknowns and independent equations.",
+      "notes": "**Picture and method**\n\nSketch the bodies, name what is given, and name exactly what you want. Choose the physical law before rearranging symbols. A special case can reveal what matters.\n\n**Keep handy**\n\n$$N_{\\rm equations}=N_{\\rm unknowns}$$\n\nCounting independent equations is a diagnostic, not a proof of uniqueness. Track directions and units throughout.\n\n**One worked relation**\n\nFor a block pulled horizontally without friction, the unknown acceleration follows from $F=ma$, so $a=F/m$. Doubling $m$ halves $a$ at fixed $F$.\n\n**Watch for**\n\nTwo rearrangements of the same equation are still one fact. Check the final sign, units and a simple limiting case.",
+      "opening_question": "What are we trying to find, and which object are we describing?",
+      "source": {
+        "id": "morin",
+        "section_id": "1.1",
+        "pages": [
+          1,
+          4
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8966d3d114e3f6056809e1921e73e2ea152f6d70aa0fefc39ddf71fa94e30b7a"
+      }
+    },
+    "1.2": {
+      "summary": "Dimensions constrain an answer before you know the detailed motion.",
+      "notes": "**Picture and method**\n\nTreat mass, length and time as independent bookkeeping units. Match powers on both sides; only quantities of the same dimension can be added.\n\n**Keep handy**\n\n$$T=C\\sqrt{\\ell/g}$$\n\nHere $T$ is a pendulum period (s), $\\ell$ length (m), $g$ gravitational acceleration (m/s²), and $C$ dimensionless. Small-amplitude dynamics gives $C=2\\pi$.\n\n**One worked relation**\n\nWriting $T\\propto\\ell^a g^b$ gives $a+b=0$ and $-2b=1$, hence $a=1/2$, $b=-1/2$.\n\n**Watch for**\n\nUnits cannot determine numerical constants or an unknown function of a dimensionless parameter such as amplitude angle.",
+      "opening_question": "What units must a period have?",
+      "source": {
+        "id": "morin",
+        "section_id": "1.2",
+        "pages": [
+          4,
+          7
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "d77760c85045ab2e7008c8e3cb720b5efc1b968fb1f0159c7233d6a65894966a"
+      }
+    },
+    "1.3": {
+      "summary": "An approximation keeps the leading behavior when a dimensionless quantity is small.",
+      "notes": "**Picture and method**\n\nIdentify the small ratio first. Expand only to the order needed; then test extreme and symmetric cases of the answer.\n\n**Keep handy**\n\n$$(1+\\epsilon)^n\\simeq1+n\\epsilon,\\qquad \\sin\\theta\\simeq\\theta$$\n\nRequire $\\lvert\\epsilon\\rvert\\ll1$ and $\\lvert\\theta\\rvert\\ll1$ in radians. Dropped terms begin at second order for the binomial and third order for sine.\n\n**One worked relation**\n\nFor $h\\ll R$, $g(R+h)=GM/(R+h)^2\\simeq(GM/R^2)(1-2h/R)$. Gravity decreases as height increases.\n\n**Watch for**\n\nSmall needs a comparison scale. Subtracting nearly equal quantities can make a normally negligible next-order term essential.",
+      "opening_question": "Which ratio in this setup is actually small?",
+      "source": {
+        "id": "morin",
+        "section_id": "1.3",
+        "pages": [
+          7,
+          11
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "b4cdc4472b3f83a20a8471e7bcab2709c0b5fa328222e95e01c5f57b7739e895"
+      }
+    },
+    "1.4": {
+      "summary": "Numerical integration replaces a differential equation by short, repeated steps.",
+      "notes": "**Picture and method**\n\nStart from position and velocity, calculate acceleration, and advance by a small time interval. Compare smaller steps to check convergence.\n\n**Keep handy**\n\n$$x_{n+1}=x_n+v_n\\Delta t,\\qquad v_{n+1}=v_n+a_n\\Delta t$$\n\nThis is explicit Euler, a first-order method. $x$ is in m, $v$ in m/s, $a=F/m$ in m/s² and $\\Delta t$ in s.\n\n**One worked relation**\n\nFor a spring, compute $a_n=-kx_n/m$ before updating either variable. Halve $\\Delta t$ and compare the trajectories over the same duration.\n\n**Watch for**\n\nA smooth animation is not an accuracy check. Euler can grow oscillator energy artificially; monitor a conserved quantity and step-size error.",
+      "opening_question": "What information at the current instant lets us predict the next tiny step?",
+      "source": {
+        "id": "morin",
+        "section_id": "1.4",
+        "pages": [
+          11,
+          14
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "5f37a421d5adf2df2b47c6c15f787c6ce0a30c9c2b4b09e66723a9810dd08bb5"
+      }
+    },
+    "2.1": {
+      "summary": "An object in static equilibrium has zero net force in every direction.",
+      "notes": "**Picture and method**\n\nIsolate one object and draw forces exerted on it. Choose axes that make the geometry simple, then balance components.\n\n**Keep handy**\n\n$$\\sum F_x=0,\\qquad\\sum F_y=0$$\n\nForces are in N. Static friction adjusts within $\\lvert f_s\\rvert\\le\\mu_sN$; $N$ is the normal force and $\\mu_s$ dimensionless.\n\n**One worked relation**\n\nOn a fixed incline with no other forces, $N=mg\\cos\\theta$ and required friction is $mg\\sin\\theta$. Rest is possible only when $\\tan\\theta\\le\\mu_s$.\n\n**Watch for**\n\nZero net force also allows constant nonzero velocity. Do not automatically set static friction equal to its maximum.",
+      "opening_question": "Which forces actually act on this one object?",
+      "source": {
+        "id": "morin",
+        "section_id": "2.1",
+        "pages": [
+          22,
+          27
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8a044bd76493fa827dd3d47d6249564e3e246e8d9b3651410852c4ef77cb9966"
+      }
+    },
+    "2.2": {
+      "summary": "Static equilibrium requires both force balance and torque balance.",
+      "notes": "**Picture and method**\n\nChoose a pivot that removes unknown forces from the torque equation. Use perpendicular distance from the pivot to each force's line of action.\n\n**Keep handy**\n\n$$\\sum\\boldsymbol\\tau=0,\\qquad\\boldsymbol\\tau=\\mathbf r\\times\\mathbf F$$\n\nTorque has units N·m. In a planar problem assign clockwise and counterclockwise opposite signs. $\\mathbf r$ runs from the chosen pivot to the force application point.\n\n**One worked relation**\n\nA massless horizontal beam supported at its ends, with weight $W$ a distance $x$ from the left end, obeys $N_R L=Wx$ and $N_L=W-N_R$.\n\n**Watch for**\n\nA force through the pivot has zero torque but still belongs in force balance. Balance both force and torque. Balance alone does not stop existing translation or spin; static equilibrium also requires the object to be at rest.",
+      "opening_question": "Which pivot would make the most unknown torques disappear?",
+      "source": {
+        "id": "morin",
+        "section_id": "2.2",
+        "pages": [
+          27,
+          30
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "7e9891d30e49ce0adde09330d097153cef93edf891c619fb1030fde24d5d1bbf"
+      }
+    },
+    "3.1": {
+      "summary": "Net force changes momentum; it does not have to point along motion.",
+      "notes": "**Picture and method**\n\nChoose an inertial frame and one body. First law describes zero net force, second law gives its change of motion, and third-law partners act on different bodies.\n\n**Keep handy**\n\n$$\\sum\\mathbf F=\\frac{d\\mathbf p}{dt}=m\\mathbf a$$\n\nThe last equality assumes constant mass. $\\mathbf p=m\\mathbf v$ (kg·m/s), $\\mathbf a$ (m/s²), $m$ (kg), force (N). Newtonian mechanics applies here.\n\n**One worked relation**\n\nFor a frictionless fixed slope, down-slope $mg\\sin\\theta=ma$, hence $a=g\\sin\\theta$. At $\\theta=0$, the acceleration vanishes.\n\n**Watch for**\n\nWeight and normal force on the same block are not a third-law pair. At an instant of zero velocity, acceleration can still be nonzero.",
+      "opening_question": "Can a block have zero velocity at this instant and still be accelerating?",
+      "source": {
+        "id": "morin",
+        "section_id": "3.1",
+        "pages": [
+          51,
+          55
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "fb06239d24faba70e1fdbd4934c69c61efcfe2d3539cf46f4a0f3d90f69465d1"
+      }
+    },
+    "3.2": {
+      "summary": "A free-body diagram separates real interactions from the resulting acceleration.",
+      "notes": "**Picture and method**\n\nDraw only the chosen body and forces on it. On the rough slope, weight is vertical, normal is perpendicular, and sliding friction opposes relative sliding.\n\n**Keep handy**\n\n$$N=mg\\cos\\theta,\\qquad ma=mg\\sin\\theta-\\mu_kN$$\n\nFor this relation the ramp is fixed, the block slides downward, and positive is down the ramp. $\\theta$ is its angle, $g$ (m/s²), $\\mu_k$ dimensionless, $N$ (N).\n\n**One worked relation**\n\nSubstitute the normal equation: $a=g(\\sin\\theta-\\mu_k\\cos\\theta)$. The paused simulation shows a released block, not a force-balanced equilibrium.\n\n**Watch for**\n\nDo not draw $m\\mathbf a$ as another force. Taut strings constrain total length; derive the actual pulley relation instead of assuming all accelerations match.",
+      "opening_question": "Which object supplies the normal force, and which supplies the weight?",
+      "source": {
+        "id": "morin",
+        "section_id": "3.2",
+        "pages": [
+          55,
+          60
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "f6c935cf0cd1895e6aaaef06f35b90a1b2b047399bea95367cc02bc110323ced"
+      }
+    },
+    "3.3": {
+      "summary": "The useful integration trick depends on whether force is given in time, position or velocity.",
+      "notes": "**Picture and method**\n\nIdentify the force's variables before separating anything. Use initial conditions to determine the constants after integration.\n\n**Keep handy**\n\n$$a=\\frac{dv}{dt}=v\\frac{dv}{dx}$$\n\nFor constant mass, $m\\dot v=F$. Use $dt$ for $F(t)$, $v\\,dv/dx$ for $F(x)$, and separate $dv/F(v)=dt/m$ for $F(v)$.\n\n**One worked relation**\n\nWith linear drag $m\\dot v=-bv$, integration gives $v=v_0e^{-bt/m}$. Here $b$ has units kg/s, so $bt/m$ is dimensionless.\n\n**Watch for**\n\nA constant of integration is not optional. Division by $v$ can lose a stationary solution, so check it separately.",
+      "opening_question": "Is the given force a function of time, position or velocity?",
+      "source": {
+        "id": "morin",
+        "section_id": "3.3",
+        "pages": [
+          60,
+          65
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "12b785b47e051b3bc98c7a52cb67f1d73b0f96f8e98a22d384cb60c86b93af49"
+      }
+    },
+    "3.4": {
+      "summary": "Horizontal and vertical projectile motions share time but have independent accelerations.",
+      "notes": "**Picture and method**\n\nChoose horizontal $x$ and upward $y$. Neglect drag and treat gravity as uniform; solve each component and use the same time.\n\n**Keep handy**\n\n$$x=x_0+v_{0x}t,\\qquad y=y_0+v_{0y}t-\\tfrac12gt^2$$\n\nPositions are in m, velocities in m/s and time in s. $v_{0x}=v_0\\cos\\theta$, $v_{0y}=v_0\\sin\\theta$.\n\n**One worked relation**\n\nFor launch and landing at equal heights, the nonzero root is $t=2v_0\\sin\\theta/g$, giving range $R=v_0^2\\sin(2\\theta)/g$.\n\n**Watch for**\n\nThe equal-height range formula does not apply to a cliff landing. Horizontal speed does not slow vertical falling in this approximation.",
+      "opening_question": "Which component changes under gravity?",
+      "source": {
+        "id": "morin",
+        "section_id": "3.4",
+        "pages": [
+          65,
+          68
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "74b3ee28411982173fcc5d53acc1c23dac8dfa74aa7fe85c0375cf82fdaaa5ad"
+      }
+    },
+    "3.5": {
+      "summary": "Polar unit vectors turn, so their derivatives contribute to acceleration.",
+      "notes": "**Picture and method**\n\nDraw radial and tangential directions at the particle. Differentiate the basis as well as the scalar coordinates.\n\n**Keep handy**\n\n$$\\mathbf a=(\\ddot r-r\\dot\\theta^2)\\hat{\\mathbf r}+(r\\ddot\\theta+2\\dot r\\dot\\theta)\\hat{\\boldsymbol\\theta}$$\n\n$r$ is in m and $\\theta$ in rad. $\\dot{\\hat{\\mathbf r}}=\\dot\\theta\\hat{\\boldsymbol\\theta}$ and $\\dot{\\hat{\\boldsymbol\\theta}}=-\\dot\\theta\\hat{\\mathbf r}$. Each acceleration component is in m/s².\n\n**One worked relation**\n\nFor uniform circular motion, $\\dot r=\\ddot r=\\ddot\\theta=0$, leaving $\\mathbf a=-r\\dot\\theta^2\\hat{\\mathbf r}=-v^2\\hat{\\mathbf r}/r$.\n\n**Watch for**\n\nConstant speed is not constant velocity. The turning basis is precisely why circular motion accelerates.",
+      "opening_question": "When the particle goes around the circle, which unit vector changes direction?",
+      "source": {
+        "id": "morin",
+        "section_id": "3.5",
+        "pages": [
+          68,
+          70
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "f123c37b62b0ffaf8ae5c508eebe8b021220b482b9c031d759464a26ace79eff"
+      }
+    },
+    "4.1": {
+      "summary": "A linear equation lets you combine independent solutions.",
+      "notes": "**Picture and method**\n\nFor a constant-coefficient homogeneous equation, try an exponential. Its derivatives keep the same shape and leave an algebraic equation for the exponent.\n\n**Keep handy**\n\n$$x=e^{\\lambda t}\\ \\Longrightarrow\\ a\\lambda^2+b\\lambda+c=0$$\n\nFor $a\\ddot x+b\\dot x+cx=0$, $\\lambda$ has units s⁻¹. Two distinct roots give $x=Ae^{\\lambda_1t}+Be^{\\lambda_2t}$.\n\n**One worked relation**\n\nFor $\\ddot x+\\omega^2x=0$, roots $\\lambda=\\pm i\\omega$ combine into real sine and cosine solutions.\n\n**Watch for**\n\nSuperposition applies to homogeneous linear equations. Repeated roots need $te^{\\lambda t}$; a driven equation needs one particular solution too.",
+      "opening_question": "What happens when you differentiate an exponential twice?",
+      "source": {
+        "id": "morin",
+        "section_id": "4.1",
+        "pages": [
+          101,
+          105
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "599d1d2d88a233ad51967a8d300cbbbe30d566cfc48b1bb01932a444295bb09b"
+      }
+    },
+    "4.2": {
+      "summary": "A restoring force proportional to displacement makes sinusoidal motion.",
+      "notes": "**Picture and method**\n\nMeasure displacement from equilibrium. The force points back toward that equilibrium, so the acceleration reverses as the mass crosses it.\n\n**Keep handy**\n\n$$m\\ddot x=-kx,\\qquad x=A\\cos(\\omega_0t+\\phi),\\qquad\\omega_0=\\sqrt{k/m}$$\n\n$x,A$ (m), $k$ (N/m), $m$ (kg), $\\omega_0$ (rad/s), $\\phi$ (rad). This is an ideal undamped linear spring.\n\n**One worked relation**\n\nReleased at $x=A$ with zero speed, choose $\\phi=0$. The period is $T=2\\pi/\\omega_0=2\\pi\\sqrt{m/k}$.\n\n**Watch for**\n\nAt the center the force is zero but speed is greatest; at a turning point speed is zero but acceleration is greatest.",
+      "opening_question": "At maximum displacement, which way must the acceleration point?",
+      "source": {
+        "id": "morin",
+        "section_id": "4.2",
+        "pages": [
+          105,
+          107
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "30fab33b440267cfa237922c80d2ea5c390d5c18ab7176047454691c82f26706"
+      }
+    },
+    "4.3": {
+      "summary": "Damping removes energy, and its strength changes the shape of the return.",
+      "notes": "**Picture and method**\n\nA velocity-proportional drag force opposes motion. Compare its decay rate with the undamped angular frequency.\n\n**Keep handy**\n\n$$\\ddot x+2\\gamma\\dot x+\\omega_0^2x=0,\\qquad\\gamma=\\frac{b}{2m}$$\n\n$F_d=-b\\dot x$, $b$ (kg/s), $\\gamma,\\omega_0$ (s⁻¹). Underdamped: $\\gamma<\\omega_0$; critical: equal; overdamped: greater.\n\n**One worked relation**\n\nFor $\\gamma<\\omega_0$, $x=Ae^{-\\gamma t}\\cos(\\sqrt{\\omega_0^2-\\gamma^2}\\,t+\\phi)$. The envelope decays while the mass still crosses equilibrium.\n\n**Watch for**\n\nThis drag is not constant-magnitude dry friction. At critical damping the solution is $(A+Bt)e^{-\\gamma t}$, not two identical exponentials.",
+      "opening_question": "Does the resisting force reverse when the velocity reverses?",
+      "source": {
+        "id": "morin",
+        "section_id": "4.3",
+        "pages": [
+          107,
+          109
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "7a991558f601d4af240f2cbe3a0a7e19f1b2e582c4f7ddee5cdb3112cdbe76cf"
+      }
+    },
+    "4.4": {
+      "summary": "A periodic drive supplies energy while damping removes it.",
+      "notes": "**Picture and method**\n\nSeparate the dying transient from the long-time response. The steady motion oscillates at the driving frequency, with an amplitude and lag set by the oscillator.\n\nThe equation is $m\\ddot x+b\\dot x+kx=F_0\\cos\\Omega t$, with mass $m$ (kg), stiffness $k$ (N/m), positive damping $b$ (kg/s), $\\omega_0=\\sqrt{k/m}$ and $\\gamma=b/(2m)$.\n\n**Keep handy**\n\n$$A=\\frac{F_0/m}{\\sqrt{(\\omega_0^2-\\Omega^2)^2+(2\\gamma\\Omega)^2}}$$\n\nDrive is $F_0\\cos\\Omega t$ (N); $A$ (m), $\\Omega,\\omega_0,\\gamma$ (s⁻¹). Lag is $\\delta=\\operatorname{atan2}(2\\gamma\\Omega,\\omega_0^2-\\Omega^2)$.\n\n**One worked relation**\n\nAt $\\Omega=\\omega_0$ with $b>0$, $A=F_0/(b\\omega_0)$ and the displacement lags by $\\pi/2$.\n\n**Watch for**\n\nThe displacement-amplitude peak is at $\\sqrt{\\omega_0^2-2\\gamma^2}$ when real; do not call every resonance peak exactly $\\omega_0$.",
+      "opening_question": "Which frequency does the mass follow after the transient dies away?",
+      "source": {
+        "id": "morin",
+        "section_id": "4.4",
+        "pages": [
+          109,
+          115
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ed714e0d697fa38591a186ea4760cfdad120c517ab24b4f3ba53c632728bf23a"
+      }
+    },
+    "4.5": {
+      "summary": "Two oscillators are coupled when the motion of either changes the force on the other. Normal modes are the simple patterns hidden inside that shared motion.",
+      "notes": "**Start with the picture**\n\nTwo equal masses slide between three identical springs. Displacements $x_1$ and $x_2$ are measured from equilibrium, not from the wall. The middle spring responds to their difference.\n\n**One oscillator first**\n\n$$F=-kx,\\qquad m\\ddot x=-kx$$\n\nThe minus sign means the force points back toward equilibrium. $x$ is displacement (m), $m$ is mass (kg), and $k$ is spring stiffness (N/m).\n\n**Two equations for this setup**\n\n$$m\\ddot x_1=-2kx_1+kx_2$$\n$$m\\ddot x_2=-2kx_2+kx_1$$\n\nEach mass feels its wall spring and the middle spring. These equations belong to the three-identical-spring picture.\n\n**Moving together**\n\nWhen $x_1=x_2$, the middle spring keeps its length. Both masses oscillate with $\\omega_+=\\sqrt{k/m}$ (rad/s).\n\n**Moving oppositely**\n\nWhen $x_1=-x_2$, the middle spring stretches and compresses too. The restoring force is stronger: $\\omega_-=\\sqrt{3k/m}$.\n\n**The reusable method**\n\nAdd the equations to describe $x_1+x_2$; subtract them to describe $x_1-x_2$. Each combination is an independent oscillator. Add the two motions back together and use the starting positions and velocities to find the amplitudes and phases.\n\n**When guessing the combinations is hard**\n\nTry $x_1=Ae^{i\\alpha t}$ and $x_2=Be^{i\\alpha t}$, where $\\alpha$ is a trial angular frequency (rad/s). Substitution turns the differential equations into two algebra equations for $A$ and $B$. A nonzero motion requires\n\n$$\\left(2k-m\\alpha^2\\right)^2-k^2=0.$$\n\nThe roots give the two frequencies. Substitute each root back into either equation to find its displacement ratio $B/A$. This is the determinant method; it does not require guessing a sum or difference first.\n\n**Modes and coordinates are different**\n\nA mode gives a displacement pattern and a frequency, such as $(x_1,x_2)\\propto(1,-1)$. A normal coordinate is a combination, such as $x_1-x_2$, that removes the other mode. For unequal coefficients the combinations need not be simple sums and differences.\n\n**Morin's opening algebra example**\n\nThe opening equations $2\\ddot x+\\omega^2(5x-3y)=0$ and $2\\ddot y+\\omega^2(5y-3x)=0$ use different coefficients. Their sum oscillates at $\\omega$ and their difference at $2\\omega$. They illustrate the same method, but are not the identical-spring simulation's equations.\n\n**What to notice**\n\nThe prepared motion starts with only the left mass displaced, so it combines both modes. A normal mode keeps a fixed ratio of the two displacements; a general motion need not.\n\n\n**Watch for**\n\nA normal mode has a fixed displacement ratio. Releasing just one mass combines modes; it is not by itself a pure in-phase or out-of-phase mode.",
+      "opening_question": "If both masses move the same distance together, does the middle spring stretch?",
+      "source": {
+        "id": "morin",
+        "section_id": "4.5",
+        "pages": [
+          115,
+          120
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "1fd5934f4783506c7a21e82505898f842ef8bc3ee9428a60ba02f1f9469c9e30"
+      }
+    },
+    "5.1": {
+      "summary": "Potential energy replaces a position-dependent force with a landscape.",
+      "notes": "**Picture and method**\n\nThe negative slope of the potential is force. Energy tells you the allowed positions and speed without first solving the trajectory.\n\n**Keep handy**\n\n$$E=\\tfrac12mv^2+V(x),\\qquad F(x)=-\\frac{dV}{dx}$$\n\n$E,V$ (J), $m$ (kg), $v$ (m/s), $x$ (m). Mechanical energy is constant for this time-independent conservative force.\n\n**One worked relation**\n\nFor $V=kx^2/2$ released from rest at $A$, $mv^2/2=k(A^2-x^2)/2$, so $v^2=(k/m)(A^2-x^2)$.\n\n**Watch for**\n\nEnergy determines speed, not its sign. Turning points have $E=V$; equilibrium requires $V'=0$, a different condition.",
+      "opening_question": "Where is the particle allowed if its total energy lies below the potential curve?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.1",
+        "pages": [
+          138,
+          147
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "0f692049b633170a21c2d879d32ba3a20326f2ba8d383e7ca4ea083e388a9027"
+      }
+    },
+    "5.2": {
+      "summary": "Near a smooth stable minimum, many different forces act like a spring.",
+      "notes": "**Picture and method**\n\nFind equilibrium, expand the potential there, and keep the first nonzero restoring term.\n\n**Keep handy**\n\n$$V(x)\\simeq V(x_0)+\\tfrac12V''(x_0)(x-x_0)^2,\\qquad\\omega=\\sqrt{V''(x_0)/m}$$\n\nRequire $V'(x_0)=0$ and $V''(x_0)>0$. Curvature has units N/m; $\\omega$ is rad/s. Displacement must be small enough for higher terms to be negligible.\n\n**One worked relation**\n\nFor $V=mg\\ell(1-\\cos\\theta)$ with arc displacement $x=\\ell\\theta$, the quadratic term gives $\\omega=\\sqrt{g/\\ell}$.\n\n**Watch for**\n\nIf the quadratic coefficient vanishes, this formula does not prove finite-frequency harmonic motion; inspect higher terms.",
+      "opening_question": "What feature of the potential decides whether a small displacement comes back?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.2",
+        "pages": [
+          147,
+          148
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "4f865183feb136cc0d5879c95ad2a035a8430215b69e82170273c143f8ae020d"
+      }
+    },
+    "5.3": {
+      "summary": "A conservative force does path-independent work in space.",
+      "notes": "**Picture and method**\n\nCompare work along paths or recover a potential whose gradient gives every component of force.\n\n**Keep handy**\n\n$$W=\\int\\mathbf F\\cdot d\\mathbf r=-\\Delta V,\\qquad\\mathbf F=-\\boldsymbol\\nabla V$$\n\nWork and potential are in J. For a smooth field in a simply connected region, zero curl ensures a potential. Mechanical energy is conserved when the potential has no explicit time dependence.\n\n**One worked relation**\n\nFor $V=mgz$, $F_z=-\\partial V/\\partial z=-mg$ and $F_x=F_y=0$. Only the height change affects gravitational work.\n\n**Watch for**\n\nPosition dependence alone does not guarantee a conservative force. Check the field and its domain; friction is not recovered from a single position potential.",
+      "opening_question": "Would two different paths between the same endpoints do the same work?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.3",
+        "pages": [
+          148,
+          152
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "aa8dea98f6158d3adf9b55873c00360204cd327051fb2acfcdb8b8085cfc71f9"
+      }
+    },
+    "5.4": {
+      "summary": "Gravity connects an inverse-square force to a measurable potential.",
+      "notes": "**Picture and method**\n\nUse spherical symmetry where it applies; distinguish the universal constant $G$ from the local acceleration $g$. Laboratory torsion measurements determine $G$.\n\n**Keep handy**\n\n$$F_r=-\\frac{GMm}{r^2},\\qquad V=-\\frac{GMm}{r}$$\n\n$G$ (m³/(kg·s²)), masses (kg), separation $r$ (m), force (N), potential (J). Choose $V=0$ at infinity. Outside a spherical mass distribution use its total mass.\n\n**One worked relation**\n\nDifferentiate $V$: $-dV/dr=-GMm/r^2$. Near Earth's surface $g=GM/R^2$, so a small rise $h$ costs approximately $mgh$.\n\n**Watch for**\n\nThe point-mass exterior formula cannot use total enclosed-plus-exterior mass unchanged inside a sphere.",
+      "opening_question": "What is the difference between $G$ and the local value $g$?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.4",
+        "pages": [
+          152,
+          156
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ae2ee59bea1e8ccedbe77819558d688cc49090a96796dfd4c29e19d6a3057ff6"
+      }
+    },
+    "5.4.1": {
+      "summary": "Spherical symmetry lets a distributed mass act simply on a test particle.",
+      "notes": "**Picture and method**\n\nOutside a spherical body, use its mass at the center. Inside, only the enclosed spherical mass contributes to the net radial force.\n\n**Keep handy**\n\n$$F_r=-\\frac{GmM(<r)}{r^2}$$\n\n$M(<r)$ is mass inside radius $r$ (kg). Exterior spherical shells contribute zero net field inside them, although their potential need not vanish.\n\n**One worked relation**\n\nFor a uniform-density sphere, $M(<r)=4\\pi\\rho r^3/3$, hence $F_r=-(4\\pi G\\rho m/3)r$: a linear restoring force.\n\n**Watch for**\n\nShell results require spherical symmetry. Zero force inside a shell means constant potential, not necessarily zero potential.",
+      "opening_question": "Why does the enclosed mass change when the particle moves inside the sphere?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.4.1",
+        "pages": [
+          152,
+          154
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "eaaffdca83211257a0d352257840d6e5a2bfaa436467d22c6d108a780226dd0d"
+      }
+    },
+    "5.4.2": {
+      "summary": "A small gravitational torque can be measured by balancing it against a torsion fiber.",
+      "notes": "**Picture and method**\n\nKnown nearby masses attract test masses on a suspended beam. Calibrate the fiber, measure its angle, and infer the weak force from torque balance.\n\n**Keep handy**\n\n$$\\kappa\\theta=\\tau_g,\\qquad F=\\frac{GMm}{r^2}$$\n\n$\\kappa$ is torsional stiffness (N·m/rad), $\\theta$ twist (rad), $\\tau_g$ gravitational torque (N·m), and masses/separations are measured independently.\n\n**One worked relation**\n\nFor one perpendicular force at lever arm $a$, $\\tau_g=aF$, giving $G=\\kappa\\theta r^2/(aMm)$. A real multi-mass apparatus sums all torques.\n\n**Watch for**\n\nMeasuring surface gravity determines $GM_{\\rm Earth}$, not $G$ by itself. Account for all source masses and lever arms.",
+      "opening_question": "What measured quantity tells us the tiny gravitational force?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.4.2",
+        "pages": [
+          154,
+          156
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "d5c47fea0396a175f3121a9807e31f73ac2508560092ffe6b80fa537f17a6657"
+      }
+    },
+    "5.5": {
+      "summary": "Momentum tracks how motion is transferred between bodies.",
+      "notes": "**Picture and method**\n\nChoose a system boundary. Internal Newtonian force pairs cancel in its momentum balance; external impulse changes the total.\n\n**Keep handy**\n\n$$\\mathbf P=\\sum_i m_i\\mathbf v_i,\\qquad\\Delta\\mathbf P=\\int\\mathbf F_{\\rm ext}\\,dt$$\n\nMomentum is kg·m/s, impulse N·s. For rockets, include expelled fuel while applying conservation over each short interval.\n\n**One worked relation**\n\nTwo initially stationary masses push apart: $m_1v_1+m_2v_2=0$, so $v_2=-(m_1/m_2)v_1$. Their speeds need not match.\n\n**Watch for**\n\nMomentum conservation concerns the whole chosen system. A rocket alone loses mass and exchanges momentum with its exhaust.",
+      "opening_question": "Which interacting bodies must be included to make the external impulse negligible?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.5",
+        "pages": [
+          156,
+          161
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "f3c6dc820f0f4fbb7013a28979b29a78f0e8b4324cf584751e580314dfee0d78"
+      }
+    },
+    "5.5.1": {
+      "summary": "An isolated system can exchange momentum internally without changing its total.",
+      "notes": "**Picture and method**\n\nWrite signed components of total momentum before and after an interaction. The cancellation is between forces on different bodies.\n\n**Keep handy**\n\n$$\\frac{d\\mathbf P}{dt}=\\mathbf F_{\\rm ext}=0\\ \\Longrightarrow\\ \\mathbf P={\\rm constant}$$\n\nThis classical statement assumes the full isolated material system and appropriate internal action-reaction balance. Momentum is a vector in kg·m/s.\n\n**One worked relation**\n\nFor masses sticking together, $m_1v_1+m_2v_2=(m_1+m_2)V$. Solve for $V$ even though kinetic energy is generally not conserved.\n\n**Watch for**\n\nZero initial momentum does not mean each particle stays motionless. Also check whether external forces deliver appreciable impulse during the event.",
+      "opening_question": "Can two objects both move while their total momentum is zero?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.5.1",
+        "pages": [
+          156,
+          159
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "f6105f98895cbde3afbb7e59a5b59f01b2c4b88cb7d8914bf527a2b050a91817"
+      }
+    },
+    "5.5.2": {
+      "summary": "A rocket accelerates by giving backward momentum to expelled fuel.",
+      "notes": "**Picture and method**\n\nConserve momentum for rocket plus newly expelled fuel over a tiny interval. Exhaust speed is measured relative to the rocket.\n\n**Keep handy**\n\n$$m\\,dv=-u\\,dm,\\qquad\\Delta v=u\\ln\\frac{m_i}{m_f}$$\n\n$u>0$ is exhaust speed (m/s), $dm<0$ rocket mass change, and $m_i,m_f$ are initial/final rocket masses. Formula assumes constant $u$ and no external force.\n\n**One worked relation**\n\nBurning from $m_i$ to $m_i/2$ gives $\\Delta v=u\\ln2$. Another identical mass ratio adds the same velocity increment.\n\n**Watch for**\n\nDo not apply $F=d(mv)/dt$ to the shrinking rocket alone without the outgoing momentum flux.",
+      "opening_question": "Why is the rocket's change in mass negative during the burn?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.5.2",
+        "pages": [
+          159,
+          161
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "e7ba3a19f3bc72daec0a5b3c478fc379719ba73e7fbf5a7f0bef5c4140d3009a"
+      }
+    },
+    "5.6": {
+      "summary": "The center-of-mass frame removes the system's shared drift.",
+      "notes": "**Picture and method**\n\nSubtract the mass-weighted mean velocity from every particle. What remains describes relative motion inside the system.\n\n**Keep handy**\n\n$$\\mathbf V_{\\rm CM}=\\frac{\\mathbf P}{M},\\qquad\\mathbf v_i'=\\mathbf v_i-\\mathbf V_{\\rm CM}$$\n\n$M=\\sum m_i$ (kg), velocities (m/s), and total CM-frame momentum is zero. This is an inertial frame when external net force is zero.\n\n**One worked relation**\n\nTwo equal masses with velocities $v$ and $0$ have $V_{\\rm CM}=v/2$ and velocities $+v/2,-v/2$ in that frame.\n\n**Watch for**\n\nThe CM need not lie on material. Changing frame changes kinetic energy, while the interaction physics remains consistent.",
+      "opening_question": "What common velocity could we subtract to make total momentum vanish?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.6",
+        "pages": [
+          161,
+          164
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "d43395ef40266beea189a6617de2f7d1e6cab62f2ca0b747bbc92cef4d8c2875"
+      }
+    },
+    "5.6.1": {
+      "summary": "Mass-weighted position and velocity locate the system's center of mass.",
+      "notes": "**Picture and method**\n\nWeight each position by mass before averaging. A boost by the CM velocity puts total momentum at zero.\n\n**Keep handy**\n\n$$\\mathbf R=\\frac{\\sum m_i\\mathbf r_i}{M},\\qquad M\\ddot{\\mathbf R}=\\mathbf F_{\\rm ext}$$\n\n$\\mathbf R$ is in m, $M$ in kg and external force in N, for a fixed collection of constant masses.\n\n**One worked relation**\n\nMasses $m$ and $3m$ at $x=0$ and $x=L$ have $R=3L/4$, closer to the heavier mass.\n\n**Watch for**\n\nA simple midpoint works only for equal masses or matching symmetry. Do not confuse CM velocity with each particle's velocity.",
+      "opening_question": "For unequal masses, which mass pulls the center of mass closer to itself?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.6.1",
+        "pages": [
+          161,
+          163
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "1c42331799bf06742159cf9166189cbae89b7384fa9ca09a32226e78436ea1c8"
+      }
+    },
+    "5.6.2": {
+      "summary": "Total kinetic energy splits into shared drift and motion relative to the CM.",
+      "notes": "**Picture and method**\n\nWrite each velocity as CM velocity plus its relative velocity. The cross term vanishes because CM-frame momentum is zero.\n\n**Keep handy**\n\n$$K=\\tfrac12MV_{\\rm CM}^2+K_{\\rm CM},\\qquad K_{\\rm CM}=\\sum_i\\tfrac12m_i{v_i'}^2$$\n\nAll energies are in J; $V_{\\rm CM},v_i'$ are in m/s. This classical decomposition is exact for constant masses.\n\n**One worked relation**\n\nTwo equal masses at velocities $v$ and $0$ have $K=mv^2/2$. Their shared drift contributes $mv^2/4$ and internal relative motion the other $mv^2/4$.\n\n**Watch for**\n\nZero CM momentum does not mean zero CM kinetic energy. Oppositely moving particles still carry energy.",
+      "opening_question": "What motion remains after you remove the motion of the center of mass?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.6.2",
+        "pages": [
+          163,
+          164
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "daa130f44a0cdae16a2ddaec68439bfde3e2a101428af7601724ad36fafe0859"
+      }
+    },
+    "5.7": {
+      "summary": "Collision equations depend on which quantities the interaction conserves.",
+      "notes": "**Picture and method**\n\nMomentum is conserved when external impulse is negligible. Add kinetic-energy conservation only for an elastic collision; in two dimensions retain both momentum components.\n\n**Keep handy**\n\n$$\\sum\\mathbf p_i=\\sum\\mathbf p_f,\\qquad K_i=K_f\\ \\text{(elastic)}$$\n\nMomentum has units kg·m/s and kinetic energy J. Inelastic collisions convert some organized kinetic energy to internal energy.\n\n**One worked relation**\n\nFor equal masses in a 1D elastic collision with one initially at rest, momentum plus energy gives $v_{1f}=0$, $v_{2f}=v_{1i}$.\n\n**Watch for**\n\nSticking is perfectly inelastic, not elastic. Conservation laws alone may need geometric or impact information to determine all outgoing directions.",
+      "opening_question": "Does the statement tell us the collision is elastic?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.7",
+        "pages": [
+          164,
+          167
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "baae4645fb628a56a5cf1254033f593282138eb73de4dfb64a4e65717bfa0b0e"
+      }
+    },
+    "5.7.1": {
+      "summary": "In a one-dimensional elastic collision, the relative velocity reverses.",
+      "notes": "**Picture and method**\n\nUse momentum conservation plus reversal of approach speed in the CM frame, then transform back.\n\n**Keep handy**\n\n$$v_{1f}=\\frac{m_1-m_2}{m_1+m_2}v,\\qquad v_{2f}=\\frac{2m_1}{m_1+m_2}v$$\n\nThese formulas assume particle 1 initially moves at signed velocity $v$ and particle 2 is initially at rest. Masses are in kg, velocities in m/s.\n\n**One worked relation**\n\nIf $m_2\\gg m_1$, $v_{1f}\\simeq-v$: the light particle rebounds from a nearly stationary heavy target.\n\n**Watch for**\n\nA negative result is a direction, not a negative speed. These particular formulas cannot be used unchanged for two moving incoming particles.",
+      "opening_question": "What should happen when the target is much heavier than the projectile?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.7.1",
+        "pages": [
+          164,
+          166
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8bd85dee4b7a04e72be4c5a1447b718f8c61bba035a5fefd37d9ecb00abb1af8"
+      }
+    },
+    "5.7.2": {
+      "summary": "A planar collision conserves two momentum components and, if elastic, one energy.",
+      "notes": "**Picture and method**\n\nDraw the incoming and outgoing velocity vectors before using their magnitudes. Keep the angle information in components or dot products.\n\n**Keep handy**\n\n$$\\mathbf v=\\mathbf v_1'+\\mathbf v_2',\\qquad v^2={v_1'}^2+{v_2'}^2$$\n\nThese relations are for equal masses, an initially stationary target and an elastic collision. Velocities are in m/s.\n\n**One worked relation**\n\nSquaring the momentum relation and comparing with energy gives $2\\mathbf v_1'\\cdot\\mathbf v_2'=0$: nonzero outgoing velocities are perpendicular.\n\n**Watch for**\n\nThe right-angle result is a special case, not every elastic collision. Unequal masses or a moving target change it.",
+      "opening_question": "What additional equation appears when the motion is in a plane?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.7.2",
+        "pages": [
+          166,
+          167
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ab8fbfc20cbc8ccf46c5a882d04696b0d8d15c7640b4a44c76251a1cd08a99b3"
+      }
+    },
+    "5.8": {
+      "summary": "An apparently gentle process can still dissipate kinetic energy.",
+      "notes": "**Picture and method**\n\nTrack how new material joins a moving system or how different velocities are forced to become one. Momentum may survive while kinetic energy becomes heat.\n\n**Keep handy**\n\n$$K_i-K_f=\\tfrac12\\mu(v_1-v_2)^2,\\qquad\\mu=\\frac{m_1m_2}{m_1+m_2}$$\n\nFor two masses sticking in 1D with negligible external impulse; $\\mu$ (kg), velocities (m/s), lost kinetic energy (J).\n\n**One worked relation**\n\nIf a moving mass $m$ collects an equal stationary mass, final speed is $v/2$ and kinetic energy falls from $mv^2/2$ to $mv^2/4$.\n\n**Watch for**\n\nTotal energy is still conserved. The loss is from the kinetic-energy account, not disappearance of energy; material collection needs momentum flux.",
+      "opening_question": "Where can the missing kinetic energy go when the objects stick?",
+      "source": {
+        "id": "morin",
+        "section_id": "5.8",
+        "pages": [
+          167,
+          173
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "4e2e305378b6aae015bd28f1c270f899f7697fc23636249ccba95add877e162d"
+      }
+    },
+    "6.1": {
+      "summary": "The Lagrangian method finds motion using energies and independent coordinates.",
+      "notes": "**Picture and method**\n\nChoose coordinates that respect the constraints, write kinetic and potential energy, then apply one Euler–Lagrange equation per coordinate.\n\n**Keep handy**\n\n$$L=T-V,\\qquad\\frac{d}{dt}\\frac{\\partial L}{\\partial\\dot q_i}=\\frac{\\partial L}{\\partial q_i}$$\n\n$L,T,V$ are in J. $q_i$ may be length (m) or angle (rad); its conjugate momentum has corresponding units. Ideal holonomic constraints fit this formulation.\n\n**One worked relation**\n\nFor $L=m\\dot x^2/2-kx^2/2$, the left side is $m\\ddot x$ and the right is $-kx$, recovering the spring equation.\n\n**Watch for**\n\nTreat $q$ and $\\dot q$ as independent during partial differentiation. Only then take the total time derivative.",
+      "opening_question": "Which coordinate describes the allowed motion without introducing an unnecessary constraint?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.1",
+        "pages": [
+          218,
+          221
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "1af0b60abf64344332ac13f6d047614fc6d9001e1846b6d9ce88ab7d22a02076"
+      }
+    },
+    "6.2": {
+      "summary": "The physical trajectory makes the action stationary under small path changes.",
+      "notes": "**Picture and method**\n\nCompare nearby paths with the same endpoints and endpoint times. Integrate the first-order variation by parts; the endpoint term vanishes.\n\n**Keep handy**\n\n$$S=\\int_{t_1}^{t_2}L\\,dt,\\qquad\\delta S=0$$\n\nAction $S$ has units J·s. The varied path has $\\delta q(t_1)=\\delta q(t_2)=0$. Stationary means first-order change vanishes.\n\n**One worked relation**\n\nFor a free particle $L=m\\dot x^2/2$, stationarity yields $m\\ddot x=0$, so the path is uniform straight-line motion.\n\n**Watch for**\n\nStationary does not always mean a minimum. Do not vary endpoint times in this fixed-endpoint derivation.",
+      "opening_question": "What is held fixed when we compare two nearby possible paths?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.2",
+        "pages": [
+          221,
+          227
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3b0b4ae6a9765e828425ec042de9268d2d151d3eee3c2a4cb8c356156516444f"
+      }
+    },
+    "6.3": {
+      "summary": "Eliminating a constrained direction also hides the force enforcing that constraint.",
+      "notes": "**Picture and method**\n\nTo recover a normal force or tension, temporarily retain the forbidden coordinate and include a multiplier for the constraint.\n\n**Keep handy**\n\n$$\\frac{d}{dt}\\frac{\\partial L}{\\partial\\dot q_i}-\\frac{\\partial L}{\\partial q_i}=\\lambda\\frac{\\partial f}{\\partial q_i}$$\n\nConstraint is $f(q,t)=0$. $\\lambda$ units depend on how $f$ is defined; the product on the right is the generalized constraint force.\n\n**One worked relation**\n\nFor a bead constrained to $y=0$, choose $f=y$. Then the $y$ equation exposes the normal force rather than discarding it by substituting $y=0$ first.\n\n**Watch for**\n\nThe multiplier is not automatically a force in N for every constraint normalization. Interpret its coefficient in the actual coordinate equation.",
+      "opening_question": "Which force disappears from the equations if we impose the constraint at the start?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.3",
+        "pages": [
+          227,
+          229
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "7b83ef3c6d29d18200b9c3e15d967eab6a9ae77408d580e9a7333a5340a43bdb"
+      }
+    },
+    "6.4": {
+      "summary": "Good coordinates simplify the description without changing the physical trajectory.",
+      "notes": "**Picture and method**\n\nTransform positions and velocities consistently before writing the Lagrangian. A smooth invertible coordinate change preserves the stationary-action equations.\n\n**Keep handy**\n\n$$T=\\tfrac12m(\\dot r^2+r^2\\dot\\theta^2)$$\n\nFor planar polar coordinates, $r$ is in m, $\\theta$ in rad and $T$ in J. The extra factor $r^2$ comes from tangential speed $r\\dot\\theta$.\n\n**One worked relation**\n\nWith $L=T-V(r)$, the radial equation is $m\\ddot r=mr\\dot\\theta^2-V'(r)$; the centrifugal-looking term comes from differentiating $r^2\\dot\\theta^2$.\n\n**Watch for**\n\nDo not just relabel $x$ as $r$ while leaving Cartesian kinetic energy unchanged.",
+      "opening_question": "What distance does the particle travel when only its angle changes a little?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.4",
+        "pages": [
+          229,
+          232
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "448adba8a9e24ca9a27986fa30c33c346fcd27910586587bb911e77442ecf38d"
+      }
+    },
+    "6.5": {
+      "summary": "Symmetries can replace a differential equation with a conserved quantity.",
+      "notes": "**Picture and method**\n\nInspect the Lagrangian for absent coordinates and absent explicit time. These give momentum-like constants and an energy-like constant respectively.\n\n**Keep handy**\n\n$$p_i=\\frac{\\partial L}{\\partial\\dot q_i},\\qquad E=\\sum_i\\dot q_i p_i-L$$\n\nIf $\\partial L/\\partial q_i=0$, then $p_i$ is conserved. If $\\partial L/\\partial t=0$, then $E$ is conserved. $E$ has units J.\n\n**One worked relation**\n\nFor $L=m(\\dot r^2+r^2\\dot\\theta^2)/2-V(r)$, absent $\\theta$ gives $p_\\theta=mr^2\\dot\\theta$, the angular momentum.\n\n**Watch for**\n\nAbsent coordinate and absent coordinate velocity are different conditions. The conserved $E$ equals $T+V$ under the usual time-independent-coordinate, quadratic-kinetic assumptions.",
+      "opening_question": "Which variable does this Lagrangian never mention explicitly?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.5",
+        "pages": [
+          232,
+          236
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "073a16a84143d25a2e74d008a97bc4d293b1c8252042a2199345558a0d769406"
+      }
+    },
+    "6.5.1": {
+      "summary": "A cyclic coordinate has a conserved conjugate momentum.",
+      "notes": "**Picture and method**\n\nLook for a coordinate missing from $L$, even if its velocity is present. Its Euler–Lagrange equation becomes a conservation statement.\n\n**Keep handy**\n\n$$\\frac{\\partial L}{\\partial q}=0\\ \\Longrightarrow\\ \\frac{d}{dt}\\frac{\\partial L}{\\partial\\dot q}=0$$\n\nConjugate momentum is kg·m/s for a length coordinate and kg·m²/s for an angle. It need not equal mass times coordinate speed.\n\n**One worked relation**\n\nFor a central potential, $L$ contains $\\dot\\theta$ but not $\\theta$. Therefore $mr^2\\dot\\theta$ stays constant while $r$ and $\\dot\\theta$ can both change.\n\n**Watch for**\n\nCyclic does not mean the motion is periodic. It describes the Lagrangian's dependence on a coordinate.",
+      "opening_question": "Can angular speed change even when angular momentum stays constant?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.5.1",
+        "pages": [
+          232,
+          234
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "4bad4bd97ec57707d0e761ad4573b3cc6741b264de7e919d05558e57531b8063"
+      }
+    },
+    "6.5.2": {
+      "summary": "Time-translation symmetry gives a conserved energy-like quantity.",
+      "notes": "**Picture and method**\n\nForm the velocity-weighted sum of conjugate momenta and subtract $L$. Use the equations of motion to differentiate it.\n\n**Keep handy**\n\n$$E=\\sum_i\\dot q_i\\frac{\\partial L}{\\partial\\dot q_i}-L,\\qquad\\frac{dE}{dt}=-\\frac{\\partial L}{\\partial t}$$\n\n$E$ is in J. The partial derivative means explicit time dependence while coordinates and velocities are held fixed.\n\n**One worked relation**\n\nFor $L=m\\dot x^2/2-V(x)$, $E=m\\dot x^2-(m\\dot x^2/2-V)=T+V$. No explicit time gives constant $E$.\n\n**Watch for**\n\nA moving constraint can make the Lagrangian explicitly time-dependent and exchange energy with the system.",
+      "opening_question": "Does time appear explicitly, or only through the changing coordinates?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.5.2",
+        "pages": [
+          234,
+          236
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "36bf0405908d04a6b7f4d2a5668033195a6f0578bb43699030982d923c25bb66"
+      }
+    },
+    "6.6": {
+      "summary": "Every continuous symmetry of the action supplies a conserved quantity.",
+      "notes": "**Picture and method**\n\nFind an infinitesimal coordinate shift that leaves $L$ unchanged to first order; weight each shift by its conjugate momentum.\n\n**Keep handy**\n\n$$\\delta q_i=\\epsilon K_i(q)\\quad\\Longrightarrow\\quad Q=\\sum_i p_iK_i\\ \\text{constant}$$\n\nThis form assumes $\\delta L=0$ for the coordinate symmetry. A total-derivative change adds a boundary-term correction. Units of $Q$ follow the chosen symmetry parameter.\n\n**One worked relation**\n\nA common translation of all particle positions leaves an interaction depending only on separations unchanged; the conserved $Q$ is total momentum.\n\n**Watch for**\n\nA symmetry shifts the entire physical configuration in a specified way, not just one term of the formula.",
+      "opening_question": "Would shifting the whole setup sideways change its Lagrangian?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.6",
+        "pages": [
+          236,
+          239
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "902909cd6c827a84a2ae01e04c3fc096d3c6d341bcbaf53bf918c2c8a3e5da2d"
+      }
+    },
+    "6.7": {
+      "summary": "Small-motion frequencies come from both potential curvature and effective inertia.",
+      "notes": "**Picture and method**\n\nExpand the Lagrangian to quadratic order about equilibrium. The coefficient of each velocity squared matters as much as the potential's shape.\n\n**Keep handy**\n\n$$\\omega^2=\\frac{K}{M},\\qquad L\\simeq\\tfrac12M\\dot\\eta^2-\\tfrac12K\\eta^2$$\n\n$\\eta=q-q_0$. The units of $M,K$ follow the coordinate; their ratio is s⁻². For several coordinates solve $\\det(K-\\omega^2M)=0$.\n\n**One worked relation**\n\nA pendulum with $\\eta=\\theta$ has $M=m\\ell^2$ and $K=mg\\ell$, hence $\\omega=\\sqrt{g/\\ell}$.\n\n**Watch for**\n\nDo not use the bare mass with angular-coordinate curvature. First identify the kinetic-energy coefficient in the same coordinate.",
+      "opening_question": "What plays the role of mass when our coordinate is an angle?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.7",
+        "pages": [
+          239,
+          242
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "4ede9c4df55cf6d79e067b57086e352424bee23477a1e1babf3ecfa4ebc7fe17"
+      }
+    },
+    "6.8": {
+      "summary": "The Euler–Lagrange equation also optimizes curves and surfaces.",
+      "notes": "**Picture and method**\n\nIdentify the quantity to extremize, express it as an integral, and treat the integration variable like time. Physical kinetic energy is not required.\n\n**Keep handy**\n\n$$\\frac{d}{dx}\\frac{\\partial f}{\\partial y'}=\\frac{\\partial f}{\\partial y}$$\n\nFor a functional $J=\\int f(y,y',x)dx$, $y'=dy/dx$. Units follow the quantity being extremized rather than a mechanical Lagrangian.\n\n**One worked relation**\n\nA surface of revolution has area $A=2\\pi\\int y\\sqrt{1+y'^2}dx$. The stationary curve is a catenary $y=a\\cosh((x-b)/a)$ with lengths $a,b$.\n\n**Watch for**\n\nA stationary surface may not be the global minimum for the chosen boundary rings. Check admissible alternatives and boundary conditions.",
+      "opening_question": "What quantity are we minimizing, and what curve determines it?",
+      "source": {
+        "id": "morin",
+        "section_id": "6.8",
+        "pages": [
+          242,
+          246
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ab44ab5556d4c5d7e931f00015b117690dfd96600bf7a26d702ea48db909db08"
+      }
+    },
+    "7.1": {
+      "summary": "A central force cannot change angular momentum about its center.",
+      "notes": "**Picture and method**\n\nPosition and force are parallel, so their cross product vanishes. The motion stays in the plane perpendicular to the conserved angular-momentum vector.\n\n**Keep handy**\n\n$$\\mathbf L=\\mathbf r\\times m\\mathbf v,\\qquad\\dot{\\mathbf L}=\\mathbf r\\times\\mathbf F=0$$\n\n$\\mathbf r$ is measured from the force center (m), $\\mathbf L$ is kg·m²/s. For nonzero $L$, the orbital plane is fixed.\n\n**One worked relation**\n\nIn planar polar coordinates, $L=mr^2\\dot\\theta$. Halving $r$ at fixed $L$ multiplies angular speed by four.\n\n**Watch for**\n\nConserved angular momentum does not mean constant angular speed. The origin must be the force center for the zero-torque argument.",
+      "opening_question": "What is the torque when the force points along the position vector?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.1",
+        "pages": [
+          281,
+          283
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "2e8a447c0414509a246ba0349e4ab811c7c39d1602a5ad8181ce67b4d085a08d"
+      }
+    },
+    "7.2": {
+      "summary": "Angular momentum turns orbital motion into one-dimensional radial motion in an effective potential.",
+      "notes": "**Picture and method**\n\nReserve part of the energy for tangential motion. Add that term to the real potential and analyze the radial energy landscape.\n\n**Keep handy**\n\n$$E=\\tfrac12m\\dot r^2+V_{\\rm eff}(r),\\qquad V_{\\rm eff}=V(r)+\\frac{L^2}{2mr^2}$$\n\n$E,V_{\\rm eff}$ are in J; $L$ is fixed angular momentum (kg·m²/s). Turning radii satisfy $E=V_{\\rm eff}$.\n\n**One worked relation**\n\nFor $V=-\\alpha/r$, set $V_{\\rm eff}'=0$: $\\alpha/r^2-L^2/(mr^3)=0$, giving circular radius $r=L^2/(m\\alpha)$.\n\n**Watch for**\n\nThe extra term is tangential kinetic energy, not a new physical potential interaction. Stability needs $V_{\\rm eff}''>0$.",
+      "opening_question": "Which part of the energy is unavailable for radial speed?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.2",
+        "pages": [
+          283,
+          285
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "eebe4e740abcdf75899ac73fed894ca626a03b3880614f90a38eed4c0a54394a"
+      }
+    },
+    "7.3": {
+      "summary": "Conserved energy and angular momentum provide two routes to an orbit.",
+      "notes": "**Picture and method**\n\nFind position versus time by integration, or eliminate time to find the shape directly. Initial data fix $E$ and $L$.\n\n**Keep handy**\n\n$$\\dot r=\\pm\\sqrt{\\frac{2}{m}(E-V_{\\rm eff})},\\qquad\\dot\\theta=\\frac{L}{mr^2}$$\n\n$r$ is in m, time in s, $\\theta$ in rad, $E$ in J. The radial sign distinguishes inward and outward parts of a trajectory.\n\n**One worked relation**\n\nAfter integrating $dt=dr/\\dot r$ to obtain $r(t)$, integrate $\\dot\\theta=L/(mr(t)^2)$. For orbit shape use $dr/d\\theta=\\dot r/\\dot\\theta$.\n\n**Watch for**\n\nAn orbit's shape does not tell you its timing. The sign of $\\dot r$ changes at a turning point.",
+      "opening_question": "Do we need where the particle is at a given time, or just the curve it follows?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.3",
+        "pages": [
+          285,
+          287
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "da99d8a18a02e9c223af771a2ae0f142e5a4ad586c52f25cff3754bd5b4895d9"
+      }
+    },
+    "7.3.1": {
+      "summary": "Time along an orbit follows from the radial speed allowed by energy.",
+      "notes": "**Picture and method**\n\nIntegrate one inward or outward branch at a time, then recover the angle from conserved angular momentum.\n\n**Keep handy**\n\n$$t-t_0=\\pm\\int_{r_0}^{r}\\frac{d\\rho}{\\sqrt{2[E-V_{\\rm eff}(\\rho)]/m}}$$\n\n$\\rho$ is an integration radius (m), $t$ in s, and $V_{\\rm eff}=V+L^2/(2m\\rho^2)$. Use the sign consistent with radial motion.\n\n**One worked relation**\n\nFor zero force and zero angular momentum, $V_{\\rm eff}=0$ gives $r-r_0=\\pm\\sqrt{2E/m}(t-t_0)$ on a radial branch.\n\n**Watch for**\n\nMany integrals have no elementary inverse; numerical integration is valid. Match branches at turning points instead of keeping one sign forever.",
+      "opening_question": "Is the particle moving toward or away from the force center on this branch?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.3.1",
+        "pages": [
+          286,
+          286
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "724427fa4843fe17b2884d67884d083199c70b0989962c55d0e905e0438a4a93"
+      }
+    },
+    "7.3.2": {
+      "summary": "Eliminating time gives a direct equation for orbital shape.",
+      "notes": "**Picture and method**\n\nUse the angular-momentum equation to replace time derivatives. The reciprocal radius often simplifies the result.\n\n**Keep handy**\n\n$$\\left(\\frac{du}{d\\theta}\\right)^2=\\frac{2mE}{L^2}-u^2-\\frac{2mV(1/u)}{L^2},\\qquad u=\\frac1r$$\n\n$u$ has units m⁻¹ and $\\theta$ is in rad. This route assumes nonzero $L$; purely radial motion is handled separately.\n\n**One worked relation**\n\nFor $V=-\\alpha/r=-\\alpha u$, the right side is a quadratic in $u$, leading to a cosine solution after shifting its center.\n\n**Watch for**\n\nDo not substitute $r$ where the potential now expects $1/u$. Eliminating time loses timing information, not the geometric orbit.",
+      "opening_question": "Why might using $1/r$ simplify an inverse-distance potential?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.3.2",
+        "pages": [
+          286,
+          287
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "56c2e5964e93672c120039c040d7c3e2a4b2fca055e7f954c250a77ee65399d7"
+      }
+    },
+    "7.4": {
+      "summary": "Inverse-square attraction produces conic orbits and Kepler's laws.",
+      "notes": "**Picture and method**\n\nSolve the reciprocal-radius equation, classify the orbit by eccentricity, then use angular momentum to determine its area rate.\n\n**Keep handy**\n\n$$r=\\frac{p}{1+e\\cos\\theta},\\qquad p=\\frac{L^2}{m\\alpha},\\quad V=-\\frac\\alpha r$$\n\nFor a fixed central mass $M$, $\\alpha=GMm$ (J·m), $p,r$ (m), $e$ dimensionless. For comparable masses use the reduced mass in the relative problem.\n\n**One worked relation**\n\nA bound ellipse has $0\\le e<1$ and period $T^2=4\\pi^2a^3/(GM)$ in the fixed-center approximation.\n\n**Watch for**\n\nThe force center is a focus, not generally the geometric center of the ellipse. The two-body period uses $G(M+m)$.",
+      "opening_question": "Which point of the ellipse is occupied by the attracting mass?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.4",
+        "pages": [
+          287,
+          296
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "b82439550b9af814cb9f219aa3fdfbdb3b49cc904093309f6e790b558b3ae3cf"
+      }
+    },
+    "7.4.1": {
+      "summary": "The reciprocal radius turns the gravitational orbit equation into a shifted oscillator.",
+      "notes": "**Picture and method**\n\nSet $u=1/r$, differentiate the energy equation, and solve the resulting equation in angle.\n\n**Keep handy**\n\n$$u''+u=\\frac{m\\alpha}{L^2},\\qquad u=\\frac{m\\alpha}{L^2}(1+e\\cos\\theta)$$\n\nPrimes mean $d/d\\theta$, not time. $\\alpha=GMm$ (J·m), $L$ (kg·m²/s), and periapsis defines $\\theta=0$.\n\n**One worked relation**\n\nSubstitute $u$ back: $r=L^2/[m\\alpha(1+e\\cos\\theta)]$. At $\\theta=0$, the radius is its minimum for $e>0$.\n\n**Watch for**\n\nUse the energy equation to relate $e$ to the initial conditions; the differential equation alone leaves integration constants undetermined.",
+      "opening_question": "What is the benefit of replacing radius by reciprocal radius here?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.4.1",
+        "pages": [
+          287,
+          289
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "031a37309533116a68add6dbb9110ecb5ab46ea999e9994c83bd8e01a36bae25"
+      }
+    },
+    "7.4.2": {
+      "summary": "Eccentricity and energy classify gravitational trajectories.",
+      "notes": "**Picture and method**\n\nCompare the total energy with zero at infinite separation. The sign determines whether escape is possible.\n\n**Keep handy**\n\n$$e^2=1+\\frac{2EL^2}{m\\alpha^2}$$\n\nFor $V=-\\alpha/r$, fixed-center mass $m$, and nonzero $L$: circle $e=0$, ellipse $0<e<1$, parabola $e=1$, hyperbola $e>1$.\n\n**One worked relation**\n\nNegative $E$ gives $e<1$ and two finite turning radii $p/(1+e)$ and $p/(1-e)$. At $E=0$, the outer turning radius goes to infinity.\n\n**Watch for**\n\nNegative total energy does not mean negative kinetic energy. It means the binding potential outweighs the positive kinetic term.",
+      "opening_question": "Which sign of energy permits reaching infinity with nonzero speed?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.4.2",
+        "pages": [
+          289,
+          290
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "d993491535144332a7f04659b5f9eaedaf0fa9ea2bbc5ceee4513cbac50bab59"
+      }
+    },
+    "7.4.3": {
+      "summary": "The polar orbit equation is a conic with its focus at the force center.",
+      "notes": "**Picture and method**\n\nReplace $r\\cos\\theta$ with $x$ and $r^2$ with $x^2+y^2$, then complete the square.\n\n**Keep handy**\n\n$$p=r+ex\\ \\Longrightarrow\\ (1-e^2)x^2+y^2+2pex-p^2=0$$\n\n$p$ is the semilatus rectum (m), $e$ dimensionless, and $x,y$ coordinates relative to the focus (m).\n\n**One worked relation**\n\nFor $0\\le e<1$, completing the square gives semiaxes $a=p/(1-e^2)$ and $b=p/\\sqrt{1-e^2}$.\n\n**Watch for**\n\nThe origin of these coordinates is a focus. A shift is needed to write the familiar centered ellipse equation.",
+      "opening_question": "Why does converting the polar equation to Cartesian coordinates reveal the conic?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.4.3",
+        "pages": [
+          290,
+          291
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "810c5fac56c69c0cf3bd5876e7f9d939b901007749e8eaa8e19e9ed6e07c6476"
+      }
+    },
+    "7.4.4": {
+      "summary": "Kepler's area and period laws follow from conserved angular momentum and gravity.",
+      "notes": "**Picture and method**\n\nA small orbital wedge has area $r^2d\\theta/2$. Constant $L$ means equal areas in equal times, even while speed changes.\n\n**Keep handy**\n\n$$\\frac{dA}{dt}=\\frac{L}{2m},\\qquad T^2=\\frac{4\\pi^2}{GM}a^3$$\n\nFor a light body orbiting fixed mass $M$, $a$ is ellipse semimajor axis (m), $T$ period (s), and $A$ swept area (m²).\n\n**One worked relation**\n\nFor a circle, $mv^2/a=GMm/a^2$ and $T=2\\pi a/v$ immediately give the period law. Ellipses obey the same law using $a$.\n\n**Watch for**\n\nEqual areas do not mean equal distances or equal angles. An orbiting body moves faster near periapsis.",
+      "opening_question": "Why must a planet move faster when it is closer to the Sun?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.4.4",
+        "pages": [
+          291,
+          293
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3628c8e7e6feec51c797b8d609ced110a9bf13b1f52b8cbf10e4b9d6ddf8725a"
+      }
+    },
+    "7.4.5": {
+      "summary": "Two moving masses reduce to one relative particle plus center-of-mass motion.",
+      "notes": "**Picture and method**\n\nSeparate the common translation from the separation vector. The relative coordinate has reduced mass, while both original masses still appear in the potential.\n\n**Keep handy**\n\n$$\\mu=\\frac{m_1m_2}{m_1+m_2},\\qquad T=\\tfrac12M\\dot R^2+\\tfrac12\\mu\\dot r^2$$\n\n$M=m_1+m_2$ (kg), $\\mathbf r=\\mathbf r_1-\\mathbf r_2$ (m), and $V=-Gm_1m_2/r$ for gravity.\n\n**One worked relation**\n\nFor equal masses $m$, $\\mu=m/2$. The relative orbit obeys $T_{\\rm orbit}^2=4\\pi^2a_{\\rm relative}^3/[G(m_1+m_2)]$.\n\n**Watch for**\n\nReplace the mass in the relative kinetic term, not the product $m_1m_2$ in the gravitational potential. Relative semimajor axis is the separation orbit's size.",
+      "opening_question": "What coordinate describes the distance between the two bodies rather than their shared drift?",
+      "source": {
+        "id": "morin",
+        "section_id": "7.4.5",
+        "pages": [
+          293,
+          296
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3ef79d9949b2adf13af579e05c64d153ba50aab184d15d6eaff493278c0eebd8"
+      }
+    },
+    "8.1": {
+      "summary": "Planar rigid motion separates into translation of the center of mass and spin about it.",
+      "notes": "**Picture and method**\n\nFor a flat object moving in its own plane, every angular-momentum contribution points perpendicular to that plane. Keep the chosen origin explicit.\n\n**Keep handy**\n\n$$L_{O,z}=(\\mathbf R\\times M\\mathbf V)_z+I_{\\rm CM}\\omega$$\n\n$\\mathbf R$ locates the CM from $O$ (m), $\\mathbf V$ is its velocity (m/s), $I$ (kg·m²), $\\omega$ (rad/s), and $L$ (kg·m²/s).\n\n**One worked relation**\n\nA freely moving disk can have orbital angular momentum about $O$ even with zero spin. If $O$ is at the CM, that orbital term vanishes.\n\n**Watch for**\n\nThe parallel-axis theorem shifts parallel axes; the perpendicular-axis theorem applies only to planar laminae. Do not substitute one for the other.",
+      "opening_question": "Is this object spinning, translating, or doing both?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.1",
+        "pages": [
+          310,
+          316
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "02e10753dac42704b66b87833ec5fd29744f3fb9bc670d2069436e00f4d49456"
+      }
+    },
+    "8.1.1": {
+      "summary": "For a flat body rotating about a perpendicular axis, inertia weights mass by squared distance.",
+      "notes": "**Picture and method**\n\nSplit the object into little masses, use $v=\\omega r_\\perp$, and sum their angular momenta.\n\n**Keep handy**\n\n$$I_z=\\int r_\\perp^2dm,\\qquad L_z=I_z\\omega,\\qquad T=\\tfrac12I_z\\omega^2$$\n\n$r_\\perp$ (m) is distance from the rotation axis, $dm$ (kg), $I_z$ (kg·m²). Positive rotation follows the right-hand rule.\n\n**One worked relation**\n\nA thin ring has every mass element at radius $R$, so $I_z=MR^2$ and $L_z=MR^2\\omega$.\n\n**Watch for**\n\nUse distance to the axis, not distance along the object or to an arbitrary point.",
+      "opening_question": "Which pieces contribute most strongly to the moment of inertia?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.1.1",
+        "pages": [
+          311,
+          312
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "10a5451c95e0d57794d9bec13acad82c03e94e87d22b882305d2f05a00194039"
+      }
+    },
+    "8.1.2": {
+      "summary": "Planar translation and spin contribute separately to angular momentum and energy.",
+      "notes": "**Picture and method**\n\nExpress each velocity as CM velocity plus rotation about the CM. Mass-weighted relative positions sum to zero, eliminating cross terms.\n\n**Keep handy**\n\n$$T=\\tfrac12MV^2+\\tfrac12I_{\\rm CM}\\omega^2$$\n\n$T$ is in J. Angular momentum about a fixed origin is $\\mathbf R\\times M\\mathbf V+I_{\\rm CM}\\omega\\hat{\\mathbf z}$ for planar motion.\n\n**One worked relation**\n\nA disk rolling without slipping has $V=R\\omega$, giving $T=MR^2\\omega^2/2+MR^2\\omega^2/4=3MR^2\\omega^2/4$.\n\n**Watch for**\n\nDo not use $v=\\omega r$ about an arbitrary origin during general translation. The CM decomposition works without a fixed rotation point.",
+      "opening_question": "Which part of the energy remains if we watch from the moving center of mass?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.1.2",
+        "pages": [
+          312,
+          314
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "4628c2e0f2de2d16ef5ea25ac7051d41cc493162be448bb53f33f1c09648fc1b"
+      }
+    },
+    "8.1.3": {
+      "summary": "Moving a rotation axis away from the center of mass increases inertia.",
+      "notes": "**Picture and method**\n\nCompare two parallel axes, one through the CM. The shift adds the whole mass times the squared perpendicular separation.\n\n**Keep handy**\n\n$$I_O=I_{\\rm CM}+Md^2$$\n\n$I$ (kg·m²), $M$ (kg), $d$ (m). Axes must be parallel, and the reference inertia must be about the CM axis.\n\n**One worked relation**\n\nA uniform rod has $I_{\\rm CM}=M\\ell^2/12$. Moving to its end gives $I_{\\rm end}=M\\ell^2/12+M(\\ell/2)^2=M\\ell^2/3$.\n\n**Watch for**\n\nThe shift term is not valid for arbitrary pairs of non-CM axes without subtracting their CM offsets correctly.",
+      "opening_question": "Why should rotating the same rod about its end require a larger moment of inertia?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.1.3",
+        "pages": [
+          314,
+          316
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "45233c551078766760fbe9695d91e32053e5fb3f816cb6d567e05a73c6ab3991"
+      }
+    },
+    "8.1.4": {
+      "summary": "For a flat lamina, the perpendicular moment is the sum of two in-plane moments.",
+      "notes": "**Picture and method**\n\nChoose three mutually perpendicular axes through the same point, with the body entirely in the $xy$ plane.\n\n**Keep handy**\n\n$$I_z=I_x+I_y$$\n\nAll moments are in kg·m². Here $I_z=\\int(x^2+y^2)dm$, $I_x=\\int y^2dm$, $I_y=\\int x^2dm$ because $z=0$.\n\n**One worked relation**\n\nFor a uniform disk, symmetry gives $I_x=I_y$. Since $I_z=MR^2/2$, each diameter moment is $MR^2/4$.\n\n**Watch for**\n\nThis theorem does not hold for a three-dimensional sphere or cylinder of appreciable thickness.",
+      "opening_question": "Which coordinate is zero for every bit of a truly flat object?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.1.4",
+        "pages": [
+          316,
+          316
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "b5573d790bf475539f9a2a83d62de360679a27b41b6ec9a53ffbdf85cced4d1c"
+      }
+    },
+    "8.2": {
+      "summary": "A nonplanar body's axial component is simple even when its full angular momentum is not.",
+      "notes": "**Picture and method**\n\nFor rotation about $z$, sum the mass-weighted squared distances to that axis. Out-of-plane mass can create transverse angular momentum.\n\n**Keep handy**\n\n$$L_z=I_z\\omega,\\qquad I_z=\\int(x^2+y^2)dm$$\n\n$\\omega$ is about the specified $z$ axis (rad/s). $I_z$ (kg·m²), $L_z$ (kg·m²/s); the full $\\mathbf L$ need not point along $z$.\n\n**One worked relation**\n\nA tilted rod spinning around a vertical axis can have a horizontal component of $\\mathbf L$ even though $L_z=I_z\\omega$ remains true.\n\n**Watch for**\n\nA correct scalar axial equation does not establish $\\mathbf L=I_z\\boldsymbol\\omega$ as a vector equation. General rotation needs the inertia tensor.",
+      "opening_question": "Are we calculating the whole angular-momentum vector or only its axial component?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.2",
+        "pages": [
+          316,
+          318
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3d14e4def62098e249f2a78408e8c3bf3a4b03af80bf18932bf4b9bb85d900d0"
+      }
+    },
+    "8.3": {
+      "summary": "Moment of inertia is a geometric integral about a specified axis.",
+      "notes": "**Picture and method**\n\nPick slices whose mass and axis distances are easy to express. Use symmetry, known pieces and axis theorems to reduce the integral.\n\n**Keep handy**\n\n$$I=\\int r_\\perp^2dm$$\n\n$I$ (kg·m²), $r_\\perp$ (m), $dm$ (kg). For a uniform rod $dm=(M/\\ell)dx$; for a disk annulus $dm=2\\pi\\sigma r\\,dr$.\n\n**One worked relation**\n\nA disk gives $I=\\int_0^Rr^2(2\\pi\\sigma r\\,dr)=\\pi\\sigma R^4/2=MR^2/2$.\n\n**Watch for**\n\nAn inertia value without its axis is incomplete. A rod's end and center values differ by a factor of four.",
+      "opening_question": "Which slices have an easy expression for both mass and distance to the axis?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.3",
+        "pages": [
+          318,
+          322
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "07673fee6e04ee8e2fafa682c9505831100815e4f1b5f6eba6e0b858efed52e8"
+      }
+    },
+    "8.3.1": {
+      "summary": "Common inertias are a toolkit when their geometry and axes match your problem.",
+      "notes": "**Picture and method**\n\nBuild rods from line elements, disks from rings, and spheres from suitable slices. Keep density normalized to total mass.\n\n**Keep handy**\n\n$$I_{\\rm rod,CM}=\\frac{M\\ell^2}{12},\\quad I_{\\rm disk,z}=\\frac{MR^2}{2},\\quad I_{\\rm sphere}=\\frac{2MR^2}{5}$$\n\nUniform thin rod about a perpendicular center axis; uniform thin disk about its symmetry axis; uniform solid sphere about a diameter. Units are kg·m².\n\n**One worked relation**\n\nFor the rod, $I=(M/\\ell)\\int_{-\\ell/2}^{\\ell/2}x^2dx=M\\ell^2/12$. The integral's limits encode the axis choice.\n\n**Watch for**\n\nA thin spherical shell has $2MR^2/3$, not the solid-sphere value. Density and hollow-versus-solid structure matter.",
+      "opening_question": "Is the object a solid volume, a shell, or a thin lamina?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.3.1",
+        "pages": [
+          318,
+          321
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "86e17b6096e7bbe3cef08f346ecb427d042330e566ad9173b157fed1e076001f"
+      }
+    },
+    "8.3.2": {
+      "summary": "Scaling and the parallel-axis theorem can determine inertia without integration.",
+      "notes": "**Picture and method**\n\nWrite the unknown answer as a dimensionless coefficient times mass and size squared. Construct a larger similar object from shifted smaller ones.\n\n**Keep handy**\n\n$$I_{\\rm rod}=cM\\ell^2$$\n\nFor a uniform rod of length $\\ell$ and mass $M$, $c$ is dimensionless. Doubling its length at fixed linear density multiplies inertia by eight.\n\n**One worked relation**\n\nJoin two rods end to end: $8cM\\ell^2=2[cM\\ell^2+M(\\ell/2)^2]$. Thus $6c=1/2$ and $c=1/12$.\n\n**Watch for**\n\nWhen scaling the size, track the mass change too. Similar geometry at fixed density does not keep mass fixed.",
+      "opening_question": "By what factor does the mass change when we double a rod's length at fixed density?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.3.2",
+        "pages": [
+          321,
+          322
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "0149d55f279066046c0c8ebb5cdbbe89d2714ec79aa983565e0076745a6ff061"
+      }
+    },
+    "8.4": {
+      "summary": "Torque is the rate of change of angular momentum about a carefully chosen origin.",
+      "notes": "**Picture and method**\n\nCompute $\\mathbf r\\times\\mathbf F$, then match it to the change of the full angular-momentum vector. Fixed origins and CM origins are especially convenient.\n\n**Keep handy**\n\n$$\\boldsymbol\\tau_{\\rm ext}=\\frac{d\\mathbf L}{dt}$$\n\nThis simple form holds about an inertially fixed origin or the CM with relative velocities. Torque (N·m), angular momentum (kg·m²/s).\n\n**One worked relation**\n\nA rod hinged at one end has $\\tau=Mg(\\ell/2)\\sin\\theta$ if $\\theta$ is measured from vertical. With $I=M\\ell^2/3$, its angular acceleration magnitude is $3g\\sin\\theta/(2\\ell)$.\n\n**Watch for**\n\nA moving arbitrary origin can require an extra term. Also $\\tau=I\\alpha$ as a scalar needs a compatible fixed-axis or planar situation.",
+      "opening_question": "About which point are we measuring both torque and angular momentum?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.4",
+        "pages": [
+          322,
+          328
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "5c7c86e8a6fa6d02c3fbd53d268f01f38096a15931f56d4ec6fe2de7fbb19bd9"
+      }
+    },
+    "8.4.1": {
+      "summary": "For one particle about a fixed origin, the force's moment changes angular momentum.",
+      "notes": "**Picture and method**\n\nDifferentiate $\\mathbf L=\\mathbf r\\times m\\mathbf v$. The velocity cross itself is zero, leaving the torque.\n\n**Keep handy**\n\n$$\\dot{\\mathbf L}=\\mathbf v\\times m\\mathbf v+\\mathbf r\\times\\mathbf F=\\mathbf r\\times\\mathbf F$$\n\nConstant particle mass, inertial fixed origin. $\\mathbf r$ (m), force (N), angular momentum (kg·m²/s).\n\n**One worked relation**\n\nIf a force is radial, $\\mathbf r\\times\\mathbf F=0$, so angular momentum stays fixed even when the speed changes.\n\n**Watch for**\n\nThe torque angle is between $\\mathbf r$ and $\\mathbf F$, not automatically the angle printed elsewhere in the diagram.",
+      "opening_question": "Why does the term $\\mathbf v\\times m\\mathbf v$ vanish?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.4.1",
+        "pages": [
+          323,
+          323
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "04cf91b01418c916b023193a5aa3f0af2c6c4c24903d2bd8e2d33037c83f295c"
+      }
+    },
+    "8.4.2": {
+      "summary": "For an extended system, internal central-force torques cancel in pairs.",
+      "notes": "**Picture and method**\n\nSum particle angular momenta about one fixed origin. Pair each internal force with its equal, opposite force along the line joining the particles.\n\n**Keep handy**\n\n$$\\frac{d}{dt}\\sum_i\\mathbf r_i\\times m_i\\mathbf v_i=\\boldsymbol\\tau_{\\rm ext}$$\n\nRequires the stated internal force-pair assumptions. Torque is N·m; the object need not be rigid for the summed angular-momentum balance.\n\n**One worked relation**\n\nIn uniform gravity the external torque is $\\sum\\mathbf r_i\\times m_i\\mathbf g=\\mathbf R_{\\rm CM}\\times M\\mathbf g$.\n\n**Watch for**\n\nCancellation of internal forces alone is insufficient if the pairs are not central; a complete angular-momentum account may need fields or internal couples.",
+      "opening_question": "Why can uniform gravity be represented as acting at the center of mass for torque?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.4.2",
+        "pages": [
+          323,
+          324
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "1684b964aaec8f8ef78a7c7e3f57ec1d58bc7fd5b312b5fc3d9d19840198e118"
+      }
+    },
+    "8.4.3": {
+      "summary": "An accelerating origin changes the angular-momentum balance unless it is chosen carefully.",
+      "notes": "**Picture and method**\n\nDefine both positions and velocities relative to the moving point. Its acceleration produces an extra term proportional to the CM offset.\n\n**Keep handy**\n\n$$\\frac{d\\mathbf L_O^{\\rm rel}}{dt}=\\boldsymbol\\tau_O-M(\\mathbf R_{\\rm CM}-\\mathbf R_O)\\times\\mathbf A_O$$\n\n$\\mathbf L_O^{\\rm rel}=\\sum(\\mathbf r_i-\\mathbf R_O)\\times m_i(\\mathbf v_i-\\mathbf V_O)$. Positions (m), $\\mathbf A_O$ (m/s²), $M$ (kg).\n\n**One worked relation**\n\nAt $O={\\rm CM}$ the offset is zero, so $\\dot{\\mathbf L}_{\\rm CM}=\\boldsymbol\\tau_{\\rm CM}$ even while the CM accelerates.\n\n**Watch for**\n\nDo not mix relative-velocity angular momentum with an absolute-velocity definition; their moving-origin correction terms differ.",
+      "opening_question": "What makes the center of mass a special moving origin?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.4.3",
+        "pages": [
+          324,
+          328
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "cf81e71448c8cdbbaba76f5b67e465c02dacd296cad1025bcf677dba2c291f62"
+      }
+    },
+    "8.5": {
+      "summary": "Rotating collisions require angular momentum as well as linear momentum.",
+      "notes": "**Picture and method**\n\nIdentify the external impulses and choose an origin where their angular impulse is zero. Add kinetic-energy conservation only if the collision is elastic.\n\n**Keep handy**\n\n$$L_{O,i}=L_{O,f}\\quad\\text{when}\\quad\\int\\tau_{O,\\rm ext}dt\\simeq0$$\n\nAngular momentum is kg·m²/s. A fixed hinge can deliver linear impulse while exerting zero torque about itself.\n\n**One worked relation**\n\nA mass $m$ moving perpendicular to a rod at distance $r$ from its hinge sticks there: $mvr=(I_{\\rm rod}+mr^2)\\omega_f$.\n\n**Watch for**\n\nThe hinge prevents ordinary linear-momentum conservation for rod plus projectile. Sticking also prevents mechanical kinetic-energy conservation.",
+      "opening_question": "Which external impulse remains, and about what point does it have no lever arm?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.5",
+        "pages": [
+          328,
+          331
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "f22aed25ad8e353f092e832fb62462b0f98df7574974321a65e28c552121e296"
+      }
+    },
+    "8.6": {
+      "summary": "A short torque pulse changes angular momentum by its angular impulse.",
+      "notes": "**Picture and method**\n\nIntegrate torque over the event. For a force applied at an essentially fixed point during a brief blow, cross its lever arm with the linear impulse.\n\n**Keep handy**\n\n$$\\Delta\\mathbf L=\\int\\boldsymbol\\tau dt=\\mathbf r\\times\\mathbf J$$\n\n$\\mathbf J=\\int\\mathbf Fdt$ (N·s), $\\mathbf r$ (m), $\\Delta\\mathbf L$ (kg·m²/s). The last equality assumes negligible lever-arm change during impact.\n\n**One worked relation**\n\nA perpendicular impulse $J$ at distance $a$ from a fixed rotation axis changes spin by $\\Delta\\omega=aJ/I$.\n\n**Watch for**\n\nImpulse is not the peak force. A large force for a tiny time can have a finite small impulse.",
+      "opening_question": "What matters for the change of spin: the force peak or its time integral?",
+      "source": {
+        "id": "morin",
+        "section_id": "8.6",
+        "pages": [
+          331,
+          333
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "bcf94c545a35e9e888a96edf57b3e949dab7ac501dc6ae9c67094f171f8a4ec2"
+      }
+    },
+    "9.1": {
+      "summary": "General rigid motion is translation plus instantaneous rotation.",
+      "notes": "**Picture and method**\n\nChoose a reference point on the body. Relative velocities of all other points are set by one angular-velocity vector.\n\n**Keep handy**\n\n$$\\mathbf v_P=\\mathbf v_O+\\boldsymbol\\omega\\times\\mathbf r_{P/O}$$\n\nVelocities are m/s, $\\boldsymbol\\omega$ rad/s and separation m. The direction of $\\boldsymbol\\omega$ follows the right-hand rule.\n\n**One worked relation**\n\nFor rotation about $+z$ and a point on $+x$, $\\boldsymbol\\omega\\times\\mathbf r$ points along $+y$.\n\n**Watch for**\n\nInstantaneous angular velocities add as vectors; finite rotations generally depend on order and do not add like displacement vectors.",
+      "opening_question": "Which way does a point on the positive x axis move when the body rotates about positive z?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.1",
+        "pages": [
+          371,
+          376
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "1823a90e98e85c9c0d02e32d9961f0c54a539d2d0e3818f8549868898ba29747"
+      }
+    },
+    "9.1.1": {
+      "summary": "Any instantaneous rigid-body velocity field can be described relative to one translating point.",
+      "notes": "**Picture and method**\n\nMove with a point on the body; every other point's remaining velocity is perpendicular to its displacement from the instantaneous rotation axis.\n\n**Keep handy**\n\n$$\\mathbf v_P-\\mathbf v_O=\\boldsymbol\\omega\\times(\\mathbf r_P-\\mathbf r_O)$$\n\n$O$ and $P$ are body points, distances in m and velocities in m/s. The same $\\boldsymbol\\omega$ works regardless of which body point is chosen.\n\n**One worked relation**\n\nChoose $O$ at the CM to split motion into its drift and spin. Choosing a different point changes the translation term, not $\\boldsymbol\\omega$.\n\n**Watch for**\n\nAn instantaneous rotation description does not imply the same axis remains fixed later.",
+      "opening_question": "If we change the reference point, which part of the motion description changes?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.1.1",
+        "pages": [
+          371,
+          372
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "9981b025631c11c9a6d0e3465ce8bd6eb125e8a0ff3eca8ab0cecd19f0798330"
+      }
+    },
+    "9.1.2": {
+      "summary": "Angular velocity is a vector because infinitesimal rotations combine linearly.",
+      "notes": "**Picture and method**\n\nDraw the axis and apply the right-hand rule. Add contributions only after expressing them in the same spatial basis.\n\n**Keep handy**\n\n$$\\mathbf v=\\boldsymbol\\omega\\times\\mathbf r,\\qquad\\boldsymbol\\omega_{\\rm total}=\\boldsymbol\\omega_1+\\boldsymbol\\omega_2$$\n\nAngular velocities are rad/s; $\\mathbf r$ is relative to the rotation reference point (m). The sum describes instantaneous combined rotations.\n\n**One worked relation**\n\nA spinning disk carried by a turning platform has the disk's spin-axis vector plus the platform's vertical angular-velocity vector.\n\n**Watch for**\n\nA finite rotation angle with an attached direction is not an ordinary vector: exchanging two finite rotations can change the final orientation.",
+      "opening_question": "Are these two angular velocities written along fixed axes or axes moving with the body?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.1.2",
+        "pages": [
+          372,
+          376
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "783e68c2d1c5aa19e00c353f3165dda83c291272acb5dd7bccb07b14328b1b0f"
+      }
+    },
+    "9.2": {
+      "summary": "The inertia tensor converts angular velocity into angular momentum component by component.",
+      "notes": "**Picture and method**\n\nChoose one origin and one basis for both vectors. Mass off each axis contributes to that axis's rotational inertia and can couple components.\n\n**Keep handy**\n\n$$L_i=\\sum_jI_{ij}\\omega_j,\\qquad I_{ij}=\\int(r^2\\delta_{ij}-r_ir_j)dm$$\n\n$I_{ij}$ (kg·m²), $\\omega_j$ (rad/s), $L_i$ (kg·m²/s). The tensor is symmetric; off-diagonal entries are minus the corresponding products of coordinates.\n\n**One worked relation**\n\nFor $\\boldsymbol\\omega=(\\omega,0,0)$, $\\mathbf L=(I_{xx}\\omega,I_{yx}\\omega,I_{zx}\\omega)$, so $\\mathbf L$ need not point along $x$.\n\n**Watch for**\n\nA moment about one axis is not the entire tensor. Translating the CM adds orbital angular momentum separately.",
+      "opening_question": "Why can rotation about x create a y component of angular momentum?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.2",
+        "pages": [
+          376,
+          383
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "16bc2d28ab5e047d848a4d13a92542b424b9d16b1240a350e9553081d8f92696"
+      }
+    },
+    "9.2.1": {
+      "summary": "Rotation about a chosen origin reveals the tensor directly from particle velocities.",
+      "notes": "**Picture and method**\n\nUse $\\mathbf v=\\boldsymbol\\omega\\times\\mathbf r$ and sum $\\mathbf r\\times dm\\,\\mathbf v$. Expand the double cross product into components.\n\n**Keep handy**\n\n$$I_{xx}=\\int(y^2+z^2)dm,\\qquad I_{xy}=-\\int xy\\,dm$$\n\nAnalogous expressions give the other entries. All coordinates are relative to the same origin; $I$ is in kg·m².\n\n**One worked relation**\n\nA point mass at $(a,b,0)$ contributes $I_{xx}=mb^2$, $I_{yy}=ma^2$, $I_{xy}=-mab$.\n\n**Watch for**\n\nDo not put $x^2$ in $I_{xx}$: distance from the x axis uses $y$ and $z$. The off-diagonal minus sign matters.",
+      "opening_question": "Which coordinate does not measure distance from the x axis?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.2.1",
+        "pages": [
+          376,
+          380
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8140612acc935959937e2610fce0856a1980e34d891bd6d4bd9c5a582f2a2c13"
+      }
+    },
+    "9.2.2": {
+      "summary": "Three-dimensional translation and rotation separate cleanly about the center of mass.",
+      "notes": "**Picture and method**\n\nCalculate orbital angular momentum of the CM and spin angular momentum about it, then add vectors in one basis.\n\n**Keep handy**\n\n$$\\mathbf L_O=\\mathbf R\\times M\\mathbf V+I_{\\rm CM}\\boldsymbol\\omega$$\n\n$\\mathbf R$ is from fixed $O$ to the CM. Energy is $T=MV^2/2+\\boldsymbol\\omega\\cdot I_{\\rm CM}\\boldsymbol\\omega/2$, in J.\n\n**One worked relation**\n\nIf the CM moves directly toward the origin, $\\mathbf R\\times M\\mathbf V=0$, but any body spin still contributes through the tensor.\n\n**Watch for**\n\nUsing a shifted tensor alone does not replace the translational term for arbitrary general motion.",
+      "opening_question": "Can a body's orbital angular momentum vanish while its spin angular momentum is nonzero?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.2.2",
+        "pages": [
+          380,
+          382
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "680541069361da569638b503feb0eac7e519209f743d8798c8e40f0bde892ecf"
+      }
+    },
+    "9.2.3": {
+      "summary": "Shifting the origin adds a tensor determined by the center-of-mass offset.",
+      "notes": "**Picture and method**\n\nUse a CM tensor and parallel coordinate axes at the new origin. Build the correction from the displacement vector.\n\n**Keep handy**\n\n$$I_O=I_{\\rm CM}+M[(\\mathbf d\\cdot\\mathbf d)\\mathbf1-\\mathbf d\\mathbf d^{\\mathsf T}]$$\n\n$\\mathbf d$ runs from the new origin to the CM (m); moments are kg·m². Axes retain the same orientation.\n\n**One worked relation**\n\nFor a shift $\\mathbf d=(a,0,0)$, $I_{xx}$ is unchanged while $I_{yy}$ and $I_{zz}$ each gain $Ma^2$.\n\n**Watch for**\n\nMoving along an axis does not increase inertia about that same axis. Off-diagonal correction terms are $-Md_id_j$.",
+      "opening_question": "Which moments change when the origin shifts only along x?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.2.3",
+        "pages": [
+          382,
+          383
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "d41ceb262bcbce6483f50f7a3ee21db910fb591a6857ff3bae54d4d72cb74cb6"
+      }
+    },
+    "9.3": {
+      "summary": "Principal axes remove the cross-coupling between angular-velocity components.",
+      "notes": "**Picture and method**\n\nFind symmetry directions or eigenvectors of the symmetric inertia tensor. In that basis each momentum component uses its own principal moment.\n\n**Keep handy**\n\n$$I\\mathbf e_i=I_i\\mathbf e_i,\\qquad L_i=I_i\\omega_i$$\n\n$\\mathbf e_i$ are mutually perpendicular unit vectors, $I_i$ principal moments (kg·m²). They depend on the chosen origin.\n\n**One worked relation**\n\nA thin disk has $I_1=I_2=MR^2/4$ along diameters and $I_3=MR^2/2$ along its symmetry axis. A tilted $\\boldsymbol\\omega$ therefore generally gives tilted $\\mathbf L$.\n\n**Watch for**\n\nDiagonal does not mean all diagonal entries are equal. Only rotation along a principal axis guarantees parallel $\\mathbf L$ and $\\boldsymbol\\omega$.",
+      "opening_question": "Which axis of the disk has the larger moment of inertia?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.3",
+        "pages": [
+          383,
+          388
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "f9e8cd3bbbefd794a100ff2f494d545ffd6ac7300757a9b614734a86eeb63d45"
+      }
+    },
+    "9.4": {
+      "summary": "Many rigid-body problems ask either for motion immediately after a blow or for motion sustained by torque.",
+      "notes": "**Picture and method**\n\nFor a blow, integrate first and solve for instantaneous velocity. For ongoing motion, find the angular-momentum vector and differentiate its direction.\n\n**Keep handy**\n\n$$\\Delta\\mathbf L=\\mathbf r\\times\\mathbf J,\\qquad\\boldsymbol\\tau=\\frac{d\\mathbf L}{dt}$$\n\nImpulse route uses kg·m²/s; continuous torque route uses N·m. Choose principal axes to relate $\\mathbf L$ and $\\boldsymbol\\omega$.\n\n**One worked relation**\n\nA fixed-length vector sweeping around vertical at rate $\\Omega$ obeys $\\dot{\\mathbf L}=\\Omega\\hat{\\mathbf z}\\times\\mathbf L$. Only its horizontal component changes.\n\n**Watch for**\n\nA blow sets initial motion; it does not determine the subsequent motion without further dynamics. Do not differentiate component numbers while ignoring turning axes.",
+      "opening_question": "Does the problem concern an instant after impact or a continuing steady motion?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.4",
+        "pages": [
+          388,
+          393
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "6539d2e41d15a1dc2b0d2aff1daf453c41bb38606ae1df10ee4b967a3483279a"
+      }
+    },
+    "9.4.1": {
+      "summary": "A short off-center blow sets both translation and spin.",
+      "notes": "**Picture and method**\n\nCompute linear impulse and angular impulse about the CM. Then resolve angular momentum along principal axes to obtain angular velocity.\n\n**Keep handy**\n\n$$M\\Delta\\mathbf V=\\mathbf J,\\qquad I_i\\Delta\\omega_i=(\\mathbf r\\times\\mathbf J)_i$$\n\nFor a free rigid object with negligible other impulses. $\\mathbf r$ is from CM to impact point (m), $\\mathbf J$ N·s, and $I_i$ kg·m².\n\n**One worked relation**\n\nAn impulse through the CM gives $\\mathbf r\\times\\mathbf J=0$: the object translates without acquiring spin from that blow.\n\n**Watch for**\n\nImpact direction and lever arm determine angular impulse. Angular velocity is obtained by dividing each principal component by its own inertia.",
+      "opening_question": "What changes if the same impulse is applied through the center of mass?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.4.1",
+        "pages": [
+          389,
+          391
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "affabc3b88ce568a589c69079ceeb6152a3a521b097e50f2f9c9ccb53b24927c"
+      }
+    },
+    "9.4.2": {
+      "summary": "A rotating angular-momentum direction requires torque even if the rotation rate is steady.",
+      "notes": "**Picture and method**\n\nFind principal moments, resolve angular velocity, calculate $\\mathbf L$, and differentiate the vector in the inertial frame.\n\n**Keep handy**\n\n$$\\boldsymbol\\tau=\\Omega\\hat{\\mathbf z}\\times\\mathbf L$$\n\nThis form applies when the vector rigidly precesses around fixed vertical at constant rate $\\Omega$ (rad/s). Torque is N·m; only $L_\\perp$ contributes.\n\n**One worked relation**\n\nA uniform rod pivoted at its top and sweeping at angle $\\theta$ from downward vertical has $L_\\perp=(m\\ell^2/3)\\Omega\\sin\\theta\\cos\\theta$. Equating torque gives $\\Omega^2=3g/(2\\ell\\cos\\theta)$.\n\n**Watch for**\n\nThis rod has no independent axial spin. A spinning top needs an additional angular-momentum component and a different equation.",
+      "opening_question": "Which part of the angular-momentum vector actually turns around the vertical?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.4.2",
+        "pages": [
+          391,
+          393
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "5336f30e662394f8e144839a28c11ad5471aa386edffd00e6818ab62c02fe12f"
+      }
+    },
+    "9.5": {
+      "summary": "Euler's equations include the turning of the body axes while keeping inertia components constant.",
+      "notes": "**Picture and method**\n\nWrite angular momentum in principal body axes. Relate its inertial derivative to its body derivative plus a rotation term.\n\n**Keep handy**\n\n$$\\tau_1=I_1\\dot\\omega_1+(I_3-I_2)\\omega_2\\omega_3$$\n\nCyclic permutations give the other two equations. Torques are N·m, $I_i$ kg·m² and $\\omega_i$ rad/s. Components and dots here are in the body frame.\n\n**One worked relation**\n\nWith zero torque and rotation exactly along axis 3, constant $\\omega_3$ with $\\omega_1=\\omega_2=0$ solves the equations. Small perturbations test stability.\n\n**Watch for**\n\nTorque-free does not mean all body-frame components remain constant. Rotations about largest/smallest principal moments are stable; the intermediate one is unstable.",
+      "opening_question": "Why can angular-momentum components change in a rotating body frame even when the vector is fixed in space?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.5",
+        "pages": [
+          393,
+          396
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "b8c491f764dc4ed49dfd2b1ff590917d0ae052a3187c2ae5246ddee17139a8ac"
+      }
+    },
+    "9.6": {
+      "summary": "A torque-free symmetric top has constant angular momentum but can wobble.",
+      "notes": "**Picture and method**\n\nUse equal transverse moments $I_1=I_2=I$. Distinguish the apparent rotation in body coordinates from precession of the symmetry axis in space.\n\n**Keep handy**\n\n$$\\omega_3={\\rm constant},\\qquad\\Omega_{\\rm body}=\\frac{I_3-I}{I}\\omega_3$$\n\nMoments are kg·m² and rates rad/s. The sign of $\\Omega_{\\rm body}$ distinguishes oblate and prolate inertia cases.\n\n**One worked relation**\n\nThe space-frame symmetry axis goes around fixed $\\mathbf L$ with rate $\\Omega_{\\rm space}=L/I$ and fixed tilt to $\\mathbf L$. These are different motions and rates.\n\n**Watch for**\n\nNo external torque fixes $\\mathbf L$, not necessarily the body's orientation or $\\boldsymbol\\omega$.",
+      "opening_question": "Which vector stays fixed in the room when the top is torque-free?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.6",
+        "pages": [
+          396,
+          399
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "30bb158c576bb6f7ead3188c3331dc2bcc28c196979847ff07e670473337023f"
+      }
+    },
+    "9.6.1": {
+      "summary": "In body coordinates, the transverse angular velocity rotates at a constant signed rate.",
+      "notes": "**Picture and method**\n\nInsert $I_1=I_2=I$ and zero torque into Euler's equations. The axial component decouples.\n\n**Keep handy**\n\n$$\\dot\\omega_1=-\\Omega_b\\omega_2,\\quad\\dot\\omega_2=\\Omega_b\\omega_1,\\quad\\Omega_b=\\frac{I_3-I}{I}\\omega_3$$\n\n$\\omega_3$ is constant; all rates have units rad/s. Body axes are attached to the object.\n\n**One worked relation**\n\nTaking another derivative gives $\\ddot\\omega_1=-\\Omega_b^2\\omega_1$, so $\\omega_1=A\\cos\\Omega_bt$ and $\\omega_2=A\\sin\\Omega_bt$ for a suitable phase.\n\n**Watch for**\n\nThe body-frame frequency can be negative as an oriented rotation rate; its magnitude is the oscillation frequency. It is not the space precession rate.",
+      "opening_question": "What equation results if we differentiate the first component equation once more?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.6.1",
+        "pages": [
+          396,
+          398
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "173a912092e3b6b37165c271d0be3c78ed6a6821e469c536e77759ca966aae0f"
+      }
+    },
+    "9.6.2": {
+      "summary": "In the room frame, the symmetry axis precesses about the fixed angular-momentum vector.",
+      "notes": "**Picture and method**\n\nEliminate the transverse angular-velocity components between $\\mathbf L$ and $\\boldsymbol\\omega$, then differentiate the symmetry-axis unit vector.\n\n**Keep handy**\n\n$$\\dot{\\mathbf e}_3=\\frac{\\mathbf L}{I}\\times\\mathbf e_3$$\n\nFor a free symmetric top, $I=I_1=I_2$ and $\\mathbf L$ is fixed. Hence the axis precesses with angular rate $L/I$ (rad/s).\n\n**One worked relation**\n\nSince $d(\\mathbf L\\cdot\\mathbf e_3)/dt=0$, the angle between the symmetry axis and $\\mathbf L$ stays constant.\n\n**Watch for**\n\nThe symmetry axis, angular velocity and angular momentum generally point in three different directions. Do not draw them as automatically coincident.",
+      "opening_question": "What does a derivative perpendicular to both the fixed vector and the axis do to the axis direction?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.6.2",
+        "pages": [
+          398,
+          399
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "1496ee0efe092a2e58e7c06fbe269977b765547ffeb8042172da635e3e5aeab0"
+      }
+    },
+    "9.7": {
+      "summary": "A heavy top can precess and nutate while gravity turns its angular momentum.",
+      "notes": "**Picture and method**\n\nUse a fixed pivot and a symmetric body. Euler angles describe tilt, direction around vertical, and spin; torque or a Lagrangian gives the dynamics.\n\n**Keep handy**\n\n$$L_3=I_3\\omega_3,\\qquad L_z=I\\dot\\phi\\sin^2\\theta+L_3\\cos\\theta$$\n\n$I$ is transverse inertia about the pivot, $I_3$ axial inertia (kg·m²). $\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta$. With ideal fixed pivot, $L_3$ and $L_z$ are constant.\n\n**One worked relation**\n\nGravity gives $V=Mg\\ell\\cos\\theta$, with $\\ell$ pivot-to-CM distance. Combine constant $L_3,L_z$ with energy to study the tilt.\n\n**Watch for**\n\nUse pivot inertias, not unshifted CM moments. Steady tilt is a special motion; a general release also nutates.",
+      "opening_question": "Which angle tells us whether the top is bobbing up and down?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.7",
+        "pages": [
+          399,
+          415
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "07478e1cc973afbd88cbb7c758010b328a8f4473819d5dd342db7268d2b76c08"
+      }
+    },
+    "9.7.1": {
+      "summary": "Euler angles name three different changes of orientation.",
+      "notes": "**Picture and method**\n\nTilt $\\theta$ measures symmetry axis from upward vertical, $\\phi$ gives precession around vertical, and $\\psi$ tracks rotation about the symmetry axis relative to the intermediate frame.\n\n**Keep handy**\n\n$$\\omega_3=\\dot\\psi+\\dot\\phi\\cos\\theta$$\n\nAngles are in rad and rates in rad/s. The component of the precession rotation along the symmetry axis contributes to $\\omega_3$.\n\n**One worked relation**\n\nIf the top's direction precesses with $\\dot\\phi=\\Omega$ while $\\dot\\psi=0$, it still has axial angular velocity $\\omega_3=\\Omega\\cos\\theta$.\n\n**Watch for**\n\nThe angle called spin is not by itself the entire axial angular-velocity component. Euler-angle conventions must be stated.",
+      "opening_question": "Why can precession contribute to rotation along the top's own axis?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.7.1",
+        "pages": [
+          399,
+          400
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "45a0981e8a631835e6aa6d9a24102f2581b11a4907d7164464dcb17a76b0dd1f"
+      }
+    },
+    "9.7.2": {
+      "summary": "The angular-velocity vector is the sum of spin, precession and change of tilt.",
+      "notes": "**Picture and method**\n\nResolve each rotational contribution onto the intermediate principal directions used for the symmetric top.\n\n**Keep handy**\n\n$$\\boldsymbol\\omega=\\dot\\theta\\mathbf e_1+\\dot\\phi\\sin\\theta\\mathbf e_2+(\\dot\\psi+\\dot\\phi\\cos\\theta)\\mathbf e_3$$\n\n$\\mathbf e_3$ is the symmetry axis; $\\mathbf e_1$ is the line-of-nodes direction and $\\mathbf e_2$ completes the triad in Morin's convention. Rates are rad/s.\n\n**One worked relation**\n\nFor constant tilt, the precession vector has transverse component $\\Omega\\sin\\theta$ and axial component $\\Omega\\cos\\theta$, then the axial spin adds to the latter.\n\n**Watch for**\n\nThese intermediate axes need not all be painted on the body. Never add angular components expressed in different bases without projecting them first.",
+      "opening_question": "What are the parallel and perpendicular components of the vertical precession vector?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.7.2",
+        "pages": [
+          400,
+          403
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "0f05e83dfb02f6e475056678879bae4385e99c0b39c87ecbfcef17beebb29a07"
+      }
+    },
+    "9.7.3": {
+      "summary": "The torque method works by differentiating angular momentum including the changing basis.",
+      "notes": "**Picture and method**\n\nResolve angular velocity along principal axes about the pivot, multiply by the matching moments, then differentiate the complete vector.\n\n**Keep handy**\n\n$$\\boldsymbol\\tau=\\mathbf r_{\\rm CM}\\times M\\mathbf g=\\left(\\frac{d\\mathbf L}{dt}\\right)_{\\rm inertial}$$\n\n$\\mathbf r_{\\rm CM}=\\ell\\mathbf e_3$ (m), $\\mathbf g=-g\\hat{\\mathbf z}$ (m/s²). The axial spin satisfies $I_3\\omega_3=$ constant.\n\n**One worked relation**\n\nFor steady precession $\\dot{\\mathbf L}=\\Omega\\hat{\\mathbf z}\\times\\mathbf L$, so matching horizontal vector directions gives the precession condition.\n\n**Watch for**\n\nDifferentiating only $I_i\\omega_i$ drops the derivative of each basis vector and misses the torque needed to turn $\\mathbf L$.",
+      "opening_question": "If the components stay constant but the basis turns, does the vector stay constant?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.7.3",
+        "pages": [
+          403,
+          405
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "aed3a47bca1937938896711af6f33974e7ed6e01f706fd15b034f8a5d5c39fbf"
+      }
+    },
+    "9.7.4": {
+      "summary": "The top's Lagrangian exposes conserved spin and vertical angular momentum.",
+      "notes": "**Picture and method**\n\nWrite rotational kinetic energy using Euler angles and gravitational height. The angles absent from the potential become cyclic.\n\n**Keep handy**\n\n$$L=\\tfrac12I(\\dot\\theta^2+\\dot\\phi^2\\sin^2\\theta)+\\tfrac12I_3(\\dot\\psi+\\dot\\phi\\cos\\theta)^2-Mg\\ell\\cos\\theta$$\n\n$I,I_3$ are pivot moments (kg·m²), $M$ kg, $\\ell$ m; $L$ is in J. $\\theta$ is measured from upward vertical.\n\n**One worked relation**\n\nSince $\\psi$ and $\\phi$ do not appear explicitly, $p_\\psi=I_3\\omega_3$ and $p_\\phi=I\\dot\\phi\\sin^2\\theta+I_3\\omega_3\\cos\\theta$ are conserved.\n\n**Watch for**\n\nThe potential is positive $Mg\\ell\\cos\\theta$ under this angle convention; changing the reference direction changes the formula.",
+      "opening_question": "Which two angles are absent even though their time derivatives appear?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.7.4",
+        "pages": [
+          405,
+          406
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "f20ead4a2c679daae78861c0390c5bd1e4d94968809949f050018d7c6af8b4cf"
+      }
+    },
+    "9.7.5": {
+      "summary": "Steady precession balances gravitational torque against a continually turning angular-momentum vector.",
+      "notes": "**Picture and method**\n\nHold tilt fixed and let $\\dot\\phi=\\Omega$ be constant. Both axial spin and transverse precession contribute to $\\mathbf L$.\n\n**Keep handy**\n\n$$I\\Omega^2\\cos\\theta-I_3\\omega_3\\Omega+Mg\\ell=0$$\n\nPivot moments $I,I_3$ (kg·m²), angular rates (rad/s), $\\ell$ (m). For $\\sin\\theta\\ne0$, this is the steady-precession condition.\n\n**One worked relation**\n\nWhen axial spin dominates the slow branch, neglect the $\\Omega^2$ term: $\\Omega\\simeq Mg\\ell/(I_3\\omega_3)$. Faster spin then means slower precession.\n\n**Watch for**\n\nThe fast-spin formula is an approximation, not the full quadratic. For upward tilts, real steady roots require a nonnegative discriminant.",
+      "opening_question": "Why does increasing spin make the slow precession rate smaller?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.7.5",
+        "pages": [
+          406,
+          408
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ca03ffaa714f3051520cf0f49ae5cc87858730a11ba6bb6115d1752cbce2796e"
+      }
+    },
+    "9.7.6": {
+      "summary": "A top's precession is a directional change of angular momentum, not cancellation of gravity.",
+      "notes": "**Picture and method**\n\nSeparate the vector torque story from the CM force story. The pivot supplies the force needed for the CM's curved path; gravity supplies a torque about the pivot.\n\n**Keep handy**\n\n$$\\boldsymbol\\tau=\\Omega\\hat{\\mathbf z}\\times\\mathbf L$$\n\nIn slow fast-spin precession, $\\mathbf L\\simeq I_3\\omega_3\\mathbf e_3$ and torque is nearly perpendicular to it. Torque is N·m, $\\Omega$ rad/s.\n\n**One worked relation**\n\nTaking magnitudes gives $Mg\\ell\\sin\\theta\\simeq\\Omega I_3\\omega_3\\sin\\theta$, recovering the slow precession rate.\n\n**Watch for**\n\nThe top does not gain an extra physical force named gyroscopic force. A release without the right precession typically includes nutation.",
+      "opening_question": "If a small change is perpendicular to a vector, does it mostly change the vector's length or direction?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.7.6",
+        "pages": [
+          408,
+          411
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8971ac7ff2e267c544fb780ed6bb9f92ea96937723ff02430dfe452a8f00cb4a"
+      }
+    },
+    "9.7.7": {
+      "summary": "Nutation is an oscillation of tilt superposed on precession.",
+      "notes": "**Picture and method**\n\nUse conserved axial and vertical angular momenta to reduce the tilt to one-dimensional motion. Nearby turning points produce a small bobbing motion.\n\n**Keep handy**\n\n$$E_\\theta=\\tfrac12I\\dot\\theta^2+U_{\\rm eff}(\\theta),\\quad U_{\\rm eff}=\\frac{(L_z-L_3\\cos\\theta)^2}{2I\\sin^2\\theta}+Mg\\ell\\cos\\theta$$\n\nConstant axial spin energy $L_3^2/(2I_3)$ is removed from $E_\\theta$. $I$ is pivot inertia; energies J, angular momenta kg·m²/s.\n\n**One worked relation**\n\nAt a stable steady tilt $\\theta_0$, expand $U_{\\rm eff}$: $\\omega_{\\rm nut}^2=U_{\\rm eff}''(\\theta_0)/I$. A small disturbance oscillates between two tilt extrema.\n\n**Watch for**\n\nConstant spin does not mean constant tilt or precession rate. Near $\\sin\\theta=0$, handle the angular-coordinate limit carefully.",
+      "opening_question": "Which two tilt angles act as turning points in the nutation?",
+      "source": {
+        "id": "morin",
+        "section_id": "9.7.7",
+        "pages": [
+          411,
+          415
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3587e28eb508699fe398182be8876d5180e2ee9ba0d91608a775d315751a3e13"
+      }
+    },
+    "10.1": {
+      "summary": "A rotating basis changes derivatives even when a vector's components stay constant.",
+      "notes": "**Picture and method**\n\nWrite inertial position as moving-origin position plus relative position. Account for both origin motion and basis rotation.\n\n**Keep handy**\n\n$$\\left(\\frac{d\\mathbf A}{dt}\\right)_I=\\left(\\frac{d\\mathbf A}{dt}\\right)_R+\\boldsymbol\\omega\\times\\mathbf A$$\n\n$I$ labels inertial and $R$ rotating-frame derivatives. $\\boldsymbol\\omega$ is frame angular velocity (rad/s); units of $\\mathbf A$ are whatever vector is differentiated.\n\n**One worked relation**\n\nFor a point fixed on a rotating platform, the relative derivative of its position is zero, but its inertial velocity includes $\\boldsymbol\\omega\\times\\mathbf r$.\n\n**Watch for**\n\nApply the derivative rule twice for acceleration; a single rotation term misses the Coriolis contribution.",
+      "opening_question": "Can a vector have fixed components on a platform while turning in the room?",
+      "source": {
+        "id": "morin",
+        "section_id": "10.1",
+        "pages": [
+          458,
+          460
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "b3e884e4cac394fd6f67a4e9b98f38b04186daa1f79028971054fc9a1f8c7033"
+      }
+    },
+    "10.2": {
+      "summary": "An accelerating frame adds four inertial terms to the force balance.",
+      "notes": "**Picture and method**\n\nStart from the inertial acceleration and move the frame-motion terms to the force side. Keep all velocities explicitly relative to the rotating frame.\n\n**Keep handy**\n\n$$m\\mathbf a_R=\\mathbf F-m\\mathbf A_O-m\\boldsymbol\\omega\\times(\\boldsymbol\\omega\\times\\mathbf r)-2m\\boldsymbol\\omega\\times\\mathbf v_R-m\\dot{\\boldsymbol\\omega}\\times\\mathbf r$$\n\nThe added terms are translation, centrifugal, Coriolis and azimuthal/Euler force, each in N. $\\mathbf A_O$ is origin acceleration; $\\mathbf v_R$ relative velocity.\n\n**One worked relation**\n\nA point at rest on a uniformly rotating platform has no Coriolis or Euler term. Its real inward force balances the outward centrifugal term in that frame.\n\n**Watch for**\n\nThese are frame corrections, not new interactions with another object. Never mix inertial velocity into the Coriolis term.",
+      "opening_question": "Which terms vanish when a point is stationary relative to a steadily rotating platform?",
+      "source": {
+        "id": "morin",
+        "section_id": "10.2",
+        "pages": [
+          460,
+          471
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "79b37b3f6f90222c269697705fa72e46c45627f1aa50ba631f704afb49d5a67b"
+      }
+    },
+    "10.2.1": {
+      "summary": "A frame accelerating forward makes free objects appear to accelerate backward.",
+      "notes": "**Picture and method**\n\nSubtract the origin's acceleration from the inertial acceleration. Add an opposite inertial force to use the usual force-balance form.\n\n**Keep handy**\n\n$$\\mathbf F_{\\rm trans}=-m\\mathbf A_O$$\n\n$m$ kg, $\\mathbf A_O$ m/s², effective force N. This term is uniform across a frame undergoing pure translation.\n\n**One worked relation**\n\nIn a train accelerating at $A\\hat{\\mathbf x}$, a freely sliding object with no horizontal real force has relative acceleration $-A\\hat{\\mathbf x}$.\n\n**Watch for**\n\nThe backward force appears only in the accelerating description. An inertial observer sees the free object's unchanged velocity.",
+      "opening_question": "If the train speeds up but the loose object does not, which way does it move relative to the train?",
+      "source": {
+        "id": "morin",
+        "section_id": "10.2.1",
+        "pages": [
+          462,
+          462
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "6776ea9fb9a78c45012b7f624354a1235a6047a2dd95ded1b13601fbf38801fc"
+      }
+    },
+    "10.2.2": {
+      "summary": "Centrifugal force points away from the rotation axis in rotating coordinates.",
+      "notes": "**Picture and method**\n\nEvaluate the double cross product or use the perpendicular distance to the axis. Distinguish it from the real inward force needed in an inertial description.\n\n**Keep handy**\n\n$$\\mathbf F_{\\rm cf}=-m\\boldsymbol\\omega\\times(\\boldsymbol\\omega\\times\\mathbf r)=m\\omega^2\\mathbf r_\\perp$$\n\n$\\mathbf r_\\perp$ is perpendicular offset from the axis (m), $\\omega$ rad/s, force N.\n\n**One worked relation**\n\nA rider stationary on a carousel has relative acceleration zero. Radial static friction supplies $m\\omega^2r$ inward and balances the outward frame term.\n\n**Watch for**\n\nDistance along the rotation axis contributes nothing. Centrifugal and centripetal terms are not a third-law interaction pair.",
+      "opening_question": "Away from what exactly does the centrifugal force point: the origin or the rotation axis?",
+      "source": {
+        "id": "morin",
+        "section_id": "10.2.2",
+        "pages": [
+          462,
+          464
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "33dd08826479f0c37b50b10acdb9e9654b5a6f8fc9bdbffaed216dc26b6bdce5"
+      }
+    },
+    "10.2.3": {
+      "summary": "Coriolis force bends motion seen from a rotating frame.",
+      "notes": "**Picture and method**\n\nUse the velocity relative to that frame and a right-hand-rule cross product, then reverse its direction because of the minus sign.\n\n**Keep handy**\n\n$$\\mathbf F_{\\rm Cor}=-2m\\boldsymbol\\omega\\times\\mathbf v_R$$\n\n$m$ kg, $\\boldsymbol\\omega$ rad/s, $\\mathbf v_R$ m/s, force N. This force is perpendicular to relative velocity and does no instantaneous work on that relative motion.\n\n**One worked relation**\n\nFor $\\boldsymbol\\omega=\\omega\\hat{\\mathbf z}$ and outward velocity $v\\hat{\\mathbf x}$, $\\mathbf F_{\\rm Cor}=-2m\\omega v\\hat{\\mathbf y}$.\n\n**Watch for**\n\nA point at rest in the rotating frame has no Coriolis force, even if it moves rapidly in the inertial frame.",
+      "opening_question": "Which velocity belongs in the Coriolis formula?",
+      "source": {
+        "id": "morin",
+        "section_id": "10.2.3",
+        "pages": [
+          464,
+          469
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3f249c79dcefb5c6403977b957e60c9db68bc51d762c8a68e1b2df62f4b08c7e"
+      }
+    },
+    "10.2.4": {
+      "summary": "A changing rotation rate produces an azimuthal inertial force.",
+      "notes": "**Picture and method**\n\nIf a carousel speeds up, a free object lags behind in its rotating coordinates. Use the angular-acceleration vector crossed with position.\n\n**Keep handy**\n\n$$\\mathbf F_{\\rm Euler}=-m\\dot{\\boldsymbol\\omega}\\times\\mathbf r$$\n\n$\\dot{\\boldsymbol\\omega}$ rad/s², $\\mathbf r$ m, force N. The general formula also handles a changing direction of the rotation vector.\n\n**One worked relation**\n\nFor $\\dot{\\boldsymbol\\omega}=\\alpha\\hat{\\mathbf z}$ and $\\mathbf r=r\\hat{\\mathbf x}$, the frame term is $-m\\alpha r\\hat{\\mathbf y}$, opposite the platform's tangential acceleration.\n\n**Watch for**\n\nConstant angular speed removes this term only when the angular-velocity direction is constant too.",
+      "opening_question": "What changes in this force if the platform spins at a steady rate?",
+      "source": {
+        "id": "morin",
+        "section_id": "10.2.4",
+        "pages": [
+          469,
+          471
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "f155fb6093610c8bceb160d51e90b776217cd6ba5a9b8631ca3cfaf590fdaec7"
+      }
+    },
+    "10.3": {
+      "summary": "Tides are caused by differences in gravity across an extended body.",
+      "notes": "**Picture and method**\n\nSubtract the acceleration of Earth's center from gravity at nearby points. The remaining field stretches along the source direction and compresses transversely.\n\n**Keep handy**\n\n$$\\delta\\mathbf a\\simeq\\frac{GM}{R^3}\\left[3(\\mathbf r\\cdot\\hat{\\mathbf R})\\hat{\\mathbf R}-\\mathbf r\\right]$$\n\n$M$ is the distant source mass (kg), $R$ its distance (m), $\\mathbf r$ a small offset from the body's center (m); assume $r\\ll R$.\n\n**One worked relation**\n\nAlong the source line, $\\delta a_\\parallel=2GMr_\\parallel/R^3$; perpendicular to it, $\\delta\\mathbf a_\\perp=-GM\\mathbf r_\\perp/R^3$.\n\n**Watch for**\n\nThe tide-producing scale is $M/R^3$, not the overall gravitational acceleration scale $M/R^2$. Local oceans also depend on coastlines and dynamics.",
+      "opening_question": "Why does subtracting the center's acceleration leave two opposite tidal bulges?",
+      "source": {
+        "id": "morin",
+        "section_id": "10.3",
+        "pages": [
+          471,
+          477
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ad553e5649ea36986b70e6adb304aa9b1a0f6b2a0ea06e6caac5de9e140ec482"
+      }
+    },
+    "11.1": {
+      "summary": "Light and electromagnetism expose the limits of ordinary velocity addition.",
+      "notes": "**Picture and method**\n\nCompare Newtonian changes of reference frame with a wave speed fixed by electromagnetic laws. Ask what all inertial observers can agree on.\n\n**Keep handy**\n\n$$u_x'=u_x-v\\quad\\text{(Galilean)}$$\n\n$u_x$ and $v$ are velocities in m/s. This formula assumes shared absolute time and works as a low-speed approximation, not for light.\n\n**One worked relation**\n\nIf one observer measures a light ray at $c$, Galilean subtraction predicts $c-v$ for a chasing observer. The light-speed postulate instead requires $c$.\n\n**Watch for**\n\nThe issue is the transformation of space and time, not an ordinary mechanical slowing of light by the observer.",
+      "opening_question": "What would ordinary velocity subtraction predict for someone chasing a light beam?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.1",
+        "pages": [
+          502,
+          509
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "7e689be138e8f18bc730173bd8f8f33a85100d1a23b9c133175a6f3f0d79fb63"
+      }
+    },
+    "11.1.1": {
+      "summary": "Galilean transformations preserve Newtonian mechanics but conflict with invariant light speed.",
+      "notes": "**Picture and method**\n\nEvents have both a place and a time. Under a classical boost, change position but keep time unchanged; then inspect what happens to a light pulse.\n\n**Keep handy**\n\n$$x'=x-vt,\\qquad t'=t$$\n\n$S'$ moves at $+v$ relative to $S$; lengths in m and time in s. Maxwell's vacuum wave speed is $c=1/\\sqrt{\\mu_0\\epsilon_0}$.\n\n**One worked relation**\n\nA pulse $x=ct$ becomes $x'=(c-v)t'$ under this transformation, so the wave equation would not retain the same speed in every frame.\n\n**Watch for**\n\nThe constants describing vacuum electromagnetic propagation are not a preferred medium velocity. Lorentz transformations replace the shared-time assumption.",
+      "opening_question": "Which assumption produces the predicted value $c-v$?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.1.1",
+        "pages": [
+          502,
+          505
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "25dc5486a212343b9467470db15041df5d32091a2c1a8857e857d0ae7f5129ca"
+      }
+    },
+    "11.1.2": {
+      "summary": "The Michelson–Morley comparison tested direction-dependent light travel times.",
+      "notes": "**Picture and method**\n\nSplit light along perpendicular arms and recombine it. A simple stationary-ether model predicted a fringe shift when the apparatus rotated.\n\n**Keep handy**\n\n$$t_\\parallel=\\frac{2L/c}{1-\\beta^2},\\qquad t_\\perp=\\frac{2L/c}{\\sqrt{1-\\beta^2}}$$\n\nThese are predictions of that classical ether model with equal arm length $L$ (m), apparatus speed $v$ and $\\beta=v/c$. They are not special-relativistic light-clock predictions.\n\n**One worked relation**\n\nFor small $\\beta$, the predicted difference is approximately $(L/c)\\beta^2$, so the test looks for a second-order effect in speed.\n\n**Watch for**\n\nThe observed absence of the expected signal challenged this ether account; do not interpret the classical formulas as measured travel-time differences.",
+      "opening_question": "Why does rotating the apparatus help compare the two paths?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.1.2",
+        "pages": [
+          505,
+          509
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "94fa2522c2b3b4a280a8d49de6b88186abf6658150edf2eca7d699dfa0706690"
+      }
+    },
+    "11.2": {
+      "summary": "Special relativity combines equivalent inertial frames with the same vacuum light speed.",
+      "notes": "**Picture and method**\n\nDefine an inertial frame and operational measurements using clocks and rulers. Apply the postulates to the same physical events.\n\n**Keep handy**\n\n$$c^2=\\frac{\\Delta x^2+\\Delta y^2+\\Delta z^2}{\\Delta t^2}\\quad\\text{for light}$$\n\nHere separations are between two events on one light ray in an inertial frame. $c$ is m/s, positions m and time s.\n\n**One worked relation**\n\nIf a moving light source emits forward, an observer still measures the pulse at $c$, not source speed plus $c$. Space and time assignments must adjust.\n\n**Watch for**\n\nThe postulate concerns local vacuum light propagation and inertial measurements. It does not make every material particle move at light speed.",
+      "opening_question": "If the source moves toward you, do the postulates let its light move faster than $c$?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.2",
+        "pages": [
+          509,
+          511
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "30a13e7f33b54feba97d0552fd5b212897a8390c2b2eb74a7b7194d61f8f5b66"
+      }
+    },
+    "11.3": {
+      "summary": "Simultaneity, duration and length depend on how events are selected in each frame.",
+      "notes": "**Picture and method**\n\nUse a pair of events for a clock's elapsed time and simultaneous endpoint events for length. Keep those measurement conditions visible.\n\n**Keep handy**\n\n$$\\gamma=\\frac1{\\sqrt{1-v^2/c^2}},\\qquad\\Delta t=\\gamma\\Delta\\tau,\\qquad L=\\frac{L_0}{\\gamma}$$\n\n$\\Delta\\tau$ is one clock's proper time (s); $L_0$ is a rod's rest length (m). The moving length uses endpoints simultaneous in the measuring frame.\n\n**One worked relation**\n\nA clock's two ticks occur at one place in its rest frame. A moving observer assigns a longer coordinate duration between those ticks.\n\n**Watch for**\n\nThe duration and length formulas apply to different event pairs. Do not replace the event-selection conditions with a slogan that everything shrinks or slows.",
+      "opening_question": "Which two events are being compared in this measurement?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.3",
+        "pages": [
+          511,
+          523
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "81986d5c936176fade896fcdf6a938fdd0afbd1321a0baa68156235e2bf611a8"
+      }
+    },
+    "11.3.1": {
+      "summary": "Events simultaneous in one frame need not be simultaneous in another.",
+      "notes": "**Picture and method**\n\nSpecify two events at different positions and transform their time separation. This is about clock synchronization, not delays in seeing a distant event.\n\n**Keep handy**\n\n$$\\Delta t'=\\gamma\\left(\\Delta t-\\frac{v\\Delta x}{c^2}\\right)$$\n\n$S'$ moves at $+v$ along $x$ in $S$. Time is in s, position in m, and $\\gamma=(1-v^2/c^2)^{-1/2}$.\n\n**One worked relation**\n\nIf $\\Delta t=0$ and event B is to the right of A, $\\Delta t'=-\\gamma v\\Delta x/c^2$. For $v>0$, B is earlier in $S'$.\n\n**Watch for**\n\nDistinguish event times from when their light reaches your eyes. Simultaneous arrivals can come from nonsimultaneous emissions.",
+      "opening_question": "If the events occur at different places, can both frames call them simultaneous?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.3.1",
+        "pages": [
+          511,
+          514
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "d6d79bdc939de50241e12e700f18c86e890692e5a5cf012b9daf5f4b9906f75d"
+      }
+    },
+    "11.3.2": {
+      "summary": "A moving clock accumulates less proper time than the coordinate time between its ticks.",
+      "notes": "**Picture and method**\n\nUse a light clock: the moving-frame path is diagonal, but light speed remains $c$. The extra path requires extra coordinate time.\n\n**Keep handy**\n\n$$\\Delta t=\\gamma\\Delta\\tau,\\qquad d\\tau=dt\\sqrt{1-v^2/c^2}$$\n\n$\\tau$ is time read by the traveling clock (s); $t$ belongs to a specified inertial frame. For changing speed, integrate along the clock's path.\n\n**One worked relation**\n\nFor a light clock with mirror height $h$, a half trip obeys $(c\\Delta t)^2=h^2+(v\\Delta t)^2$, giving $\\Delta t=\\gamma h/c$.\n\n**Watch for**\n\nTwo inertial observers can each assign slow rates to the other's clock because their simultaneity slices differ. Reunion comparisons need the full paths.",
+      "opening_question": "Which frame sees both ticks at the same position?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.3.2",
+        "pages": [
+          514,
+          519
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8199e0487a05a60370c07026227a9c4c73dab50998dc7ae7b1cac4dac4c90462"
+      }
+    },
+    "11.3.3": {
+      "summary": "A moving object's measured length is shorter along its motion.",
+      "notes": "**Picture and method**\n\nMeasure both endpoints at the same time in the observer's frame. The corresponding events are not simultaneous in the rod's rest frame.\n\n**Keep handy**\n\n$$L=\\frac{L_0}{\\gamma}$$\n\n$L_0$ is rest length (m), $L$ moving length (m), and $\\gamma=(1-v^2/c^2)^{-1/2}$. Only the component parallel to the relative motion contracts.\n\n**One worked relation**\n\nA rod parallel to the motion with $\\gamma=2$ has measured length $L_0/2$. A transverse ruler retains its transverse length.\n\n**Watch for**\n\nA photograph includes light-travel delays and is not automatically the simultaneous-endpoint length measurement.",
+      "opening_question": "Why must both endpoint positions be recorded at the same time in the measuring frame?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.3.3",
+        "pages": [
+          519,
+          523
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "207b7307d534650a34882d5e20441482112c60ec1abee755dc65f12626e60a08"
+      }
+    },
+    "11.4": {
+      "summary": "Lorentz transformations connect the space and time coordinates of the same events.",
+      "notes": "**Picture and method**\n\nChoose the boost direction and origins once. Transform the event pair rather than mixing formulas for different measurements.\n\n**Keep handy**\n\n$$x'=\\gamma(x-vt),\\qquad t'=\\gamma(t-vx/c^2)$$\n\n$S'$ moves at $+v$ relative to $S$, with coincident origins at $t=t'=0$. $y'=y$, $z'=z$; x in m, t in s.\n\n**One worked relation**\n\nFor a right-moving light ray $x=ct$, substitution gives $x'=ct'$, so both observers measure the same light speed.\n\n**Watch for**\n\nThe inverse uses $v\\to-v$. Keep the sign convention fixed; a memorized plus sign may belong to the opposite transformation.",
+      "opening_question": "Which frame is moving in the positive direction relative to which?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.4",
+        "pages": [
+          523,
+          529
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ee477833a2ae13839215b1c71fc043ddef01900197edaa54f97644d19dfb6ebd"
+      }
+    },
+    "11.4.1": {
+      "summary": "Linearity and invariant light propagation determine the boost's form.",
+      "notes": "**Picture and method**\n\nAssume aligned inertial frames with coincident origins. The moving origin fixes the combination $x-vt$; reciprocity and light speed fix its scale and time mixing.\n\n**Keep handy**\n\n$$\\gamma^2(1-v^2/c^2)=1$$\n\nThe positive root gives $\\gamma=(1-v^2/c^2)^{-1/2}$. At $v=0$ the transformation must reduce continuously to the identity.\n\n**One worked relation**\n\nFor the origin of $S'$, $x=vt$, so $x'=\\gamma(x-vt)=0$ as required. For light $x=ct$, the time relation makes $x'/t'=c$.\n\n**Watch for**\n\nHomogeneity and inertial motion justify linear transformations. Do not derive the scale by assuming time is already identical in both frames.",
+      "opening_question": "What path must the moving frame's origin follow in the stationary coordinates?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.4.1",
+        "pages": [
+          523,
+          528
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "26f63491b62630feb0053c3b28bce8740c1ff4e11f2d8ac4c57693094fbc0b74"
+      }
+    },
+    "11.4.2": {
+      "summary": "The three fundamental effects are different special cases of one transformation.",
+      "notes": "**Picture and method**\n\nBefore using the algebra, mark which separation is zero: common place, simultaneous time, or neither.\n\n**Keep handy**\n\n$$\\Delta x'=\\gamma(\\Delta x-v\\Delta t),\\qquad\\Delta t'=\\gamma(\\Delta t-v\\Delta x/c^2)$$\n\nCoordinates belong to the same event pair, $S'$ moves at $+v$, and units are m and s.\n\n**One worked relation**\n\nA rod at rest in $S'$ is measured simultaneously in $S$: $\\Delta t=0$, so $L_0=\\Delta x'=\\gamma\\Delta x=\\gamma L$.\n\n**Watch for**\n\nFor a clock at rest in $S'$, the condition is $\\Delta x'=0$, not $\\Delta t=0$. Different zero conditions produce different results.",
+      "opening_question": "Which separation should be set to zero for a moving-length measurement?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.4.2",
+        "pages": [
+          528,
+          529
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "a270b66caab60eeeb33c806b80c46759d2268db2b91272a2ce05fbe3a174951c"
+      }
+    },
+    "11.5": {
+      "summary": "Relativistic velocity addition comes from transforming both distance and elapsed time.",
+      "notes": "**Picture and method**\n\nDivide transformed coordinate differentials. Longitudinal and transverse velocities share a changed time denominator.\n\n**Keep handy**\n\n$$u_x=\\frac{u_x'+v}{1+vu_x'/c^2},\\qquad u_y=\\frac{u_y'}{\\gamma_v(1+vu_x'/c^2)}$$\n\n$S'$ moves at $+v$ along x relative to $S$; velocities are m/s and $\\gamma_v=(1-v^2/c^2)^{-1/2}$.\n\n**One worked relation**\n\nIf $u_x'=c$ and $u_y'=0$, the formula gives $u_x=c$. For speeds much smaller than $c$, recover $u_x\\simeq u_x'+v$.\n\n**Watch for**\n\nTransverse coordinates do not contract, but transverse velocity changes because elapsed time transforms.",
+      "opening_question": "Why does changing the time interval affect even a transverse velocity?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.5",
+        "pages": [
+          529,
+          533
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "e43b6c6d127ba8438bbe874b432c7dbebfd89fc09580d72404d61783dadcfb76"
+      }
+    },
+    "11.5.1": {
+      "summary": "Collinear velocities combine with a denominator that preserves the speed limit.",
+      "notes": "**Picture and method**\n\nGive both velocities signed directions and identify the intermediate frame.\n\n**Keep handy**\n\n$$u=\\frac{u'+v}{1+u'v/c^2}$$\n\n$u'$ is object velocity in $S'$, and $v$ is $S'$ velocity in $S$; all in m/s. Use the inverse by changing the boost sign.\n\n**One worked relation**\n\nTwo successive velocities $u'=v=c/2$ give $u=c/(1+1/4)=4c/5$, below $c$.\n\n**Watch for**\n\nDo not add speed magnitudes when the velocities point opposite ways. A minus sign belongs in the signed velocity itself.",
+      "opening_question": "What would ordinary addition predict here, and which denominator changes it?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.5.1",
+        "pages": [
+          529,
+          532
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "028a3a37f96ade1b9f6ada3c1bf93c3bf7382be299936ce5e593f73e998df400"
+      }
+    },
+    "11.5.2": {
+      "summary": "Transverse velocity transforms because simultaneity and time change under a longitudinal boost.",
+      "notes": "**Picture and method**\n\nKeep $dy=dy'$ but transform $dt$. Then divide, using the object's longitudinal motion in the denominator.\n\n**Keep handy**\n\n$$u_y=\\frac{u_y'}{\\gamma_v(1+vu_x'/c^2)}$$\n\nBoost is along x; $u_x'$ and $u_y'$ are the object's components in $S'$. Rates are m/s, $\\gamma_v$ dimensionless.\n\n**One worked relation**\n\nIf the object moves purely across $S'$ with $u_x'=0$, then $u_y=u_y'/\\gamma_v$ while $u_x=v$. For a transverse light ray, the total speed still equals $c$.\n\n**Watch for**\n\nUnchanged transverse length does not imply unchanged transverse speed. Account for the shared transformed time.",
+      "opening_question": "If the y displacement is unchanged, what makes the y velocity different?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.5.2",
+        "pages": [
+          532,
+          533
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "bdf55edf4334943933f9cb0776fbd4826cf25914391558917a317aaf7d15bbf4"
+      }
+    },
+    "11.6": {
+      "summary": "The spacetime interval is the same for all inertial observers.",
+      "notes": "**Picture and method**\n\nTransform an event pair and form the time-square minus spatial-distance-square combination. Its sign classifies the separation.\n\n**Keep handy**\n\n$$\\Delta s^2=c^2\\Delta t^2-\\lvert\\Delta\\mathbf r\\rvert^2$$\n\nInterval has units m². Timelike: positive, spacelike: negative, null/lightlike: zero. For a clock's infinitesimal path, $ds=c\\,d\\tau$.\n\n**One worked relation**\n\nFor two ticks at one position, $\\Delta s^2=c^2\\Delta\\tau^2$. Another frame may separate them in space, but the interval is unchanged.\n\n**Watch for**\n\nA spacelike separation cannot be traversed by a causal signal. Frame changes can reverse its time ordering without reversing causal order.",
+      "opening_question": "What sign of the interval would a light ray have?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.6",
+        "pages": [
+          533,
+          536
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "206bdad8c18b8e0189d2e4b23409b5024a0bce162d2311725e9c060de5ffae7a"
+      }
+    },
+    "11.7": {
+      "summary": "A spacetime diagram shows motion and simultaneity together.",
+      "notes": "**Picture and method**\n\nPut x horizontally and ct vertically with matching length scales. Worldline slope encodes velocity; tilted time and space axes represent another inertial frame.\n\n**Keep handy**\n\n$$ct'=\\gamma(ct-\\beta x),\\qquad x'=\\gamma(x-\\beta ct)$$\n\n$\\beta=v/c$ is dimensionless. Light lines obey $x=\\pm ct$, while a stationary object's worldline is vertical in its own coordinates.\n\n**One worked relation**\n\nThe moving frame's time axis has $x'=0$, hence $x=\\beta ct$. Its simultaneous-time lines satisfy constant $ct-\\beta x$.\n\n**Watch for**\n\nTilted coordinate axes do not use Euclidean perpendicular projection. Read coordinates along lines parallel to the other tilted axis.",
+      "opening_question": "Which line represents all events at the moving frame's spatial origin?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.7",
+        "pages": [
+          536,
+          539
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "97f401dc760c3887e63eb2cddbc2c3a83fc37a05cdf57b81d42b74f814ba7691"
+      }
+    },
+    "11.8": {
+      "summary": "Doppler shifts combine emission timing with the changing light-travel distance.",
+      "notes": "**Picture and method**\n\nDistinguish when a source emits from when the observer receives. State whether the source approaches, recedes or is observed transversely.\n\n**Keep handy**\n\n$$f_{\\rm approach}=f_0\\sqrt{\\frac{1+\\beta}{1-\\beta}},\\qquad f_{\\rm recede}=f_0\\sqrt{\\frac{1-\\beta}{1+\\beta}}$$\n\n$f_0$ is source-rest frequency (Hz), $\\beta=v/c>0$ the relative speed fraction. These formulas are for longitudinal motion.\n\n**One worked relation**\n\nFor an approaching source, successive flashes start closer to the receiver, shortening arrival intervals in addition to relativistic clock effects.\n\n**Watch for**\n\nA source's current position and its retarded position when the light was emitted differ. Transverse Doppler questions must specify which one is perpendicular.",
+      "opening_question": "Are we comparing emission times or arrival times at the observer?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.8",
+        "pages": [
+          539,
+          543
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "a95539a0d6302048c9316b2c9b99b7d100cc298e297659e11fc1fe07a5729407"
+      }
+    },
+    "11.8.1": {
+      "summary": "An approaching source sends later flashes from closer positions, increasing arrival frequency.",
+      "notes": "**Picture and method**\n\nCombine the time-dilated emission interval in the observer frame with the distance gained or lost between emissions.\n\n**Keep handy**\n\n$$\\Delta t_{\\rm arrival}=\\gamma\\Delta\\tau_{\\rm emit}(1-\\beta)$$\n\nFor approach along the line of sight, $\\Delta\\tau_{\\rm emit}$ is in s and $\\beta=v/c>0$. Invert to get $f=f_0/[\\gamma(1-\\beta)]$.\n\n**One worked relation**\n\nUsing $1/[\\gamma(1-\\beta)]=\\sqrt{(1+\\beta)/(1-\\beta)}$ gives the longitudinal blue shift. Recession replaces $-\\beta$ with $+\\beta$.\n\n**Watch for**\n\nTime dilation alone would miss the changing propagation distance and even predict the wrong direction for approach.",
+      "opening_question": "Why does the second emitted flash have a shorter trip to reach us?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.8.1",
+        "pages": [
+          539,
+          541
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "a60fed42641073d8f7666bec97dacca4c12c35cf01a93e453e2d14c8226ec744"
+      }
+    },
+    "11.8.2": {
+      "summary": "The phrase transverse Doppler has two different event-timing meanings.",
+      "notes": "**Picture and method**\n\nSpecify whether the source is at closest approach now or whether the received light shows it at closest approach. Light travel time separates those cases.\n\n**Keep handy**\n\n$$f_{\\rm now\\ closest}=\\gamma f_0,\\qquad f_{\\rm seen\\ closest}=\\frac{f_0}{\\gamma}$$\n\nFor a source passing at constant speed relative to a stationary receiver. $f_0$ is source-rest frequency (Hz), $\\gamma=(1-v^2/c^2)^{-1/2}$.\n\n**One worked relation**\n\nWhen we see the source at closest approach, nearby emitted flashes have nearly equal path lengths, leaving the time-dilation red shift $f_0/\\gamma$.\n\n**Watch for**\n\nDo not use a single transverse formula without stating the geometry of the emitted and received events. At current closest approach the seen source is still approaching.",
+      "opening_question": "Do we mean where the source is now, or where it was when the light left it?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.8.2",
+        "pages": [
+          541,
+          543
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "a06ddddc2ea11c74162da6ec4d78844d081fef4a5b1c583918278fdee435124e"
+      }
+    },
+    "11.9": {
+      "summary": "Rapidity turns collinear velocity composition into ordinary addition.",
+      "notes": "**Picture and method**\n\nReplace the speed fraction with a hyperbolic angle. It also measures accumulated proper acceleration along a straight line.\n\n**Keep handy**\n\n$$\\beta=\\tanh\\phi,\\qquad\\phi_{\\rm total}=\\phi_1+\\phi_2$$\n\nRapidity $\\phi$ is dimensionless, $\\beta=v/c$, $\\gamma=\\cosh\\phi$ and $\\gamma\\beta=\\sinh\\phi$.\n\n**One worked relation**\n\nTwo equal boosts with rapidity $\\phi$ give $v/c=\\tanh(2\\phi)$, which stays below one for every finite $\\phi$.\n\n**Watch for**\n\nThis simple addition is for collinear boosts. Changing boost directions introduces rotation effects beyond this one-dimensional rule.",
+      "opening_question": "Which quantity adds simply even though velocities do not?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.9",
+        "pages": [
+          543,
+          546
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "2ea21170c763fc54b36bb96cca5a56ba7331e0ae8170b3d6d22f253e89ddf548"
+      }
+    },
+    "11.9.1": {
+      "summary": "Rapidity is the hyperbolic angle associated with a Lorentz boost.",
+      "notes": "**Picture and method**\n\nDefine it from the signed speed fraction and use hyperbolic identities to rewrite the boost.\n\n**Keep handy**\n\n$$\\phi=\\operatorname{artanh}(v/c),\\qquad\\gamma=\\cosh\\phi,\\quad\\gamma\\beta=\\sinh\\phi$$\n\n$\\phi$ and $\\beta$ are dimensionless. A boost mixes $ct$ and x with cosh and sinh while preserving $(ct)^2-x^2$.\n\n**One worked relation**\n\nThe identity $\\tanh(\\phi_1+\\phi_2)=(\\tanh\\phi_1+\\tanh\\phi_2)/(1+\\tanh\\phi_1\\tanh\\phi_2)$ reproduces velocity addition.\n\n**Watch for**\n\nRapidity is not an ordinary geometric angle; hyperbolic rather than circular functions preserve the spacetime interval.",
+      "opening_question": "How does the hyperbolic addition identity reproduce the velocity-addition denominator?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.9.1",
+        "pages": [
+          543,
+          544
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "adbbd1f2892717b85624ed5cc1a6057640bef93dfbffce522852c18447e9f0ce"
+      }
+    },
+    "11.9.2": {
+      "summary": "Rapidity measures accumulated acceleration felt by a traveler.",
+      "notes": "**Picture and method**\n\nAdd tiny velocity boosts in successive instantaneous rest frames. Proper time is the traveler's own clock variable.\n\n**Keep handy**\n\n$$\\frac{d\\phi}{d\\tau}=\\frac{a_{\\rm proper}}c$$\n\nFor collinear motion, $a_{\\rm proper}$ is in m/s², $\\tau$ in s and $\\phi$ dimensionless. It is not generally the coordinate acceleration $dv/dt$.\n\n**One worked relation**\n\nStarting from rest at constant proper acceleration $a$, $\\phi=a\\tau/c$ and $v=c\\tanh(a\\tau/c)$, approaching but never reaching $c$.\n\n**Watch for**\n\nConstant felt acceleration does not mean velocity grows linearly with lab time indefinitely.",
+      "opening_question": "Which clock measures the time used to accumulate proper acceleration?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.9.2",
+        "pages": [
+          544,
+          546
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "289e9974ef910b0c7aba2f43e0081eb1d6be59afd20ef6389c899257af672962"
+      }
+    },
+    "11.10": {
+      "summary": "The relativity principle strongly constrains boosts even before light identifies the invariant speed.",
+      "notes": "**Picture and method**\n\nCombine homogeneity, isotropy and consistent composition of inertial boosts. The same universal parameter must appear in every transformation.\n\n**Keep handy**\n\n$$x'=\\frac{x-vt}{\\sqrt{1-Kv^2}},\\qquad t'=\\frac{t-Kvx}{\\sqrt{1-Kv^2}}$$\n\n$K$ has units s²/m². $K=0$ gives Galilean transformations; positive $K=1/c^2$ gives the observed Lorentz form.\n\n**One worked relation**\n\nLetting $K\\to0$ removes time mixing and gives $x'=x-vt$, $t'=t$. A finite positive $K$ provides an invariant speed $1/\\sqrt K$.\n\n**Watch for**\n\nThe numerical value of the invariant speed is empirical and unit-dependent. The structural result also relies on the stated symmetry/composition assumptions.",
+      "opening_question": "Which part of the transformation disappears in the Galilean limit?",
+      "source": {
+        "id": "morin",
+        "section_id": "11.10",
+        "pages": [
+          546,
+          549
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "4c41b1f3b928317649ab96ccdb09f6284b3c00922677d39361909baab10f118e"
+      }
+    },
+    "12.1": {
+      "summary": "Relativistic energy and momentum form a consistent pair with an invariant mass.",
+      "notes": "**Picture and method**\n\nUse invariant mass $m$ and the particle's speed in the chosen frame. Include rest energy when comparing reactions.\n\n**Keep handy**\n\n$$\\mathbf p=\\gamma m\\mathbf v,\\qquad E=\\gamma mc^2,\\qquad E^2-p^2c^2=m^2c^4$$\n\nMomentum is kg·m/s, energy J, mass kg. For a photon, $m=0$ and $E=pc$; do not substitute $v=c$ into a massive-particle gamma expression.\n\n**One worked relation**\n\nAt low speed $\\gamma\\simeq1+v^2/(2c^2)$, so $E\\simeq mc^2+mv^2/2$ and $\\mathbf p\\simeq m\\mathbf v$.\n\n**Watch for**\n\nMass here means invariant rest mass. It is not a velocity-dependent substitute for the gamma factor.",
+      "opening_question": "Which part of the total energy remains when the particle is at rest?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.1",
+        "pages": [
+          584,
+          594
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8647c446e29676f6bd31a7125ee0d195086ec81c7599595d44dc35378d62e9b1"
+      }
+    },
+    "12.1.1": {
+      "summary": "Relativistic momentum includes a speed-dependent gamma factor.",
+      "notes": "**Picture and method**\n\nUse the form that transforms consistently and remains conserved across inertial frames.\n\n**Keep handy**\n\n$$\\mathbf p=\\frac{m\\mathbf v}{\\sqrt{1-v^2/c^2}}$$\n\n$m$ is invariant mass (kg), $v$ m/s, and momentum kg·m/s. This formula is for massive particles with $v<c$.\n\n**One worked relation**\n\nFor $v\\ll c$, expand the denominator to obtain $\\mathbf p\\simeq m\\mathbf v$. As $v\\to c$, momentum grows without bound for fixed nonzero mass.\n\n**Watch for**\n\nThe same velocity change needs a larger momentum change near light speed. A photon instead uses $p=E/c$.",
+      "opening_question": "Why can momentum keep growing even when speed changes only a little near $c$?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.1.1",
+        "pages": [
+          584,
+          586
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "21e5c986ee5a07eb3f941552c4035dc52dc16dd77b058730532fab43ac60e55e"
+      }
+    },
+    "12.1.2": {
+      "summary": "Energy includes rest energy as well as motion, and both can participate in reactions.",
+      "notes": "**Picture and method**\n\nTrack total energy, not just kinetic energy. The invariant relation is often easier than solving for velocity.\n\n**Keep handy**\n\n$$E=\\gamma mc^2,\\qquad K=(\\gamma-1)mc^2$$\n\n$E,K$ are in J and $m$ kg. Rest energy is $mc^2$; energy and momentum together determine invariant mass.\n\n**One worked relation**\n\nAt low speed, $K\\simeq mv^2/2$. If two particles stick and heat up, some initial kinetic energy increases the combined object's invariant mass.\n\n**Watch for**\n\nRest masses need not add during an inelastic interaction. Total energy and momentum are conserved, including internal energy.",
+      "opening_question": "Where is energy stored when a collision makes a combined object hotter?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.1.2",
+        "pages": [
+          586,
+          594
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "7385a62ab285fe1d34b543b8944697ea23104bd41903442140087ad7fb273fc3"
+      }
+    },
+    "12.2": {
+      "summary": "Energy and momentum mix under a change of inertial frame.",
+      "notes": "**Picture and method**\n\nTransform the pair $(E/c,p_x)$ using the same boost as $(ct,x)$. Transverse momentum components are unchanged for an x boost.\n\n**Keep handy**\n\n$$E'=\\gamma_v(E-vp_x),\\qquad p_x'=\\gamma_v(p_x-vE/c^2)$$\n\n$S'$ moves at $+v$ relative to $S$. Energies are J and momenta kg·m/s; $\\gamma_v$ belongs to the frame speed, not the particle speed.\n\n**One worked relation**\n\nFor a particle at rest in $S'$, inverse transformation gives $E=\\gamma_vmc^2$ and $p_x=\\gamma_vmv$.\n\n**Watch for**\n\nA frame change can change total energy and momentum while leaving $E^2-p^2c^2$ unchanged.",
+      "opening_question": "Which combination of energy and momentum should remain unchanged after the boost?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.2",
+        "pages": [
+          594,
+          596
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "7cd9dc3dc5acb6c86d671a94dc30a8f0882004dea8d098dc35620f38c062e0d8"
+      }
+    },
+    "12.3": {
+      "summary": "Relativistic collisions conserve total energy and momentum, while particle rest masses can change.",
+      "notes": "**Picture and method**\n\nWrite all incoming and outgoing four-momenta. Use the invariant total mass to select a useful CM frame and check thresholds.\n\n**Keep handy**\n\n$$s=E_{\\rm tot}^2-c^2\\lvert\\mathbf p_{\\rm tot}\\rvert^2=M_{\\rm inv}^2c^4$$\n\nHere $s$ has units J² and $M_{\\rm inv}$ kg. Each particle separately obeys $E_i^2-p_i^2c^2=m_i^2c^4$.\n\n**One worked relation**\n\nA parent of mass $M$ at rest decaying into two photons gives equal opposite momenta and photon energies $Mc^2/2$ each.\n\n**Watch for**\n\nDo not conserve the sum of rest masses or use classical kinetic energy at relativistic speeds. Include rest energies in threshold calculations.",
+      "opening_question": "Which frame makes the total spatial momentum zero?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.3",
+        "pages": [
+          596,
+          600
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "af9a2876f10a456b7a5aeaf0c42aa0cffd7418b4f34f1512ea0eeb9f9b8896d0"
+      }
+    },
+    "12.4": {
+      "summary": "Particle units express tiny masses and energies on a practical scale.",
+      "notes": "**Picture and method**\n\nUse electron-volts for energy and keep the powers of c that distinguish energy, mass and momentum unless explicitly choosing natural units.\n\n**Keep handy**\n\n$$E^2=(pc)^2+(mc^2)^2$$\n\nEnergy can be in MeV, momentum in MeV/c and mass in MeV/c². In $c=1$ units all can be quoted in an energy unit, with that convention stated.\n\n**One worked relation**\n\nA particle with $mc^2=3$ MeV and $pc=4$ MeV has $E=5$ MeV. The arithmetic comes from the invariant relation.\n\n**Watch for**\n\nWriting a mass in MeV assumes $c=1$ shorthand. Restore c factors before mixing with SI quantities.",
+      "opening_question": "What unit would make $pc$ and $mc^2$ comparable with energy?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.4",
+        "pages": [
+          600,
+          601
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "cf3d2b8d8e79c9cc009e7faa6642dfd144cefc42c6941fa732ddc75bbdd6a82d"
+      }
+    },
+    "12.5": {
+      "summary": "Relativistic force changes momentum, and force need not point along acceleration.",
+      "notes": "**Picture and method**\n\nDifferentiate $\\gamma m\\mathbf v$ for fixed invariant mass. Resolve directions parallel and perpendicular to the instantaneous velocity.\n\n**Keep handy**\n\n$$F_\\parallel=\\gamma^3ma_\\parallel,\\qquad F_\\perp=\\gamma ma_\\perp$$\n\nForces N, accelerations m/s², $m$ kg. These are components along the particle's current motion, not an arbitrary fixed x axis.\n\n**One worked relation**\n\nFor a transverse force on a rapidly moving particle, $a_\\perp=F_\\perp/(\\gamma m)$; a same-sized longitudinal force gives the smaller $a_\\parallel=F_\\parallel/(\\gamma^3m)$.\n\n**Watch for**\n\nThere is no single scalar effective mass that makes all force components equal that scalar times acceleration.",
+      "opening_question": "Why can the acceleration direction differ from the force direction?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.5",
+        "pages": [
+          601,
+          606
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3e7ad356f872ffd021aecfb04bb4f2defd6575d73e48ef76b638e28ed2d6e05c"
+      }
+    },
+    "12.5.1": {
+      "summary": "In one dimension, momentum can grow linearly under constant force while speed approaches c.",
+      "notes": "**Picture and method**\n\nIntegrate $F=dp/dt$ first, then recover velocity from momentum.\n\n**Keep handy**\n\n$$F=\\gamma^3m\\frac{dv}{dt},\\qquad v=\\frac{pc^2}{\\sqrt{m^2c^4+p^2c^2}}$$\n\nConstant invariant mass, collinear force and motion. Force N, momentum kg·m/s, velocity m/s.\n\n**One worked relation**\n\nFrom rest under constant lab force $F$, $p=Ft$, giving $v=(Ft/m)/\\sqrt{1+(Ft/mc)^2}$.\n\n**Watch for**\n\nConstant force does not mean constant coordinate acceleration at high speed. The gamma factor grows as the particle accelerates.",
+      "opening_question": "Which quantity grows uniformly when the force is constant?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.5.1",
+        "pages": [
+          601,
+          603
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "741eca4f53b28df69ea950d69e908acb64d59650c61522abf56f917f4fc47018"
+      }
+    },
+    "12.5.2": {
+      "summary": "A two-dimensional force changes both speed and direction with different inertial factors.",
+      "notes": "**Picture and method**\n\nAt an instant align x with velocity, then differentiate the momentum components at that instant.\n\n**Keep handy**\n\n$$\\mathbf F=\\gamma m\\mathbf a+\\gamma^3m\\frac{\\mathbf v\\cdot\\mathbf a}{c^2}\\mathbf v$$\n\n$\\mathbf F$ N, $\\mathbf a$ m/s², and $m$ is constant. The extra term changes only the component along velocity.\n\n**One worked relation**\n\nWith instantaneous $\\mathbf v=v\\hat{\\mathbf x}$, $F_x=\\gamma^3ma_x$ and $F_y=\\gamma ma_y$. Thus $a_y/a_x=\\gamma^2F_y/F_x$ when the denominators are nonzero.\n\n**Watch for**\n\nForce and acceleration align only in special directions or the low-speed limit. Do not impose alignment as an extra constraint.",
+      "opening_question": "What happens to the extra term when acceleration is perpendicular to velocity?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.5.2",
+        "pages": [
+          603,
+          604
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3586ad291a1f8a714f4a33abd9c080bb53461716281048e4744e8dbf5b3fc8d7"
+      }
+    },
+    "12.5.3": {
+      "summary": "A force measured in the particle's instantaneous rest frame has simple boost relations.",
+      "notes": "**Picture and method**\n\nLet $S'$ be the instantaneous inertial rest frame and boost along the particle's lab velocity. Transform momentum transfer and elapsed time together.\n\n**Keep handy**\n\n$$F_\\parallel=F_\\parallel',\\qquad F_\\perp=\\frac{F_\\perp'}\\gamma$$\n\nPrimed force is measured at rest; unprimed force is in the lab. Force N, $\\gamma=(1-v^2/c^2)^{-1/2}$. These simple relations require that rest-frame condition.\n\n**One worked relation**\n\nA purely transverse rest-frame force appears smaller by $\\gamma$ in the lab; paired with $F_\\perp=\\gamma ma_\\perp$, this gives $a_\\perp=a_\\perp'/\\gamma^2$.\n\n**Watch for**\n\nThese are not the general transformations between two arbitrary frames where the particle moves in both.",
+      "opening_question": "In which of these frames is the particle instantaneously at rest?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.5.3",
+        "pages": [
+          604,
+          606
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3bdc879cdb833636cdc24fb8d916ccae1e498a9d2b12a327470d031489e8be6c"
+      }
+    },
+    "12.6": {
+      "summary": "A photon rocket trades invariant mass for directed radiation and increased rapidity.",
+      "notes": "**Picture and method**\n\nConserve energy and momentum for rocket plus exhaust. Photons fired backward have momentum opposite their positive energy divided by c.\n\n**Keep handy**\n\n$$\\frac{m}{M}=\\sqrt{\\frac{1-\\beta}{1+\\beta}},\\qquad\\phi=\\ln\\frac{M}{m}$$\n\nIdeal rocket starts at rest with mass $M$, converts mass fully to backward photons, and has no external force. $\\beta=v/c$, masses kg, rapidity dimensionless.\n\n**One worked relation**\n\nIf the remaining mass is $m=M/2$, then $\\beta=(M^2-m^2)/(M^2+m^2)=3/5$. Exhaust energy must be transformed into the same frame as the rocket.\n\n**Watch for**\n\nThe photon-exhaust result is not the ordinary fixed-speed massive-exhaust rocket law. Keep the exhaust's energy and momentum in the conservation equations.",
+      "opening_question": "Why must we include the energy of the photons as well as their momentum?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.6",
+        "pages": [
+          606,
+          609
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ffbdaf56ce6bf8102e49ef7fed2560bf4ff1fa3cb89ccb11c731f5ec14e8f895"
+      }
+    },
+    "12.7": {
+      "summary": "A constant-tension relativistic string stores energy proportional to its length.",
+      "notes": "**Picture and method**\n\nUse work to track the string energy and impulse to track attached masses. Even a string with no unstretched mass gains mass-equivalent energy when stretched.\n\n**Keep handy**\n\n$$U=T\\ell,\\qquad m_{\\rm string}=\\frac{T\\ell}{c^2}$$\n\nTension $T$ N, length $\\ell$ m, energy J and mass kg. This ideal model has constant tension rather than Hooke's-law tension.\n\n**One worked relation**\n\nA mass leaving a fixed wall with speed v stops after $\\ell=(\\gamma-1)mc^2/T$; since $dp/dt=-T$, stopping time is $t=\\gamma mv/T$.\n\n**Watch for**\n\nDo not discard the stretched string's energy from the system mass. Relativistic force is $dp/dt$, not generally $ma$.",
+      "opening_question": "Where is the particle's lost kinetic energy stored as the string stretches?",
+      "source": {
+        "id": "morin",
+        "section_id": "12.7",
+        "pages": [
+          609,
+          611
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "9f4de64d6e7540a9f12c97f1077b251e3df7e45fc253c2348b7a8ea91d61e60a"
+      }
+    },
+    "13.1": {
+      "summary": "A four-vector is defined by how its four components transform, not just by having four entries.",
+      "notes": "**Picture and method**\n\nPackage time and spatial components with compatible units. Require the same Lorentz transformation as a spacetime displacement.\n\n**Keep handy**\n\n$$A'^0=\\gamma(A^0-\\beta A^1),\\qquad A'^1=\\gamma(A^1-\\beta A^0)$$\n\nFor an x boost; $A'^2=A^2$, $A'^3=A^3$. All four components must share units. $\\beta=v/c$ is dimensionless.\n\n**One worked relation**\n\nThe displacement $(c\\,dt,dx,dy,dz)$ is a four-vector. Multiplying all its components by an invariant scalar preserves that property.\n\n**Watch for**\n\nMultiplying only one component by an arbitrary constant generally destroys the required transformation law.",
+      "opening_question": "What must four numbers do before we are allowed to call them a four-vector?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.1",
+        "pages": [
+          634,
+          635
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "5e00a9b7bb82a3583774863308e303a961d31b0778672f00b586b31d1f8ed5fb"
+      }
+    },
+    "13.2": {
+      "summary": "Proper time turns ordinary derivatives into useful four-vectors.",
+      "notes": "**Picture and method**\n\nDifferentiate spacetime position with respect to invariant proper time, then multiply by invariant mass for four-momentum.\n\n**Keep handy**\n\n$$U^\\mu=\\frac{dX^\\mu}{d\\tau}=\\gamma(c,\\mathbf v),\\qquad P^\\mu=mU^\\mu=(E/c,\\mathbf p)$$\n\nFour-velocity components have units m/s; four-momentum kg·m/s. Four-acceleration is $A^\\mu=dU^\\mu/d\\tau$.\n\n**One worked relation**\n\nIn the instantaneous rest frame, $U^\\mu=(c,0,0,0)$ and $P^\\mu=(mc,0,0,0)$. A boost creates spatial components consistently.\n\n**Watch for**\n\nCoordinate time t is frame-dependent; dividing a four-vector by dt does not generally produce another four-vector.",
+      "opening_question": "Why is proper time a better denominator here than a frame's coordinate time?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.2",
+        "pages": [
+          635,
+          637
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "9f644c82806357eaa61e9c88775b78d12c264d98ae6fc276959efe6f65eb9e0b"
+      }
+    },
+    "13.3": {
+      "summary": "Four-vector dot products and linear combinations give frame-independent tools.",
+      "notes": "**Picture and method**\n\nUse the Minkowski sign pattern, not the Euclidean sum of four squares. Coefficients in a linear combination must be invariant scalars.\n\n**Keep handy**\n\n$$A\\cdot B=A^0B^0-\\mathbf A\\cdot\\mathbf B$$\n\nSignature is $(+,-,-,-)$. The dot product is invariant and has the product of the vectors' units; a vector norm can be positive, zero or negative.\n\n**One worked relation**\n\nFor four-velocity, $U\\cdot U=c^2$. Differentiating gives $U\\cdot A=0$, where $A=dU/d\\tau$.\n\n**Watch for**\n\nA zero Minkowski norm need not mean a zero vector: a photon's four-momentum is nonzero and null.",
+      "opening_question": "How can a nonzero lightlike vector have zero norm?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.3",
+        "pages": [
+          637,
+          639
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "77c124e0e1e0c1ca292c039bb5b3db9e8f07cb7789776a980f94b713fab2b578"
+      }
+    },
+    "13.4": {
+      "summary": "Four-momentum packages conservation and the mass-energy relation into one object.",
+      "notes": "**Picture and method**\n\nAdd all particle four-momenta before taking the system's invariant norm. Lorentz transformations then handle any frame change.\n\n**Keep handy**\n\n$$P^\\mu=(E/c,\\mathbf p),\\qquad P\\cdot P=M^2c^2$$\n\nFor a system, $E$ and $\\mathbf p$ are totals and $M$ is invariant system mass (kg), not automatically the sum of constituent masses.\n\n**One worked relation**\n\nTwo opposite photons each of energy $E_\\gamma$ have total momentum zero and invariant mass $M=2E_\\gamma/c^2$, despite each photon being massless.\n\n**Watch for**\n\nSquare the total four-vector, not each term separately and then add. Cross terms contain the relative-motion energy.",
+      "opening_question": "Can a system made entirely of massless particles have nonzero invariant mass?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.4",
+        "pages": [
+          639,
+          640
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8f983ccd85b6bfb9ff1ba0126cbf5b4e2c950bff1947846fe80e47f3e407d896"
+      }
+    },
+    "13.4.1": {
+      "summary": "The norm of total four-momentum measures the system's invariant mass.",
+      "notes": "**Picture and method**\n\nCompute total energy and total vector momentum in any one frame, then form the invariant combination.\n\n**Keep handy**\n\n$$M^2c^4=E_{\\rm tot}^2-c^2\\lvert\\mathbf p_{\\rm tot}\\rvert^2$$\n\nMass M is kg, total energy J, total momentum kg·m/s. In the CM frame, $M=E_{\\rm CM}/c^2$.\n\n**One worked relation**\n\nTwo equal-energy photons meeting at angle $\\theta$ have $M^2c^4=2E_\\gamma^2(1-\\cos\\theta)$. Parallel photons give zero; opposite photons give $M=2E_\\gamma/c^2$.\n\n**Watch for**\n\nInvariant mass includes internal relative motion. It is not calculated by simply summing photon or particle rest masses.",
+      "opening_question": "What changes about the system mass when the two photon directions change?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.4.1",
+        "pages": [
+          639,
+          640
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8f983ccd85b6bfb9ff1ba0126cbf5b4e2c950bff1947846fe80e47f3e407d896"
+      }
+    },
+    "13.4.2": {
+      "summary": "Energy-momentum transformations follow immediately from the four-vector definition.",
+      "notes": "**Picture and method**\n\nApply the boost to $(E/c,p_x)$; keep the transverse components unchanged. Use one boost sign convention throughout.\n\n**Keep handy**\n\n$$E'=\\gamma(E-vp_x),\\quad p_x'=\\gamma(p_x-vE/c^2),\\quad p_y'=p_y$$\n\nAn x boost with $S'$ moving at $+v$; energies J, momenta kg·m/s, $\\gamma$ based on frame speed.\n\n**One worked relation**\n\nFor a photon traveling along $+x$, $p_x=E/c$, hence $E'=\\gamma E(1-\\beta)$, the red shift for an observer chasing the ray.\n\n**Watch for**\n\nThe same formulas work for total system energy-momentum. The gamma factor is not the gamma of each individual particle.",
+      "opening_question": "If you chase a photon, should its measured energy increase or decrease?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.4.2",
+        "pages": [
+          640,
+          640
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "dee7067a043c7f43518f0a8424198ee160cfcb4eecca2b2eed811a42ab9b0726"
+      }
+    },
+    "13.5": {
+      "summary": "Four-force and four-acceleration transform cleanly even though ordinary force and acceleration do not.",
+      "notes": "**Picture and method**\n\nDifferentiate four-momentum and four-velocity with respect to proper time. Keep invariant mass constant for the direct proportionality.\n\n**Keep handy**\n\n$$K^\\mu=\\frac{dP^\\mu}{d\\tau}=mA^\\mu,\\qquad K^\\mu=\\gamma\\left(\\frac{\\mathbf f\\cdot\\mathbf v}{c},\\mathbf f\\right)$$\n\n$\\mathbf f=d\\mathbf p/dt$ is ordinary three-force in N; four-force components also have units N. $A$ has units m/s².\n\n**One worked relation**\n\nAt instantaneous rest, $K'^\\mu=(0,\\mathbf f')$ and $A'^\\mu=(0,\\mathbf a')$, recovering $\\mathbf f'=m\\mathbf a'$.\n\n**Watch for**\n\nIf rest mass changes, $d(mU)/d\\tau$ includes an extra term. Do not use $K=mA$ unchanged for a heating object or rocket.",
+      "opening_question": "Why is the time component of four-force zero in the instantaneous rest frame for fixed mass?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.5",
+        "pages": [
+          640,
+          643
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "04d7150517fcf8f009e48aad24446391bc3460734972a61abc4b3851409268c6"
+      }
+    },
+    "13.5.1": {
+      "summary": "Boosting four-force explains why transverse three-force changes differently from longitudinal force.",
+      "notes": "**Picture and method**\n\nStart in the particle's instantaneous rest frame with $K'^\\mu=(0,\\mathbf f')$. Transform that four-vector, then divide spatial components by lab gamma.\n\n**Keep handy**\n\n$$f_\\parallel=f_\\parallel',\\qquad f_\\perp=f_\\perp'/\\gamma$$\n\nThe boost direction is the particle's lab velocity. All ordinary force components are N; four-force is $K=\\gamma(\\mathbf f\\cdot\\mathbf v/c,\\mathbf f)$.\n\n**One worked relation**\n\nThe boost gives $K_x=\\gamma f_x'$ and $K_y=f_y'$. Since $K_i=\\gamma f_i$, the longitudinal gamma cancels but the transverse one does not.\n\n**Watch for**\n\nSpatial four-force is $\\gamma\\mathbf f$, not just $\\mathbf f$. Forgetting this conversion reverses the interpretation.",
+      "opening_question": "What factor relates the spatial part of four-force to ordinary three-force?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.5.1",
+        "pages": [
+          640,
+          641
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "0e302414142868357b6d77045d7074a71adb92970e893c8c6c884138e036724c"
+      }
+    },
+    "13.5.2": {
+      "summary": "Proper acceleration and coordinate acceleration differ under a boost.",
+      "notes": "**Picture and method**\n\nTransform the four-acceleration from the instantaneous rest frame, then express it in terms of lab coordinate acceleration.\n\n**Keep handy**\n\n$$a_\\parallel=\\frac{a_\\parallel'}{\\gamma^3},\\qquad a_\\perp=\\frac{a_\\perp'}{\\gamma^2}$$\n\nPrimed frame is instantaneous rest, boost along lab velocity. Accelerations are m/s² and $\\gamma=(1-v^2/c^2)^{-1/2}$.\n\n**One worked relation**\n\nFor straight motion with constant felt acceleration $a'$, lab acceleration is $a'/\\gamma^3$, which decreases as speed increases.\n\n**Watch for**\n\nThese compact relations use an instantaneous rest frame. They are not transformations between arbitrary moving frames without further velocity factors.",
+      "opening_question": "Can a traveler feel constant acceleration while the lab sees decreasing acceleration?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.5.2",
+        "pages": [
+          641,
+          643
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "ff83bec3a573ee425fdf083f2203211aac92f36274977c231cebfb81dab97f9d"
+      }
+    },
+    "13.6": {
+      "summary": "Relativistic physical laws must transform consistently between inertial frames.",
+      "notes": "**Picture and method**\n\nWrite equalities between quantities of the same tensor type, so a valid relation in one frame remains valid after a Lorentz transformation.\n\n**Keep handy**\n\n$$\\frac{dP^\\mu}{d\\tau}=K^\\mu$$\n\nBoth sides are four-vectors with force units. Four-momentum conservation $\\sum P_i^\\mu=\\sum P_f^\\mu$ is a covariant statement.\n\n**One worked relation**\n\nIf the total incoming and outgoing four-momenta agree in the CM frame, multiplying both sides by a Lorentz transformation proves agreement in every inertial frame.\n\n**Watch for**\n\nCovariant form alone does not prove a proposed law is physically true; experiments and the system assumptions are still needed.",
+      "opening_question": "Why must both sides of a physical equation transform the same way?",
+      "source": {
+        "id": "morin",
+        "section_id": "13.6",
+        "pages": [
+          643,
+          645
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "dd5f6ac0cd3d3bdc74c795d5b5ea0694f1f28bfd7b1e868aba89dc700483b755"
+      }
+    },
+    "14.1": {
+      "summary": "Locally, uniform gravity and acceleration can produce the same laboratory observations.",
+      "notes": "**Picture and method**\n\nCompare a small supported lab in gravity with a rocket accelerating in empty space. Compare free fall with an inertial lab.\n\n**Keep handy**\n\n$$\\mathbf g_{\\rm effective}=-\\mathbf a_{\\rm frame}$$\n\nFor a small accelerating lab in otherwise gravity-free space, accelerations are in m/s². The equivalence is local; tidal variation is excluded in this ideal comparison.\n\n**One worked relation**\n\nA released ball falls toward an accelerating rocket's floor because the floor accelerates up to meet it, matching the local supported-lab description.\n\n**Watch for**\n\nA large experiment can detect tidal differences. The principle does not identify a whole curved gravitational field with one globally accelerating frame.",
+      "opening_question": "What experiment would notice that gravity varies from one side of the lab to the other?",
+      "source": {
+        "id": "morin",
+        "section_id": "14.1",
+        "pages": [
+          649,
+          650
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "51104169acd1472ba41a0ab99a4b42e3d6002b36e74a90a380c082b6cb9d4a86"
+      }
+    },
+    "14.2": {
+      "summary": "Clocks higher in a weak gravitational potential run faster than lower clocks.",
+      "notes": "**Picture and method**\n\nUse equivalence to compare light exchanged across an accelerating laboratory, then translate the result into a gravitational potential difference.\n\n**Keep handy**\n\n$$\\frac{d\\tau_{\\rm high}}{d\\tau_{\\rm low}}\\simeq1+\\frac{\\Delta\\Phi}{c^2}\\simeq1+\\frac{gh}{c^2}$$\n\nWeak static field, $\\lvert\\Delta\\Phi\\rvert\\ll c^2$, small height h (m), g m/s²; potential $\\Phi$ is J/kg. Clocks are stationary in that field.\n\n**One worked relation**\n\nOver coordinate duration T, the higher clock gains approximately $Tgh/c^2$. Light climbing upward is redshifted when compared with a local receiving clock.\n\n**Watch for**\n\nKeep clock-rate comparison distinct from observed frequency during motion. The weak-field formula is not an exact expression near a strong-field horizon.",
+      "opening_question": "Which stationary clock accumulates more time: the higher one or the lower one?",
+      "source": {
+        "id": "morin",
+        "section_id": "14.2",
+        "pages": [
+          650,
+          653
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "8ffa6016fbd7f48aad530e28481ef3e698a9b9a694e762152265d11508fc885d"
+      }
+    },
+    "14.3": {
+      "summary": "A rigid accelerating reference frame requires different proper accelerations at different positions.",
+      "notes": "**Picture and method**\n\nConstruct hyperbolic worldlines that share a common horizon so their proper separations stay fixed. A single constant lab acceleration for every point will not do.\n\n**Keep handy**\n\n$$a(\\xi)=\\frac{a_0}{1+a_0\\xi/c^2}$$\n\n$\\xi$ is fixed proper distance ahead of a reference point (m), $a_0$ its proper acceleration (m/s²). Domain has $1+a_0\\xi/c^2>0$.\n\n**One worked relation**\n\nA point farther forward needs smaller proper acceleration. Its larger hyperbola radius keeps its instantaneous-rest distance from the rear fixed.\n\n**Watch for**\n\nUniformly accelerating frame does not mean identical proper acceleration at all positions. Distinguish frame rigidity from equal lab-coordinate acceleration.",
+      "opening_question": "Which end of a rigid accelerating rocket must feel the larger proper acceleration?",
+      "source": {
+        "id": "morin",
+        "section_id": "14.3",
+        "pages": [
+          653,
+          656
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "70e5ca7e17ffdf704230eabbef82db9b04067ca7393458b84c0d9da49ba3f211"
+      }
+    },
+    "14.3.1": {
+      "summary": "Constant proper acceleration traces a hyperbola in inertial spacetime.",
+      "notes": "**Picture and method**\n\nIntegrate the rapidity using the traveler's clock, then integrate four-velocity. Choose the particle initially at rest at the origin.\n\n**Keep handy**\n\n$$ct=\\frac{c^2}{a}\\sinh(a\\tau/c),\\qquad x=\\frac{c^2}{a}[\\cosh(a\\tau/c)-1]$$\n\n$a$ is constant proper acceleration (m/s²), $\\tau,t$ s, and x m. Then $(x+c^2/a)^2-c^2t^2=(c^2/a)^2$.\n\n**One worked relation**\n\nDifferentiate to find $v=c\\tanh(a\\tau/c)$. At short proper time, $x\\simeq a\\tau^2/2$ and $t\\simeq\\tau$, recovering Newtonian motion.\n\n**Watch for**\n\nThe asymptote is approached but never crossed by this uniformly accelerated worldline. Constant proper acceleration differs from constant $d^2x/dt^2$.",
+      "opening_question": "What happens to the speed at very large proper time?",
+      "source": {
+        "id": "morin",
+        "section_id": "14.3.1",
+        "pages": [
+          653,
+          655
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "80740bbddebaf987862bb17c6e9d303e6903ccffa216df258a3c888a07bbd30e"
+      }
+    },
+    "14.3.2": {
+      "summary": "A Rindler frame keeps fixed proper distances by sharing a family of centered hyperbolae.",
+      "notes": "**Picture and method**\n\nGive every stationary point a hyperbola centered on the same event in the construction. Its proper acceleration is inversely proportional to its hyperbola radius.\n\n**Keep handy**\n\n$$a\\rho=c^2$$\n\n$\\rho$ is a stationary point's distance from the common horizon in the instantaneous rest construction (m), $a$ its proper acceleration (m/s²).\n\n**One worked relation**\n\nIf one point has radius $\\rho$ and another $2\\rho$, their accelerations are $c^2/\\rho$ and $c^2/(2\\rho)$. Their shared instantaneous rest slice keeps their proper separation fixed.\n\n**Watch for**\n\nEqual proper accelerations would make the separation grow in the comoving description. The horizon limits this accelerating coordinate patch, not all of spacetime.",
+      "opening_question": "Why cannot every point of a rigid accelerating frame use the same proper acceleration?",
+      "source": {
+        "id": "morin",
+        "section_id": "14.3.2",
+        "pages": [
+          655,
+          656
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "9d41f4307d4bd80bd1a2f3877933672da3bbec9d59dec6408b7ae9eeca0c48d1"
+      }
+    },
+    "14.4": {
+      "summary": "Free fall makes proper time stationary between fixed spacetime events.",
+      "notes": "**Picture and method**\n\nCompare nearby timelike paths with the same endpoints. In a weak field at low speed, the proper-time functional connects directly to classical action.\n\n**Keep handy**\n\n$$d\\tau\\simeq\\left(1+\\frac{\\Phi}{c^2}-\\frac{v^2}{2c^2}\\right)dt$$\n\n$\\Phi$ is gravitational potential per unit mass (m²/s²), v m/s, times s. Assume weak static gravity and $v\\ll c$.\n\n**One worked relation**\n\nWith endpoints fixed, maximizing this proper-time integral corresponds to stationarity of $\\int(mv^2/2-m\\Phi)dt$, reproducing classical free fall.\n\n**Watch for**\n\nStationary is the general statement; a geodesic is not always a global maximum over every possible path. Restrict the simple maximum claim to its applicable neighborhood.",
+      "opening_question": "Which two effects on clock rate compete when a falling object changes height and speed?",
+      "source": {
+        "id": "morin",
+        "section_id": "14.4",
+        "pages": [
+          656,
+          658
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "b3218500d9a8a4140bcae8a22f58a5fbb74f5d6f00884148a7dc5e7f3e31a07c"
+      }
+    },
+    "14.5": {
+      "summary": "Twin clock comparisons depend on their complete paths and reunion events.",
+      "notes": "**Picture and method**\n\nCompute proper time along both worldlines, or use consistent accelerated coordinates including their effective gravitational clock shifts.\n\n**Keep handy**\n\n$$\\tau=\\int\\sqrt{1-v(t)^2/c^2}\\,dt$$\n\nThis expression uses one inertial frame in flat spacetime, v in m/s and time in s. Actual gravity requires its metric or an appropriate approximation.\n\n**One worked relation**\n\nFor ideal outward and return legs of equal lab duration T at speed v, traveling proper time is $2T/\\gamma$ while the stay-home clock accumulates $2T$, neglecting the brief turnaround duration.\n\n**Watch for**\n\nAcceleration marks the asymmetry but elapsed time is found from the full worldlines. Special relativity already resolves the ordinary traveling-twin setup.",
+      "opening_question": "Which twin follows one inertial worldline from departure all the way to reunion?",
+      "source": {
+        "id": "morin",
+        "section_id": "14.5",
+        "pages": [
+          658,
+          660
+        ],
+        "source_sha256": "51fbce11159680fe2a529c1866e93f584278cf5d52b4cd6abcf9869c115ac991",
+        "range_text_sha256": "3dfd66f66f2b17c2107d3abd06138d60a0419a27b27514616a85a15f787e5fb9"
+      }
+    }
+  }
+}

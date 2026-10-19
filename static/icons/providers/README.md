@@ -1,0 +1,1 @@
+Provider SVG marks from Lobe Icons, https://github.com/lobehub/lobe-icons/tree/master/packages/static-svg/icons. OpenAI and Claude reused unchanged from Panel; Gemini, Kimi and OpenRouter retrieved 2026-10-16. Upstream MIT license included. Brand marks belong to their respective owners.

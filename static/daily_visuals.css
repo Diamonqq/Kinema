@@ -1,0 +1,129 @@
+/* Daily prepared 3D scenes (static/js/daily_visuals.js). Uses the app's variables with dark fallbacks.
+   Full-width canvas, small symbolic key, and a compact transport. Descriptions are in the info popover.
+   Every control sets pointer-events explicitly: hosts and overlays must never leave a button unpressable. */
+.dv { position: relative; display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 220px; overflow: hidden;
+  border-radius: 14px; background: #1b1b1b; color: var(--ink, #e8eaed); font: 13px/1.35 var(--sans, Inter, system-ui, sans-serif);
+  text-align: left; isolation: isolate; box-sizing: border-box; pointer-events: auto; }
+.dv *, .dv *::before, .dv *::after { box-sizing: border-box; }
+.dp-scene-box:has(> .dv) { padding: 0; background: #1b1b1b; }
+.dv-main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.dv-view { position: relative; flex: 1; min-width: 0; min-height: 120px; overflow: hidden; }
+.dv-stage { position: absolute; inset: 0; }
+.dv-stage canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
+.dv-stage canvas { cursor: grab; }
+.dv-stage canvas:active { cursor: grabbing; }
+.dv-stage canvas:focus-visible { outline: 2px solid #5598e7; outline-offset: -3px; }
+.dv-stage.dv-moving canvas { cursor: move; }
+.dv-labels { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+.dv-leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; overflow: visible; }
+.dv-leaders line { stroke: rgba(213, 218, 225, .45); stroke-width: 1; }
+.dv-lab { position: absolute; left: 0; top: 0; padding: 1px 4px; border-radius: 4px; white-space: nowrap; font-size: calc(11px * var(--dv-s, 1));
+  color: var(--ink, #e8eaed); background: rgba(15, 17, 20, .66); will-change: transform; }
+.dv-lab.dv-sym { font: italic calc(14px * var(--dv-s, 1))/1.2 var(--math, 'Cambria Math', Cambria, serif); background: rgba(15,17,20,.88); padding: 1px 3px; border-radius: 3px;
+  text-shadow: 0 1px 1px #000; }
+.dv-lab.dv-dim { font-size: calc(12px * var(--dv-s, 1)); color: #e0e5ed; background: rgba(15,17,20,.88); text-shadow: 0 0 3px #0f1114; }
+.dv-assumption { flex: none; margin: 0 12px 6px; font-size: 11px; line-height: 1.4; color: #c3cbd7; }
+.dv-assumption[hidden] { display: none; }
+.dv-force-target { max-width: 110px; min-height: 28px; border: 0; border-left: 1px solid #424750; background: #25282d; color: #e0e5ed; font: 11px system-ui; }
+.dv .dv-forces { min-width: 84px; }
+.dp-visual-help { margin: 6px 0; color: #c3cbd7; font: 12px/1.4 system-ui; }
+.dp-visual-help button { margin-left: 6px; color: #bad5fa; background: #252b35; border: 1px solid #52647e; border-radius: 5px; padding: 4px 8px; cursor: pointer; }
+/* a label tied to a coloured object carries the same colour as a dot (bodies) or as its text (symbols) */
+.dv-lab.dv-c:not(.dv-sym)::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 4px; border-radius: 50%;
+  background: var(--c); vertical-align: 0; box-shadow: 0 0 0 1px rgba(0, 0, 0, .4); }
+.dv-lab.dv-sym.dv-c { color: color-mix(in srgb, var(--c) 80%, #fff); }
+
+/* buttons: explicit resets (never `all: unset`, which inherits pointer-events from an overlay) */
+.dv button { appearance: none; margin: 0; font: inherit; line-height: 1.2; color: var(--ink2, #b8bdc5); cursor: pointer; pointer-events: auto;
+  background: rgba(37, 37, 37, .88); border: 1px solid #383838; border-radius: 6px; padding: 3px 7px; font-size: 11px;
+  white-space: nowrap; min-height: 28px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-transform: none; letter-spacing: 0; box-shadow: none; }
+.dv button:hover { color: var(--ink, #e8eaed); border-color: #4a515a; }
+.dv button:focus-visible, .dv input:focus-visible { outline: 2px solid var(--c2, #5598e7); outline-offset: 1px; }
+.dv button[hidden] { display: none; }
+.dv button:disabled { opacity: 1; cursor: pointer; }
+
+/* top overlay: views, parts, info and expand */
+.dv-top { position: absolute; left: 8px; right: 8px; top: 8px; z-index: 4; display: flex; align-items: flex-start; gap: 6px; flex-wrap: wrap; pointer-events: none; }
+.dv-top > * { pointer-events: auto; }
+.dv-top > .dv-grow { flex: 1; pointer-events: none; }
+.dv-readout { align-self:center; color:var(--ink2,#b8bdc5); font-size:11px; font-variant-numeric:tabular-nums; padding:4px 5px; }
+.dv-readout[hidden] { display:none; }
+.dv-seg { display: flex; border: 1px solid #383838; border-radius: 6px; overflow: hidden; background: rgba(37, 37, 37, .88); }
+.dv-seg:empty { display: none; }
+.dv-seg[hidden] { display: none; }
+.dv-seg button { border: 0; border-radius: 0; background: none; }
+.dv-seg button + button { border-left: 1px solid #383838; }
+.dv-seg button[aria-pressed="true"] { color: #fff; background: rgba(85, 152, 231, .3); }
+/* focus chip: the close-up's name and the way back to the whole setup */
+.dv-focus { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+.dv-focus[hidden] { display: none; }
+.dv-focus-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; color: var(--ink, #e8eaed);
+  padding: 4px 8px; border-radius: 999px; background: rgba(37, 37, 37, .88); }
+.dv .dv-detail, .dv .dv-focus-back { border-radius: 999px; padding-inline: 10px; background: #ffffff08; border-color: #ffffff12; }
+.dv .dv-detail:hover, .dv .dv-focus-back:hover { background: #ffffff10; border-color: #ffffff20; }
+/* the named close-up sits in the top bar beside Forces: an outlined pill on the canvas, never hidden in the camera row */
+.dv-top .dv-detail, .dv-top .dv-focus-back { min-height: 28px; background: rgba(37, 37, 37, .88); border: 1px solid #ffffff38; color: var(--ink, #e8eaed); }
+.dv-top .dv-detail:hover { border-color: #89b6ec99; }
+.dv-top .dv-detail[aria-pressed="true"] { border-color: #89b6ec99; }
+.dv-compact .dv-top .dv-detail { min-height: 26px; padding-inline: 8px; font-size: 11px; }
+.dv-compact .dv-focus-label { font-size: 10.5px; padding: 4px 6px; }
+.dv-note.dv-focus-note { color: var(--ink, #e8eaed); }
+.dv .dv-icon { min-width: 28px; padding: 2px 7px; font-size: 14px; }
+.dv-camera { position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 4; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; pointer-events: none; }
+.dv-camera > * { pointer-events: auto; }
+.dv-camera .dv-zoom-in, .dv-camera .dv-zoom-out { font-size: 16px; min-width: 28px; padding: 2px 7px; }
+.dv-camera .dv-pan[aria-pressed="true"] { color: #fff; background: #294b73; border-color: #42658e; }
+.dv-gesture { display: none; }
+.dv-info { font: italic 600 14px/1 Georgia, serif; }
+.dv-pop { position: absolute; z-index: 5; right: 8px; top: 44px; max-width: min(320px, calc(100% - 16px)); max-height: calc(100% - 52px); overflow: auto;
+  padding: 10px 12px; border-radius: 8px; background: rgba(32, 32, 32, .98); border: 1px solid #414141; }
+.dv-pop[hidden] { display: none; }
+.dv-pop .dv-note:first-child { margin-top: 0; }
+
+/* A quiet key uses symbols only. Hover/accessibility text and the info popover explain every symbol. */
+.dv .dv-legend { position: absolute; left: 10px; right: 10px; z-index: 3; pointer-events: none; background: transparent; }
+.dv-legend ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 3px 12px; }
+.dv-legend li { display: inline-flex; gap: 4px; align-items: center; pointer-events: auto; padding: 1px 0; }
+.dv-legend li b, .dv-key-details b { font: italic 500 calc(12px * var(--dv-s, 1))/1.2 var(--math, 'Cambria Math', Cambria, serif); color: var(--ink, #e8eaed); white-space: nowrap; }
+.dv-sw { display: block; flex: none; width: 13px; height: 13px; }
+/* a wide, short stage (an inline Daily band): the key is a column at the left, so the scene keeps the full height */
+.dv-wide .dv-legend { right: auto; max-width: 200px; }
+.dv-wide .dv-legend ul { flex-direction: column; flex-wrap: nowrap; gap: 4px; }
+.dv-key-details { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.dv-key-details li { display: grid; grid-template-columns: 13px auto 1fr; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2, #b8bdc5); }
+.dv-note { margin: 6px 0 0; color: var(--ink3, #8b919a); font-size: 11.5px; }
+.dv-note.dv-motion { color: var(--ink2, #b8bdc5); }
+.dv-note.dv-answer { color: #a9c8f0; border-top: 1px solid var(--line, #262a30); padding-top: 6px; }
+.dv-note.dv-answer span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink3, #8b919a); }
+/* control strip */
+.dv-ctrl { flex: none; display: flex; align-items: center; gap: 6px; margin: 0 8px 8px; padding: 3px 4px; border-radius: 9px; background: #292929; min-height: 34px; }
+.dv-ctrl:empty { display: none; }
+.dv .dv-play { color: #172538 !important; background: #a7cafa !important; border-color: transparent !important; font-weight: 600; width: 28px; min-width: 28px; padding: 3px; }
+.dv-play:hover { filter: brightness(1.06); }
+.dv .dv-speed { min-width: 28px; padding: 3px; font-variant-numeric: tabular-nums; }
+.dv-ctrl input[type=range] { flex: 1; min-width: 30px; height: 28px; margin: 0; accent-color: #a7cafa; cursor: pointer; pointer-events: auto; background: none; }
+.dv-time { font: 10px var(--sans, Inter, sans-serif); color: var(--ink2, #b8bdc5); font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.dv-exl { font: italic 600 15px var(--math, 'Cambria Math', serif); color: var(--ink, #e8eaed); }
+.dv-hint { font-size: 11.5px; color: var(--ink3, #8b919a); }
+
+.dv-compact .dv-top { left: 6px; right: 6px; top: 6px; gap: 4px; }
+.dv-compact .dv-camera { left: 6px; right: 6px; bottom: 6px; gap: 4px; }
+.dv-compact button { padding: 3px 5px; font-size: 10.5px; }
+.dv-compact .dv-legend { left: 8px; right: 8px; }
+.dv-compact .dv-legend ul { gap: 3px 9px; }
+.dv-compact .dv-ctrl { gap: 4px; margin: 0 6px 6px; }
+
+.dv-backdrop { position: fixed; inset: 0; z-index: 2147483000; background: rgba(8, 9, 11, .78); display: grid; place-items: center; padding: 2vmin; pointer-events: auto; }
+.dv.dv-expanded { width: min(1500px, 96vw); height: min(940px, 94vh); border: 1px solid var(--line, #30353c); box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
+@media (prefers-reduced-motion: reduce) { .dv * { transition: none !important; } }
+/* a phone's tiny stage keeps its tools on one row so the drawing gets that row back */
+/* ...but never past its edge: a row that does not fit wraps (right-aligned nowrap had pushed Reveal forces off the left) */
+.dv-tiny .dv-bottom .dv-tools { flex-wrap: wrap; gap: 0; max-width: 100%; }
+.dv-tiny .dv-bottom .dv-tools .viewer-zoom button { width: 24px; min-width: 24px; padding: 4px !important; }
+.dv-tiny .dv-bottom .dv-tools .dv-pan { min-width: 24px; padding: 3px; }
+/* r150: the timeline keeps a usable width; when Forces, Breakdown and the view tools do not fit beside it they take their own row */
+.dv .dv-bottom { flex-wrap: wrap; row-gap: 2px; }
+.dv .dv-bottom .dv-ctrl { flex: 1 1 230px; }
+.dv .dv-tools .dv-breakdown { min-width: 0; padding-inline: 7px; }
+body .dv .dv-tools .dv-breakdown[aria-pressed="true"] { background: #ffffff12; color: #eee; }
+@media (max-width: 420px) { .dv .dv-tools .dv-breakdown { font-size: 11px; padding-inline: 5px; } }

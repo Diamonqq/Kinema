@@ -1,0 +1,147 @@
+/* Current Panel references: conversation, composer, chat-menu and Files cards.
+   Retain Kinema's sibling artifact surfaces and saved reading magnification. */
+.teacher,.daily,.kinema-shots{color-scheme:dark}
+.teacher *,.daily *,.kinema-shots *{scrollbar-width:thin;scrollbar-color:#ffffff28 transparent}
+.teacher ::-webkit-scrollbar,.daily ::-webkit-scrollbar,.kinema-shots ::-webkit-scrollbar{width:7px;height:7px}
+.teacher ::-webkit-scrollbar-thumb,.daily ::-webkit-scrollbar-thumb,.kinema-shots ::-webkit-scrollbar-thumb{background:#ffffff28;border:2px solid transparent;background-clip:padding-box;border-radius:99px}
+.teacher ::-webkit-scrollbar-thumb:hover,.daily ::-webkit-scrollbar-thumb:hover{background-color:#ffffff45}
+.teacher ::-webkit-scrollbar-track,.daily ::-webkit-scrollbar-track{background:transparent}
+.teacher ::-webkit-scrollbar-button,.daily ::-webkit-scrollbar-button{display:none;width:0;height:0}
+.lr-bar{gap:8px;padding:9px 14px;flex-wrap:wrap;align-content:center}
+.lr-order-slot{margin-left:auto}.lr-order-slot:empty{display:none}
+.lr-lesson-nav{display:flex;align-items:center;gap:5px;margin:0;padding:0}
+.lr-bar .lr-lesson-nav button{display:inline-flex;align-items:center;justify-content:center;min-height:32px;min-width:32px;padding:5px 11px;border:1px solid var(--tv-hair2);border-radius:999px;background:transparent;font:13px/1.5 var(--tv-sans);color:var(--tv-ink)}
+.lr-bar .lr-lesson-nav button:last-child{background:var(--tv-wash)}
+.lr-bar .lr-lesson-nav button:disabled{opacity:.3;cursor:default}
+.lr-steps{gap:26px}.lr-step-number{width:28px;height:28px;line-height:28px;cursor:pointer;border:1px solid transparent;transition:background .15s}
+.lr-step-number:hover,.lr-step-number[aria-pressed=true]{background:#a9cfff20;border-color:#a9cfff40;color:#d5e7ff}
+.lr-step-number:focus-visible{outline:2px solid #a9cfff;outline-offset:3px}
+.lr-panel>section:has(>.lr-step-number){position:relative;padding-left:38px}.lr-panel>section>.lr-step-number{position:absolute;left:0;top:0}
+.lr-example h2::before{content:none}
+.tv-step-reference[hidden]{display:none}.tv-step-reference{display:flex;align-items:center;gap:12px;padding:8px 11px;margin:2px 0 8px;background:#ffffff07;border:1px solid #ffffff14;border-radius:12px;font:12px/1.5 var(--tv-sans);min-width:0}
+.tv-step-reference span{min-width:0;flex:1}.tv-step-reference b{display:block;color:#b7cdeb;font-weight:500}.tv-step-reference small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tv-dim)}
+.tv-step-reference button{width:28px;height:28px;flex:none;border-radius:50%;color:var(--tv-dim);font-size:18px}.tv-step-reference button:hover{background:var(--tv-wash);color:var(--tv-ink)}
+.tv-sent-reference{display:block;margin-bottom:8px;color:#b5c7dd;font:12px/1.5 var(--tv-sans)}
+.tv-chat-heading{padding:20px 14px 8px;color:var(--tv-dim);font:12px/1.5 var(--tv-sans)}
+.tv-chat-search{display:flex;align-items:center;gap:7px;margin:0 9px 9px;padding:6px 8px;border:1px solid #ffffff10;border-radius:9px;min-width:0;background:#ffffff03}
+.tv-chat-search svg{width:14px;height:14px;fill:none;stroke:var(--tv-dim);stroke-width:1.7;flex:none}
+.tv-chat-search input{width:100%;min-width:0;border:0;outline:0;background:none;color:var(--tv-ink);font:12px/1.6 var(--tv-sans)}
+.tv-chat-search:focus-within{border-color:#a9cfff60}.tv-chat-group{font:11px/1.5 var(--tv-sans);color:var(--tv-dim);padding:12px 12px 5px}
+.tv-thread{border-radius:10px!important;margin-bottom:2px}.tv-tname{min-height:36px}.tv-more{border-radius:8px;opacity:0}.tv-thread:hover .tv-more,.tv-thread:focus-within .tv-more{opacity:1}
+.tv-cm{padding:6px;border-radius:16px;background:#252525;border:1px solid #ffffff15;box-shadow:0 12px 45px #0005}
+.tv-cm button{min-height:36px;border-radius:9px;padding:8px 12px}.tv-cm button:hover,.tv-cm button:focus-visible{background:#ffffff09}
+.tv-dialog{border-radius:24px!important;border:1px solid #ffffff15!important;background:#202020!important}
+.tv-composer .combox{border-radius:24px;padding:12px 15px 9px;background:#292929;border:1px solid #ffffff0b}
+.tv-composer textarea{font-size:15px;line-height:1.6}.tv-composer .comrow{min-height:40px}.tv-composer .pill.iconly{border-radius:10px}
+.tv-main .tv-umsg,.tv-main .umsg{border-radius:18px}.tv-main .amsg .mdb{line-height:1.75}
+.folder-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;max-width:1100px}
+.folder-list>li+li{border-top:0}.folder-list button{height:100%;min-height:88px;padding:17px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff03;gap:13px}
+.folder-list button:hover{background:#ffffff07;border-color:#ffffff26}.folder-list b{font-size:14px}.folder-icon{width:30px;height:30px;stroke:#adbed1}
+.folder-heading{max-width:1100px}.folder-empty{padding:30px 0;color:var(--tv-dim)}
+
+
+
+
+@media(max-width:800px){.lr-bar{padding:6px 9px;gap:4px}.lr-bar .lr-lesson-nav button{font-size:11px;min-height:28px;padding:4px 8px}.lr-mobile-surfaces{margin-left:auto}.tv-more{opacity:1}.tv-composer .combox{border-radius:20px;padding:10px 11px 8px}.folder-list{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
+
+/* Daily: prepared setup above normal conversation; question stays in its artifact. */
+.teacher[data-page=daily] .tv-main{background:transparent;margin-right:8px;overflow:visible}
+.teacher[data-page=daily] .tv-head{display:none}
+.teacher[data-page=daily] .tv-pages{height:100%;min-height:0;overflow:hidden;margin:0;padding:0}
+.teacher[data-page=daily] #daily{height:100%;overflow:hidden;padding:0}
+.tv-pages .dp-wrap.dp-workspace{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,var(--dp-pane,30%));gap:12px;height:100%;min-height:0;width:100%;max-width:none;margin:0;padding:0;background:transparent;border-radius:0}
+.dp-workspace .dp-center,.dp-workspace .dp-reference{min-width:0;min-height:0;background:var(--tv-base);border-radius:18px;overflow:hidden}
+.dp-workspace .dp-center{display:flex;flex-direction:column}.dp-workspace .dp-head{padding:16px 22px 9px;flex:none}.dp-workspace .dp-title h1{font:500 14px/1.5 var(--tv-sans);margin:0}.dp-workspace .dp-headrow{gap:8px}.dp-workspace .dp-timer{font-size:11px;padding:4px 9px;background:#ffffff05}.dp-workspace .dp-timer small{font-size:10px}.dp-workspace .dp-timer .dp-track{width:35px}
+.dp-workspace .dp-main{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;max-width:none;margin:0;padding:0 18px 12px}
+.dp-stage-chat{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 10px 16px}.dp-workspace .dp-side{position:static;margin:0 auto 18px;padding:0;width:100%;max-width:1100px}.dp-workspace .dp-scene{margin:0}.dp-workspace .dp-scene-box{height:clamp(260px,50vh,620px);padding:0;background:transparent!important}
+.dp-workspace .dp-work{max-width:760px;margin:0 auto;padding:0}.dp-workspace .dp-work .dp-chat:empty{display:block;min-height:25px}
+.dp-workspace .dp-composer{flex:none;width:100%;max-width:760px;align-self:center;border-radius:24px;padding:12px 15px 9px;background:#292929;border:1px solid #ffffff0b}
+.dp-workspace .dp-composer textarea{min-height:32px;font-size:15px;line-height:1.6;padding:2px 0 8px!important}.dp-workspace .dp-tools{padding:0;min-height:40px;gap:5px}.dp-workspace .dp-tool-space{flex:1}.dp-workspace .dp-main>.dp-err,.dp-workspace .dp-main>.dp-say{flex:none;max-width:760px;width:100%;align-self:center;margin:5px 0 0}
+@media(max-width:380px){.dp-workspace .dp-tools{gap:3px}.dp-workspace .dp-tools .dp-tool-space{display:none}.dp-workspace .dp-tools .dp-attach,.dp-workspace .dp-tools #dp-shot{width:30px;height:32px;min-width:30px}}
+.dp-reference{display:flex;flex-direction:column}.dp-reference>header{flex:none;padding:16px 22px;font:12px/1.5 var(--tv-sans);color:var(--tv-dim)}
+.dp-reference-scroll{flex:1;min-height:0;overflow:auto;padding:12px clamp(18px,2vw,34px) 30px;overscroll-behavior:contain}.dp-reference-scroll>h1{font:550 calc(23px * var(--read,1.2))/1.3 var(--tv-sans);letter-spacing:-.02em;margin:0 0 24px}.dp-reference .dp-document{padding:0;background:none;border:0}.dp-reference .dp-statement{padding:0 0 14px;border:0;background:none}.dp-reference .dp-md{font:calc(14px * var(--read,1.2))/1.75 var(--tv-sans)}.dp-reference .dp-figs.dp-big{margin:12px 0 20px}.dp-reference .dp-figs.dp-big figure{max-width:100%;width:100%;margin:0}.dp-reference .dp-figs img{max-height:280px;margin:auto}.dp-reference .dp-ref{background:transparent}.dp-reference .dp-ref summary{padding:10px 0;color:var(--tv-dim)}
+.dp-divider{position:absolute;width:12px;top:10px;bottom:10px;right:calc(40% - 6px);cursor:col-resize;touch-action:none;z-index:5}.dp-divider::after{content:'';position:absolute;left:5px;top:15px;bottom:15px;width:2px;border-radius:2px;background:transparent}.dp-divider:hover::after,.dp-divider:focus-visible::after,.dp-resizing .dp-divider::after{background:var(--tv-dim)}.dp-resizing{user-select:none}.dp-resizing *{cursor:col-resize!important}
+@media(max-width:800px){.teacher[data-page=daily] .tv-main{margin:6px!important}.teacher[data-page=daily] .tv-head{display:flex;background:var(--tv-base);border-radius:18px;margin-bottom:6px}.teacher[data-page=daily] .tv-pages{flex:1;height:auto}.tv-pages .dp-wrap.dp-workspace{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(160px,.7fr) minmax(300px,1.3fr);gap:8px}.dp-workspace .dp-reference{grid-row:1}.dp-workspace .dp-center{grid-row:2}.dp-workspace .dp-head{padding:9px 14px}.dp-workspace .dp-main{padding:0 10px 8px}.dp-stage-chat{padding-inline:0}.dp-workspace .dp-scene-box{height:270px}.dp-reference>header{padding:10px 18px}.dp-reference-scroll{padding:4px 18px 20px}.dp-reference-scroll>h1{font-size:22px;margin-bottom:15px}.dp-workspace .dp-composer{padding:10px 11px 8px;border-radius:20px}.dp-divider{display:none}.dp-workspace .dp-tools{flex-wrap:nowrap}.dp-workspace .dp-tools .model-controls{flex:0 1 auto;min-width:0;max-width:calc(100% - 102px)}}
+
+
+
+/* Chat search uses one quiet rounded field, without the browser's inner square. */
+.tv-chat-search{border:0!important;background:transparent!important;box-shadow:none!important}
+.tv-chat-search:focus-within{background:#ffffff06!important;box-shadow:0 0 0 1px #ffffff20!important}
+.tv-chat-search input,.tv-chat-search input:focus,.tv-chat-search input:focus-visible{outline:0!important;border:0!important;box-shadow:none!important;background:transparent!important}
+.tv-icon:hover,.kinema-dialog header [data-close]:hover{background:transparent;color:var(--tv-ink)}
+/* The frame never scrolls: panes own scrolling. Prevent focus/restore from
+   translating the whole app after an expanded viewer or responsive resize. */
+body .teacher{overflow:clip!important}
+/* Optional problem references belong to the conversation, not the reading pane. */
+.lr-read{padding-inline:clamp(18px,1.5vw,28px)}
+.tv-guidance{width:100%;max-width:1000px;box-sizing:border-box;margin:0 auto;padding:0 28px 22px}
+.tv-guidance[hidden]{display:none!important}.tv-guidance .problem-guidance{margin:0}.tv-guidance .guidance-card{margin-top:14px;font:calc(14px * var(--read,1.2))/1.7 var(--tv-sans)}
+.tv-guidance .guidance-card .mdb{font:inherit}.tv-guidance .guidance-card .katex-display{max-width:100%;overflow:auto hidden}.tv-guidance .guidance-card header button:hover{background:none}
+/* Before the first question, the welcome and composer form one central group.
+   A visible simulation already uses that space and keeps the normal flow. */
+.teacher.tv-awaiting-input:not(.tv-paged) .tv-main{display:flex;flex-direction:column}
+.teacher.tv-awaiting-input .tv-head{flex:none}
+.teacher.tv-awaiting-input .tv-scroll{flex:0 1 auto;margin-top:auto;max-height:65%;min-height:0;width:100%;padding-top:12px}
+.teacher.tv-awaiting-input .tv-col{max-width:1000px;width:100%;box-sizing:border-box;padding:0 28px 32px!important}
+.tv-greeting{padding:8px 0 20px;margin:0;text-align:center}
+.tv-greeting h1{margin:0;color:var(--tv-ink);font:550 calc(25px * var(--read,1.2))/1.22 var(--tv-sans);letter-spacing:-.025em;overflow-wrap:anywhere;text-wrap:balance}
+.tv-greeting p{margin:22px 0 0;color:var(--tv-dim);font:400 calc(12px * var(--read,1.2))/1.65 var(--tv-sans);text-wrap:balance}
+.teacher.tv-awaiting-input .tv-greeting{padding:0;margin:0}
+.teacher.tv-awaiting-input .tv-greeting h1{font-size:clamp(26px,3.2cqi,calc(32px * var(--read,1.2)))}
+.teacher .tv-main{container-type:inline-size;container-name:chat-pane}
+.teacher .tv-composer{--composer-width:100%;max-width:1000px;box-sizing:border-box;padding-inline:28px}
+.teacher .tv-compose-stack{width:100%;box-sizing:border-box}
+.teacher.tv-awaiting-input .tv-composer{flex:none;width:100%;max-width:1000px;margin:0 auto auto;padding:0 28px 18px!important}
+.dp-workspace .dp-composer{max-width:944px}
+.dp-workspace .dp-center{container-type:inline-size;container-name:daily-pane}
+@container daily-pane (max-width:440px){
+ .dp-composer .model-controls{min-width:0;max-width:calc(100% - 102px)}
+ .dp-composer .model-choice{min-width:0;max-width:100%}
+ .dp-composer .pn-mc-effort,.dp-composer .pn-cap-family,.dp-composer .pn-comrow-sep{display:none}
+}
+@container chat-pane (max-width:620px){
+ .teacher .tv-composer{padding-inline:16px}
+ .tv-composer .comrow{flex-wrap:nowrap;zoom:calc(1 / var(--read,1));row-gap:6px}
+ .tv-composer .comrow>.grow{min-width:0}
+ .tv-composer .model-controls{flex:0 1 auto;min-width:0;max-width:calc(100% - 112px)}
+ .tv-composer .model-controls .model-choice{min-width:0;max-width:100%;flex:0 1 auto}
+ .tv-composer .pn-comrow-sep{display:none}
+ .tv-composer .model-choice .capname{min-width:0}
+}
+@container chat-pane (max-width:440px){
+ .tv-composer .model-choice .pn-mc-effort{display:none}
+ .tv-composer .model-controls{max-width:calc(100% - 100px)}
+}
+@media(max-width:800px){.teacher.tv-awaiting-input .tv-scroll{max-height:60%}.teacher.tv-awaiting-input .tv-col,.teacher.tv-awaiting-input .tv-composer,.tv-guidance{padding-inline:16px!important}.teacher.tv-awaiting-input .tv-col{padding-bottom:26px!important}.tv-greeting p{margin-top:16px}.lr-active .tv-guidance{padding-inline:16px}.tv-guidance .guidance-card{padding:16px}}
+
+/* Recent screenshots: a compact non-dimming popover above the composer button (Panel's picker, Kinema tokens). */
+.kinema-shots{position:fixed;z-index:60;box-sizing:border-box;display:flex;flex-direction:column;gap:8px;width:370px;padding:10px 10px 12px;border:1px solid #ffffff15;border-radius:18px;background:#252525;color:#eee;box-shadow:0 12px 45px #0007;font:13px/1.45 var(--tv-sans,'Segoe UI',sans-serif);animation:kinema-shots-in .14s ease-out}
+.kinema-shots:focus{outline:none}
+.kinema-shots footer{display:flex;justify-content:flex-end;padding:0 2px}
+.kinema-shots footer [data-shot=browse]{flex:none;height:28px;padding:0 11px;border:1px solid #ffffff1c;border-radius:999px;background:transparent;color:#cfd3da;font-size:12px;line-height:1;cursor:pointer}
+.kinema-shots footer [data-shot=browse]:hover{background:#ffffff0b;color:#fff}
+.shot-body{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.shot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.shot-grid[hidden],.shot-status[hidden],.shot-notice[hidden]{display:none}
+.shot-notice{margin:0 0 7px;padding:7px 9px;border-radius:9px;background:rgba(248,113,113,.09);color:#f4b4b4;font-size:12px;line-height:1.45}
+.shot-notice button{margin-left:8px;height:24px;padding:0 10px;border:1px solid #f4b4b455;border-radius:999px;background:transparent;color:#f8d4d4;font-size:12px;line-height:1;cursor:pointer}
+.shot-tile-wrap{position:relative;min-width:0}
+.shot-tile{position:relative;display:block;width:100%;aspect-ratio:16/10;padding:0;border:1px solid #ffffff14;border-radius:10px;overflow:hidden;background:#1d1d1e;cursor:pointer;transition:border-color .12s,opacity .12s}
+.shot-tile img{display:block;width:100%;height:100%;object-fit:cover}
+.shot-tile:hover{border-color:#ffffff40}
+.shot-tile.is-broken img{visibility:hidden}.shot-tile.is-broken::before{content:"No preview";position:absolute;inset:0;display:grid;place-items:center;color:#8d929b;font-size:11px}
+.shot-tile.is-busy{cursor:progress}.shot-tile.is-busy img{opacity:.4}
+.shot-age{position:absolute;left:4px;bottom:4px;padding:1px 6px;border-radius:6px;background:#161719d0;color:#fff;font-size:10px;font-weight:500;line-height:1.6;white-space:nowrap;pointer-events:none}
+.shot-zoom{position:absolute;right:4px;top:4px;display:grid;place-items:center;width:26px;height:26px;padding:0;border:1px solid #ffffff35;border-radius:7px;background:#161719dc;color:#fff;cursor:pointer}
+.shot-zoom svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.shot-zoom:hover{background:#2a2b2e}
+.kinema-shots button:focus-visible{outline:2px solid #a9cfff;outline-offset:1px}
+.shot-status{margin:0;padding:8px 6px 4px;color:#a8adb5;font-size:12px;line-height:1.5}
+.shot-status button{margin-left:8px;height:24px;padding:0 10px;border:1px solid #ffffff20;border-radius:999px;background:transparent;color:#dde1e7;font-size:12px;line-height:1;cursor:pointer}
+@keyframes kinema-shots-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.kinema-shots{animation:none}}
+@media (max-width:420px){.shot-grid{gap:5px}.kinema-shots{padding:8px}}
+/* A phone's Daily: a short problem preview that scrolls above a workspace sized to the scene (same clamp as daily.js), so the
+   first Play and Fit sit above the composer; the full problem stays one ordinary scroll away */
+@media(max-width:520px){.tv-pages .dp-wrap.dp-workspace{--dp-scene-h:clamp(260px,calc(100dvh - 400px),330px);grid-template-rows:minmax(92px,1fr) minmax(0,calc(var(--dp-scene-h) + 240px))}.dp-reference>header{padding:6px 14px;min-height:0}.dp-reference-scroll{padding-top:0}}

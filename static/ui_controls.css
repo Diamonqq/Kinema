@@ -1,0 +1,127 @@
+/* Shared neutral surfaces: page filters and choices use the same light touch. */
+:root{--ui-control-fill:#ffffff08;--ui-control-hover:#ffffff10;--ui-control-active:#ffffff18;--ui-control-border:#ffffff14;--ui-control-ink:#e3e3e3;--ui-radius-pill:999px;--ui-radius-row:12px;--ui-radius-panel:20px;--ui-popover-fill:#292929;--ui-popover-shadow:0 16px 48px #0006}
+.choice-native{display:none!important}
+body .choice-trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:14px;min-height:36px;max-width:100%;padding:7px 12px;border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-pill);background:var(--ui-control-fill);color:var(--ui-control-ink);font:13px/1.4 system-ui;text-align:start;cursor:pointer}
+.choice-trigger span{min-width:0;overflow:hidden;text-overflow:ellipsis}.choice-trigger svg{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:1.4}.choice-trigger:hover{background:var(--ui-control-hover)}.choice-trigger:focus-visible{outline:2px solid #afc8e8;outline-offset:2px}.choice-trigger:disabled{opacity:.5;cursor:default}
+.choice-panel{position:fixed;z-index:2147483100;display:flex;flex-direction:column;padding:8px;border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-panel);box-shadow:var(--ui-popover-shadow);background:var(--ui-popover-fill);color:#eee;font:13px/1.4 system-ui;overflow:hidden;box-sizing:border-box}
+.choice-panel input{width:100%;min-height:36px;padding:8px 10px;margin-bottom:6px;background:var(--ui-control-fill);border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-pill);outline:0;color:inherit;font:inherit;box-sizing:border-box}.choice-panel input:focus{box-shadow:inset 0 0 0 1px #ffffff20}
+.choice-options{overflow:auto;min-height:0;scrollbar-width:thin;scrollbar-color:#ffffff2b transparent}.choice-options button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;background:transparent;color:inherit;border-radius:var(--ui-radius-row);padding:9px 10px;min-height:34px;text-align:start;font:inherit;cursor:pointer}.choice-options button:hover:not(:disabled),.choice-options button:focus-visible{background:var(--ui-control-hover);outline:0}.choice-options [aria-selected=true]{background:var(--ui-control-active)}.choice-options button:disabled{opacity:.45;cursor:default}.choice-options p{padding:10px;color:#aaa}
+.visual-resizable{position:relative;padding-bottom:24px!important}
+.visual-grip{position:absolute;bottom:0;left:0;right:0;width:100%;height:24px;display:block!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;cursor:ns-resize;touch-action:none;padding:0!important;z-index:20}
+.visual-grip::after{content:'';display:block;width:32px;height:3px;background:#ffffff22;border-radius:3px;margin:auto}.visual-grip:hover::after,.visual-grip:focus-visible::after{background:#ffffff65}.visual-grip:focus-visible{outline:1px solid #ffffff55;outline-offset:-3px}
+.lr-expanded>.visual-grip{display:none!important}.teacher.lr-active .lr-visual.visual-resizable:not(.lr-expanded),.dp-workspace .dp-scene-box.visual-resizable{height:var(--visual-height,38vh)!important}
+/* Both renderer paths use quiet, neutral controls. */
+.dv-bottom{flex:none;display:flex;align-items:center;gap:10px;margin:0 8px 5px;min-height:32px}.dv-bottom .dv-ctrl{flex:1;min-width:0;margin:0;padding:0;background:transparent;min-height:30px;border-radius:0}.dv-tools{display:flex;align-items:center;gap:5px;flex:none}
+.dv-tools button,.dv-view-menu button,.dv-top>.dv-icon{background:transparent;border:0;border-radius:8px;color:#bbb}.dv-tools button:hover,.dv-view-menu button:hover,.dv-top>.dv-icon:hover{color:#fff;background:transparent}.dv-tools .dv-force{border:0;background:none;overflow:visible}.dv-tools .dv-forces{min-width:0;padding-inline:7px}.dv-tools .dv-forces[aria-pressed=true]{color:#fff;background:#ffffff0b;border-radius:999px}
+.dv .dv-play{background:#dedede!important;color:#222!important;border-radius:50%;width:28px;min-height:28px}.dv-ctrl .dv-speed,.dv-ctrl .dv-reset,.dv-ctrl .dv-exreset{border:0;background:transparent}
+.dv-ctrl input[type=range]{appearance:none;accent-color:#ccc;height:28px;background:transparent}.dv-ctrl input[type=range]::-webkit-slider-runnable-track{height:2px;background:#ffffff35;border-radius:2px}.dv-ctrl input[type=range]::-webkit-slider-thumb{appearance:none;width:8px;height:8px;border-radius:50%;background:#ddd;margin-top:-3px}
+.dv-view-menu{position:absolute;z-index:15;right:8px;bottom:44px;max-width:calc(100% - 16px);max-height:calc(100% - 90px);overflow:auto;background:var(--ui-popover-fill);padding:10px;border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-panel);box-shadow:var(--ui-popover-shadow)}.dv-view-menu[hidden]{display:none}.dv-view-menu .dv-seg{border:0;border-radius:9px;background:none;flex-wrap:wrap}.dv-view-menu .dv-seg button+button{border:0}.dv-view-menu .dv-seg button[aria-pressed=true]{background:#ffffff0b;border-radius:8px}.dv-view-menu .dv-camera{position:static;pointer-events:auto;display:flex;flex-wrap:wrap;margin-top:6px}.dv-view-menu .dv-pan[aria-pressed=true]{background:#ffffff14;border:0}.dv-view-menu .dv-gesture{display:block;flex-basis:100%;font-size:11px;color:#999;margin-top:6px}
+.dv .dv-top>.dv-icon{width:28px;padding:4px}.dv .dv-top>.dv-icon:hover{background:transparent!important;border:0!important;color:white}.dv .dv-seg.dv-force[hidden]{display:none}
+.library-views button{border:0;border-radius:999px;background:transparent}.library-views button[aria-pressed=true]{background:#ffffff0d;color:#eee}.library-views button:hover{background:#ffffff08}.library-views .choice-trigger{font-size:11px;min-height:28px;padding:3px 8px}
+#stage .transport{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:2px 5px!important}.native-camera-more{position:relative;display:flex;align-items:center}.native-camera-more>button{white-space:nowrap}.native-camera-options{position:absolute;bottom:36px;right:0;padding:8px;background:var(--ui-popover-fill);border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-panel);display:flex;gap:4px;z-index:30}.native-camera-options[hidden]{display:none}
+.lp-support{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin:16px 0 24px}.lp-support>div{padding:0}.lp-support strong{display:block;font:600 20px/1.5 system-ui}.lp-support span,.lp-confidence{color:#c4c4c4;font:13px/1.6 system-ui}.lp-confidence b{color:#eee}.lp-evidence blockquote{margin:5px 0;color:#bbb;font-size:13px}.lp-evidence .lp-ref{font:11px/1.5 system-ui;color:#aaa}
+@container physics-stage (max-width:520px){.dv-bottom{flex-wrap:wrap;gap:2px}.dv-bottom .dv-tools{order:-1;width:100%;justify-content:flex-end}.dv-bottom .dv-ctrl{flex-basis:100%}}
+.dv-compact .dv-bottom{flex-wrap:wrap;gap:2px}.dv-compact .dv-bottom .dv-tools{order:-1;width:100%;justify-content:flex-end}.dv-compact .dv-bottom .dv-ctrl{flex-basis:100%}.dv-compact .dv-view-menu{bottom:76px}
+@media(pointer:coarse){.dv-tools button,.dv-view-menu button{min-height:36px}.choice-options button{min-height:40px}}
+
+.lr-visual .book-help-note{position:absolute;top:40px;left:12px;right:12px;z-index:25;background:#262626;border-radius:10px;padding:8px 10px;box-shadow:0 3px 16px #0005}
+.lr-visual .book-help-note[data-help-state=ready],.lr-visual .book-help-note[data-help-state=saved]{display:none!important}
+body .library-views button{border:0;border-radius:999px;background:transparent}body .library-views button[aria-pressed=true]{background:#ffffff0d;color:#eee}
+body .dv-tools button{background:transparent;border:0;border-radius:999px}body .dv-tools button:hover{background:#ffffff08}
+body .dv .dv-tools .dv-forces[aria-pressed=true]{background:#ffffff12;color:#eee}
+#hint .native-camera-more{display:none}.native-menu-extras{display:flex;gap:4px;padding:6px}.native-menu-extras button{border:0!important;background:transparent!important;border-radius:8px;padding:5px 9px!important}
+
+.visual-grip:focus-visible{outline:none!important}.lp-evidence li{border:0!important}.lp-evidence blockquote{border:0!important;padding:0}
+#settings input[type=time]{border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-pill);padding:7px 12px;background:var(--ui-control-fill);color:inherit;font:inherit}
+
+/* Camera presets cycle directly; zoom is always within reach. Extras keep pan and framing available. */
+.viewer-zoom{display:flex;align-items:center;gap:0;flex:none}
+.viewer-zoom button{width:28px;min-width:28px;padding:5px!important;display:grid;place-items:center}
+.viewer-zoom svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.dv-tools{gap:2px;flex-wrap:wrap;justify-content:flex-end}
+.dv-tools .dv-views{border:0;background:transparent;border-radius:0;overflow:visible}
+.dv-tools .dv-views[hidden]{display:none}.dv-tools .dv-view-cycle{white-space:nowrap;padding:5px 8px;font-size:12px}
+.dv-tools .dv-camera-more{font-size:20px;line-height:1;width:25px;padding:3px}
+.dv-tools .dv-fit{padding:5px 7px;font-size:12px}
+.dv-tools .dv-force{display:flex;align-items:center}.dv-tools .dv-force[hidden]{display:none}
+.dv-bottom .dv-tools .dv-zoom-in,.dv-bottom .dv-tools .dv-zoom-out{min-height:28px}
+.dv-top .dv-parts{margin-left:auto;border:0;background:transparent}
+#stage .camera-tools{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+#stage .camera-tools button{border:0;background:transparent;border-radius:999px;padding:5px 7px;font-size:12px;color:#bbb;min-height:28px}
+#stage .camera-tools button:hover{color:#fff;background:#ffffff08}
+#stage .camera-tools [data-camera-tool=move][aria-pressed=true]{background:#ffffff12;color:#eee}
+#stage .camera-tools #views{white-space:nowrap;margin:0}
+/* A small viewer gets two light rows instead of a clipped view label and scrubber. */
+@container physics-stage (max-width:440px){
+ #stage .transport,.teacher.visual-inline #stage .transport{flex-wrap:wrap;row-gap:1px;padding-top:7px!important;background:linear-gradient(transparent,#1b1b1bf2 12px)!important;backdrop-filter:none}
+ #stage .transport #hint.camera-tools{flex:0 0 100%;order:-1;justify-content:flex-end;margin:0}
+ #stage .transport #hint.camera-tools #views,.teacher.visual-inline #stage .transport #views{max-width:none;overflow:visible;text-overflow:clip}
+ #stage .transport .bar,.teacher.visual-inline #stage .transport .bar{min-width:80px}
+ #stage .transport #tlab{display:inline;min-width:0}
+}
+.teacher .sw-error button{border-radius:999px;padding:8px 14px;background:#ffffff08;border:1px solid #ffffff15}
+.teacher .sw-error button:hover{background:#ffffff10}
+@media(max-width:420px){.dv-bottom{margin-inline:3px}.dv-tools{gap:0}.dv-tools .dv-view-cycle{padding-inline:5px}.dv-tools .dv-forces{font-size:11px;padding-inline:5px}.dv-tools .choice-trigger{max-width:100px}.dv-tools .dv-fit{padding-inline:5px}.dv-view-menu{bottom:76px}}
+
+/* Secondary motion framing appears only when the scene actually offers it. */
+.dv .dv-secondary-camera{position:static;display:flex;justify-content:flex-end;flex-wrap:wrap;gap:6px;pointer-events:auto;padding:0 8px;background:none;border:0}
+.dv .dv-secondary-camera:not(:has(.dv-detail:not([hidden]),.dv-tracking:not([hidden]))){display:none}
+.dv .dv-secondary-camera .dv-gesture{display:none}.dv-secondary-camera button{font-size:11px;border:0;background:none;color:#aaa;border-radius:999px;padding:4px 8px}
+.dv .dv-secondary-camera .dv-tracking{border:0;background:none}.dv .dv-secondary-camera .dv-tracking[hidden]{display:none}
+.dv-tools .dv-pan{padding:4px;min-width:28px;min-height:28px}.dv-tools .dv-pan svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;vertical-align:middle}
+body .dv-tools .dv-pan:hover{background:none;color:#eee}body .dv-tools .dv-pan[aria-pressed=true]{background:none;color:#a9cfff}
+.book-search .choice-trigger{flex:none;max-width:180px}.vl-bar .choice-trigger{font-size:12px;min-height:32px}
+
+.dv .dv-tools .dv-forces{min-width:0;padding-inline:6px}
+.dv .dv-secondary-camera .dv-seg button[aria-pressed=true]{background:#ffffff10;color:#eee;border-radius:999px}
+@media(max-width:420px){.dv .dv-tools .dv-forces{font-size:11px;padding-inline:5px}}
+
+/* Existing dialogs share surface geometry; model/context popovers keep their Panel clone. */
+:is(.kinema-dialog,.kinema-language-dialog,.kp-dialog,.account-dialog,.ka-dialog,.tv-dialog){border-color:var(--ui-control-border);border-radius:var(--ui-radius-panel)}
+:is(.kinema-dialog,.kinema-language-dialog,.account-dialog,.ka-dialog) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select):where(:not([data-language-search])){border-color:var(--ui-control-border);border-radius:var(--ui-radius-pill);background:var(--ui-control-fill)}
+:is(.kinema-dialog,.kinema-language-dialog,.account-dialog,.ka-dialog) :is(input,select):focus-visible{outline:2px solid #afc8e8;outline-offset:2px}
+/* Close and overflow affordances brighten their glyph without a surrounding bubble. */
+body :is(.ka-icon,.kinema-dialog [data-close],.dv-tools .dv-camera-more):is(:hover,:focus-visible){background:transparent;color:#fff;box-shadow:none}
+
+/* Language search has one pill surface; the editable field stays visually inside it. */
+.kinema-language-dialog .language-search{border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-pill);background:var(--ui-control-fill)}
+.kinema-language-dialog .language-search:focus-within{outline:2px solid #afc8e8;outline-offset:2px;border-color:var(--ui-control-border)}
+.kinema-language-dialog .language-search input,.kinema-language-dialog .language-search input:focus-visible{padding:0;border:0;border-radius:0;background:transparent;outline:none;box-shadow:none}
+.kinema-language-dialog .language-options button{border-radius:var(--ui-radius-row);background:transparent}
+.kinema-language-dialog .language-options button:hover:not(:disabled){background:var(--ui-control-hover)}
+.kinema-language-dialog .language-options button[aria-pressed=true]{background:var(--ui-control-active)}
+.kinema-language-dialog footer .choice-trigger{max-width:60%;min-width:0}
+
+/* Lesson tabs and the remaining page choices use individual light pills. */
+body :is(.pg-tabs,.pg-seg){flex-wrap:wrap;gap:5px;padding:0;background:transparent;border:0;border-radius:0;max-width:100%}
+body :is(.pg-tabs,.pg-seg,.lr-tabs,.lr-practice-actions) button{border:0;border-radius:var(--ui-radius-pill);background:var(--ui-control-fill);color:var(--ui-control-ink);max-width:100%}
+body :is(.pg-tabs,.pg-seg,.lr-tabs,.lr-practice-actions) button:hover:not(:disabled){background:var(--ui-control-hover)}
+body :is(.pg-tabs button.on,.pg-seg button[aria-checked=true],.lr-tabs [aria-current=page]){background:var(--ui-control-active);color:var(--tv-ink,#eee);border:0}
+body :is(.pg-tabs,.pg-seg,.lr-tabs,.lr-practice-actions) button:focus-visible{outline:2px solid #afc8e8;outline-offset:2px}
+
+/* Reading size stays attached on desktop and inside viewport edges on phones. */
+body .tv-readpop{box-sizing:border-box;width:220px;min-width:0;max-width:calc(100vw - 24px);max-height:calc(100dvh - 88px);overflow:auto;padding:8px;border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-panel);background:var(--ui-popover-fill);box-shadow:var(--ui-popover-shadow)}
+body .tv-readpop button{border:0;border-radius:var(--ui-radius-row);background:transparent}
+body .tv-readpop button:is(:hover,:focus-visible){background:var(--ui-control-hover)}
+body .tv-readpop [aria-checked=true]{background:var(--ui-control-active)}
+body .tv-readpop [aria-checked=true]::before{background:currentColor}
+body .tv-readpop .tv-readreset{border-top:0;border-radius:var(--ui-radius-row)}
+
+/* Folder dialogs keep existing form behavior, loading and error states. */
+.tv-dialog:has(.folder-dialog),.kinema-language-dialog{box-sizing:border-box;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto}
+.tv-dialog .folder-dialog input{border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-pill);background:var(--ui-control-fill)}
+.tv-dialog .folder-dialog input:focus-visible{outline:2px solid #afc8e8;outline-offset:2px;border-color:var(--ui-control-border)}
+body .folder-button,body .folder-heading-actions button{border:1px solid var(--ui-control-border);border-radius:var(--ui-radius-pill);background:var(--ui-control-fill)}
+body .folder-button:hover:not(:disabled),body .folder-heading-actions button:hover:not(:disabled){background:var(--ui-control-hover);border-color:var(--ui-control-border)}
+.tv-dialog .folder-choices button{border:0;border-radius:var(--ui-radius-row);background:var(--ui-control-fill)}
+.tv-dialog .folder-choices button:hover:not(:disabled){background:var(--ui-control-hover)}
+.tv-dialog .folder-form-actions{flex-wrap:wrap}
+body :is(.folder-remove,.kinema-language-dialog [data-language-close],.tv-dialog>header [data-act=dialog-close]):is(:hover,:focus-visible){background:transparent;box-shadow:none;color:#fff}
+@media(max-width:720px){body .tv-readpop{position:fixed;inset:64px 12px auto auto}}
+@media(max-width:600px){.kinema-language-dialog footer .choice-trigger{max-width:100%;width:100%}}
+
+/* Accounts and update actions keep the same quiet pill as the surrounding Settings. */
+body .ka-mounted .ka-connection-actions button,body .ka-update-row button,body .ka-use-btn,
+body .kw-skip,body .kw-more,body .ka-skip{border-radius:var(--ui-radius-pill);border-color:var(--ui-control-border);background:var(--ui-control-fill)}
+body .ka-mounted .ka-connection-actions button:hover:not(:disabled),body .ka-update-row button:hover:not(:disabled),
+body .ka-use-btn:hover:not(:disabled),body .kw-skip:hover,body .kw-more:hover,body .ka-skip:hover{background:var(--ui-control-hover)}

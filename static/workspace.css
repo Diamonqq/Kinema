@@ -1,0 +1,195 @@
+/* Lesson chat follows Panel's conversation typography and composer geometry.
+   Reference: Panel panel-conversation.css + panel-refinement.css (2026-09-28).
+   These tokens are scoped; the accepted Study home keeps its own identity. */
+.v-session:has(.lesson-workspace){--bg:#181818;--panel:#202020;--panel2:#282828;--panel3:#303030;--line:#ffffff0d;--line2:#ffffff18;--ink:#eeeeee;--ink2:#c7c7c7;--ink3:#939393}
+.v-session:has(.lesson-workspace)>header{background:var(--bg);border:0}
+.v-session:has(.lesson-workspace) :is(.askbar,.model,.ver){display:none}
+.v-session:has(.lesson-workspace)>header>.menu{margin-left:auto}
+.v-session:has(.lesson-workspace)>header .nav.on{background:#ffffff08;box-shadow:none}
+.v-session:has(.lesson-workspace)>header .hbtn{border:0;background:transparent}
+#session:has(.lesson-workspace){height:100%;overflow:hidden;background:var(--bg);background-image:none}
+#session>.lesson-workspace{height:100%;max-width:none;padding:0;margin:0;box-sizing:border-box}
+.lesson-workspace{position:relative;min-height:0;display:flex;flex-direction:column}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.work-top{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px;padding:0 28px;flex-shrink:0}
+.problem-picker{position:relative;min-width:0}
+.problem-select{display:flex;align-items:center;gap:14px;text-align:left;padding:9px 0;max-width:100%;border-radius:6px}
+.problem-select strong{display:flex;align-items:center;gap:12px;min-width:0;font-size:14px;font-weight:500;line-height:1.5}
+.problem-select strong>span{color:var(--ink3);font-size:16px}
+.work-eyebrow{font-size:11px;color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.work-end{padding:8px 10px;font-size:12px;color:var(--ink3);border-radius:9px;flex-shrink:0}
+.work-end:hover{background:#ffffff08;color:var(--ink)}
+.work-grid{display:grid;grid-template-columns:minmax(0,1fr);flex:1;min-height:0}
+.artifact-open:not(.artifact-expanded) .work-grid{grid-template-columns:minmax(0,1fr) clamp(360px,38vw,540px)}
+.conversation{display:flex;flex-direction:column;min-width:0;min-height:0;width:100%}
+.conversation-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ffffff20 transparent}
+.conversation-inner{width:100%;max-width:800px;margin:0 auto;padding:28px 30px 30px}
+.open-problem,.conversation-message{font-size:16px;line-height:1.7;color:#e5e5e8;overflow-wrap:anywhere}
+.open-problem{margin:0 0 24px}
+.open-problem p{margin:0}
+.conversation-message{margin:0 0 28px}
+.conversation-message.user{display:table;margin:24px 0 24px auto;max-width:82%;padding:12px 17px;background:#2b2c2e;border-radius:18px;font-size:15px;line-height:1.65;color:var(--ink)}
+.message-label{font-size:11px;color:var(--ink3);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.message-body p{margin:0 0 16px}.message-body p:last-child{margin:0}
+.message-body :is(ul,ol){padding-left:24px;margin:12px 0 18px}.message-body li{margin:5px 0}
+.message-body strong{font-weight:600;color:#f0f0f2}
+.message-body code{font-size:.88em;background:#ffffff09;border-radius:5px;padding:2px 5px}
+.message-body .katex-display{margin:18px 0;padding:4px 0;text-align:left;overflow-x:auto;overflow-y:hidden;max-width:100%}
+.message-body .katex-display>.katex{text-align:left}
+.chat-formula{display:block;text-align:left;max-width:100%;background:#ffffff05;border-radius:12px;padding:13px 16px;margin:18px 0 0;overflow:auto}
+.chat-formula:hover{background:#ffffff09}
+.chat-formula small{display:block;color:var(--ink3);font-size:12px;padding-top:8px}
+.visual-replay{font-size:12px;color:var(--accent);padding:12px 0 0}
+.conversation-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px}
+.conversation-actions .btn{font-size:13px;font-weight:400;padding:9px 14px;height:auto;border-radius:999px;background:#ffffff07;border:1px solid #ffffff12;color:#ddd}
+.conversation-actions .btn:hover{background:#ffffff10;border-color:#ffffff20}
+.conversation-actions .btn.ghost{color:var(--ink3);background:transparent;border-color:transparent}
+.conversation-status{font-size:13px;color:var(--ink3);margin-top:14px}
+.conversation-status:empty{display:none}
+.conversation-bottom{flex-shrink:0;width:100%;max-width:844px;margin-inline:auto;padding:8px 22px 20px;box-sizing:border-box}
+.conversation-compose{max-width:800px;margin:auto;background:#282828;border:1px solid #ffffff0b;border-radius:24px;padding:17px 17px 12px;transition:border-color .15s ease}
+.conversation-compose:focus-within{border-color:#ffffff29}
+.conversation-compose textarea{display:block;box-sizing:border-box;width:100%;background:transparent;border:0;outline:0;resize:none;color:#e9e9ec;font:400 16px/1.6 var(--sans);min-height:42px;max-height:min(220px,26dvh);padding:4px 6px;scrollbar-width:thin}
+.conversation-compose textarea::placeholder{color:#93949b}
+.conversation-compose textarea:focus-visible{outline:none}
+.compose-row{display:flex;align-items:center;gap:7px;margin-top:9px;min-height:35px}
+.compose-tool{display:flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:999px;color:#b4b4b4;font-size:12px;white-space:nowrap}
+.compose-tool:hover,.compose-tool[aria-expanded=true]{background:#ffffff0b;color:var(--ink)}
+.lesson-workspace button svg{display:block;width:17px;height:17px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.send-message{margin-left:auto;width:32px;height:32px;border-radius:50%;background:#e6e8e6;color:#191b1d;display:grid;place-items:center;flex-shrink:0}
+.send-message svg{stroke-width:2!important}
+.send-message:hover:enabled{background:#fff}.send-message:disabled{opacity:.35;cursor:default}
+.work-break{width:100%;font-size:12px;color:var(--ink3);padding-top:12px}.work-break .link{font-size:12px}
+
+/* The chat owns the reading area. There is one live visual, opened from its card. */
+.artifact-card{display:flex;align-items:center;gap:14px;text-align:left;width:min(100%,380px);padding:15px 16px;margin:0 0 28px;border:1px solid #ffffff15;border-radius:14px;background:#ffffff02;color:var(--ink2)}
+.artifact-card:hover{background:#ffffff06;border-color:#ffffff28}
+.artifact-card-icon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:#ffffff05;color:#9dc9bf;flex-shrink:0}
+.artifact-card-icon svg{width:25px!important;height:25px!important;stroke-width:1.3!important}
+.artifact-card b{display:block;font-size:14px;font-weight:500;color:var(--ink)}
+.artifact-card small{display:block;margin-top:4px;font-size:12px;color:var(--ink3)}
+.artifact-card-open{margin-left:auto;color:var(--ink3)}
+.visual-desk{display:flex;flex-direction:column;min-width:0;min-height:0;margin:4px 16px 20px 8px;background:var(--panel);border-radius:18px;overflow:hidden}
+.artifact-toolbar{display:flex;align-items:center;gap:5px;padding:13px 14px 8px 20px;min-height:56px;flex-shrink:0}
+.artifact-toolbar h2{flex:1;min-width:0;font-size:14px;font-weight:500;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.artifact-toolbar button{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--ink3)}
+.artifact-toolbar button:hover{background:#ffffff09;color:var(--ink)}
+.artifact-body{flex:1;min-height:0;display:flex;flex-direction:column;padding:0 18px 18px;overflow-y:auto;scrollbar-width:thin}
+.lesson-artifact{display:flex;flex-direction:column;flex:1;min-height:380px}
+.visual-footnote{font-size:11px;color:var(--ink3);text-align:center;padding-top:14px;margin:0}
+.orbit-stage{position:relative;flex:1;min-height:240px;overflow:hidden}
+.orbit-caption{position:absolute;top:14px;left:2px;right:2px;display:flex;gap:12px;justify-content:space-between;font-size:11px;color:var(--ink3);pointer-events:none}
+.orbit-mode{color:#b6a3d5;font-size:10px;text-align:right;max-width:140px}
+.orbit-svg{display:block;width:100%;height:100%;position:absolute;inset:0;overflow:visible}
+.orbit-svg text{font:14px var(--sans);fill:var(--ink2)}.orbit-svg .orbit-radius-label,.orbit-svg .orbit-vector-label{font:italic 20px Georgia,serif;fill:#a3ccc2}
+.orbit-svg .orbit-origin{font-size:11px;fill:#5e6971}.orbit-svg .orbit-mass-label{font-size:12px;fill:var(--ink3)}
+.orbit-svg .orbit-normal text{fill:#b6a3d5;font:italic 18px Georgia,serif}.orbit-svg .orbit-normal .orbit-normal-direction{font:10px var(--sans);fill:#897e9d}
+.orbit-svg .orbit-axes text{font:11px var(--sans);fill:#626d76;stroke:none}.orbit-svg .orbit-axes text:last-child{font-size:9px}
+.orbit-ball,.orbit-hit{cursor:grab;touch-action:none;outline:none}.orbit-ball:active,.orbit-hit:active{cursor:grabbing}.orbit-ball:focus-visible{stroke:var(--ink);stroke-width:2px}
+.orbit-svg text{pointer-events:none}
+.orbit-readout{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap;pointer-events:none;font-size:18px;color:var(--ink2);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.orbit-readout>small{display:block;font-size:11px;color:var(--ink3);margin-top:5px;letter-spacing:0}.orbit-readout span small{font-size:11px;color:var(--ink3);letter-spacing:0}
+.orbit-controls{display:flex;align-items:center;gap:10px;padding:12px 0 0;border:0;flex-shrink:0}
+.orbit-controls button{font-size:12px;color:var(--ink2);padding:7px}.orbit-controls button:hover{color:var(--ink)}
+.orbit-play{width:28px;height:28px;display:flex;align-items:center;justify-content:center}.orbit-play svg{width:18px;height:18px;stroke:var(--ink2);fill:none;stroke-width:1.5}
+.playback-note{font-size:11px;color:var(--ink3)}.orbit-spacer{flex:1}.orbit-controls select{border:0;background:var(--panel);font-size:12px;color:var(--ink2);max-width:145px;padding:5px 0}
+.orbit-experiments{padding:18px 0 2px;flex-shrink:0}.orbit-experiments label{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:11px;color:var(--ink3);margin-top:10px}
+.orbit-experiments input{grid-column:1/-1;width:100%;accent-color:var(--accent)}.orbit-experiments p{font-size:11px;color:var(--ink3);margin:12px 0 0}
+
+.orbit-controls{flex-wrap:wrap}
+.orbit-controls .orbit-play{border-radius:50%;width:32px;height:32px;background:#ffffff07;padding:0}
+.orbit-controls .orbit-play:hover{background:#ffffff10}
+.orbit-experiments{padding:8px 4px 2px}
+.orbit-experiments p{line-height:1.6}
+.artifact-expanded .visual-desk{position:absolute;inset:0;margin:8px 20px 20px;z-index:15;border-radius:18px}
+.artifact-expanded .artifact-body{width:min(100%,960px);align-self:center}
+.artifact-expanded .orbit-stage{min-height:280px}
+.artifact-expanded .conversation{visibility:hidden}
+
+/* Existing reference and calculator content, reached through the composer. */
+.tools-shade{display:none;position:absolute;inset:0;background:#0005;z-index:16;cursor:default}
+.tools-open .tools-shade{display:block}
+.work-tools{display:none;position:absolute;right:12px;top:8px;bottom:16px;width:min(380px,calc(100% - 24px));z-index:17;background:var(--panel);border:1px solid #ffffff0d;border-radius:18px;box-shadow:0 16px 60px #0003;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.tools-open .work-tools{display:flex}
+.tools-tabs{display:flex;gap:8px;align-items:center;padding:12px 14px;min-height:58px;flex-shrink:0}
+.tools-tabs>button{font-size:13px;color:var(--ink3);padding:8px 10px;border-radius:9px}
+.tools-tabs>button[aria-pressed=true]{color:var(--ink);background:#ffffff08}
+.tools-tabs>.tools-close{margin-left:auto;display:grid;place-items:center;width:32px;height:32px;padding:6px}
+.tools-tabs>button:hover{color:var(--ink)}
+.tools-content{padding:12px 22px 24px;overflow-y:auto;min-height:0;flex:1;scrollbar-width:thin;scrollbar-color:#ffffff20 transparent}
+.reference-top h2{font-size:13px;font-weight:500;margin:0 0 5px}.reference-top p{color:var(--ink3);font-size:12px;line-height:1.7;margin:0 0 20px}
+.reference-formula{border-bottom:1px solid var(--line);padding:13px 0}
+.reference-formula summary{cursor:pointer;list-style:none;position:relative;padding-right:18px;font-size:12px;color:var(--ink2)}
+.reference-formula summary::-webkit-details-marker{display:none}
+.reference-formula summary:after{content:'+';position:absolute;top:0;right:1px;color:var(--ink3)}
+.reference-formula[open] summary:after{content:'−'}
+.reference-equation{display:block;padding:9px 0 1px;font-size:16px;color:var(--ink);overflow-x:auto;overflow-y:hidden;max-width:100%}
+.reference-meaning{font-size:12px;line-height:1.8;color:var(--ink2);padding-top:4px}
+.reference-meaning p{margin:10px 0}.reference-meaning dl{display:grid;grid-template-columns:auto 1fr;column-gap:12px;row-gap:6px;margin:16px 0}
+.reference-meaning dt{color:var(--ink)}.reference-meaning dd{margin:0;color:var(--ink3)}
+.reference-meaning .link{font-size:11px;text-align:left;color:var(--accent);padding:5px 0}
+.formula-condition b{display:block;color:var(--ink3);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+.all-formulas{margin-top:28px;font-size:12px}.all-formulas>summary{color:var(--ink3);cursor:pointer;padding:7px 0}
+.all-formulas input{width:100%;background:var(--panel);border:1px solid var(--line2);padding:9px;margin:12px 0 2px;border-radius:7px;font-size:11px;box-sizing:border-box}
+
+.problem-menu{position:absolute;top:100%;left:0;width:350px;max-width:calc(100vw - 32px);max-height:min(65vh,580px);overflow:auto;border:1px solid var(--line2);border-radius:10px;background:var(--panel);padding:7px;box-shadow:0 18px 50px #0008;z-index:15;scrollbar-width:thin}
+.menu-title{display:flex;justify-content:space-between;padding:9px 9px 14px;font-size:12px;color:var(--ink3)}
+.problem-menu>button{display:flex;align-items:center;text-align:left;gap:12px;padding:10px;width:100%;border-radius:7px;font-size:12px}.problem-menu>button:hover,.problem-menu>button:focus-visible{background:var(--panel3)}
+.problem-menu>button[aria-current=true]{background:var(--panel2);color:var(--accent)}.problem-menu>button>span:first-child{color:var(--ink3);font-size:11px;font-variant-numeric:tabular-nums}
+.problem-menu>button>span:nth-child(2){flex:1}.problem-menu small{display:block;font-size:10px;color:var(--ink3);margin-top:3px}
+.practice-question:not(:empty){margin-top:20px}.practice-choices{display:grid;gap:7px}.practice-choices button{text-align:left;border:1px solid var(--line);background:transparent;border-radius:7px;padding:9px 11px;font-size:12px}
+.practice-choices button:hover:enabled{border-color:var(--accent)}.practice-choices button:last-child{border:none;color:var(--ink3);padding-left:0;font-size:11px}.practice-choices button:disabled{opacity:.5}
+.workspace-loading{margin:60px auto;color:var(--ink3);display:flex;gap:15px;align-items:center}
+.calc-mode{display:flex;align-items:center;gap:4px;margin-bottom:22px;font-size:11px;color:var(--ink3)}
+.calc-mode>span{flex:1}.calc-mode button{padding:4px 9px;border-radius:5px}
+.calc-mode button[aria-pressed=true]{background:var(--panel3);color:var(--accent)}
+.calc label{display:block;color:var(--ink3);font-size:11px;margin-bottom:9px}
+.calc input{box-sizing:border-box;width:100%;background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:13px 10px;font-size:16px;font-variant-numeric:tabular-nums}
+.calc-result{min-height:34px;text-align:right;font-size:19px;padding:12px 0;color:var(--accent);overflow-wrap:anywhere}
+.calc-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.calc-keys button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;min-height:40px;font-size:14px}
+.calc-keys button:nth-child(-n+8){font-size:12px;color:var(--ink3);background:var(--panel)}
+.calc-keys button:hover{background:var(--panel3)}.calc-bottom{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:12px;color:var(--ink3)}
+.calc-bottom .btn{flex:1;margin-left:8px;padding:8px}
+.tool-note{font-size:11px;color:var(--ink3);line-height:1.8;margin:18px 0}
+.calc-history{border-top:1px solid var(--line);margin-top:24px;padding-top:14px}.calc-history h3{font-size:11px;color:var(--ink3);font-weight:400}
+.calc-history>div{display:flex;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}.calc-history button:first-child{flex:1;min-width:0;text-align:left}
+.calc-history span{display:block;color:var(--ink3);font-size:11px;overflow-wrap:anywhere}.calc-history b{font-size:14px;font-weight:400}.calc-history small{color:var(--ink3);font-size:9px}
+
+
+.lesson-workspace :focus-visible{outline:2px solid #bfc5c4;outline-offset:3px}
+/* Size by the artifact container, including when the desktop side panel is narrow. */
+.visual-desk{container-type:inline-size}
+@container(max-width:550px){
+  .orbit-svg .orbit-mass-label{font-size:16px}
+  .orbit-svg .orbit-origin{font-size:14px}
+  .orbit-svg .orbit-normal .orbit-normal-direction{font-size:14px}
+  .orbit-svg .orbit-axes{display:none}
+  .orbit-readout{bottom:16px;font-size:18px}
+  .orbit-readout>small{font-size:11px}
+}
+@media(max-width:1100px){.artifact-open .calculator-label{display:none}.artifact-open .conversation-inner{padding-inline:24px}.artifact-open .conversation-bottom{padding-inline:16px}}
+@media(max-width:900px){
+  .artifact-open:not(.artifact-expanded) .work-grid{grid-template-columns:minmax(0,1fr)}
+  .artifact-open .visual-desk{position:absolute;inset:0;margin:0 12px 12px;z-index:15}
+  .artifact-open .conversation{visibility:hidden}
+  .artifact-expand{display:none!important}
+}
+@media(max-width:600px){
+  .work-top{min-height:46px;padding:0 18px;gap:10px}
+  .problem-select{gap:8px}.problem-select strong{font-size:12px;gap:8px}.work-eyebrow{display:none}
+  .work-end{font-size:11px;padding:8px 4px}
+  .conversation-inner,.artifact-open .conversation-inner{padding:20px 18px 26px}
+  .open-problem,.conversation-message{font-size:16px;line-height:1.7}
+  .conversation-message.user{max-width:91%}
+  .conversation-bottom,.artifact-open .conversation-bottom{padding:8px 11px 12px}
+  .conversation-compose{padding:13px 12px 10px;border-radius:24px}
+  .compose-row{gap:4px}.compose-tool{padding:0 7px}.calculator-label{display:none}
+  .compose-tool[data-open-tool=calculator]{width:28px;justify-content:center;padding:0}
+  .artifact-open .visual-desk,.artifact-expanded .visual-desk{margin:0 8px 8px}
+  .artifact-body{padding:0 12px 16px}.artifact-toolbar{padding-left:16px}
+  .orbit-controls{gap:8px}.orbit-controls select{max-width:124px;font-size:11px}.orbit-controls button{font-size:11px;padding:5px 1px}
+  .playback-note{font-size:10px}.orbit-controls .orbit-spacer{display:none}
+  .lesson-artifact{min-height:370px}.visual-footnote{font-size:10px}
+}
+@media(max-height:600px){.conversation-compose textarea{min-height:32px}.conversation-bottom{padding-bottom:10px}.conversation-inner{padding-top:16px}}
+@media(prefers-reduced-motion:reduce){.orbit-trail{display:none}.conversation-compose{transition:none}}

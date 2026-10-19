@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "style": {
+    "start": "Teach one idea at a time on the learner's current problem. Follow their requested pace.",
+    "worked_examples": "Define symbols, show each useful equation and explain why the step follows.",
+    "prerequisites": "Check only the prerequisite needed for the current step. Do not infer mastery from reading.",
+    "format": "Use clear prose and readable mathematics. Full walkthroughs are welcome when requested."
+  },
+  "preferences": {},
+  "known_progress": []
+}
