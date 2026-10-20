@@ -39,7 +39,13 @@ export class Daily {
     });
     el.addEventListener('dragover', e => e.preventDefault());
     el.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if (f && f.type.startsWith('image/') && this.el.querySelector('#dp-photo')) this.photo(f); });
-    el.addEventListener('click', e => { const z = e.target.closest?.('img[data-zoom]'); if (z) this.zoom(z); if (e.target.closest?.('#dp-start')) this.start(); });
+    el.addEventListener('click', e => {
+      const z = e.target.closest?.('img[data-zoom]'); if (z) this.zoom(z);
+      if (e.target.closest?.('#dp-start')) this.start();
+      if (e.target.closest?.('[data-dp-retry]')) this.enter();
+      const action = e.target.closest?.('[data-dp-explore]')?.dataset.dpExplore;
+      if (action) this.el.closest('.teacher')?.querySelector(`.tv-nav [data-act="${action}"]`)?.click();
+    });
     el.addEventListener('keydown', e => { const z = e.target.closest?.('img[data-zoom]'); if (z && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); this.zoom(z); } });
     el.addEventListener('error', e => { const i = e.target; if (i?.classList?.contains('dp-page')) this.badImage(i); }, true);
     el.addEventListener('load', e => { const i = e.target; if (i?.classList?.contains('dp-page') && (i.naturalWidth < 120 || i.naturalHeight < 60)) this.badImage(i); }, true);
@@ -59,10 +65,20 @@ export class Daily {
   key(kind) { return `kinema.daily.${kind}.${this.v.day}.${this.v.problem.id}`; }
   bind(body) { return JSON.stringify({ ...(body || {}), day: this.v.day, problem: this.v.problem.id }); }
   async enter() {
+    const visit = this.visit = (this.visit || 0) + 1;
     this.active = true; this.stale = false;
     if (!this.v) this.el.innerHTML = '<div class="dp-wrap"><p class="dp-quiet">Finding today’s puzzle…</p></div>';
-    try { this.set(await this.d.api(this.d.url('/api/daily/today'))); this.offline = false; }
-    catch (e) { if (!this.v) { this.el.innerHTML = `<div class="dp-wrap"><p class="dp-err">${esc(e.message)}</p></div>`; return; } this.offline = true; }
+    try {
+      const value = await this.d.api(this.d.url('/api/daily/today'));
+      if (!this.active || this.visit !== visit) return;
+      if (value.state === 'unavailable') {
+        this.v = null; clearInterval(this.timer); clearInterval(this.hb);
+        this.el.innerHTML = '<div class="dp-empty"><h1>Daily problem</h1><p>A Daily puzzle needs a prepared local problem pack. You can explore the chapters or bring your own question meanwhile.</p><div class="dp-row"><button type="button" class="dp-btn" data-dp-explore="path">Explore chapters</button><button type="button" class="dp-btn" data-dp-explore="new-chat">Bring a problem</button></div></div>';
+        return;
+      }
+      this.set(value); this.offline = false;
+    }
+    catch (e) { if (!this.active || this.visit !== visit) return; if (!this.v) { this.el.innerHTML = `<div class="dp-empty"><h1>Daily problem</h1><p role="alert">Could not load today's puzzle. ${esc(e.message)}</p><button type="button" class="dp-btn" data-dp-retry>Try again</button></div>`; return; } this.offline = true; }
     this.beat();
     clearInterval(this.timer); this.timer = setInterval(() => this.frame(), 500);
     clearInterval(this.hb); this.hb = setInterval(() => this.beat(), TICK_MS);

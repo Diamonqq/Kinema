@@ -312,15 +312,19 @@ def test_nonzero_exit_never_returns_partial_answer(tmp_path, monkeypatch):
     assert "super-secret" not in str(error.exception)
 
 
-def load_tests(loader, standard_tests, pattern):
-    suite = unittest.TestSuite()
+class RunnerContracts(unittest.TestCase):
+    """Materialized cases are collected identically by unittest and pytest."""
+
+
+def _materialize():
     for name, fn in list(globals().items()):
         if not name.startswith("test_") or not callable(fn):
             continue
+        fn.__test__ = False  # These are helper bodies; collect the isolated cases below.
         params, values = getattr(fn, "_cases", ([], [()]))
         for index, value in enumerate(values):
             kwargs = dict(zip(params, value if isinstance(value, tuple) else (value,)))
-            def run_case(fn=fn, kwargs=kwargs):
+            def run_case(self, fn=fn, kwargs=kwargs):
                 patches = Patches()
                 try:
                     with tempfile.TemporaryDirectory(prefix="kinema-runner-test-") as temp:
@@ -329,8 +333,10 @@ def load_tests(loader, standard_tests, pattern):
                         fn(**{k: args[k] for k in inspect.signature(fn).parameters})
                 finally:
                     patches.close()
-            suite.addTest(unittest.FunctionTestCase(run_case, description=f"{name}[{index}]"))
-    return suite
+            setattr(RunnerContracts, f"{name}_{index}", run_case)
+
+
+_materialize()
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@
 <p align="center">
   <a href="#get-started">Get started</a> ·
   <a href="docs/PUBLIC-SETUP.md">Setup guide</a> ·
+  <a href="docs/AGENT-SETUP.md">Install on another computer</a> ·
   <a href="#what-this-preview-includes">Preview status</a> ·
   <a href="CONTRIBUTING.md">Contribute</a>
 </p>
@@ -107,6 +108,10 @@ no personal account or conversation data.
 Python/FastAPI serves the app; the interface is browser JavaScript.
 The app's data stays separate from the checkout. Start with the
 [contributing guide](CONTRIBUTING.md) for layout, isolated checks and useful bug reports.
+
+Prepared references, formulas and Library visuals work offline after installation.
+The tutor and account setup need internet access. The browser runtime is bundled
+with the release. [Laptop / setup-agent instructions →](docs/AGENT-SETUP.md)
 
 Next priorities are easier installation, clearer teaching visuals and broader
 checks on real devices and provider accounts. Feedback on an actual study flow

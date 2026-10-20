@@ -20,6 +20,7 @@ class PublicPackage(unittest.TestCase):
         self.assertIn('app/content/class_courses.json',files)
         self.assertIn('static/icons/providers/LICENSE',files)
         self.assertIn('static/icons/providers/README.md',files)
+        self.assertIn(b'static/vendor/** -text',files['.gitattributes'])
     def test_private_addition_is_rejected(self):
         fake_path=json.dumps({'path':'D:/'+'Users/example'}).encode()
         for name,body in [('data/work.txt',b'work'),('app/content/book.pdf',b'pdf'),('settings.json',fake_path)]:

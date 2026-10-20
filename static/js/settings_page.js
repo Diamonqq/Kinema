@@ -127,15 +127,15 @@ export class SettingsPage {
     const chapters = c ? `<select data-st="chapter" aria-label="Current chapter"><option value="">Not set</option>${c.chapters.map(ch => `<option value="${ch.n}"${ch.n === p.chapter ? ' selected' : ''}>${ch.n} · ${esc(ch.title)}</option>`).join('')}</select>` : '<span class="st-quiet">Choose a class first</span>';
     const guess = c && c.id !== 'other' && !this.data.verified ? ' Chapter ranges are a best guess until your course confirms them.' : '';
     return this.row('Name', 'Shown at the bottom left. Stays on this computer.', `<input type="text" data-st="name" maxlength="40" placeholder="You" value="${esc(p.name || '')}" autocomplete="nickname">`)
-      + this.row('Class', 'Physics 2300 or 2301 mechanics, or any other class.', this.seg('course', classes, p.course || ''))
+      + this.row('Class', 'Choose your course, or study on your own.', this.seg('course', classes, p.course || ''))
       + this.row('Current chapter', 'The Daily problem comes from chapters up to this one.' + guess, chapters);
   }
   progressHTML() { return '<div data-learning-progress></div>'; }
   accountHTML() { return `<div class="st-mount" data-mount="account">${this.fallback('account')}</div>`; }
   fallback(kind) {
-    if (kind === 'updates') return '<p class="st-quiet">Install and update ChatGPT (Codex), Claude Code and Gemini from Account & connections.</p>';
+    if (kind === 'updates') return '<p class="st-quiet">Install and update Codex, Claude Code and Kimi Code from Accounts.</p>';
     const all = this.connected(), tutor = this.signedIn();
-    if (!all.length) return this.row('Not signed in', 'Sign in with ChatGPT, Claude or Google Gemini to use the tutor.', '<button type="button" class="st-btn st-primary" data-st="connections">Sign in</button>');
+    if (!all.length) return this.row('Not signed in', 'Sign in with ChatGPT, Claude or Kimi to use the tutor.', '<button type="button" class="st-btn st-primary" data-st="connections">Sign in</button>');
     return all.map((p, i) => this.row(esc(PROVIDER[p.id] || p.label || p.id), p === tutor ? 'Signed in · runs your tutor' : 'Signed in on this computer', i === 0 ? '<button type="button" class="st-btn" data-st="connections">Manage</button>' : '')).join('');
   }
   languageHTML() {
@@ -181,7 +181,7 @@ export class SettingsPage {
     const u = this.update;
     let kinema;
     if (!u) kinema = this.row('Kinema', 'Checking…', '');
-    else if (u.state === 'off') kinema = this.row('Kinema ' + esc(u.current), 'Updates turn on once Kinema is published.', '');
+    else if (u.state === 'off') kinema = this.row('Kinema ' + esc(u.current), 'Install new releases using the setup guide. Your study data stays in its own folder.', '<a class="st-btn" href="https://github.com/Diamonqq/Kinema/releases/latest" target="_blank" rel="noopener">Latest release</a><a class="st-btn" href="https://github.com/Diamonqq/Kinema/blob/main/docs/PUBLIC-SETUP.md" target="_blank" rel="noopener">Setup guide</a>');
     else {
       const j = u.job || {}, busy = u.state === 'working' || j.state === 'checking';
       const line = busy ? ({ checking: 'Checking…', downloading: `Downloading${j.progress ? ' ' + Math.round(j.progress * 100) + '%' : '…'}`, verifying: 'Checking the download…', installing: 'Installing…', restarting: 'Restarting Kinema…' }[j.state] || 'Working…')

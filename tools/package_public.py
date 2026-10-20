@@ -13,7 +13,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / 'app/content'
-CONTENT_FILES = ('chapter_map.json','examples.json','questions.json','morin_lessons.json',
+CONTENT_FILES = ('chapter_map.json','examples.json','scene_examples.json','questions.json','morin_lessons.json',
                  'topic_references.json','visual_library.json','class_courses.json')
 TEXT_SUFFIXES = {'.py','.js','.css','.html','.json','.md','.txt','.svg','.webmanifest'}
 
@@ -35,10 +35,13 @@ def collect(root=ROOT):
     for folder in ('icons','vthumbs','locales'):
         for path in (root/'static'/folder).rglob('*'):
             if path.is_file() and path.suffix.lower() in {'.svg','.png','.webp','.ico','.json'}:add(path)
+    for path in (root/'static/vendor').rglob('*'):
+        if path.is_file() and (path.suffix.lower() in {'.js','.css','.json','.woff','.woff2','.ttf','.txt'} or path.name=='LICENSE'):add(path)
     for name in ('requirements.txt','requirements-dev.txt','start.py'):add(root/name)
+    if (root/'.gitattributes').is_file():add(root/'.gitattributes')
     for name in ('LICENSE','README.md'):add(root/'static/icons/providers'/name)
-    for name in ('PUBLIC-SETUP.md','PROVIDERS.md'):add(root/'docs'/name)
-    for name in ('provider_fixture.py','test_provider_connections.py','test_cloud_providers.py','test_provider_teacher_flow.py','test_cli_connections.py','test_cli_runners.py','test_cli_teacher_flow.py','test_localization.py','test_public_package.py','test_official_accounts.py','test_account.py','test_account_welcome.mjs'):
+    for name in ('PUBLIC-SETUP.md','PROVIDERS.md','AGENT-SETUP.md'):add(root/'docs'/name)
+    for name in ('provider_fixture.py','test_provider_connections.py','test_cloud_providers.py','test_provider_teacher_flow.py','test_cli_connections.py','test_cli_runners.py','test_cli_teacher_flow.py','test_localization.py','test_public_package.py','test_public_readiness.py','test_official_accounts.py','test_account.py','test_account_welcome.mjs'):
         path=root/'tests'/name
         if path.exists():add(path)
     add(root/'tools/package_public.py')
@@ -78,7 +81,12 @@ def validate(files):
         if name.startswith(('data/','.git/','backups/')) or Path(name).suffix.lower() in {'.pdf','.db','.sqlite3','.pem','.key'}:
             raise ValueError('Private file in export: '+name)
         if Path(name).suffix.lower() in TEXT_SUFFIXES and name!='tools/package_public.py':
-            if private.search(data.decode('utf8')):raise ValueError('Private-looking text in export: '+name)
+            text=data.decode('utf8')
+            # Upstream attribution, reviewed against the pinned Three archive.
+            # All other email/path/credential checks remain in force.
+            if name=='static/vendor/three/examples/jsm/math/SimplexNoise.js':
+                text=text.replace('banksean@gmail.com','')
+            if private.search(text):raise ValueError('Private-looking text in export: '+name)
     required={'app/main.py','start.py','static/app.html','static/js/account_panel.js','static/js/language_panel.js','PUBLIC-DISTRIBUTION'}
     if required-files.keys():raise ValueError('Incomplete export: '+', '.join(sorted(required-files.keys())))
 

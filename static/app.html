@@ -12,8 +12,7 @@
 <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="/icons/kinema.svg">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/vendor/katex/dist/katex.min.css">
 <link rel="stylesheet" href="/app.css">
 <link rel="stylesheet" href="/study.css">
 <link rel="stylesheet" href="/workspace.css">
@@ -120,11 +119,11 @@
     </div>
 <script src="/js/image_viewer.js"></script>
 <script>window.__errs=[];addEventListener('error',e=>window.__errs.push((e.message||'')+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));addEventListener('unhandledrejection',e=>window.__errs.push('promise: '+(e.reason&&e.reason.message||e.reason)));</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/planck@1.5.0/dist/planck.min.js"></script>
+<script src="/vendor/katex/dist/katex.min.js"></script>
+<script src="/vendor/katex/dist/contrib/auto-render.min.js"></script>
+<script src="/vendor/planck/dist/planck.min.js"></script>
 <script src="/js/engine2d.js"></script><script src="/js/presets.js"></script>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/","three/examples/jsm/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.js","three/addons/":"/vendor/three/examples/jsm/","three/examples/jsm/":"/vendor/three/examples/jsm/"}}</script>
 <script type="module" src="/js/app.js"></script>
 </body>
 </html>

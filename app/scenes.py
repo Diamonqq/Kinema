@@ -21,7 +21,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLES_PATH = ROOT / "app" / "examples.json"
+EXAMPLES_PATH = ROOT / "app" / "content" / "scene_examples.json"
 
 INERTIA_WORDS = ["solid_sphere", "solid_cylinder", "hoop", "shell", "rod", "plate", "point"]
 SHAPES = ["circle", "box", "polygon", "edge"]

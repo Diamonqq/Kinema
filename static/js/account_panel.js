@@ -305,7 +305,10 @@ export class AccountPanel {
     if (action === 'retry') return this.run(async () => { await this.refresh(); this.loadFailed = false; }, 'Account details could not load. Try again.');
     if (action === 'skip') return this.run(async () => {
       this.browse(true); await this.completeOnboarding(); await this.courseStep(); this.closeWelcome();
-      this.t.host.querySelector('.tv-nav [data-act="daily"],[data-act="daily"]')?.click();
+      // A fresh install may have prepared lessons but no local Daily pack.
+      let landing = 'path';
+      try { if ((await this.api(this.url('/api/daily/peek')))?.id) landing = 'daily'; } catch {}
+      this.t.host.querySelector(`.tv-nav [data-act="${landing}"]`)?.click();
     }, 'Could not continue. Try again.');
     if (action === 'next') { this.error = ''; this.notice = ''; this.step = 'account'; return this.paint(); }
     if (action === 'back') {

@@ -78,5 +78,10 @@ chapter references and Library visuals remain usable without that pack.
 - **No textbook questions or Daily puzzle:** those imported packs are intentionally
   absent from the public source. Use your own question or prepared Library visuals.
 
-Internet access is needed for AI and some browser libraries. Offline-first data
-storage does not mean every feature runs without a network connection.
+Prepared references, formulas and Library visuals work offline after installation;
+the browser libraries and math fonts are bundled. AI, provider sign-in and
+installing dependencies require internet access.
+
+For a version-pinned installation on another computer, use the
+[setup-agent guide](AGENT-SETUP.md). Windows with Python 3.12.5 was checked in a
+fresh environment. This release provides a browser app, not a standalone installer.

@@ -242,5 +242,9 @@ body.dp-lb-open{overflow:hidden}
 .dp-quiet-action:hover:not(:disabled){background:#ffffff08;color:#bfcbdc;border-color:#ffffff18}
 .dp-solution-ref{margin-top:18px}
 .dp-solution-ref h2{margin:0 0 8px;font-size:14px;font-weight:600;color:var(--d-dim)}
+.dp-empty{max-width:580px;margin:clamp(32px,10vh,100px) auto;padding:24px;color:var(--d-fg,#e3e6eb)}
+.dp-empty h1{font-size:24px;letter-spacing:-.02em;margin:0 0 16px}
+.dp-empty p{font-size:16px;line-height:1.65;color:var(--d-dim,#a9b0bc);margin:0 0 24px}
+.dp-empty .dp-row{flex-wrap:wrap;gap:12px}
 /* phone: a slimmer resize strip gives the drawing its 10 px */
 @media(max-width:520px){.dp-workspace .dp-scene-box.visual-resizable{padding-bottom:14px!important}.dp-workspace .dp-scene-box>.visual-grip{height:14px}}

@@ -666,7 +666,7 @@ export function buildScene(studio, spec, sim) {
     const forces = frame.forces.filter(f => targets.includes(f.body) && !(teachOn && teaching.hides(f)) && !incompleteReactionJoints.has(f.joint) && !(f.kind === 'applied' && f.label === 'no contact yet') && !(f.joint && inAir(f.body, frame.t) && (spec.joints || []).some(j => j.id === f.joint && j.type === 'friction'))); for (const id of targets) forces.push(...stringForces(frame, id));
     const maxF = Math.max(1e-9, ...forces.map(f => Math.hypot(f.vec[0], f.vec[1])));
     // two forces on one body with one name (a ladder's floor and wall normals) are told apart by what pushes
-    const nameOf = f => { const l = f.label || f.kind; return f.other && forces.some(g => g !== f && g.body === f.body && (g.label || g.kind) === l && g.other && g.other !== f.other) ? l + ' ' + (byId[f.other]?.label || f.other) : l; };
+    const forceName = f => { const l = f.label || f.kind; return f.other && forces.some(g => g !== f && g.body === f.body && (g.label || g.kind) === l && g.other && g.other !== f.other) ? l + ' ' + (byId[f.other]?.label || f.other) : l; };
     for (const f of forces) {
       const m = Math.hypot(f.vec[0], f.vec[1]); if (m < 1e-4 * maxF) continue;
       if (ov.loads && f.kind === 'applied' && !ov.loads.includes(f.label)) continue;   // a chosen subset of authored loads, kept on the full set's scale
@@ -705,7 +705,7 @@ export function buildScene(studio, spec, sim) {
       // centre, landed on the hub of a pulley at the top: the name sits just past the rim, on the arrow's own line
       const bf = byId[f.body], sf = frame.bodies[f.body], tipR = sf ? Math.hypot(a.tip.x - sf.cx, a.tip.y - sf.cy) : Infinity, inRim = bf?.shape === 'circle' && f.kind === 'gravity' && tipR < 1.3 * bf.r;
       const rimPin = inRim ? V3(sf.cx, sf.cy).addScaledVector(V3(f.vec[0], f.vec[1]).normalize(), Math.max(tipR, 1.08 * bf.r)).setZ(a.tip.z) : undefined;   // pushed on along the arrow, not away from the scene centre (up into the hub)
-      if (showF && !onString) state.labels.push({ key, label: nameOf(f), value: m, unit: 'N', color: color || PALETTE.ink, legend:f.supportReaction?'R_axle  axle support reaction':undefined, pref: FORCE_PREF[f.kind] || 0, tip: rimPin || a.tip, ...(rimPin && { dir: V3(f.vec[0], f.vec[1]).normalize() }) });
+      if (showF && !onString) state.labels.push({ key, label: forceName(f), value: m, unit: 'N', color: color || PALETTE.ink, legend:f.supportReaction?'R_axle  axle support reaction':undefined, pref: FORCE_PREF[f.kind] || 0, tip: rimPin || a.tip, ...(rimPin && { dir: V3(f.vec[0], f.vec[1]).normalize() }) });
     }
     // strings: tension chips at the segment middles; a selected string also shows its pull at both ends of every segment
     for (const s of strings) s.segs.forEach((seg, i) => {

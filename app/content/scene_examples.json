@@ -1,0 +1,784 @@
+{
+  "rolling_incline": {
+    "title": "Solid ball on a 30° incline",
+    "note": "rolling emerges from friction",
+    "params": {
+      "shape": "solid_sphere",
+      "beta": 0.4,
+      "mass": 1,
+      "radius": 0.35,
+      "angle": 30,
+      "length": 5,
+      "mu": 1,
+      "g": 9.8
+    },
+    "spec": {
+      "gravity": 9.8,
+      "duration": 2.190308509457033,
+      "bodies": [
+        {
+          "id": "ramp",
+          "type": "static",
+          "shape": "polygon",
+          "points": [
+            [
+              0,
+              0
+            ],
+            [
+              4.330127018922194,
+              0
+            ],
+            [
+              0,
+              2.4999999999999996
+            ]
+          ],
+          "friction": 1,
+          "render": {
+            "kind": "slab"
+          }
+        },
+        {
+          "id": "floor",
+          "type": "static",
+          "shape": "edge",
+          "points": [
+            [
+              -2,
+              0
+            ],
+            [
+              24.330127018922195,
+              0
+            ]
+          ],
+          "friction": 1,
+          "render": {
+            "kind": "floor"
+          }
+        },
+        {
+          "id": "ball",
+          "shape": "circle",
+          "r": 0.35,
+          "mass": 1,
+          "inertia": "solid_sphere",
+          "pos": [
+            0.17499999999999996,
+            2.803108891324553
+          ],
+          "friction": 1,
+          "restitution": 0,
+          "render": {
+            "kind": "sphere"
+          },
+          "label": "ball"
+        }
+      ],
+      "focus": "ball",
+      "facts": {
+        "angle": 0.5235987755982988,
+        "w": 4.330127018922194,
+        "h": 2.4999999999999996
+      }
+    }
+  },
+  "atwood_pulley": {
+    "title": "Atwood machine, massive pulley",
+    "note": "string constraint on a pulley with inertia",
+    "params": {
+      "m1": 3,
+      "m2": 2,
+      "pulley_mass": 2,
+      "pulley_beta": 0.5,
+      "radius": 0.25,
+      "drop": 2,
+      "g": 9.8
+    },
+    "spec": {
+      "gravity": 9.8,
+      "duration": 1.964921592871903,
+      "bodies": [
+        {
+          "id": "pulley",
+          "shape": "circle",
+          "r": 0.25,
+          "mass": 2,
+          "inertia": 0.0625,
+          "pos": [
+            0,
+            4.2
+          ],
+          "render": {
+            "kind": "disk"
+          },
+          "label": "pulley"
+        },
+        {
+          "id": "m1",
+          "shape": "box",
+          "w": 0.4366025403784438,
+          "h": 0.45,
+          "mass": 3,
+          "inertia": "plate",
+          "pos": [
+            -0.25,
+            3.45
+          ],
+          "render": {
+            "kind": "box"
+          },
+          "label": "m₁"
+        },
+        {
+          "id": "m2",
+          "shape": "box",
+          "w": 0.42071067811865476,
+          "h": 0.45,
+          "mass": 2,
+          "inertia": "plate",
+          "pos": [
+            0.25,
+            1.4500000000000002
+          ],
+          "render": {
+            "kind": "box"
+          },
+          "label": "m₂"
+        },
+        {
+          "id": "floor",
+          "type": "static",
+          "shape": "edge",
+          "points": [
+            [
+              -3,
+              -0.001
+            ],
+            [
+              3,
+              -0.001
+            ]
+          ],
+          "render": {
+            "kind": "floor"
+          }
+        }
+      ],
+      "joints": [
+        {
+          "id": "axle",
+          "type": "pivot",
+          "a": "world",
+          "b": "pulley",
+          "anchor": [
+            0,
+            4.2
+          ],
+          "label": "axle"
+        },
+        {
+          "id": "rail1",
+          "type": "slider",
+          "a": "world",
+          "b": "m1",
+          "anchor": [
+            -0.25,
+            3.45
+          ],
+          "axis": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "rail2",
+          "type": "slider",
+          "a": "world",
+          "b": "m2",
+          "anchor": [
+            0.25,
+            1.4500000000000002
+          ],
+          "axis": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "string1",
+          "type": "gear",
+          "a": "m1",
+          "b": "pulley",
+          "joint1": "rail1",
+          "joint2": "axle",
+          "ratio": 0.25,
+          "label": "T₁"
+        },
+        {
+          "id": "string2",
+          "type": "gear",
+          "a": "m2",
+          "b": "pulley",
+          "joint1": "rail2",
+          "joint2": "axle",
+          "ratio": -0.25,
+          "label": "T₂"
+        }
+      ],
+      "ropes": [
+        [
+          "m1",
+          [
+            -0.25,
+            4.2
+          ]
+        ],
+        [
+          "m2",
+          [
+            0.25,
+            4.2
+          ]
+        ]
+      ],
+      "strings": [
+        {
+          "id": "string",
+          "via": [
+            {
+              "body": "m1",
+              "attach": "top"
+            },
+            {
+              "wrap": "pulley",
+              "ccw": false
+            },
+            {
+              "body": "m2",
+              "attach": "top"
+            }
+          ],
+          "tension": [
+            "string1",
+            "string2"
+          ],
+          "labels": [
+            "T₁",
+            "T₂"
+          ]
+        }
+      ],
+      "nocollide": [
+        [
+          "m1",
+          "m2"
+        ],
+        [
+          "m1",
+          "pulley"
+        ],
+        [
+          "m2",
+          "pulley"
+        ]
+      ],
+      "focus": "m1"
+    }
+  },
+  "falling_rod": {
+    "title": "Rod released from horizontal",
+    "note": "pivot",
+    "params": {
+      "mass": 1,
+      "length": 1.2,
+      "theta0": 0,
+      "g": 9.8
+    },
+    "spec": {
+      "gravity": 9.8,
+      "duration": 1.9747153822564416,
+      "bodies": [
+        {
+          "id": "rod",
+          "shape": "box",
+          "w": 1.2,
+          "h": 0.042,
+          "mass": 1,
+          "inertia": "rod",
+          "pos": [
+            0.6,
+            0
+          ],
+          "angle": 0,
+          "render": {
+            "kind": "rod"
+          },
+          "label": "rod"
+        }
+      ],
+      "joints": [
+        {
+          "id": "pivot",
+          "type": "pivot",
+          "a": "world",
+          "b": "rod",
+          "anchor": [
+            0,
+            0
+          ],
+          "label": "F_pivot"
+        }
+      ],
+      "focus": "rod"
+    }
+  },
+  "physical_pendulum": {
+    "title": "Physical pendulum",
+    "note": "pivot",
+    "params": {
+      "body": "rod_end",
+      "mass": 1,
+      "size": 1.2,
+      "d": 0.6,
+      "I_pivot": 0.48,
+      "theta0": 40,
+      "g": 9.8
+    },
+    "spec": {
+      "gravity": 9.8,
+      "duration": 4.487989505128276,
+      "bodies": [
+        {
+          "id": "rod",
+          "shape": "box",
+          "w": 0.042,
+          "h": 1.2,
+          "mass": 1,
+          "inertia": "rod",
+          "pos": [
+            0.38567256581192355,
+            -0.4596266658713868
+          ],
+          "angle": 0.6981317007977318,
+          "render": {
+            "kind": "rod"
+          },
+          "label": "rod"
+        }
+      ],
+      "joints": [
+        {
+          "id": "pivot",
+          "type": "pivot",
+          "a": "world",
+          "b": "rod",
+          "anchor": [
+            0,
+            0
+          ],
+          "label": "F_pivot"
+        }
+      ],
+      "focus": "rod"
+    }
+  },
+  "ball_stick": {
+    "title": "Ball hits a free stick",
+    "note": "contact impulse, top view",
+    "params": {
+      "ball_mass": 0.5,
+      "ball_speed": 4,
+      "stick_mass": 1,
+      "stick_length": 1,
+      "hit_offset": 0.3,
+      "collision": "elastic"
+    },
+    "spec": {
+      "gravity": 0,
+      "duration": 2.6,
+      "bodies": [
+        {
+          "id": "stick",
+          "shape": "box",
+          "w": 0.04,
+          "h": 1,
+          "mass": 1,
+          "inertia": "rod",
+          "pos": [
+            0,
+            0
+          ],
+          "friction": 0,
+          "restitution": 1,
+          "render": {
+            "kind": "rod"
+          },
+          "label": "stick"
+        },
+        {
+          "id": "ball",
+          "shape": "circle",
+          "r": 0.08414213562373096,
+          "mass": 0.5,
+          "inertia": "solid_sphere",
+          "pos": [
+            -2.504142135623731,
+            0.3
+          ],
+          "vel": [
+            4,
+            0
+          ],
+          "friction": 0,
+          "restitution": 1,
+          "bullet": true,
+          "render": {
+            "kind": "sphere"
+          },
+          "label": "ball"
+        }
+      ],
+      "topdown": true,
+      "focus": "stick",
+      "stick": []
+    }
+  },
+  "struck_ball": {
+    "title": "Cue ball, struck at the centre",
+    "note": "slip then roll",
+    "params": {
+      "mass": 0.17,
+      "radius": 0.06,
+      "impulse": 0.5,
+      "h": 0,
+      "mu": 0.2,
+      "g": 9.8
+    },
+    "spec": {
+      "gravity": 9.8,
+      "duration": 1.9287429257417252,
+      "bodies": [
+        {
+          "id": "table",
+          "type": "static",
+          "shape": "edge",
+          "points": [
+            [
+              -1,
+              0
+            ],
+            [
+              200,
+              0
+            ]
+          ],
+          "friction": 0.2,
+          "render": {
+            "kind": "floor"
+          }
+        },
+        {
+          "id": "ball",
+          "shape": "circle",
+          "r": 0.06,
+          "mass": 0.17,
+          "inertia": "solid_sphere",
+          "pos": [
+            0,
+            0.06
+          ],
+          "friction": 0.2,
+          "restitution": 0,
+          "render": {
+            "kind": "sphere"
+          },
+          "label": "ball"
+        }
+      ],
+      "impulses": [
+        {
+          "body": "ball",
+          "at": [
+            0,
+            0.06
+          ],
+          "J": [
+            0.5,
+            0
+          ],
+          "t": 0
+        }
+      ],
+      "focus": "ball"
+    }
+  },
+  "disk_on_disk": {
+    "title": "Disk dropped onto a disk",
+    "note": "friction torque, top view",
+    "params": {
+      "I1": 0.5,
+      "omega1": 10,
+      "I2": 1,
+      "omega2": 0,
+      "coupling_time": 1.5
+    },
+    "spec": {
+      "gravity": 0,
+      "duration": 3.5,
+      "bodies": [
+        {
+          "id": "top",
+          "shape": "circle",
+          "r": 0.6,
+          "mass": 2.7777777777777777,
+          "inertia": 0.5,
+          "pos": [
+            0,
+            0
+          ],
+          "omega": 10,
+          "friction": 0,
+          "render": {
+            "kind": "disk",
+            "z": 0.32
+          },
+          "label": "I₁"
+        },
+        {
+          "id": "bottom",
+          "shape": "circle",
+          "r": 0.95,
+          "mass": 2.21606648199446,
+          "inertia": 1,
+          "pos": [
+            0,
+            0
+          ],
+          "omega": 0,
+          "friction": 0,
+          "render": {
+            "kind": "disk"
+          },
+          "label": "I₂"
+        }
+      ],
+      "joints": [
+        {
+          "id": "axle1",
+          "type": "pivot",
+          "a": "world",
+          "b": "top",
+          "anchor": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "axle2",
+          "type": "pivot",
+          "a": "world",
+          "b": "bottom",
+          "anchor": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "rub",
+          "type": "friction",
+          "a": "top",
+          "b": "bottom",
+          "anchor": [
+            0,
+            0
+          ],
+          "maxForce": 0,
+          "maxTorque": 2.222222222222222,
+          "label": "friction torque"
+        }
+      ],
+      "topdown": true,
+      "focus": "top",
+      "nocollide": [
+        [
+          "top",
+          "bottom"
+        ]
+      ]
+    }
+  },
+  "ball_leaves_sphere": {
+    "title": "Ball rolling off a sphere",
+    "note": "leaves when the contact force vanishes",
+    "params": {
+      "R": 1.2,
+      "r": 0.16,
+      "beta": 0.4,
+      "nudge": 0.02,
+      "g": 9.8
+    },
+    "spec": {
+      "gravity": 9.8,
+      "duration": 3.000979112506085,
+      "bodies": [
+        {
+          "id": "sphere",
+          "type": "static",
+          "shape": "circle",
+          "r": 1.2,
+          "pos": [
+            0,
+            1.2
+          ],
+          "friction": 30,
+          "render": {
+            "kind": "sphere",
+            "color": "slab"
+          }
+        },
+        {
+          "id": "floor",
+          "type": "static",
+          "shape": "edge",
+          "points": [
+            [
+              -4,
+              0
+            ],
+            [
+              8,
+              0
+            ]
+          ],
+          "friction": 0.6,
+          "render": {
+            "kind": "floor"
+          }
+        },
+        {
+          "id": "ball",
+          "shape": "circle",
+          "r": 0.16,
+          "mass": 1,
+          "inertia": 0.01024,
+          "pos": [
+            0.027198186702932985,
+            2.5597280090665455
+          ],
+          "vel": [
+            0.019996000133331554,
+            -0.0003999733338666616
+          ],
+          "omega": -0.125,
+          "friction": 30,
+          "restitution": 0,
+          "render": {
+            "kind": "sphere"
+          },
+          "label": "ball"
+        }
+      ],
+      "focus": "ball"
+    }
+  },
+  "spool_pull": {
+    "title": "Spool pulled by its string",
+    "note": "which way does it roll",
+    "params": {
+      "mass": 1,
+      "R": 0.3,
+      "r": 0.15,
+      "beta": 0.5,
+      "tension": 3,
+      "phi": 20,
+      "mu": 1,
+      "g": 9.8
+    },
+    "spec": {
+      "gravity": 9.8,
+      "duration": 4,
+      "bodies": [
+        {
+          "id": "floor",
+          "type": "static",
+          "shape": "edge",
+          "points": [
+            [
+              -20,
+              0
+            ],
+            [
+              40,
+              0
+            ]
+          ],
+          "friction": 1,
+          "render": {
+            "kind": "floor"
+          }
+        },
+        {
+          "id": "spool",
+          "shape": "circle",
+          "r": 0.3,
+          "mass": 1,
+          "inertia": 0.045,
+          "pos": [
+            0,
+            0.3
+          ],
+          "friction": 1,
+          "restitution": 0,
+          "render": {
+            "kind": "disk",
+            "inner": 0.15
+          },
+          "label": "spool"
+        }
+      ],
+      "forces": [
+        {
+          "body": "spool",
+          "F": [
+            2.8190778623577253,
+            1.0260604299770062
+          ],
+          "offset": [
+            0.051303021498850306,
+            -0.14095389311788625
+          ],
+          "label": "T"
+        }
+      ],
+      "strings": [
+        {
+          "id": "string",
+          "via": [
+            {
+              "body": "spool",
+              "attach": [
+                0.051303021498850306,
+                -0.14095389311788625
+              ]
+            },
+            {
+              "world": [
+                11.276311449430901,
+                4.263287826790139
+              ]
+            }
+          ],
+          "tension": [
+            "T"
+          ],
+          "labels": [
+            "T"
+          ]
+        }
+      ],
+      "focus": "spool"
+    }
+  }
+}

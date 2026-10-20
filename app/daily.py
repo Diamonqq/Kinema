@@ -892,7 +892,7 @@ def api_peek():
             p = pick(conn, day_key())
             return {"id": p["id"], "title": p["title"], "hook": p["hook"], "think_seconds": think_seconds()}
     except NoPreparedProblem as exc:
-        return _bad(str(exc), 503)
+        return {"state": "unavailable", "message": str(exc)}
 
 
 @router.get("/api/daily/today")
@@ -902,7 +902,9 @@ def api_today():
         with closing(_db()) as conn:
             v = view(conn, day_key())
             return v
-    except (SourceError, NoPreparedProblem) as exc:
+    except NoPreparedProblem as exc:
+        return {"state": "unavailable", "message": str(exc)}
+    except SourceError as exc:
         return _bad(str(exc), 503)
 
 

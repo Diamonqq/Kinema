@@ -1290,7 +1290,7 @@ export class Teacher {
   }
   shareDialog(r) {
     const page = new URL(this.d.url('/api/teacher/threads/' + encodeURIComponent(r.id) + '/share'), location.href).href;
-    this.dialog('Share chat', `<p class="tv-dp">A readable copy of this chat: open it as a page, copy its link, or copy the text.</p><div class="tv-share"><a class="tv-btn" href="${esc(page)}" target="_blank" rel="noopener">Open as page</a><button type="button" class="tv-btn" id="tv-cl">Copy link</button><button type="button" class="tv-btn" id="tv-ct">Copy text</button></div><p class="tv-dp tv-dim" id="tv-sh"></p>`);
+    this.dialog('Share chat', `<p class="tv-dp">The page and its link open on this computer. Copy the text to share it elsewhere.</p><div class="tv-share"><a class="tv-btn" href="${esc(page)}" target="_blank" rel="noopener">Open as page</a><button type="button" class="tv-btn" id="tv-cl">Copy local link</button><button type="button" class="tv-btn" id="tv-ct">Copy text</button></div><p class="tv-dp tv-dim" id="tv-sh"></p>`);
     const say = t => { const n = this.el.dialog.querySelector('#tv-sh'); if (n) n.textContent = t; };
     const copy = async text => { try { await navigator.clipboard.writeText(text); return true; } catch { return false; } };
     this.el.dialog.querySelector('#tv-cl').onclick = async () => say(await copy(page) ? 'Link copied.' : 'Copy failed. Use Open as page.');
