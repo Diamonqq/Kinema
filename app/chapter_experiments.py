@@ -19,6 +19,8 @@ def _read(path, stamp, size):
 
 
 def _json(path):
+    from .book_library import content_path
+    path = content_path('chapter_experiments/' + path.name, path)
     stat = path.stat()
     return _read(str(path), stat.st_mtime_ns, stat.st_size)
 

@@ -14,6 +14,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
 from . import teacher_content, prepared_problems, chapter_experiments
+from . import book_library
 
 router = APIRouter()
 DATABASE = Path(__file__).parent/'content/morin_book.sqlite3'
@@ -27,22 +28,29 @@ def setup(data_dir: Path):
     _data = Path(data_dir)
 
 
+def database():
+    return book_library.catalog_path(DATABASE)
+
+
 def _db():
-    if not DATABASE.is_file():
+    if not database().is_file():
         raise ValueError('The private textbook library is not installed. You can upload a problem to a new chat.')
-    conn = sqlite3.connect(DATABASE.resolve().as_uri()+'?mode=ro',uri=True)
+    conn = sqlite3.connect(database().resolve().as_uri()+'?mode=ro',uri=True)
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def metadata():
-    if not DATABASE.is_file():
+    if not database().is_file():
         return {'available': False, 'note': 'The textbook question pack is a private import. Upload your own problem in a new chat.'}
     with closing(_db()) as conn:
         return {r['key']: json.loads(r['value']) for r in conn.execute('SELECT key,value FROM metadata')}
 
 
 def item(pid: str):
+    if isinstance(pid, str) and pid.startswith('k:'):
+        from . import companion_questions
+        return companion_questions.item(pid)
     if not isinstance(pid,str) or len(pid)>12:
         raise ValueError('Choose a numbered Morin question.')
     with closing(_db()) as conn:
@@ -56,7 +64,7 @@ def item(pid: str):
 
 
 def _prepared(row, source_sha=None):
-    if not DATABASE.is_file():
+    if not database().is_file():
         return {'prepared_help': prepared_problems.unavailable()}
     return prepared_problems.get(row, source_sha or metadata().get('source_sha256'))
 
@@ -64,13 +72,19 @@ def _prepared(row, source_sha=None):
 def _summary(row, source_sha=None):
     result = {key: row[key] for key in ('id','kind','chapter','number','title','section_id','stars')}
     from . import daily_visuals
+    result.update(book_id='morin',reference_number=row['id'])
     result['visual_available'] = bool(row['legacy_daily_id']) and row['id'] in daily_visuals.ready_ids()
     result['visual_available'] = result['visual_available'] or bool(chapter_experiments.get(row, source_sha or metadata().get('source_sha256')))
     result['prepared_solution'] = _prepared(row, source_sha)['prepared_help']['available']
     return result
 
 
-def search(chapter: int|None=None, kind: str|None=None, query: str='', offset: int=0, limit: int=60, prepared: bool|None=None, visual: bool|None=None):
+def search(chapter: int|None=None, kind: str|None=None, query: str='', offset: int=0, limit: int=60, prepared: bool|None=None, visual: bool|None=None, book: str='morin'):
+    if book == 'kinema':
+        from . import companion_questions
+        return companion_questions.search(chapter, kind, query, offset, limit, prepared, visual)
+    if book != 'morin':
+        raise ValueError('Choose an available book.')
     if chapter is not None and chapter not in range(1,15):
         raise ValueError('Choose a chapter from 1 to 14.')
     if kind not in (None,'problem','exercise'):
@@ -85,7 +99,7 @@ def search(chapter: int|None=None, kind: str|None=None, query: str='', offset: i
         args.extend([pattern]*3)
     clause=' WHERE '+' AND '.join(where) if where else ''
     limit=max(1,min(int(limit),100));offset=max(0,int(offset))
-    if not DATABASE.is_file():
+    if not database().is_file():
         return {'items': [], 'total': 0, 'prepared_total': 0, 'visual_total': 0, 'offset': offset, 'limit': limit, 'next_offset': None}
     source_sha=metadata().get('source_sha256')
     with closing(_db()) as conn:
@@ -134,9 +148,12 @@ def related_items(row):
 
 
 def public_item(pid: str):
+    if isinstance(pid, str) and pid.startswith('k:'):
+        from . import companion_questions
+        return companion_questions.public_item(pid)
     row=item(pid)
     result=_summary(row)
-    result.update(statement_md=row['statement_md'],statement_status=row['statement_status'],
+    result.update(label='Morin '+pid,book_title='Introduction to Classical Mechanics',statement_md=row['statement_md'],statement_status=row['statement_status'],
                   source_revision=row['content_sha'],pages=row['source']['pages'],
                   source_url=teacher_content.source_url('morin',row['source']['pages'][0],'2301'))
     result['images']={kind:[{'url':f'/api/book/items/{pid}/images/{kind}/{i}.png',
@@ -164,6 +181,8 @@ def public_item(pid: str):
 
 
 def notes_scope(pid: str):
+    if pid.startswith('k:'):
+        return None
     from . import chapter_scope
     row=item(pid)
     chosen=chapter_scope.canonical(chapter_scope.launch(row['chapter'],[row['section_id']])) if row['section_id'] else None
@@ -171,6 +190,8 @@ def notes_scope(pid: str):
 
 
 def visual_state(pid: str, proposed):
+    if pid.startswith('k:'):
+        return None
     """Bounded report of the exact prepared setup; never inferred from its availability."""
     from . import daily_visuals
     if isinstance(proposed, dict) and proposed.get('kind') == 'chapter_experiment':
@@ -247,6 +268,8 @@ def _source_hash(path,size,mtime):
 
 
 def crop_file(pid: str,kind: str,index: int, *, detail: bool = False):
+    if pid.startswith('k:'):
+        raise ValueError('This original practice question has no source scan.')
     row=item(pid);regions=_regions(row,kind)
     if not isinstance(index,int) or not 0<=index<len(regions):
         raise ValueError('That source image is unavailable.')
@@ -258,7 +281,7 @@ def crop_file(pid: str,kind: str,index: int, *, detail: bool = False):
     fingerprint=hashlib.sha256(json.dumps([row['source_sha'],region,scale],sort_keys=True).encode()).hexdigest()[:20]
     folder=_data/'book-images'
     target=folder/f'{pid}-{kind}-{index}-{fingerprint}.png'
-    with _image_lock:
+    with _image_lock, teacher_content.notes._pdf_lock:
         if target.is_file():return target
         import pypdfium2 as pdfium
         folder.mkdir(parents=True,exist_ok=True)
@@ -284,6 +307,9 @@ def crop_file(pid: str,kind: str,index: int, *, detail: bool = False):
 
 def private_context(pid: str):
     """For the tutor only. Never return this object from a public route."""
+    if pid.startswith('k:'):
+        from . import companion_questions
+        return companion_questions.private_context(pid)
     row=item(pid)
     with closing(_db()) as conn:
         solution=conn.execute('SELECT origin FROM solutions WHERE item_id=?',(pid,)).fetchone()
@@ -317,8 +343,8 @@ def private_context(pid: str):
 
 
 @router.get('/api/book/catalog')
-def api_catalog(chapter:int|None=None,kind:str|None=None,q:str='',offset:int=0,limit:int=60,prepared:bool|None=None,visual:bool|None=None):
-    try:return {**search(chapter,kind,q,offset,limit,prepared,visual),'book':metadata()}
+def api_catalog(chapter:int|None=None,kind:str|None=None,q:str='',offset:int=0,limit:int=60,prepared:bool|None=None,visual:bool|None=None,book:str='morin'):
+    try:return {**search(chapter,kind,q,offset,limit,prepared,visual,book),'book':metadata() if book=='morin' else {'id':'kinema','available':True,'title':'Kinema practice'}}
     except ValueError as exc:raise HTTPException(400,str(exc)) from exc
 
 

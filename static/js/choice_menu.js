@@ -1,6 +1,6 @@
 // Retain the native select as the value/event authority, with a consistent choice panel.
 import {esc} from './md.js';
-const selector = '#settings select,.kinema-language-dialog select,.kp-dialog select,.account-dialog select,.ka-dialog select,.kw-screen select,.tv-dialog select,.dv select,.lpulse select,.library-views select,.book-browser select,.vl select,.sim-lab select';
+const selector = '#settings select,.kinema-language-dialog select,.kp-dialog select,.account-dialog select,.ka-dialog select,.kw-screen select,.tv-dialog select,.dv select,.lpulse select,.library-views select,.book-browser select,.book-chooser select,.vl select,.sim-lab select';
 const link=document.createElement('link');link.rel='stylesheet';link.href='/ui_controls.css';document.head.append(link);
 let active=null;
 function close(focus=false){if(!active)return;const {panel,button}=active;active=null;panel.remove();button.setAttribute('aria-expanded','false');if(focus&&button.isConnected)button.focus();}

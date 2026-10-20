@@ -55,3 +55,12 @@
 .book-browser .book-more,.book-browser .book-error button{border:0;border-radius:999px;background:#ffffff09;padding:9px 16px;color:#ddd}
 .book-browser .book-more:hover,.book-browser .book-error button:hover{background:#ffffff10}
 .teacher[data-page=path] .tv-pages{overflow-anchor:none}
+.book-chooser{margin:0 0 22px;max-width:100%}
+.book-choice-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.book-choice-row select,.book-choice-row .choice-trigger{max-width:320px;min-width:0;width:auto;border:0;border-radius:999px;background:#ffffff08;color:#ddd;font:14px/1.5 var(--tv-sans);padding:9px 14px}
+.book-choice-row button[data-book=upload],.book-import-status button{border:0;border-radius:999px;background:#ffffff07;color:#bbb;font:13px/1.5 var(--tv-sans);padding:9px 14px}
+.book-choice-row button[data-book=upload]:hover,.book-import-status button:hover{background:#ffffff10;color:#eee}
+.book-choice-row button:disabled{opacity:.55;cursor:wait}
+.book-description,.book-import-status{font:13px/1.6 var(--tv-sans);color:#949ba5;margin:10px 2px 0;max-width:620px}
+.book-import-status{color:#b0c6e0}.book-import-status button{margin-left:8px}
+@media(max-width:600px){.book-choice-row .choice-trigger,.book-choice-row select{max-width:100%;font-size:13px}.book-description,.book-import-status{font-size:12px}}

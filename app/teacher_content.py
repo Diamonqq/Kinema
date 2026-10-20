@@ -7,6 +7,7 @@ actually read for that turn. Uploaded text is reference data for the tutor, neve
 from __future__ import annotations
 
 import atexit
+import copy
 import hashlib
 import json
 import re
@@ -46,7 +47,15 @@ def profile() -> dict:
 
 
 def courses() -> list[dict]:
-    return _courses_raw()["courses"]
+    result = copy.deepcopy(_courses_raw()["courses"])
+    from . import book_library
+    source = book_library.source_pdf()
+    if source:
+        for c in result:
+            if c['id'] == '2301' and not any(r['id'] == 'morin' for r in c.get('material_refs', [])):
+                c.setdefault('material_refs', []).append({'id': 'morin', 'title': 'Introduction to Classical Mechanics',
+                    'kind': 'pdf', 'role': 'book', 'path': str(source), 'pdf_page_offset': 18})
+    return result
 
 
 def course(course_id: str) -> dict:
@@ -141,6 +150,11 @@ def course_skills(c: dict) -> list[dict]:
 def _ref_path(ref: dict) -> Path:
     if ref["id"] in PATH_OVERRIDES:
         return PATH_OVERRIDES[ref["id"]]
+    if ref['id'] == 'morin':
+        from . import book_library
+        source = book_library.source_pdf()
+        if source:
+            return source
     p = Path(ref["path"])
     return p if p.is_absolute() else ROOT / p
 

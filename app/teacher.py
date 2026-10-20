@@ -1870,7 +1870,7 @@ async def create_thread(request: Request):
             if book_id is not None:
                 from . import book_catalog
                 if not isinstance(book_id,str) or c['id']!='2301' or not fresh or problem_id or raw_scope is not None:
-                    raise ValueError('Open one Morin question in a fresh mechanics conversation.')
+                    raise ValueError('Open one question in a fresh mechanics conversation.')
                 book_item=book_catalog.public_item(book_id)
             if raw_scope is not None:
                 scope = _study_context(conn, c["id"], raw_scope)
@@ -1911,7 +1911,7 @@ async def create_thread(request: Request):
                     _save(conn, tid, t)
             else:
                 tid = "t" + uuid.uuid4().hex[:11]
-                book_title=f"{book_item['kind'].title()} {book_id}: {book_item['title']}" if book_item else None
+                book_title=f"{book_item.get('label', book_id)}: {book_item['title']}" if book_item else None
                 t = _new_state(str(body.get("title") or book_title or (scope or {}).get("label") or c["title"])[:120])
                 if scoped:
                     t["reading_scope_key"] = scope_key

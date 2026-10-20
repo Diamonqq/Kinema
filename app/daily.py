@@ -102,7 +102,8 @@ def bound_day(conn, day: str, pid: str) -> str:
 # ── catalog ─────────────────────────────────────────────────────────────────────────────────────────────────────
 @lru_cache(maxsize=1)
 def config() -> dict:
-    return json.loads((CONTENT / "daily_config.json").read_text(encoding="utf-8"))
+    from .book_library import content_path
+    return json.loads(content_path('daily_config.json', CONTENT / 'daily_config.json').read_text(encoding='utf8'))
 
 
 def think_seconds() -> float:
@@ -112,8 +113,9 @@ def think_seconds() -> float:
 
 @lru_cache(maxsize=1)
 def catalog() -> dict[str, dict]:
-    probs = json.loads((CONTENT / "daily_problems.json").read_text(encoding="utf-8"))["problems"]
-    hooks = json.loads((CONTENT / "daily_hooks.json").read_text(encoding="utf-8"))["hooks"]
+    from .book_library import content_path
+    probs = json.loads(content_path('daily_problems.json', CONTENT / 'daily_problems.json').read_text(encoding='utf8'))['problems']
+    hooks = json.loads(content_path('daily_hooks.json', CONTENT / 'daily_hooks.json').read_text(encoding='utf8'))['hooks']
     out = {}
     for p in probs:
         title = re.sub(r"\s*[*∗]+\s*$", "", p["title"]).strip()

@@ -5,6 +5,9 @@ import { esc, mdlite, math } from './md.js';
 export class BookWorkspace {
   constructor(teacher) {
     this.t = teacher; this.states = new Map(); this.sceneSeq = 0; this.savedViews = new Map(); this.focusApplied = new Map();
+    try { this.selectedBook = localStorage.getItem('kinema.book.selected'); } catch {}
+    if (!['kinema','morin'].includes(this.selectedBook)) this.selectedBook = 'kinema';
+    this.books = [{id:'kinema',title:'Kinema practice',available:true},{id:'morin',title:'Morin · your textbook',available:false}];
     teacher.host.addEventListener('click', e => {
       const b = e.target.closest('[data-book]'); if (b) this.click(b, e);
     });
@@ -28,6 +31,8 @@ export class BookWorkspace {
       }, 220);
     });
     teacher.host.addEventListener('change', e => {
+      if (e.target.matches('[data-book-select]')) { this.choose(e.target.value); return; }
+      if (e.target.matches('[data-book-file]')) { const file=e.target.files?.[0]; if(file)this.importFile(file);e.target.value='';return; }
       if(e.target.matches('[data-book-kind]')){const root=e.target.closest('[data-book-browser]');this.state(root.dataset.chapter).kind=e.target.value;this.save(root.dataset.chapter);this.returnScroll=null;this.load(root,true);return;}
       if (!e.target.matches('[data-book-scope]')) return;
       const root = e.target.closest('[data-book-browser]'); this.state(root.dataset.chapter).scope = e.target.value; this.save(root.dataset.chapter);
@@ -43,10 +48,10 @@ export class BookWorkspace {
     }, true);
   }
   state(chapter) {
-    const key = String(chapter);
+    const chapterKey = String(chapter), key = this.selectedBook + '.' + chapterKey;
     if (!this.states.has(key)) {
       let saved; try { saved = JSON.parse(sessionStorage.getItem('kinema.book.chapter.' + key)); } catch { }
-      const scope = saved?.scope === 'all' || key === 'library' && /^(?:[1-9]|1[0-4])$/.test(saved?.scope) ? saved.scope : key === 'library' ? 'all' : key;
+      const scope = saved?.scope === 'all' || chapterKey === 'library' && /^(?:[1-9]|1[0-4])$/.test(saved?.scope) ? saved.scope : chapterKey === 'library' ? 'all' : chapterKey;
       this.states.set(key, { tab: saved?.tab === 'problems' ? 'problems' : 'lessons', scope,
         q: String(saved?.q || '').slice(0, 160), kind: ['problem','exercise'].includes(saved?.kind) ? saved.kind : '', visual: false, rows: [], next: null, seq: 0, loaded: false });
     }
@@ -54,7 +59,42 @@ export class BookWorkspace {
   }
   save(chapter) {
     const { tab, scope, q, kind, visual } = this.state(chapter);
-    try { sessionStorage.setItem('kinema.book.chapter.' + chapter, JSON.stringify({ tab, scope, q, kind, visual })); } catch { }
+    try { sessionStorage.setItem('kinema.book.chapter.' + this.selectedBook + '.' + chapter, JSON.stringify({ tab, scope, q, kind, visual })); } catch { }
+  }
+  chooser() {
+    return `<div class="book-chooser"><div class="book-choice-row"><select data-book-select aria-label="Choose book">${this.books.map(b=>`<option value="${b.id}"${b.id===this.selectedBook?' selected':''}>${esc(b.id==='morin'?'Morin · your textbook':b.title)}</option>`).join('')}</select><button type="button" data-book="upload"${this.importing?' disabled':''}>${this.importing?'Importing…':'Add textbook PDF'}</button><input type="file" data-book-file accept="application/pdf,.pdf" hidden></div><p class="book-description">${this.selectedBook==='kinema'?'112 original setups with parameter variants, hints and worked answers. Reference numbers follow the chapter grid; the questions differ from Morin.':this.books.find(b=>b.id==='morin')?.available?'Your textbook · all 635 questions and exercises, with source figures and matched simulations.':'Upload the prepared Morin PDF once to unlock all 635 questions and exercises, source figures and matched simulations.'}</p><p class="book-import-status" role="status"${this.importMessage?'':' hidden'}>${esc(this.importMessage||'')}${this.importFailed?'<button type="button" data-book="import-retry">Try again</button>':''}</p></div>`;
+  }
+  async refreshBooks() {
+    try { const r=await this.t.d.api(this.t.d.url('/api/books'));this.books=r.books;this.paintChoosers(); }
+    catch { /* Catalog loading reports its own retry; an upload remains available. */ }
+  }
+  paintChoosers() { this.t.host.querySelectorAll('.book-chooser').forEach(n=>{n.outerHTML=this.chooser()}); }
+  choose(id) {
+    if(!['kinema','morin'].includes(id))return;
+    if(id!==this.selectedBook&&!this.importing){this.importMessage='';this.importFailed=false;}
+    this.selectedBook=id;this.returnScroll=null;
+    try {localStorage.setItem('kinema.book.selected',id)}catch{}
+    this.paintChoosers();
+    this.t.host.querySelectorAll('[data-book-browser]').forEach(root=>{
+      const s=this.state(root.dataset.chapter);
+      if(root.dataset.chapter!=='library'&&root.getClientRects().length){s.tab='problems';this.save(root.dataset.chapter);}
+      root.querySelector('[data-book-search]').value=s.q;
+      for(const [name,value] of [['scope',s.scope],['kind',s.kind]]){const n=root.querySelector('[data-book-'+name+']');if(n){n.value=value;n.dispatchEvent(new Event('change'));}}
+      this.load(root,true);
+    });
+    if(this.t.page==='path'&&!this.t.host.querySelector('[data-book-browser]'))this.t.renderPathPage();
+  }
+  async importFile(file) {
+    if(this.importing)return;
+    this.importing=true;this.importFailed=false;this.importMessage='Checking your PDF and restoring the prepared library…';this.lastImportFile=file;this.paintChoosers();
+    try {
+      const form=new FormData();form.append('file',file);
+      const response=await fetch(this.t.d.url('/api/books/import'),{method:'POST',body:form});
+      const data=await response.json();if(!response.ok)throw new Error(data.detail||'The import could not finish. Your library is unchanged.');
+      this.importMessage='Ready · '+data.questions+' questions and exercises. Saved work is preserved.';
+      await this.refreshBooks();this.choose('morin');
+    } catch(e) {this.importFailed=true;this.importMessage=e.message||'The import could not finish. Try again.';}
+    finally {this.importing=false;this.paintChoosers();}
   }
   tabs(c) {
     if (c.math) return '';
@@ -63,12 +103,14 @@ export class BookWorkspace {
   }
   browser(c) {
     const s = this.state(c.n), scopes = c.n === 'library' ? [['all','All chapters'], ...Array.from({length:14}, (_,i) => [String(i+1),`Chapter ${i+1}`])] : [[String(c.n),`Chapter ${c.n}`],['all','All chapters']];
-    return `<section class="book-browser" data-book-browser data-chapter="${c.n}" aria-label="Problems and exercises"><div class="book-search"><input type="search" data-book-search value="${esc(s.q)}" placeholder="Find a number or title" aria-label="Search questions"><select data-book-scope aria-label="Filter by chapter">${scopes.map(([value,label]) => `<option value="${value}"${s.scope === value ? ' selected' : ''}>${label}</option>`).join('')}</select>${c.n==='library'?`<select data-book-kind aria-label="Question type">${[['','All questions'],['problem','Problems'],['exercise','Exercises']].map(([value,label])=>`<option value="${value}"${s.kind===value?' selected':''}>${label}</option>`).join('')}</select>`:''}</div><div class="book-filter" aria-label="Question type"${c.n==='library'?' hidden':''}>${[['','All'],['problem','Problems'],['exercise','Exercises']].map(([value,label]) => `<button type="button" data-book="kind" data-kind="${value}" aria-pressed="${s.kind === value}">${label}</button>`).join('')}</div><div class="book-results"></div></section>`;
+    return `<section class="book-browser" data-book-browser data-chapter="${c.n}" aria-label="Problems and exercises">${this.chooser()}<div class="book-search"><input type="search" data-book-search value="${esc(s.q)}" placeholder="Find a number or title" aria-label="Search questions"><select data-book-scope aria-label="Filter by chapter">${scopes.map(([value,label]) => `<option value="${value}"${s.scope === value ? ' selected' : ''}>${label}</option>`).join('')}</select>${c.n==='library'?`<select data-book-kind aria-label="Question type">${[['','All questions'],['problem','Problems'],['exercise','Exercises']].map(([value,label])=>`<option value="${value}"${s.kind===value?' selected':''}>${label}</option>`).join('')}</select>`:''}</div><div class="book-filter" aria-label="Question type"${c.n==='library'?' hidden':''}>${[['','All'],['problem','Problems'],['exercise','Exercises']].map(([value,label]) => `<button type="button" data-book="kind" data-kind="${value}" aria-pressed="${s.kind === value}">${label}</button>`).join('')}</div><div class="book-results"></div></section>`;
   }
   mountChapter() {
+    this.refreshBooks();
     this.mount(this.t.el.pathpage.querySelector('[data-book-browser]'));
   }
   mountLibrary(host) {
+    this.refreshBooks();
     host.innerHTML = this.browser({ n: 'library' }); this.mount(host.querySelector('[data-book-browser]'));
   }
   mount(root) {
@@ -82,8 +124,8 @@ export class BookWorkspace {
     root.querySelectorAll('[data-book=kind]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.kind === s.kind)));
     box.innerHTML = `<p class="book-count" role="status">${s.busy && !s.rows.length ? 'Loading questions…' : s.loaded ? `${s.total} ${s.total === 1 ? 'question' : 'questions'}${s.scope === 'all' ? ' across all chapters' : ' in chapter ' + s.scope}` : ''}</p>
       ${s.error ? `<p class="book-error" role="alert">${esc(s.error)} <button type="button" data-book="retry">Try again</button></p>` : ''}
-      <ol class="book-list">${s.rows.map(r => `<li><button type="button" data-book="open" data-id="${esc(r.id)}" aria-label="Open ${r.kind === 'exercise' ? 'exercise' : 'problem'} ${esc(r.id)} ${esc(r.title)}"><b>${esc(r.id)}</b><span>${esc(r.title)}</span><small>${r.visual_available?'Interactive setup':r.kind === 'exercise' ? 'Exercise' : 'Problem'}</small><i aria-hidden="true">↗</i></button></li>`).join('')}</ol>
-      ${s.loaded && !s.rows.length && !s.error ? `<p class="book-no-results">${s.unavailable ? 'This install has no private textbook question pack. Start a new chat and upload a problem of your own.' : 'No questions match. Try a problem number or a shorter title.'}</p>` : ''}
+      <ol class="book-list">${s.rows.map(r => `<li><button type="button" data-book="open" data-id="${esc(r.id)}" aria-label="Open ${r.kind === 'exercise' ? 'exercise' : 'problem'} ${esc(r.reference_number || r.id)} ${esc(r.title)}"><b>${esc(r.reference_number || r.id)}</b><span>${esc(r.title)}</span><small>${r.visual_available?'Interactive setup':r.kind === 'exercise' ? 'Exercise' : 'Problem'}${r.book_id==='kinema'?' · variant '+r.variant:''}</small><i aria-hidden="true">↗</i></button></li>`).join('')}</ol>
+      ${s.loaded && !s.rows.length && !s.error ? `<p class="book-no-results">${s.unavailable ? 'Add your textbook PDF above to open the prepared questions. A different edition will leave your library unchanged.' : 'No questions match. Try a problem number or a shorter title.'}</p>` : ''}
       ${s.next != null ? `<button type="button" class="book-more" data-book="more"${s.busy ? ' disabled' : ''}>${s.busy ? 'Loading…' : 'Show more questions'}</button>` : ''}`;
     math(box);
     const page = root.dataset.chapter === 'library' ? 'library' : 'path';
@@ -97,23 +139,23 @@ export class BookWorkspace {
   }
   async load(root, reset = false) {
     if (!root?.isConnected) return;
-    const s = this.state(root.dataset.chapter), seq = ++s.seq;
+    const book=this.selectedBook, s = this.state(root.dataset.chapter), seq = ++s.seq;
     if (reset) { s.rows = []; s.next = null; s.loaded = false; }
     s.busy = true; s.error = ''; this.paint(root);
-    const params = new URLSearchParams({ q: s.q, offset: reset ? 0 : s.next || 0, limit: 60 });
+    const params = new URLSearchParams({ book, q: s.q, offset: reset ? 0 : s.next || 0, limit: 60 });
     if (s.scope !== 'all') params.set('chapter', s.scope); if (s.kind) params.set('kind', s.kind);
     try {
       const data = await this.t.d.api(this.t.d.url('/api/book/catalog?' + params));
-      if (seq !== s.seq) return;
+      if (seq !== s.seq || book !== this.selectedBook) return;
       s.rows = reset ? data.items : [...s.rows, ...data.items]; s.total = data.total; s.next = data.next_offset; s.loaded = true; s.unavailable = data.book?.available === false;
-    } catch (e) { if (seq === s.seq) s.error = 'Could not load these questions: ' + e.message; }
-    finally { if (seq === s.seq) { s.busy = false; this.paint(root); } }
+    } catch (e) { if (seq === s.seq && book === this.selectedBook) s.error = 'Could not load these questions: ' + e.message; }
+    finally { if (seq === s.seq && book === this.selectedBook) { s.busy = false; this.paint(root); } }
   }
   async open(id, browser = null, from = null) {
     if (this.t.creating || this.t.busy) return;
     browser ||= this.t.page === 'path' ? this.t.el.pathpage.querySelector('[data-book-browser]') : this.t.page === 'library' ? this.t.host.querySelector('#libcatalog [data-book-browser]') : null;
     const state = browser && this.state(browser.dataset.chapter);
-    const origin = from || (browser ? { chapter: browser.dataset.chapter, scroll: this.t.el.page.scrollTop, id, q: state.q, scope: state.scope, kind: state.kind } : this.origin());
+    const origin = from || (browser ? { book:this.selectedBook, chapter: browser.dataset.chapter, scroll: this.t.el.page.scrollTop, id, q: state.q, scope: state.scope, kind: state.kind } : this.origin());
     this.t.closeDrawer();
     return this.t.workspace.open({ book_problem_id: id }, origin);
   }
@@ -178,7 +220,7 @@ export class BookWorkspace {
   questionHTML(p, {figures:showFigures=true}={}) {
     if (!p) return '';
     const checked = p.display_statement_md || (p.statement_status === 'checked' && p.statement_md), figures = p.images?.figure || [], setup = p.images?.setup || [], question = p.images?.question || [];
-    return `<section class="tv-book-question" data-mid="book-question:${esc(p.id)}" data-book-problem="${esc(p.id)}" aria-label="${p.kind === 'exercise' ? 'Exercise' : 'Problem'} ${esc(p.id)}"><div class="tv-book-reading"><header><div><span class="tv-book-kicker">${p.kind === 'exercise' ? 'Exercise' : 'Problem'} ${esc(p.id)}</span><h2>${esc(p.title)}</h2></div><button type="button" class="tv-book-folder" title="Add to folder" data-folder-action="add" data-folder-kind="book" data-folder-id="${esc(p.id)}" data-folder-title="${esc(p.title)}" aria-label="Add ${p.kind === 'exercise' ? 'exercise' : 'problem'} ${esc(p.id)} to a folder"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V5h6l2 2h10v13H3zM12 10v7m-3-3.5h6"/></svg></button></header>
+    return `<section class="tv-book-question" data-mid="book-question:${esc(p.id)}" data-book-problem="${esc(p.id)}" aria-label="${p.kind === 'exercise' ? 'Exercise' : 'Problem'} ${esc(p.reference_number || p.id)}"><div class="tv-book-reading"><header><div><span class="tv-book-kicker">${p.book_id==='kinema'?'Kinema · ':'Morin · '}${p.kind === 'exercise' ? 'Exercise' : 'Problem'} ${esc(p.reference_number || p.id)}</span><h2>${esc(p.title)}</h2></div><button type="button" class="tv-book-folder" title="Add to folder" data-folder-action="add" data-folder-kind="book" data-folder-id="${esc(p.id)}" data-folder-title="${esc(p.title)}" aria-label="Add ${p.kind === 'exercise' ? 'exercise' : 'problem'} ${esc(p.reference_number || p.id)} to a folder"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V5h6l2 2h10v13H3zM12 10v7m-3-3.5h6"/></svg></button></header>
       ${checked ? `<div class="tv-book-statement mdb">${this.statementHTML(p.display_statement_md || p.statement_md)}</div>` : `<p class="tv-book-fallback">Question</p><div class="tv-book-scans">${question.map((r,i) => this.image(r,'question',i)).join('') || '<p>The question is unavailable. Please reopen it from the Library.</p>'}</div>`}
       ${showFigures && (figures.length || setup.length) ? `<div class="tv-book-figures">${setup.map((r,i) => this.image(r,'setup',i)).join('')}${figures.map((r,i) => this.image(r,'figure',i)).join('')}</div>` : ''}
       </div></section>`;
@@ -316,6 +358,8 @@ export class BookWorkspace {
   }
   click(b, e) {
     e.preventDefault(); const action = b.dataset.book, root = b.closest('[data-book-browser]');
+    if(action==='upload')return b.closest('.book-chooser').querySelector('[data-book-file]').click();
+    if(action==='import-retry'&&this.lastImportFile)return this.importFile(this.lastImportFile);
     if (action === 'tab') { this.state(b.dataset.chapter).tab = b.dataset.tab; this.save(b.dataset.chapter); return this.t.renderPathPage(); }
     if (action === 'kind') { this.returnScroll = null; this.state(root.dataset.chapter).kind = b.dataset.kind; this.save(root.dataset.chapter); return this.load(root, true); }
     if (action === 'more' || action === 'retry') return this.load(root, action === 'retry');

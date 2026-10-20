@@ -35,6 +35,8 @@ def _read_revision(path: str, size: int, modified_ns: int) -> dict:
 
 
 def _read(path: Path) -> dict:
+    from .book_library import content_path
+    path = content_path(path.name, path)
     st = path.stat()
     return _read_revision(str(path.resolve()), st.st_size, st.st_mtime_ns)
 

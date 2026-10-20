@@ -229,7 +229,8 @@ def _check_focus(pid: str, entry: dict, scene: dict) -> dict:
 
 
 def _catalog() -> dict[str, dict]:
-    probs = json.loads((CONTENT / "daily_problems.json").read_text(encoding="utf-8"))["problems"]
+    from .book_library import content_path
+    probs = json.loads(content_path('daily_problems.json', CONTENT / 'daily_problems.json').read_text(encoding='utf8'))['problems']
     return {p["id"]: {**p, "title": re.sub(r"\s*[*∗]+\s*$", "", p["title"]).strip()} for p in probs}
 
 
@@ -307,7 +308,8 @@ def validate_scene(s: dict, catalog: dict[str, dict]) -> dict:
 
 @lru_cache(maxsize=1)
 def _load() -> tuple[dict[str, dict], dict[str, str]]:
-    manifest = json.loads((CONTENT / "daily_visuals.json").read_text(encoding="utf-8"))
+    from .book_library import content_path
+    manifest = json.loads(content_path('daily_visuals.json', CONTENT / 'daily_visuals.json').read_text(encoding='utf8'))
     catalog = _catalog()
     ready, rejected = {}, {}
     for s in manifest.get("scenes", []):
@@ -317,7 +319,7 @@ def _load() -> tuple[dict[str, dict], dict[str, str]]:
             ready[pid] = validate_scene(s, catalog)
         except SceneError as e:
             rejected[pid] = str(e)
-    focus_path = CONTENT / "focus_states.json"
+    focus_path = content_path('focus_states.json', CONTENT / 'focus_states.json')
     registry = json.loads(focus_path.read_text(encoding="utf-8")).get("scenes", {}) if focus_path.is_file() else {}
     for pid, entry in registry.items():
         if pid not in ready:

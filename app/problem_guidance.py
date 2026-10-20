@@ -15,7 +15,8 @@ def statement_sha(row):
 @lru_cache(maxsize=1)
 def _pack():
     try:
-        data=json.loads((CONTENT/'problem_guidance_exact.json').read_text(encoding='utf8'))
+        from .book_library import content_path
+        data=json.loads(content_path('problem_guidance_exact.json', CONTENT/'problem_guidance_exact.json').read_text(encoding='utf8'))
         return data if data.get('schema')==1 and isinstance(data.get('items'),dict) else {}
     except (OSError,ValueError,TypeError):
         return {}

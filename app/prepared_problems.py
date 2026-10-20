@@ -25,8 +25,10 @@ def _read(path, size, modified):
 
 def records():
     try:
-        stat = CONTENT.stat()
-        value = _read(str(CONTENT.resolve()), stat.st_size, stat.st_mtime_ns)
+        from .book_library import content_path
+        path = content_path(CONTENT.name, CONTENT)
+        stat = path.stat()
+        value = _read(str(path.resolve()), stat.st_size, stat.st_mtime_ns)
         return value if isinstance(value, dict) else {}
     except (OSError, ValueError, TypeError):
         return {}

@@ -73,7 +73,7 @@ export class Daily {
       if (!this.active || this.visit !== visit) return;
       if (value.state === 'unavailable') {
         this.v = null; clearInterval(this.timer); clearInterval(this.hb);
-        this.el.innerHTML = '<div class="dp-empty"><h1>Daily problem</h1><p>A Daily puzzle needs a prepared local problem pack. You can explore the chapters or bring your own question meanwhile.</p><div class="dp-row"><button type="button" class="dp-btn" data-dp-explore="path">Explore chapters</button><button type="button" class="dp-btn" data-dp-explore="new-chat">Bring a problem</button></div></div>';
+        this.el.innerHTML = '<div class="dp-empty"><h1>Daily problem</h1><p>Add your prepared Morin PDF using the book chooser in Chapters to unlock Daily. Original practice, notes and visuals are ready to explore.</p><div class="dp-row"><button type="button" class="dp-btn" data-dp-explore="path">Explore chapters</button><button type="button" class="dp-btn" data-dp-explore="new-chat">Bring a problem</button></div></div>';
         return;
       }
       this.set(value); this.offline = false;

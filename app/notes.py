@@ -53,7 +53,8 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
 def _pdf():
     import pypdfium2 as pdfium          # imported lazily: only the background writer needs it
     book = curriculum.load()["book"]
-    path = Path(book.get("pdf") or "")
+    from . import book_library
+    path = book_library.source_pdf() or Path(book.get("pdf") or "")
     if not path.is_file():
         raise NoteError(f"Morin PDF not found at {path}")
     return pdfium.PdfDocument(str(path))

@@ -1,5 +1,5 @@
 """Export cannot include source data/private paths and has reproducible file hashes."""
-import importlib.util,json,unittest
+import importlib.util,json,unittest,gzip
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('package_public',Path(__file__).resolve().parents[1]/'tools/package_public.py')
 package=importlib.util.module_from_spec(spec);spec.loader.exec_module(package)
@@ -18,6 +18,12 @@ class PublicPackage(unittest.TestCase):
         self.assertIn('static/js/account_panel.js',files)
         self.assertIn('app/sim_lab_anchors.json',files)
         self.assertIn('app/content/class_courses.json',files)
+        self.assertIn('app/content/book_import/morin.json.gz',files)
+        self.assertIn('docs/BOOKS.md',files)
+        recipe=json.loads(gzip.decompress(files['app/content/book_import/morin.json.gz']))
+        self.assertEqual(len(recipe['payload']['catalog']['items']),635)
+        self.assertIn('$pdf',json.dumps(recipe['payload']))
+        self.assertFalse(any(name.endswith('.pdf') for name in files))
         self.assertIn('static/icons/providers/LICENSE',files)
         self.assertIn('static/icons/providers/README.md',files)
         self.assertIn(b'static/vendor/** -text',files['.gitattributes'])

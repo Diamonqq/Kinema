@@ -37,7 +37,7 @@ from fastapi.staticfiles import StaticFiles
 from . import chapter_map, library_problems, course_cards, curriculum, daily, daily_visuals, dictation, jobs, learn_api, learner, notes, providers, registry, reminder, scenes, session, study, study_guides, tasks, teacher, tutor, visual_library, workspace
 from . import library_folders, screenshots_api, sim_lab
 
-VERSION = "1.48.3"
+VERSION = "1.49.0"
 # Windows registry associations can override WebP with text/plain. These are images.
 mimetypes.add_type('image/webp', '.webp')
 ROOT = Path(__file__).resolve().parents[1]
@@ -927,6 +927,9 @@ async def reminder_set(request: Request):
 
 
 learn_api.setup(db, DATA, lambda lesson: _lesson_digest(lesson))
+from . import book_library
+book_library.setup(DATA)
+app.include_router(book_library.router)
 from . import book_catalog
 book_catalog.setup(DATA)
 app.include_router(book_catalog.router)

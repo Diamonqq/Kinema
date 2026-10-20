@@ -92,11 +92,23 @@ See [data locations and launch options](docs/PUBLIC-SETUP.md#your-data).
 This is a starting point for a visual study app, with prepared mechanics
 references, reusable simulations, normal chat and a guided account setup.
 
-**The public repository excludes imported textbooks, numbered textbook question
-and solution packs, course assessments and anyone's saved study history.**
-Upload your own question to work with it. Daily's timed problem flow needs a
-separately prepared local problem pack and is unavailable without one.
-The larger development installation's textbook coverage is not included here.
+**Choose a book in Chapters or Library → Problems.** Kinema practice includes
+635 original questions: 112 setups with parameter variants, hints and worked
+answers across 14 chapters. Their familiar reference numbers help navigation;
+they are different questions, rather than replacements for the corresponding
+textbook problems, and do not reproduce their difficulty or full topic coverage.
+
+For your exact Morin questions, use **Add textbook PDF**. The matching prepared
+PDF restores all 635 checked questions and exercises with native math, source
+figures, existing help and matched simulations. It reads and formats your PDF
+locally, without another AI extraction. Other editions are rejected clearly.
+[Book import details →](docs/BOOKS.md)
+
+Textbook prose, page images, course assessments and personal study history are
+not distributed in the repository. Your imported book stays in your local data.
+Daily becomes available after the matching import; it still requires a prepared
+simulation for the selected question. Not every question has a prepared solution
+or simulation. AI help requires your own signed-in account.
 
 Prepared simulations cover specific supported setups. Generated visuals and AI
 explanations can need correction; arbitrary 3D assemblies do not all have physical

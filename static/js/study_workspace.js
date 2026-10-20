@@ -126,6 +126,7 @@ export class StudyWorkspace {
   back() {
     const t = this.t, p = t.thread?.book_problem, origin = read('origin.' + this.key(t.thread)) || this.origin;
     this.remember(); t.saveDraft(); this.cancel();
+    if(p){t.book.selectedBook=p.book_id||((p.id||'').startsWith('k:')?'kinema':'morin');try{localStorage.setItem('kinema.book.selected',t.book.selectedBook)}catch{}}
     if (origin?.chapter === 'folder') return t.libraryFolders.openReturn(origin);
     if (origin?.chapter === 'library') {t.book.returnScroll={chapter:'library',top:origin.scroll,id:origin.id};return t.d.openBookLibrary();}
     const chapter = origin?.chapter || t.thread?.study_context?.chapter || p?.chapter;

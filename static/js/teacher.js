@@ -1348,7 +1348,7 @@ export class Teacher {
     const label={known:'Known',shaky:'Shaky',weak:'Weak',partial:'Partly checked'};
     const row=c=>{const ev=c.evidence||{},badge=progressBadge(c,true)||(label[ev.state]?`<em class="pp2-${ev.state}">${label[ev.state]}</em>`:'');
       return `<li><button type="button" class="pp2-row pp2-ch" data-act="pp-open" data-n="${esc(c.n)}" aria-label="Open ${c.math?'':'chapter '}${esc(c.n)} ${esc(c.title)}"><b class="pp2-ch-number">${c.math?'MATH':'CHAPTER '+esc(c.n)}</b><span class="pp2-ch-title">${esc(c.title)}</span><span class="pp2-ch-meta">${badge}${c.primary?'':'<i class="pp2-supp">Supplemental</i>'}<span data-reading-record="${esc(c.n)}" data-reading-chapter="true">${this.workspace.history.line(c.n,true)}</span></span></button></li>`;};
-    return `<div class="pg-col pp2 pp2-overview"><h1 class="pg-h">Chapters</h1><div data-reading-save-status>${this.workspace.history.status()}</div><ol class="pp2-list" aria-label="Chapters and the maths used across the course">${this.chMap.map(row).join('')}</ol><p class="pg-note pp2-foot">Viewed tracks reading time. Learning progress reflects your answers.</p></div>`;
+    return `<div class="pg-col pp2 pp2-overview"><h1 class="pg-h">Chapters</h1>${this.book.chooser()}<div data-reading-save-status>${this.workspace.history.status()}</div><ol class="pp2-list" aria-label="Chapters and the maths used across the course">${this.chMap.map(row).join('')}</ol><p class="pg-note pp2-foot">Viewed tracks reading time. Learning progress reflects your answers.</p></div>`;
   }
   chapterDetail(c) {
     const label={known:'Known',shaky:'Shaky',weak:'Weak',partial:'Partly checked'};

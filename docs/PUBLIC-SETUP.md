@@ -61,13 +61,19 @@ account isolation and should not be exposed as a public website.
 
 ## Included content
 
-The source includes authored references and reusable physics visuals. It excludes
-imported textbooks, exact numbered textbook questions and solutions, copied book
-pages, course assessments, credentials and personal study records.
+The source includes authored references, reusable physics visuals and Kinema
+practice: 635 original questions built from 112 setups with parameter variants,
+hints and worked answers. These are different questions from Morin.
 
-Upload your own questions in chat. The Daily timer needs a separately prepared
-local problem pack and is unavailable in a clean public install. Prepared
-chapter references and Library visuals remain usable without that pack.
+Choose **Morin · your textbook** in Chapters or Library → Problems, then
+**Add textbook PDF**. The exact prepared PDF restores the 635 checked textbook
+questions and exercises, figures and existing simulation/help bindings locally.
+There is no AI extraction or sign-in requirement. Other editions are rejected
+without changing the library. [Supported PDF and details](BOOKS.md).
+
+The public source excludes textbook prose/pages, course assessments, credentials
+and personal study records. Daily requires the matching local book import.
+Prepared references, original practice and Library visuals work before importing.
 
 ## Troubleshooting
 
@@ -75,8 +81,9 @@ chapter references and Library visuals remain usable without that pack.
 - **AI is unavailable:** connect an account in Settings and verify it there.
   A provider may refuse a model because of permissions, quota or billing.
 - **Blank 3D view:** enable hardware acceleration/WebGL in a current browser.
-- **No textbook questions or Daily puzzle:** those imported packs are intentionally
-  absent from the public source. Use your own question or prepared Library visuals.
+- **No textbook questions or Daily puzzle:** add the matching PDF through the book
+  chooser. A different edition cannot use this prepared import. Kinema practice
+  and prepared Library visuals remain available.
 
 Prepared references, formulas and Library visuals work offline after installation;
 the browser libraries and math fonts are bundled. AI, provider sign-in and

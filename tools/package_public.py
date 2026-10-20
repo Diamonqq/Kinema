@@ -29,6 +29,7 @@ def collect(root=ROOT):
     for path in (root/'app').glob('*.py'):add(path)
     add(root/'app/sim_lab_anchors.json')
     for name in CONTENT_FILES:add(root/'app/content'/name)
+    add(root/'app/content/book_import/morin.json.gz')
     for path in (root/'static/js').rglob('*.js'):add(path)
     for path in (root/'static').glob('*.css'):add(path)
     for name in ('app.html','manifest.webmanifest'):add(root/'static'/name)
@@ -40,8 +41,8 @@ def collect(root=ROOT):
     for name in ('requirements.txt','requirements-dev.txt','start.py'):add(root/name)
     if (root/'.gitattributes').is_file():add(root/'.gitattributes')
     for name in ('LICENSE','README.md'):add(root/'static/icons/providers'/name)
-    for name in ('PUBLIC-SETUP.md','PROVIDERS.md','AGENT-SETUP.md'):add(root/'docs'/name)
-    for name in ('provider_fixture.py','test_provider_connections.py','test_cloud_providers.py','test_provider_teacher_flow.py','test_cli_connections.py','test_cli_runners.py','test_cli_teacher_flow.py','test_localization.py','test_public_package.py','test_public_readiness.py','test_official_accounts.py','test_account.py','test_account_welcome.mjs'):
+    for name in ('PUBLIC-SETUP.md','PROVIDERS.md','AGENT-SETUP.md','BOOKS.md'):add(root/'docs'/name)
+    for name in ('provider_fixture.py','test_book_library.py','test_companion_questions.py','test_provider_connections.py','test_cloud_providers.py','test_provider_teacher_flow.py','test_cli_connections.py','test_cli_runners.py','test_cli_teacher_flow.py','test_localization.py','test_public_package.py','test_public_readiness.py','test_official_accounts.py','test_account.py','test_account_welcome.mjs'):
         path=root/'tests'/name
         if path.exists():add(path)
     add(root/'tools/package_public.py')
