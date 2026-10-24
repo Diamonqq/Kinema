@@ -61,6 +61,35 @@ quantum, modern, nuclear/particle, solid state, astrophysics. They reuse this ki
 - Presets are chips that teach something specific ("Mode 1", "Beats", "Chaos").
 - Desktop and 320 px widths both usable; controls reachable above the composer.
 
+## Shared polish conventions (lead review + independent judge, wave 1)
+
+- Zoom chips sit beside a FIXED point of their target, such as a pivot, rest
+  position, launch point, apex, spring midpoint, periapsis or barycentre. They
+  never cover the apparatus, readouts or captions. Close-ups with no physical
+  target (potential, Poincaré) share one wrapping row. All chips use the kit chip
+  style with no custom sizes. View toggles that are not zooms go in Setup, not in
+  chip rows.
+- Every label stays inside the stage at 1280 and 320. Components that coincide with
+  their full vector (zero bank, zero angle) are hidden rather than drawn on top of
+  it. At 320, drop secondary labels before anything overlaps, and give stacked
+  frames a readable minimum height (about 150 px).
+- One title per graph. A custom graph's shell header is its title, so draw no
+  in-canvas title. Graph chips show names only; units go in the panel title.
+  Legends use symbols (θ, ω), never spelled-out words.
+- Time-series graphs show a readable window: about 5 periods or one beat, set with
+  descriptor `window` (seconds). The y range stays fixed over the whole forecast.
+  Motion that ends (a landing) ends the timeline with `sample.ended`.
+- Captions are built from what is actually drawn, so their colours and names match
+  the picture. No preset names floating as captions.
+- Text: US spelling (center, tire), typeset minus "−" in canvas text, accented
+  Poincaré. Use the same symbol for the same quantity across experiments. Numbers
+  get 2–4 significant figures and a unit (9.81 kN, not 9810.00). Equations end in a
+  number with its unit.
+- Defaults read as real, recognisable physics with readable magnitudes, and
+  degenerate defaults (a flat bank in a bank Breakdown) are avoided.
+- Breakdown and Graphs keep the transport pinned to the pane bottom, with no empty
+  band beneath it. Debug or diagnostic graphs are not shown to learners.
+
 ## Physics core contract (headless, Node-testable, no DOM)
 
 `static/js/experiments/<id>/model.js` exports `model`:
