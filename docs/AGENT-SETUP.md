@@ -10,7 +10,7 @@ Give your setup agent this instruction:
 
 ## For the setup agent
 
-The release audited for this guide is **v1.50.1**. Use its tag or source ZIP;
+The release audited for this guide is **v1.50.2**. Use its tag or source ZIP;
 do not assume an unreleased `main` commit is a tested release.
 Windows with Python **3.12.5** was checked in a fresh environment. Python 3.11+
 is supported by the source, but other Python/platform combinations were not
@@ -19,8 +19,8 @@ checked on real devices.
 1. Check for an existing installation and data first. Keep its data folder.
    Choose an ordinary user-owned install directory, not a system directory.
 2. Install Python and Git if needed using their official distributions. Clone
-   with `git clone --branch v1.50.1 https://github.com/Diamonqq/Kinema.git`, or
-   extract https://github.com/Diamonqq/Kinema/archive/refs/tags/v1.50.1.zip.
+   with `git clone --branch v1.50.2 https://github.com/Diamonqq/Kinema.git`, or
+   extract https://github.com/Diamonqq/Kinema/archive/refs/tags/v1.50.2.zip.
    Either gives a version-pinned checkout.
 3. Follow the environment and launch commands in [Setup](PUBLIC-SETUP.md).
    Do not enable PowerShell scripts; call `.venv\Scripts\python.exe` directly.
