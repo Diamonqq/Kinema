@@ -1,4 +1,6 @@
-// Independent Newtonian two-body mechanics. All lengths, masses and times are SI.
+// Independent Newtonian mechanics. All lengths, masses and times are SI.
+import {createNBody,scenarioBodies,replicateBodies} from './nbody.js';
+export {createNBody,stateFromElements,orbitalElements,replicateBodies} from './nbody.js';
 export const G = 6.67430e-11;
 const number = (key,label,symbol,unit,min,max,step,value,group='Launch') =>
   ({key,label,symbol,unit,min,max,step,value,group});
@@ -14,7 +16,33 @@ const params = [
     ['transfer','Hohmann first burn'],['escape','Escape threshold']]),
   number('targetRadius','Transfer destination','r_2','m',1,100,.1,20),
   number('alpha','Extra inverse-cube attraction','\\alpha','m',0,1,.01,0,'Force'),
-  choice('frame','Frame','cm',[['cm','Centre of mass'],['primary','Primary body']]),
+  choice('frame','Frame','cm',[['cm','Centre of mass'],['primary','Primary body'],['secondary','Body 2'],
+    ['third','Body 3'],['universe','Inertial'],['rotating','Rotating with bodies 1–2']]),
+  choice('system','System','two-body', [['two-body','Two bodies'],['custom-nbody','Custom 3–5 bodies'],
+    ['sun-earth-moon','Sun–Earth–Moon analogue'],['solar-system','Solar system analogue'],
+    ['docking','Shuttle docking analogue'],['jupiter-comet','Jupiter and comet analogue'],
+    ['jupiter-moons','Jupiter moons analogue'],['lagrange','Lagrange probes'],
+    ['binary-comet','Binary stars and comet'],['retrograde','Apparent retrograde motion']]),
+  number('bodyCount','Custom body count','N','',3,5,1,3,'Extra bodies'),
+  ...[3,4,5].flatMap(n=>[
+    number(`m${n}`,`Mass ${n}`,`m_${n}`,'kg',0,1e14,1e8,n===3?1e9:0,'Extra bodies'),
+    number(`x${n}`,`Body ${n} x`,`x_${n}`,'m',-1000,1000,.01,n===3?13:n===4?-15:0,'Extra bodies'),
+    number(`y${n}`,`Body ${n} y`,`y_${n}`,'m',-1000,1000,.01,n===5?20:0,'Extra bodies'),
+    number(`vx${n}`,`Body ${n} x speed`,`v_{${n}x}`,'m/s',-100,100,.01,n===5?-2:0,'Extra bodies'),
+    number(`vy${n}`,`Body ${n} y speed`,`v_{${n}y}`,'m/s',-100,100,.01,n===3?5:n===4?-2:0,'Extra bodies')]),
+  number('gravityScale','Gravity multiplier','G/G_0','',0,10,.01,1,'Force'),
+  number('maxStep','Maximum physics step','h','s',.0001,.1,.0001,.01,'Accuracy'),
+  choice('timeDirection','Physical time','forward',[['forward','Forward'],['reverse','Reverse']]),
+  number('thrustBody','Thrust body','i','',1,5,1,2,'Thrust'),
+  number('thrustAlong','Along / inertial x acceleration','a_t','m/s²',-1,1,.001,0,'Thrust'),
+  number('thrustNormal','Left normal / inertial y acceleration','a_n','m/s²',-1,1,.001,0,'Thrust'),
+  number('burnStart','Burn start','t_b','s',0,60,.1,0,'Thrust'),
+  number('burnDuration','Burn duration (0 = continuous)','\\Delta t_b','s',0,600,.1,0,'Thrust'),
+  choice('thrustFrame','Thrust directions','velocity',[['velocity','Along velocity / left normal'],['inertial','Inertial x / y']]),
+  number('replicas','Nearby test probes','N_p','',0,12,1,0,'Probes'),
+  number('replicaSpread','Probe x spacing','\\delta x','m',.001,1,.001,.01,'Probes'),
+  number('boostX','Inertial drift x','V_x','m/s',-5,5,.01,0,'View'),
+  number('boostY','Inertial drift y','V_y','m/s',-5,5,.01,0,'View'),
 ];
 const defaults = Object.fromEntries(params.map(p=>[p.key,p.value]));
 const preset = (id,label,values,note)=>({id,label,values:{...defaults,...values},note});
@@ -27,6 +55,11 @@ export const model = {
     preset('transfer','Hohmann first burn',{launch:'transfer'},'One launch impulse enters the transfer ellipse; the second circularising burn is not applied.'),
     preset('escape','Just escape',{launch:'escape'},'Zero relative energy is the boundary between bound and unbound motion.'),
     preset('precession','Precessing ellipse',{alpha:.6},'An added inverse-cube force rotates the line of apsides; this is a toy force, not general relativity.'),
+    ...[['custom-nbody','Three gravitating bodies'],['sun-earth-moon','Sun–Earth–Moon'],['solar-system','Solar system'],
+      ['docking','Shuttle docking'],['jupiter-comet','Comet encounter'],['jupiter-moons','Jupiter moons'],
+      ['lagrange','Lagrange probes'],['binary-comet','Binary and comet'],['retrograde','Retrograde motion']]
+      .map(([system,label])=>preset(system,label,{system},'Compact planar teaching analogue; not an ephemeris.')),
+    preset('thrust','Prograde thrust',{launch:'circular',thrustAlong:.01},'Continuous acceleration adds orbital energy; its work and impulse are tracked.'),
   ],
   observables:[['r','Separation','r','m'],['speed','Relative speed','v','m/s'],
     ['energy','Energy','E','J'],['kinetic','Kinetic energy','K','J'],['potential','Potential energy','U','J'],
@@ -34,7 +67,9 @@ export const model = {
     ['semiMajorAxis','Osculating semimajor axis','a','m'],['period','Kepler period','T','s'],
     ['periapsis','Inner turning radius','r_p','m'],['apoapsis','Outer turning radius','r_a','m'],
     ['escapeSpeed','Escape speed','v_e','m/s'],['sweptArea','Signed swept area','A','m²'],
-    ['areaRate','Area rate','dA/dt','m²/s']].map(([key,label,symbol,unit])=>({key,label,symbol,unit})),
+    ['areaRate','Area rate','dA/dt','m²/s'],['work','Thruster work','W','J'],
+    ['jacobi','Restricted circular Jacobi constant','C_J','m²/s²'],
+    ['lineOfSightRate','Apparent angular speed','d\\phi/dt','rad/s']].map(([key,label,symbol,unit])=>({key,label,symbol,unit})),
   create(values={}) {
     const p={...defaults,...values};
     for (const key of Object.keys(values)) if (!(key in defaults)) throw new RangeError(`Unknown parameter ${key}`);
@@ -43,7 +78,26 @@ export const model = {
         !Number.isFinite(p[d.key]) || p[d.key]<d.min || p[d.key]>d.max)
         throw new RangeError(`Invalid ${d.key}`);
     }
-    const total=p.m1+p.m2, reduced=p.m1*p.m2/total, mu=G*total;
+    if(![p.bodyCount,p.thrustBody,p.replicas].every(Number.isInteger)) throw new RangeError('Counts must be integers');
+    const total=p.m1+p.m2, reduced=p.m1*p.m2/total, mu=G*p.gravityScale*total;
+    if(p.system!=='two-body'||p.thrustAlong||p.thrustNormal||p.replicas||p.boostX||p.boostY||p.gravityScale===0||
+      !['cm','primary'].includes(p.frame)) {
+      let vx=p.vx0,vy=p.vy0;
+      if(p.launch!=='custom')vx=0;
+      if(p.launch==='circular')vy=Math.sqrt(mu/p.r0*(1+p.alpha/p.r0));
+      if(p.launch==='escape')vy=Math.sqrt(mu*(2/p.r0+p.alpha/p.r0**2));
+      if(p.launch==='transfer')vy=Math.sqrt(mu*(2/p.r0-2/(p.r0+p.targetRadius)));
+      const binary=[{name:'Primary',mass:p.m1,x:-p.m2/total*p.r0,y:0,vx:-p.m2/total*vx,vy:-p.m2/total*vy},
+        {name:'Companion',mass:p.m2,x:p.m1/total*p.r0,y:0,vx:p.m1/total*vx,vy:p.m1/total*vy}];
+      let bodies=scenarioBodies(p,binary);
+      bodies=bodies.map(b=>({...b,vx:b.vx+p.boostX,vy:b.vy+p.boostY}));
+      if(p.replicas)bodies=replicateBodies(bodies,bodies.length-1,p.replicas,{dx:p.replicaSpread});
+      if((p.thrustAlong||p.thrustNormal)&&p.thrustBody>bodies.length)throw new RangeError('Thrust body does not exist');
+      return createNBody({bodies,gravity:G*p.gravityScale,alpha:p.alpha,maxStep:p.maxStep,
+        direction:p.timeDirection==='reverse'?-1:1,frame:p.frame,
+        thrust:{body:Math.min(p.thrustBody-1,bodies.length-1),along:p.thrustAlong,normal:p.thrustNormal,
+          frame:p.thrustFrame,start:p.burnStart,duration:p.burnDuration}});
+    }
     let x,y,vx,vy,t,area,status;
     const potential = r=>-reduced*mu*(1/r+p.alpha/(2*r*r));
     const acceleration = (x,y)=>{
@@ -67,7 +121,7 @@ export const model = {
       2*barrier0/(mu+Math.sqrt(Math.max(0,mu*mu+4*specific0*barrier0))) : 0;
     const captureTrajectory=estimatedPeri<.02;
     const peri=captureTrajectory ? p.r0 : estimatedPeri;
-    const maxH=Math.min(.01,.001*Math.sqrt(peri**3/(mu*(1+p.alpha/peri))));
+    const maxH=Math.min(p.maxStep,.001*Math.sqrt(peri**3/(mu*(1+p.alpha/peri))));
     function step(dt) {
       if (!Number.isFinite(dt)||dt<0||dt>60) throw new RangeError('dt must be 0..60 seconds');
       if (!dt) return;
@@ -78,7 +132,7 @@ export const model = {
         const r=Math.hypot(x,y);
         if (r<.02) {status='close-encounter';break;}
         if(++count>2e6) throw new RangeError('Integration budget exceeded; use a shorter step');
-        const h=Math.min(dt-elapsed,dt/n,captureTrajectory ?
+        const h=(p.timeDirection==='reverse'?-1:1)*Math.min(dt-elapsed,dt/n,captureTrajectory ?
           .001*Math.sqrt(r**3/(mu*(1+p.alpha/r))) : Infinity);
         const a=acceleration(x,y);
         vx+=h*a[0]/2;vy+=h*a[1]/2;
@@ -89,7 +143,7 @@ export const model = {
           status='close-encounter';break;
         }
         area+=(x*ny-y*nx)/2;x=nx;y=ny;
-        const b=acceleration(x,y);vx+=h*b[0]/2;vy+=h*b[1]/2;elapsed+=h;
+        const b=acceleration(x,y);vx+=h*b[0]/2;vy+=h*b[1]/2;elapsed+=Math.abs(h);
       }
       t+=dt;
     }
@@ -114,7 +168,8 @@ export const model = {
       return {t,r,speed:Math.sqrt(v2),...energy,eccentricity,semiMajorAxis,
         period:keplerBound ? 2*Math.PI*Math.sqrt(semiMajorAxis**3/mu) : 0,
         periapsis,apoapsis,escapeSpeed:Math.sqrt(mu*(2/r+p.alpha/(r*r))),
-        sweptArea:area,areaRate:h/2,bound,keplerExact:p.alpha===0,status};
+        sweptArea:area,areaRate:h/2,bound,keplerExact:p.alpha===0,work:0,jacobi:0,
+        jacobiApplicable:false,lineOfSightRate:0,bodyCount:2,status};
     }
     function geometry() {
       const body=(mass,f)=>({mass,x:f*x,y:f*y,vx:f*vx,vy:f*vy});

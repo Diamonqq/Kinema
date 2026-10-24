@@ -18,6 +18,45 @@ saved/restored. Mouse launch, effective potential, replay-style paths and zoom
 supported exploration. The actual finite-charge source uses linear restoring
 force inside R0, despite an inconsistent simplified help description.
 
+## CUPS coverage
+
+Coverage is from a complete read of local COLISION.HLP and COLPHY.PAS (1546
+source lines), including force initialization, force sums, histories and
+DrawXSection. **Yes/improved below refers to tested headless physics/data.** No
+table row is evidence of an implemented plot on screen; views remain unassigned.
+
+| Original physics, example or plot | Kinema status and evidence / omission reason |
+|---|---|
+| Single finite-mass two-body collisions; edit impact parameter, mass ratio, speed/energy | **Yes:** independent m1/m2 and finite-start launch; target motion additionally supported. Kinetic energy maps to speed via sqrt(2K/m1). |
+| Repulsive/attractive Coulomb | **Yes:** signed potential strength and numerical Rutherford tests, not an analytic animation. |
+| Screened Coulomb | **Yes:** consistent exponential potential/force; Screening example. |
+| Truncated Coulomb inside the charge distribution | **Improved:** continuous potential and linear interior force match the physics source rather than the inconsistent help simplification. |
+| Arbitrary negative power law (source entry range −100..−1) | **Yes** for tested exponents −4..2, including the logarithmic n=−1 potential. **Deliberately omitted:** −100..−4 stiffness range, which has no verified accuracy/performance bound in this real-time integrator. Positive exponents are an extra, with no claim of asymptotic scattering. |
+| Elastic hard spheres | **Improved:** exact time-of-contact and finite-mass normal impulse, no assumption that y velocity stays zero. Restitution and tracked deformation energy are additional. |
+| Soft spring spheres | **Improved:** F=−dU/dr with the correct 1/2 in spring energy; Spring contact example. |
+| Yukawa | **Yes:** signed short-range potential and force; Short-range attraction example. |
+| Woods–Saxon | **Improved:** bounded well and radial unit-vector force consistent with the potential; Finite-depth well example. |
+| User-defined compiled force hook | **Deliberately omitted:** the original hook only reports that user code is missing; arbitrary code execution is outside the bounded model/action contract. No implemented original interaction is lost. |
+| Coulomb combined with Woods–Saxon, Yukawa, hard sphere or soft sphere; separate secondary strength/range/steepness | **Improved:** all four combinations, independent secondary descriptors and preset chips, consistent summed U/F. Hard-core contact uses exact drift impulse within split force steps; work/energy tested. Invalid non-Coulomb combinations reject. |
+| Original default Coulomb, shielding, finite-core, power, hard, soft, Yukawa and Woods–Saxon examples | **Yes:** all eight force choices have tested configurations. Human-labelled chips focus on one effect rather than reproducing the original numerical constants. |
+| Lab and CM trajectories (separately/together) | **Yes:** every geometry/trace row supplies both frames, including translating CM. No displayed panes yet. |
+| Lab momentum vectors and their sum; CM momentum vectors | **Yes:** masses/velocities and total P are explicit, plus velocity-component observables. Vector rendering remains pending. |
+| Potential function and effective-potential overlay | **Improved:** interactionAt gives U and F, including sums; exact U_eff=U+L²/(2m_red r²) is specified in the view note, rather than the original inconsistent barrier coefficient. Hard core is a wall, not a finite fake U. |
+| Instantaneous positions, dot histories, paths, CM marker and impact-offset bracket | **Yes:** collisionTrace supplies bounded frame histories/time and configuration metadata, suitable for each display. Rendering styles remain pending. |
+| Single-step, slow/continuous motion, reset | **Yes:** exact requested dt, deterministic reset and finite samples; transport presentation remains the shared kit's job. |
+| Sweep impact parameter with uniform / concentrated / strongly concentrated spacing | **Yes:** sweepValues with concentration 1/2/3, scatteringCurve with explicit completeness flags. |
+| Sweep projectile energy, force type, mass ratio, strength, range, steepness, combined-force parameters | **Yes:** collisionSweep, explicit choices and linear/geometric grids; all source sweep dimensions tested. Energy choices convert to speed before calling the helper. |
+| Repeat previous force/parameter set for comparison | **Yes:** immutable complete configs and trace arrays allow comparisons; tests serialize two independent histories without cross-contamination. A remembered-previous UI control is deliberately omitted until views. |
+| Differential cross section vs scattering angle; relative probability and logarithmic display | **Improved:** numerical local branch Jacobian dσ/dΩ in physical m²/sr, plus logSigma; lab/CM and initial/asymptotic impact-coordinate choices are explicit. Tested against hard-sphere and Rutherford results. The help's claim of plotting against impact parameter is inconsistent with the actual angle-axis source; rows expose both b and θ. |
+| Nonmonotonic/multivalued scattering and singular forward directions | **Improved:** mark turning/forward singularities and incomplete encounters unavailable instead of dividing blindly. **Deliberately omitted:** combining multiple b branches into one angular bin until convergence/error rules are defined; local branch curves remain usable. |
+| Save/restore/overlay up to ten cross-section sets, linear/log toggle, discard selected/all | **Yes:** returned section arrays/configs are JSON data and independent sets can be overlaid by the future renderer. **Deliberately omitted:** persistent-set UI, filesystem I/O and legacy ASCII format; no pure core owns storage. |
+| Save/restore collision histories with force, parameters, mass ratio, angle, times, x/y/vx/vy; overlay paths/dots | **Yes:** collisionTrace includes full parameter snapshots, measured angle, samples and both frame histories, round-tripped through JSON in tests. **Deliberately omitted:** actual disk writes and a saved-history viewer in this pass. |
+| Relativistic scattering | **Deliberately omitted:** despite dormant variable declarations, the read COLPHY acceleration/run path is Newtonian and initialization disables Relativistic; no working relativistic collision capability is demonstrated by this original. |
+
+No DOS menu/hotkey, printer, palette, memory or file-dialog mechanic is counted
+as physics parity. New evidence lives in `collisions-coverage.test.mjs` beside
+the original analytic/regression suite.
+
 ## Implemented core and improvements
 
 Two finite masses, SI units, exact separation/velocity reconstruction in lab and
@@ -91,7 +130,8 @@ b/θ marker. The latter is a parameter plot, not a time series: author it as a
 close-up if the initial kit only supports time graphs. Do not freeze the UI by
 computing long curves in draw(); batch once off the animation path and cancel
 stale work. Label finite-start curves as such, distinguish lab scattering angles
-from CM angles, omit unfinished points. No differential cross section is claimed.
+from CM angles, omit unfinished points. The optional cross-section graph uses
+the tested local-branch Jacobian described below; it does not invent missing data.
 
 Breakdown order: contact/central-force direction; normal/tangent decomposition;
 impulse and momentum; then energy. Show the current signed equation, plus
@@ -123,8 +163,48 @@ merger. Curves expose `complete=false` on this path or when duration is exhauste
 High-energy soft spheres can interpenetrate; reaching the centre is guarded too.
 Curves are bounded to 100 points/100000 caller steps; use a worker for large jobs.
 
-Deferred: force superposition, user-defined code, arbitrary 2D launch velocity
-editing, differential cross-section extraction/overlays and persisted curve sets.
+## Coverage-pass additions and limits
+
+`secondInteraction` is none / woods-saxon / yukawa / hard / soft, valid only with
+Coulomb, matching the original combinations. secondStrength, secondRange,
+secondDiffuseness and secondStiffness are independent. A combined hard core uses
+secondRange as its contact separation. Restitution still applies at that contact;
+smooth potentials contribute continuously, with deformation energy accounted.
+The four combination presets use deliberately instructional SI scales, not actual
+nuclear measurements. The constructor rejects initially overlapping hard cores.
+
+`differentialCrossSection(points,{frame:'cm'|'lab',coordinate:'initial'|'asymptotic'})`
+computes `abs(b/(sin(theta) dtheta/db))` using a nonuniform-grid quadratic derivative.
+Inputs need >=3 complete local neighbours and strictly increasing nonnegative b.
+Output sigma is m²/sr (solid angle is dimensionless), logSigma is its natural log
+in those chosen units, and available/reason flags protect incomplete and singular
+results. Nonmonotonic branches remain separate; this is neither a quantum cross
+section nor an automatically converged total angular distribution. Refine b grids
+and starting distance before treating the curve as converged. Tests use actual
+integrated hard-sphere angles (sigma=R²/4 within 0.001 m²) and independently supplied
+Rutherford angles on a finer nonuniform grid (relative error <1e-4). Existing tests
+still compare three numerical Coulomb trajectories to the analytic angle.
+
+`scatteringCurve` now also returns labAngle/availability and Coulomb bInfinity
+derived from energy/angular momentum, when a positive-energy pure inverse-square
+asymptote exists. Finite-start numerical deflection still has finite-tail error;
+requesting an asymptotic coordinate does not remove that error. Inelastic/combined/
+power-law trajectories never claim a Coulomb asymptote. Default curves retain
+initial b so comparisons do not silently mix coordinate conventions.
+
+`sweepValues` generates <=100 linear/geometric or concentrated grid values;
+`collisionSweep` supports <=32 explicit parameter choices and bounded runtime.
+`collisionTrace` retains <=10001 timestamped lab/CM snapshots plus configuration,
+without writing files. Independent arrays can be stored/overlaid by their eventual
+UI owner. Add parameter graph `cross-section` with b/angle coordinates and a log
+toggle, filtering `available=false`; never show those sentinel zeros as data.
+Setup must expose secondary controls only when combined Coulomb is selected.
+Trace `complete` means the requested finite recording window completed without
+a close-encounter guard; only scatteringCurve's `complete` checks outgoing return
+to the launch separation. A completed trace is not necessarily a finished encounter.
+
+User-defined code, arbitrary 2D initial-velocity editing, extremely stiff exponents,
+branch-summed cross sections and persisted-set UI remain deliberately omitted.
 UI integration and rendered desktop/320 px checks belong to the follow-up.
 Shared integration friction and sandbox test-runner workaround are recorded in
 orbits.md; no shared app/kit/version/registry file is owned by this lane.
