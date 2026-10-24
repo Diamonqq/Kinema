@@ -80,12 +80,12 @@ export const view={graphs,closeups,
    else{const apex=data.apex,map=mapWorld(s,[apex.x-10,apex.x+10,apex.y-4,apex.y+4],65,s.h-75);path(s,data.path,map,blue);s.circle(map.x(apex.x),map.y(apex.y),5,blue);vector(s,map.x(apex.x),map.y(apex.y),apex.vx,0,'vx',blue,Math.min(70,s.w*.22)/Math.max(1,Math.abs(apex.vx)));vector(s,map.x(apex.x),map.y(apex.y),0,-1,'mg',orange,38);s.text('At the top: vy = 0, but gravity remains',s.w/2,48,muted,s.w<340?10:12);}
    return;
   }
-  const m=mapWorld(s,data.bounds),p=f.geometry.position;
+  const m=mapWorld(s,data.bounds,f.thumbnail?12:50,f.thumbnail?s.h-12:s.h-150),p=f.geometry.position;
   s.line(m.x(data.bounds[0]),m.y(0),m.x(data.bounds[1]),m.y(0),'#465669',1);
   path(s,data.ghost,m,'#8c9cb250',true);path(s,data.path,m,blue+'28');path(s,data.path.filter(q=>q.t<=f.t+.001),m,blue);
   // Actual diameter is preserved; the luminous halo is an explicit locator.
   const r=f.geometry.radius*m.scale;s.circle(m.x(p.x),m.y(p.y),Math.max(5,r+4),blue+'25');s.circle(m.x(p.x),m.y(p.y),Math.max(.6,r),blue);
-  s.text(f.sample.landed?`Landed · ${fmt(f.sample.range)} m`:`Height ${fmt(f.sample.y)} m`,s.w/2,29,muted,12);
+  if(!f.thumbnail)s.text(f.sample.landed?`Landed · ${fmt(f.sample.range)} m`:`Height ${fmt(f.sample.y)} m`,s.w/2,29,muted,12);
   if(f.breakdown){
    const len=Math.min(48,s.w*.11),v=f.geometry.velocity,vscale=len/Math.max(1,Math.hypot(v.x,v.y));
    vector(s,m.x(p.x),m.y(p.y),v.x,0,'vx',blue,vscale);vector(s,m.x(p.x),m.y(p.y),0,v.y,'vy',green,vscale);

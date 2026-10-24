@@ -90,7 +90,7 @@ on a separate row clear of the key.
 
 | close-up id | exact view and equations |
 |---|---|
-| corner | Looking forward across the configured next corner: road angle theta from horizontal, N toward center/up, mg down, signed f down/up slope; separate N sin(theta), N cos(theta), f cos(theta), -f sin(theta) projections. N=m(g cos(theta)+(v^2/r)sin(theta)), f=m((v^2/r)cos(theta)-g sin(theta)), signed values and vmax |
+| corner | Looking forward across the configured next corner: road angle theta from horizontal, N toward center/up, mg down, signed f down/up slope; contact-rooted dashed N sin(theta), N cos(theta), f cos(theta), -f sin(theta) projections. N=m(g cos(theta)+(v^2/r)sin(theta)), f=m((v^2/r)cos(theta)-g sin(theta)), signed values and vmax |
 | grip | Friction circle radius mu N, lateral/longitudinal axes, actual force as solid dot and requested drive hollow; fparallel^2+fperp^2 <= (mu N)^2 with signed forces and capacity in N |
 
 Breakdown combines the bank cross-section and friction circle, stacked at narrow
@@ -131,3 +131,9 @@ Workflow suggestions for coordinator: preserve explicit source-vs-new-model
 distinction (the referenced HLP has no named projectile/race chapters), and use
 single-process Node tests where child spawn is EPERM. These are lane-scoped notes;
 coordinator can reconcile them with existing work_records.
+
+Polish: component arrows share the car contact origin and the force scale; faint
+dashed rectangle guides connect their tips to the resultant. Tip labels use
+collision avoidance and short leaders when needed. The friction-circle capacity
+label is attached to a diagonal radius. Gallery rendering uses frame.thumbnail
+and contains apparatus only, independent of canvas height.

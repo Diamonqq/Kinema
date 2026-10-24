@@ -21,6 +21,19 @@ function arrow(s,x,y,dx,dy,label,color){
  if(Math.hypot(dx,dy)<1.5)return;const tx=x+dx,ty=y-dy;s.arrow(x,y,tx,ty,color,2);
  s.text(label,tx+(dx>3?7:dx<-3?-7:0),ty+(dy>=0?-12:13),color,11,dx>3?'left':dx<-3?'right':'center');
 }
+// Keep every component rooted at contact; labels may move to the nearest
+// clear tip position, with a leader if the first caption row is occupied.
+function tipLabel(s,label,tx,ty,color){
+ const c=s.ctx;c.font='11px system-ui,sans-serif';const width=c.measureText(label).width||label.length*6,height=12;
+ const choices=[];for(const dy of [-14,16,-30,32,-46,48])for(const dx of [9,-9,0])choices.push({x:tx+dx,y:ty+dy,align:dx>0?'left':dx<0?'right':'center'});
+ const fits=p=>{const left=p.x-(p.align==='right'?width:p.align==='center'?width/2:0),top=p.y-height/2;
+  return left>=7&&left+width<=s.w-7&&top>=8&&top+height<=s.h-12&&!(s.labels||[]).some(a=>left<a.x+a.width+5&&left+width>a.x-5&&top<a.y+a.height+5&&top+height>a.y-5);};
+ const p=choices.find(fits)||choices.at(-1);if(Math.hypot(p.x-tx,p.y-ty)>26)s.line(tx,ty,p.x,p.y,color+'70',.8);s.text(label,p.x,p.y,color,11,p.align);
+}
+function projection(s,x,y,dx,dy,label,color){
+ if(Math.hypot(dx,dy)<1.5)return;
+ s.ctx.setLineDash([4,4]);s.arrow(x,y,x+dx,y-dy,color,1.4);s.ctx.setLineDash([]);tipLabel(s,label,x+dx,y-dy,color);
+}
 export function bankSnapshot(f){return curveForces({...f.params,speed:f.sample.speed,radius:f.params.radius,bank:f.params.bank});}
 function bank(s,f,box,components){
  const {x,y,w,h}=box,theta=f.params.bank*rad,c=Math.cos(theta),sn=Math.sin(theta),force=bankSnapshot(f),cx=x+w*.5,cy=y+h*.53,len=Math.min(w*.33,h*.39),k=len/Math.max(force.normal,f.params.mass*f.params.gravity,Math.abs(force.lateral),1);
@@ -33,12 +46,17 @@ function bank(s,f,box,components){
  arrow(s,cx,cy,0,-f.params.mass*f.params.gravity*k,'mg',orange);
  arrow(s,cx,cy,force.lateral*c*k,-force.lateral*sn*k,'f',green);
  if(components){
-  // Projection arrows have separate origins so N and f components stay legible.
-  const px=x+w*.3,py=y+h-19,l=Math.min(35,w*.15),nk=l/Math.max(1,force.normal);
-  arrow(s,px,py,force.normal*sn*nk,0,'N sin θ',blue);
-  arrow(s,x+w-45,py,0,force.normal*c*nk,'N cos θ',blue);
-  arrow(s,px,py+26,force.lateral*c*nk,0,'f cos θ',green);
-  arrow(s,x+w-45,py+26,0,-force.lateral*sn*nk,'−f sin θ',green);
+  // Orthogonal projections and completion guides form the actual vector
+  // rectangle, all at the same force scale and the same contact origin.
+  const nx=force.normal*sn*k,ny=force.normal*c*k,fx=force.lateral*c*k,fy=-force.lateral*sn*k;
+  s.ctx.setLineDash([2,4]);
+  s.line(cx+nx,cy,cx+nx,cy-ny,blue+'60',1);s.line(cx,cy-ny,cx+nx,cy-ny,blue+'60',1);
+  if(Math.hypot(fx,fy)>=1.5){s.line(cx+fx,cy,cx+fx,cy-fy,green+'60',1);s.line(cx,cy-fy,cx+fx,cy-fy,green+'60',1);}
+  s.ctx.setLineDash([]);
+  projection(s,cx,cy,nx,0,'N sin \u03b8',blue);
+  projection(s,cx,cy,0,ny,'N cos \u03b8',blue);
+  projection(s,cx,cy,fx,0,'f cos \u03b8',green);
+  projection(s,cx,cy,0,fy,'\u2212f sin \u03b8',green);
  }
  return force;
 }
@@ -49,7 +67,7 @@ function grip(s,f,box){
  const tx=cx+force.longitudinal*k,ty=cy-force.lateral*k;s.arrow(cx,cy,tx,ty,force.grip?green:'#e4a9bd',2);s.circle(tx,ty,3,green);
  s.ctx.strokeStyle=purple;s.ctx.beginPath();s.ctx.arc(cx+f.params.drive*k,ty,4,0,2*Math.PI);s.ctx.stroke();
  s.text('f∥',cx+r+10,cy,muted,11,'left');s.text('f⊥',cx,cy-r-16,muted,11);
- s.text('μN',cx-r-6,cy+r+13,orange,11);
+ const radius=force.capacity*k,rx=cx-radius/Math.sqrt(2),ry=cy+radius/Math.sqrt(2);s.line(cx,cy,rx,ry,orange,1.2);tipLabel(s,'\u03bcN',rx,ry,orange);
  return force;
 }
 export const view={graphs,closeups,
@@ -73,7 +91,7 @@ export const view={graphs,closeups,
    }
    return;
   }
-  const R=p.radius,L=p.halfStraight,pad=Math.max(4,R*.08),thumb=s.h<220,m=world(s,[-L-R-pad,L+R+pad,-R-pad,R+pad],thumb?12:56,thumb?s.h-12:s.h-132),length=4*L+2*Math.PI*R,c=s.ctx;
+  const R=p.radius,L=p.halfStraight,pad=Math.max(4,R*.08),thumb=f.thumbnail===true,m=world(s,[-L-R-pad,L+R+pad,-R-pad,R+pad],thumb?12:56,thumb?s.h-12:s.h-132),length=4*L+2*Math.PI*R,c=s.ctx;
   c.beginPath();for(let j=0;j<=240;j++){const a=trackPoint(length*j/240,p);j?c.lineTo(m.x(a.x),m.y(a.y)):c.moveTo(m.x(a.x),m.y(a.y));}
   c.strokeStyle='#28394e';c.lineWidth=Math.max(2,Math.min(9,4*m.scale));c.stroke();c.strokeStyle='#60748e';c.lineWidth=1;c.setLineDash([3,5]);c.stroke();c.setLineDash([]);
   s.line(m.x(0),m.y(-R)-6,m.x(0),m.y(-R)+6,'#b1c3db',2);
