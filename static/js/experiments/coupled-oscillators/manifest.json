@@ -933,12 +933,13 @@
           "label": "x₂",
           "color": "#e9bb88"
         }
-      ]
+      ],
+      "window": 14.720113712011933
     },
     {
       "id": "modes",
-      "label": "Mode amplitudes",
-      "unit": "√kg m",
+      "label": "Mode coordinates",
+      "unit": "?kg ? m",
       "series": [
         {
           "key": "q1",
@@ -950,7 +951,8 @@
           "label": "q₂",
           "color": "#e9bb88"
         }
-      ]
+      ],
+      "window": 14.720113712011933
     },
     {
       "id": "energy",
@@ -959,17 +961,17 @@
       "series": [
         {
           "key": "energy",
-          "label": "Total",
+          "label": "E",
           "color": "#b0c9ad"
         },
         {
           "key": "kinetic",
-          "label": "Kinetic",
+          "label": "K",
           "color": "#8ab9ff"
         },
         {
           "key": "potential",
-          "label": "Spring",
+          "label": "U",
           "color": "#e9bb88"
         }
       ]

@@ -210,8 +210,11 @@ Coupled oscillators implements a linear one-dimensional chain of 2–10 independ
 editable masses and 3–11 springs, two walls/one wall/free ends, initial drag and
 velocities, two-mode superposition, analytic mass-weighted normal modes and
 independent Verlet/RK4 numerical motion, mass-proportional damping and first-mass
-sinusoidal driving. Displacements and mode amplitudes cover every active mass;
-energy and phase space are optional graphs. The analytic bound frames the entire
+sinusoidal driving. Displacements and mass-weighted mode coordinates (?kg ? m) cover every active mass;
+energy and phase space are optional graphs. Their time window is one beat period
+from the two strongest active normal modes, or five periods of the lowest
+nonzero mode if only one is excited. Spring labels carry N/m, and Breakdown
+equations end with the live net force in N. The analytic bound frames the entire
 60-second motion without waiting for forecast samples. General 2D spring-network
 editing and arbitrary driven masses from original CUPS remain outside this chain
 reference implementation.

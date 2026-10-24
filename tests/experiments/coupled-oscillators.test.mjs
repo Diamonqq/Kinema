@@ -36,3 +36,22 @@ test('reset and exact step duration preserve initial state for all presets and f
  for(const p of model.presets){const s=model.create(p.values),initial=s.sample();s.step(.123);near(s.t,.123);s.reset();assert.deepEqual(s.sample(),initial);}
  const free=model.create({ends:'free',modeA:1,amplitudeA:.1,v1:.1});free.step(2);assert.ok(Object.values(free.sample()).every(Number.isFinite));assert.equal(defaults.n,2);
 });
+
+test('displacement window follows the excited mode beat and falls back to five periods',async()=>{
+ const {displacementWindow,view}=await import('../../static/js/experiments/coupled-oscillators/view.js');
+ for(const id of ['beats','mode1','mode2','driven']){
+  const p=model.presets.find(p=>p.id===id).values,s=model.create(p),[a,b]=s.modes;
+  const expected=['beats','driven'].includes(id)?2*Math.PI/(b.omega-a.omega):5*2*Math.PI/a.omega;
+  near(displacementWindow(p),expected,1e-8);near(view.graphDescriptors(p).find(g=>g.id==='motion').window,expected,1e-8);
+ }
+ const p={...defaults,n:4,modeA:2,modeB:4},s=model.create(p);near(displacementWindow(p),2*Math.PI/(s.modes[3].omega-s.modes[1].omega),1e-8);
+ assert.equal(view.graphs.find(g=>g.id==='modes').label,'Mode coordinates');assert.equal(view.graphs.find(g=>g.id==='modes').unit,'√kg · m');
+ assert.deepEqual(view.graphs.find(g=>g.id==='energy').series.map(v=>v.label),['E','K','U']);
+});
+test('Breakdown ends with live net force in N including damping and driving',async()=>{
+ const {view}=await import('../../static/js/experiments/coupled-oscillators/view.js');
+ for(const p of [{...defaults},{...defaults,gamma:.3,force:.4,ends:'free'}]){
+  const s=model.create(p);s.step(.6);const geometry=s.geometry(),lines=view.equations({params:s.params,geometry,t:s.t,sample:s.sample()});
+  lines.forEach((line,i)=>{assert.ok(line.includes('='+geometry.forces[i].toFixed(2)+'\\,\\mathrm{N}'));assert.ok(line.includes('m_{'+(i+1)+'}\\ddot'));});
+ }
+});
