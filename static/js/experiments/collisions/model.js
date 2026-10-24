@@ -75,7 +75,7 @@ export const model={
     preset('glancing','Glancing collision',{},'Only the normal component changes; equal-mass outgoing velocities are perpendicular.'),
     preset('heavy','Heavy target',{m2:10,b:0},'A massive target sends the projectile back.'),
     preset('inelastic','Energy into deformation',{b:0,restitution:.5},'Momentum is conserved while normal relative kinetic energy decreases.'),
-    preset('rutherford','Rutherford',{interaction:'coulomb',distance:100,b:1},'Repulsive inverse-square scattering bends the relative velocity.'),
+    preset('rutherford','Rutherford',{interaction:'coulomb',distance:20,b:1},'Repulsive inverse-square scattering bends the relative velocity; the launch is finite-distance.'),
     preset('screening','Screening',{interaction:'shielded',distance:20,b:1},'Screening suppresses distant deflections.'),
     preset('spring','Spring contact',{interaction:'soft',b:.3},'Contact stores energy in compression and gives it back.'),
     preset('yukawa','Short-range attraction',{interaction:'yukawa',strength:-1,b:.8,distance:20},'The attractive tail acts over a finite range.'),
@@ -85,7 +85,7 @@ export const model={
     preset('combined-hard','Coulomb + hard core',{interaction:'coulomb',strength:.2,secondInteraction:'hard',b:.2},'Repulsive acceleration and an exact contact impulse act in one encounter.'),
     preset('combined-soft','Coulomb + spring core',{interaction:'coulomb',strength:.2,secondInteraction:'soft',b:.2},'A finite contact spring supplements the inverse-square force.'),
   ],
-  observables:[['separation','Separation','r','m'],['relativeSpeed','Relative speed','v_{rel}','m/s'],
+  observables:[['separation','Separation','r','m'],['radialSpeed','Radial speed','v_r','m/s'],['relativeSpeed','Relative speed','v_{rel}','m/s'],
     ['vx1','Projectile x velocity','v_{1x}','m/s'],['vy1','Projectile y velocity','v_{1y}','m/s'],
     ['vx2','Target x velocity','v_{2x}','m/s'],['vy2','Target y velocity','v_{2y}','m/s'],
     ['energy','Mechanical energy','E','J'],['kinetic','Kinetic energy','K','J'],['potential','Potential energy','U','J'],
@@ -166,7 +166,7 @@ export const model={
     }
     function sample() {
       const a=p.m2/total,b=-p.m1/total,inv=invariants(),v=Math.hypot(vx,vy);
-      return {t,...inv,px:inv.momentum.x,py:inv.momentum.y,separation:Math.hypot(x,y),relativeSpeed:v,
+      return {t,...inv,px:inv.momentum.x,py:inv.momentum.y,separation:Math.hypot(x,y),radialSpeed:(x*vx+y*vy)/Math.hypot(x,y),relativeSpeed:v,
         vx1:cmVelocity+a*vx,vy1:a*vy,vx2:cmVelocity+b*vx,vy2:b*vy,
         cmSpeed1:a*v,cmSpeed2:-b*v,
         scatteringAngle:Math.atan2((Math.sign(p.speed-p.targetSpeed)||1)*vy,

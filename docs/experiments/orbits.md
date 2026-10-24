@@ -1,7 +1,6 @@
 # Gravitational orbits — physics core and renderer brief
 
-This pass implements the headless model and analytic tests. No view, manifest,
-gallery activation or rendered-screen approval is claimed. Source implementation
+The physics core now has a manifest and shared-kit canvas view. Source implementation
 is independent of CUPS; original code and prose are not incorporated.
 
 ## Original capability research
@@ -23,12 +22,12 @@ Coverage checked by reading the complete local ORBITER.HLP and ORBPHY.PAS
 (1292 source lines), including initialization, frame transforms, elements, energy
 and section routines. Earlier ORBPAR/ORBMENUS research supplies the example list.
 **Yes/improved below means tested headless physics/data, not a finished view.**
-All rendering and controls remain for the separately assigned kit follow-up.
+The final section records the subsequent shared-kit view implementation.
 
 | Original physics, example or plot | Kinema status and evidence / omission reason |
 |---|---|
 | Pairwise gravity, up to five massive bodies, additional non-backreacting test bodies | **Improved:** `createNBody`, 5 massive / 32 total; custom 3–5 body setup. Equilateral three-body and regular five-body solutions, conservation and massless backreaction tests. |
-| Create/add/reposition bodies; choose their mass, Cartesian position and speed/direction | **Yes:** custom scalar body 3–5 controls; `createNBody({bodies})` for arbitrary bounded initial states. Polar data can be converted to Cartesian. Live dragging/append controls are deliberately omitted in this core pass because the contract is reset-based and views are not assigned yet. |
+| Create/add/reposition bodies; choose their mass, Cartesian position and speed/direction | **Yes:** custom scalar body 3–5 controls; `createNBody({bodies})` for arbitrary bounded initial states. Polar data can be converted to Cartesian. Live dragging/append controls are deliberately omitted in this core pass because the bounded edit contract is reset-based. |
 | Change G and integration step | **Yes:** gravityScale, maxStep, bounded substeps. |
 | User absolute/relative RKF error tolerances | **Deliberately omitted:** there is no RKF error estimator here; exposing tolerance knobs without enforcing them would be false. Step refinement and explicit analytic/conservation tolerances replace that control. |
 | Circular velocities in either direction about a selected centre | **Yes:** launch presets and `stateFromElements({e:0,clockwise},primary)`. Multi-body results are labelled osculating. |
@@ -36,12 +35,12 @@ All rendering and controls remain for the separately assigned kit follow-up.
 | Replicate nearby trajectories, varying x/y or vx/vy; start at initial/current state | **Yes:** `replicateBodies` takes any captured inertial state and dx/dy/dvx/dvy. Probes have mass zero. Setup exposes initial x replicas; current-state continuation is a helper operation, not an implemented UI control. |
 | Forward/backward physics and original/modified reset | **Improved:** physical timeDirection, deterministic reset per created state, tested forward/reverse retracing; transport time remains monotonically increasing. |
 | Continuous thrust along motion and perpendicular, adjustable strength, stop burn | **Improved:** velocity-aligned or inertial acceleration on selected body; burnStart/burnDuration (0 = continuous). RK4 integrates velocity-dependent thrust and its work/impulse/torque; event boundaries enforce exact burn start/stop. Live keyboard changes deliberately omitted from the headless interface; a captured state can initialize a changed burn without inventing history. |
-| CM, body 1, body 2, body 3 and inertial/universe trajectory views; CM marker | **Yes:** simultaneous frames and selected-frame CM geometry; inertial drift/boost controls. No rendered panes yet. |
+| CM, body 1, body 2, body 3 and inertial/universe trajectory views; CM marker | **Yes:** simultaneous frames and selected-frame CM geometry; inertial drift/boost controls. The view uses the selected frame. |
 | Two co-rotating views, independent origins/scales, magnified detail | **Yes:** rotating coordinates include the correct −ω×r velocity term. **Deliberately omitted:** multiple renderer origins/scales are view concerns and have not been built in this pass. |
 | Poincaré vx vs x at a selected rotating-plane crossing | **Improved:** bounded, interpolated third-body upward y=0 crossings; geometry.poincare retains up to 2048. Arbitrary section coordinate/body selection deliberately omitted until an authored graph needs it; no claim of a generic chaos classifier. |
 | Osculating e, semimajor axis, peri/apoapsis, period and orientation display | **Yes:** perBody elements, angle/anomaly, clear zero/unavailable sentinels. No fitted N-body period presented as a true period. |
 | Total and selected-body energy, angular momentum diagnostics | **Improved:** real total energy/P/L, per-body energy and massless *specific* energy instead of assigning a fictitious test mass; thruster work and impulses account for nonconservation. |
-| Tracks, discrete time marks, replay at physical speed, line of sight | **Yes:** snapshots and deterministic step/reset provide data; retrograde line-of-sight angle/rate are explicit. **Deliberately omitted:** recorded-track caching and display/replay styling belong to the unbuilt renderer. |
+| Tracks, discrete time marks, replay at physical speed, line of sight | **Yes:** snapshots and deterministic step/reset provide data; retrograde line-of-sight angle/rate are explicit. **Deliberately omitted:** discrete time-mark styling is omitted; the view caches bounded paths and labels elapsed/forecast motion. |
 | Save/read a whole system and current body states | **Yes:** plain SI body arrays can be serialized and passed to createNBody, including captured current state. **Deliberately omitted:** CUPS ASCII compatibility, filesystem dialogs and clock/history persistence; a pure physics module performs no file I/O. |
 | Sun–Earth–Moon (CM/Sun/Earth/rotating plots) | **Yes:** `sun-earth-moon` analogue with eccentric planet/moon and all frame data. |
 | Solar System, inner/outer planets through Pluto, eccentric orbits | **Yes:** `solar-system` analogue with five gravitating masses; Mercury/Venus/Earth/Mars/Pluto as probes. All start at apocentre; these are not present-day ephemerides. |
@@ -186,3 +185,42 @@ Integration friction: ordinary Node test workers cannot spawn in this sandbox
 Raw downloads through inherited proxy settings failed; a standard Python urllib
 reader reached the public sources. Research copies remain outside the stage in
 conversation scratch. No app or shared registration file was changed by this lane.
+
+## Shared-kit view implementation
+
+The manifest repeats every model parameter and preset exactly. The view provides
+fixed, uniformly scaled 60-second motion envelopes, reserved chip/caption rows,
+magnified authored diagrams, symbolic and signed numerical KaTeX equations,
+and the shell's linked time graphs. Bounds are prepared in batches of eight
+0.1-second geometry snapshots; no per-frame reintegration or camera chasing.
+Bound two-body orbit envelopes also include the full apoapsis envelope, even
+when its period exceeds the playback window. Physical points are marked
+symbolically; collision contact disks use the model's true contact radii.
+
+The initial primary frame marks the gravitational focus; the binary preset
+uses the CM frame. Breakdown and the local r/v close-up distinguish inward
+gravity, radial velocity and signed tangential velocity. Equal-duration area
+sectors use actual integrated relative positions. Potential carries E and the
+current-radius cursor; N-body setups explicitly decline a fictitious radial
+potential. Poincare displays only actual upward crossings through the current
+transport time; the two-body scene explains which setup provides crossings.
+The radial phase graph uses an explicit radialSpeed observable.
+
+Verification receipts and captures: `round-156/orbit-views/`. Browser execution
+requires the parent runner because this worker's sandbox denies Edge spawn.
+Real-device behavior and owner visual approval remain unverified. This lane
+does not edit the kit, app registration, provider paths or installed app.
+
+Breakdown velocity components and area laws are inertial physical quantities,
+even when displayed in rotating axes; they are not confused with the zero
+coordinate velocity of a co-rotating body. Energy uses a custom scientific-axis
+panel; potential and Poincare use true parameter/section panels via drawGraph.
+
+Verification workflow notes: await the kit's asynchronous numerical seek Promise
+(or seeker.pending becoming false) before asserting the scrubber time. Reset a
+restored close-up before waiting for a full-scene caption. Keep module and manifest
+bytes fixed while an external browser run is in flight, since gallery imports are
+cached within that browser context. Use UTF-8 patch/file writes for scientific
+symbols; piping Unicode through a legacy PowerShell/Python stdin encoding can
+silently turn expected symbols into question marks. The parent browser runner is
+required here because Edge spawn is denied in this worker sandbox.

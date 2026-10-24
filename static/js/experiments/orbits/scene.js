@@ -1,0 +1,57 @@
+// Shared by these two experiments only. Coordinates are SI; plot pixels are uniform.
+export const C={blue:'#8ab9ff',pale:'#e1e5ed',green:'#b0d8ad',amber:'#e9bb88',purple:'#bcabef',muted:'#8496ae',grid:'#334256'};
+const scientific=n=>Math.abs(n)>=1e5||Math.abs(n)>0&&Math.abs(n)<.001;
+export const fmt=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>'×10'+(sign==='-'?'⁻':'')+String(Number(power)).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d])):(Math.abs(n)<.0005?0:n).toFixed(2);
+export const tex=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>String.raw`\times10^{${sign==='-'?'-':''}${Number(power)}}`):fmt(n);
+export function camera(s,bounds,top=100,bottom=58){
+ const [a,b,c,d]=bounds,scale=Math.min((s.w-40)/Math.max(.01,b-a),(s.h-top-bottom)/Math.max(.01,d-c));
+ const target={cx:(a+b)/2,cy:(c+d)/2,scale};
+ if(!s.camera||s.snap)s.camera=target;else for(const k of ['cx','cy','scale'])s.camera[k]+=(target[k]-s.camera[k])*.22;
+ s.snap=false;const q=s.camera,cy=top+(s.h-top-bottom)/2;
+ return {x:v=>s.w/2+(v-q.cx)*q.scale,y:v=>cy-(v-q.cy)*q.scale,scale:q.scale};
+}
+export function linePath(s,points,map,color,width=1.2){if(!points.length)return;const c=s.ctx;c.beginPath();points.forEach((p,i)=>i?c.lineTo(map.x(p.x),map.y(p.y)):c.moveTo(map.x(p.x),map.y(p.y)));c.strokeStyle=color;c.lineWidth=width;c.stroke();}
+export function boundsFor(rows,frame){let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;
+ for(const row of rows)for(const q of (row.geometry.frames[frame]||row.geometry.bodies)) {xmin=Math.min(xmin,q.x);xmax=Math.max(xmax,q.x);ymin=Math.min(ymin,q.y);ymax=Math.max(ymax,q.y);}
+ const pad=Math.max(.5,(xmax-xmin)*.07,(ymax-ymin)*.07);return [xmin-pad,xmax+pad,ymin-pad,ymax+pad];
+}
+export function* motionBatches(model,params,{duration=60,interval=.1}={}){
+ const sim=model.create(params),rows=[{t:0,sample:sim.sample(),geometry:sim.geometry()}];
+ yield {rows,done:false};
+ while(sim.t<duration-1e-9){for(let i=0;i<8&&sim.t<duration-1e-9;i++) {sim.step(Math.min(interval,duration-sim.t));rows.push({t:sim.t,sample:sim.sample(),geometry:sim.geometry()});}yield {rows,done:sim.t>=duration-1e-9};}
+}
+const forecasts=new WeakMap();
+export function forecast(model,params,options={}){
+ let state=forecasts.get(params);if(state)return state;
+ state={rows:[],done:false,error:''};forecasts.set(params,state);const iterator=motionBatches(model,params,options);
+ const next=()=>{try{const result=iterator.next();if(result.done)return;Object.assign(state,result.value);if(!state.done)setTimeout(next,0);}catch(e){state.error=e.message;state.done=true;}};
+ next();return state;
+}
+export function chipAnchors(s,ids){const cols=s.w<460?2:3,rows=Math.ceil(ids.length/cols);return Object.fromEntries(ids.map((id,i)=>[id,{x:s.w*((i%cols)+.5)/cols,y:12+Math.floor(i/cols)*30}]));}
+export function title(s,text){s.text(text,s.w/2,48,C.pale,s.w<380?12:14);}
+export function label(s,text,x,y,color=C.pale){
+ const c=s.ctx;c.font='12px system-ui';const width=c.measureText(text).width,yy=Math.max(38,Math.min(s.h-40,y));
+ x=Math.max(width/2+8,Math.min(s.w-width/2-8,x));
+ for(const delta of [0,16,-16,32,-32]){const box={x:x-width/2,y:yy+delta-7,width,height:14};
+  if(box.y<35||box.y+14>s.h-35)continue;
+  if(s.labels.every(a=>!(a.x<box.x+width+3&&a.x+a.width+3>box.x&&a.y<box.y+14+3&&a.y+a.height+3>box.y))){s.text(text,x,yy+delta,color,12);return true;}}
+ return false;
+}
+export function vector(s,x,y,dx,dy,color,text){if(Math.hypot(dx,dy)<.05)return;s.arrow(x,y,x+dx,y+dy,color,2);if(text)label(s,text,x+dx+Math.sign(dx||1)*12,y+dy-10,color);}
+export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',scatter=false,zero=false}={}){
+ const compact=s.h<220,left=76,right=s.w-28,top=compact?32:90,bottom=s.h-(compact?32:68),values=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
+ if(!values.length){s.text('No completed points yet',s.w/2,s.h/2,C.muted,13);return;}
+ let xmin=Math.min(...values.map(p=>p[xkey])),xmax=Math.max(...values.map(p=>p[xkey])),lo=Math.min(...values.map(p=>p[ykey])),hi=Math.max(...values.map(p=>p[ykey]));
+ if(zero){lo=Math.min(0,lo);hi=Math.max(0,hi);}
+ if(Number.isFinite(energy)){lo=Math.min(lo,energy);hi=Math.max(hi,energy);}
+ const span=Math.max(1e-9,hi-lo),xspan=Math.max(.01,xmax-xmin);lo-=span*.12;hi+=span*.12;
+ const x=v=>left+(v-xmin)/xspan*(right-left),y=v=>bottom-(v-lo)/(hi-lo)*(bottom-top);
+ s.line(left,top,left,bottom,C.grid);s.line(left,bottom,right,bottom,C.grid);
+ s.text(fmt(xmin),left,bottom+17,C.muted,10);s.text(fmt(xmax),right,bottom+17,C.muted,10);
+ s.text(fmt(hi),left-5,top,C.muted,10,'right');s.text(fmt(lo),left-5,bottom,C.muted,10,'right');
+ if(scatter)values.forEach(p=>s.circle(x(p[xkey]),y(p[ykey]),2.5,C.blue));else linePath(s,values.map(p=>({x:p[xkey],y:p[ykey]})),{x,y},C.blue,2);
+ if(Number.isFinite(energy)){s.line(left,y(energy),right,y(energy),C.amber,1.5);s.text('E',right-5,y(energy)-10,C.amber,12);}
+ if(cursor&&cursor.x>=xmin&&cursor.x<=xmax){s.line(x(cursor.x),top,x(cursor.x),bottom,C.pale,1);if(Number.isFinite(cursor.y)&&cursor.y>=lo&&cursor.y<=hi)s.circle(x(cursor.x),y(cursor.y),4,C.pale);}
+ if(!compact)s.text(caption,s.w/2,s.h-40,C.muted,12);
+ return {xmin,xmax,lo,hi};
+}

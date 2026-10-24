@@ -1,7 +1,6 @@
 # Two-body collisions — physics core and renderer brief
 
-This pass supplies headless physics and tests. Views/manifests are for the shared
-kit follow-up; no browser or real-device verification has happened yet. CUPS was
+The physics core now has a manifest and shared-kit canvas view. CUPS was
 read for capability research; neither source code nor help prose was copied.
 
 ## What CUPS had
@@ -23,7 +22,7 @@ force inside R0, despite an inconsistent simplified help description.
 Coverage is from a complete read of local COLISION.HLP and COLPHY.PAS (1546
 source lines), including force initialization, force sums, histories and
 DrawXSection. **Yes/improved below refers to tested headless physics/data.** No
-table row is evidence of an implemented plot on screen; views remain unassigned.
+table row alone establishes visual quality; see the subsequent view section.
 
 | Original physics, example or plot | Kinema status and evidence / omission reason |
 |---|---|
@@ -39,10 +38,10 @@ table row is evidence of an implemented plot on screen; views remain unassigned.
 | User-defined compiled force hook | **Deliberately omitted:** the original hook only reports that user code is missing; arbitrary code execution is outside the bounded model/action contract. No implemented original interaction is lost. |
 | Coulomb combined with Woods–Saxon, Yukawa, hard sphere or soft sphere; separate secondary strength/range/steepness | **Improved:** all four combinations, independent secondary descriptors and preset chips, consistent summed U/F. Hard-core contact uses exact drift impulse within split force steps; work/energy tested. Invalid non-Coulomb combinations reject. |
 | Original default Coulomb, shielding, finite-core, power, hard, soft, Yukawa and Woods–Saxon examples | **Yes:** all eight force choices have tested configurations. Human-labelled chips focus on one effect rather than reproducing the original numerical constants. |
-| Lab and CM trajectories (separately/together) | **Yes:** every geometry/trace row supplies both frames, including translating CM. No displayed panes yet. |
-| Lab momentum vectors and their sum; CM momentum vectors | **Yes:** masses/velocities and total P are explicit, plus velocity-component observables. Vector rendering remains pending. |
+| Lab and CM trajectories (separately/together) | **Yes:** every geometry/trace row supplies both frames, including translating CM. The view displays both frames together. |
+| Lab momentum vectors and their sum; CM momentum vectors | **Yes:** masses/velocities and total P are explicit, plus velocity-component observables. The momentum close-up renders actual before/after sums. |
 | Potential function and effective-potential overlay | **Improved:** interactionAt gives U and F, including sums; exact U_eff=U+L²/(2m_red r²) is specified in the view note, rather than the original inconsistent barrier coefficient. Hard core is a wall, not a finite fake U. |
-| Instantaneous positions, dot histories, paths, CM marker and impact-offset bracket | **Yes:** collisionTrace supplies bounded frame histories/time and configuration metadata, suitable for each display. Rendering styles remain pending. |
+| Instantaneous positions, dot histories, paths, CM marker and impact-offset bracket | **Yes:** collisionTrace supplies bounded frame histories/time and configuration metadata, suitable for each display. The view renders these with fixed bounds and caption rows. |
 | Single-step, slow/continuous motion, reset | **Yes:** exact requested dt, deterministic reset and finite samples; transport presentation remains the shared kit's job. |
 | Sweep impact parameter with uniform / concentrated / strongly concentrated spacing | **Yes:** sweepValues with concentration 1/2/3, scatteringCurve with explicit completeness flags. |
 | Sweep projectile energy, force type, mass ratio, strength, range, steepness, combined-force parameters | **Yes:** collisionSweep, explicit choices and linear/geometric grids; all source sweep dimensions tested. Energy choices convert to speed before calling the helper. |
@@ -208,3 +207,40 @@ branch-summed cross sections and persisted-set UI remain deliberately omitted.
 UI integration and rendered desktop/320 px checks belong to the follow-up.
 Shared integration friction and sandbox test-runner workaround are recorded in
 orbits.md; no shared app/kit/version/registry file is owned by this lane.
+
+## Shared-kit view implementation
+
+The manifest repeats every model parameter and preset exactly. The view provides
+fixed, uniformly scaled 60-second motion envelopes, reserved chip/caption rows,
+magnified authored diagrams, symbolic and signed numerical KaTeX equations,
+and the shell's linked time graphs. Bounds are prepared in batches of eight
+0.1-second geometry snapshots; no per-frame reintegration or camera chasing.
+Bound two-body orbit envelopes also include the full apoapsis envelope, even
+when its period exceeds the playback window. Physical points are marked
+symbolically; collision contact disks use the model's true contact radii.
+
+Lab and CM trajectories are shown together, stacked on narrow screens. The
+impact offset is bracketed perpendicular to the incident direction. The
+encounter close-up magnifies the physical contact geometry and places theta
+at the tail of the relative-velocity vector against the incident direction.
+When the live bodies are outside the magnified window it shows an explicitly
+timestamped closest-approach preview. Momentum close-up compares actual initial
+and post-encounter samples with head-to-tail p1+p2 triangles and common scale.
+Scattering and local-branch cross-section parameter plots compute one bounded
+trajectory per event-loop turn. They omit incomplete/singular points.
+
+Verification receipts and captures: `round-156/orbit-views/`. Browser execution
+requires the parent runner because this worker's sandbox denies Edge spawn.
+Real-device behavior and owner visual approval remain unverified. This lane
+does not edit the kit, app registration, provider paths or installed app.
+
+The collision replay window is explicitly chosen from the initial approach time
+(default 9.6 s, bounded 8..60 s) so contact remains legible in the whole-motion
+view. Transport, geometry forecast and graph horizon use this same duration.
+Long-range encounters that have not returned to launch separation by that window
+remain incomplete; the scattering helpers retain their separate bounded horizon.
+
+The rendered hard-sphere cross section uses a resolved 0.1R..0.9R impact band
+with 0.01R spacing and numerical encounters. A view-specific analytic check
+requires the plateau to match R?/4 within 0.001 m?; under-resolved grazing
+endpoints are excluded instead of displaying spurious curvature.

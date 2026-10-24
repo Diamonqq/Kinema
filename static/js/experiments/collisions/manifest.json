@@ -1,0 +1,749 @@
+{
+  "id": "collisions",
+  "title": "Two-body collisions",
+  "group": "Mechanics",
+  "description": "Compare laboratory and centre-of-mass collisions.",
+  "params": [
+    {
+      "key": "m1",
+      "label": "Projectile mass",
+      "symbol": "m_1",
+      "unit": "kg",
+      "min": 0.1,
+      "max": 20,
+      "step": 0.1,
+      "value": 1,
+      "group": "Masses"
+    },
+    {
+      "key": "m2",
+      "label": "Target mass",
+      "symbol": "m_2",
+      "unit": "kg",
+      "min": 0.1,
+      "max": 20,
+      "step": 0.1,
+      "value": 1,
+      "group": "Masses"
+    },
+    {
+      "key": "speed",
+      "label": "Projectile speed",
+      "symbol": "v_0",
+      "unit": "m/s",
+      "min": 0.1,
+      "max": 20,
+      "step": 0.1,
+      "value": 2,
+      "group": "Launch"
+    },
+    {
+      "key": "targetSpeed",
+      "label": "Target speed",
+      "symbol": "u_2",
+      "unit": "m/s",
+      "min": -10,
+      "max": 10,
+      "step": 0.1,
+      "value": 0,
+      "group": "Launch"
+    },
+    {
+      "key": "b",
+      "label": "Impact parameter",
+      "symbol": "b",
+      "unit": "m",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "value": 0.5,
+      "group": "Launch"
+    },
+    {
+      "key": "distance",
+      "label": "Initial horizontal separation",
+      "symbol": "d",
+      "unit": "m",
+      "min": 2,
+      "max": 5000,
+      "step": 1,
+      "value": 8,
+      "group": "Launch"
+    },
+    {
+      "key": "radius",
+      "label": "Contact separation",
+      "symbol": "R",
+      "unit": "m",
+      "min": 0.1,
+      "max": 1.5,
+      "step": 0.01,
+      "value": 1,
+      "group": "Force"
+    },
+    {
+      "key": "restitution",
+      "label": "Restitution",
+      "symbol": "e",
+      "unit": "",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "value": 1,
+      "group": "Force"
+    },
+    {
+      "key": "strength",
+      "label": "Potential strength (signed)",
+      "symbol": "K",
+      "unit": "J",
+      "min": -100,
+      "max": 100,
+      "step": 0.1,
+      "value": 1,
+      "group": "Force"
+    },
+    {
+      "key": "range",
+      "label": "Interaction length",
+      "symbol": "R_0",
+      "unit": "m",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "group": "Force"
+    },
+    {
+      "key": "stiffness",
+      "label": "Contact stiffness",
+      "symbol": "k",
+      "unit": "N/m",
+      "min": 1,
+      "max": 1000,
+      "step": 1,
+      "value": 100,
+      "group": "Force"
+    },
+    {
+      "key": "power",
+      "label": "Radial force exponent",
+      "symbol": "n",
+      "unit": "",
+      "min": -4,
+      "max": 2,
+      "step": 0.1,
+      "value": -2,
+      "group": "Force"
+    },
+    {
+      "key": "diffuseness",
+      "label": "Surface diffuseness",
+      "symbol": "a",
+      "unit": "m",
+      "min": 0.05,
+      "max": 2,
+      "step": 0.05,
+      "value": 0.2,
+      "group": "Force"
+    },
+    {
+      "key": "interaction",
+      "label": "Interaction",
+      "symbol": "",
+      "unit": "",
+      "value": "hard",
+      "group": "Force",
+      "options": [
+        {
+          "value": "hard",
+          "label": "Hard spheres"
+        },
+        {
+          "value": "soft",
+          "label": "Spring contact"
+        },
+        {
+          "value": "coulomb",
+          "label": "Inverse square"
+        },
+        {
+          "value": "shielded",
+          "label": "Screened inverse square"
+        },
+        {
+          "value": "truncated",
+          "label": "Finite charge sphere"
+        },
+        {
+          "value": "power",
+          "label": "Power law"
+        },
+        {
+          "value": "yukawa",
+          "label": "Yukawa"
+        },
+        {
+          "value": "woods-saxon",
+          "label": "Woods–Saxon"
+        }
+      ]
+    },
+    {
+      "key": "secondInteraction",
+      "label": "Add to Coulomb",
+      "symbol": "",
+      "unit": "",
+      "value": "none",
+      "group": "Combined force",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "woods-saxon",
+          "label": "Woods–Saxon"
+        },
+        {
+          "value": "yukawa",
+          "label": "Yukawa"
+        },
+        {
+          "value": "hard",
+          "label": "Hard core"
+        },
+        {
+          "value": "soft",
+          "label": "Spring core"
+        }
+      ]
+    },
+    {
+      "key": "secondStrength",
+      "label": "Second potential strength",
+      "symbol": "K_2",
+      "unit": "J",
+      "min": -100,
+      "max": 100,
+      "step": 0.1,
+      "value": -2,
+      "group": "Combined force"
+    },
+    {
+      "key": "secondRange",
+      "label": "Second range / contact separation",
+      "symbol": "R_2",
+      "unit": "m",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 0.5,
+      "group": "Combined force"
+    },
+    {
+      "key": "secondDiffuseness",
+      "label": "Second surface diffuseness",
+      "symbol": "a_2",
+      "unit": "m",
+      "min": 0.05,
+      "max": 2,
+      "step": 0.05,
+      "value": 0.1,
+      "group": "Combined force"
+    },
+    {
+      "key": "secondStiffness",
+      "label": "Second contact stiffness",
+      "symbol": "k_2",
+      "unit": "N/m",
+      "min": 1,
+      "max": 1000,
+      "step": 1,
+      "value": 100,
+      "group": "Combined force"
+    },
+    {
+      "key": "frame",
+      "label": "Frame",
+      "symbol": "",
+      "unit": "",
+      "value": "lab",
+      "group": "View",
+      "options": [
+        {
+          "value": "lab",
+          "label": "Laboratory"
+        },
+        {
+          "value": "cm",
+          "label": "Centre of mass"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "id": "exchange",
+      "label": "Swap velocities",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 1,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "hard",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "Equal masses exchange velocities in a head-on elastic collision."
+    },
+    {
+      "id": "glancing",
+      "label": "Glancing collision",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0.5,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 1,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "hard",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "Only the normal component changes; equal-mass outgoing velocities are perpendicular."
+    },
+    {
+      "id": "heavy",
+      "label": "Heavy target",
+      "values": {
+        "m1": 1,
+        "m2": 10,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 1,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "hard",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "A massive target sends the projectile back."
+    },
+    {
+      "id": "inelastic",
+      "label": "Energy into deformation",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 0.5,
+        "strength": 1,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "hard",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "Momentum is conserved while normal relative kinetic energy decreases."
+    },
+    {
+      "id": "rutherford",
+      "label": "Rutherford",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 1,
+        "distance": 20,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 1,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "coulomb",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "Repulsive inverse-square scattering bends the relative velocity; the launch is finite-distance."
+    },
+    {
+      "id": "screening",
+      "label": "Screening",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 1,
+        "distance": 20,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 1,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "shielded",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "Screening suppresses distant deflections."
+    },
+    {
+      "id": "spring",
+      "label": "Spring contact",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0.3,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 1,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "soft",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "Contact stores energy in compression and gives it back."
+    },
+    {
+      "id": "yukawa",
+      "label": "Short-range attraction",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0.8,
+        "distance": 20,
+        "radius": 1,
+        "restitution": 1,
+        "strength": -1,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "yukawa",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "The attractive tail acts over a finite range."
+    },
+    {
+      "id": "nuclear",
+      "label": "Finite-depth well",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0.8,
+        "distance": 20,
+        "radius": 1,
+        "restitution": 1,
+        "strength": -2,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "woods-saxon",
+        "secondInteraction": "none",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "A finite well avoids the divergent central potential."
+    },
+    {
+      "id": "combined-well",
+      "label": "Coulomb + nuclear well",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0.5,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 0.2,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "coulomb",
+        "secondInteraction": "woods-saxon",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "An outer repulsive barrier competes with a short-range attractive well."
+    },
+    {
+      "id": "combined-yukawa",
+      "label": "Coulomb + Yukawa",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0.5,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 0.2,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "coulomb",
+        "secondInteraction": "yukawa",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "Long- and short-range forces contribute to the same conservative potential."
+    },
+    {
+      "id": "combined-hard",
+      "label": "Coulomb + hard core",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0.2,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 0.2,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "coulomb",
+        "secondInteraction": "hard",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "Repulsive acceleration and an exact contact impulse act in one encounter."
+    },
+    {
+      "id": "combined-soft",
+      "label": "Coulomb + spring core",
+      "values": {
+        "m1": 1,
+        "m2": 1,
+        "speed": 2,
+        "targetSpeed": 0,
+        "b": 0.2,
+        "distance": 8,
+        "radius": 1,
+        "restitution": 1,
+        "strength": 0.2,
+        "range": 1,
+        "stiffness": 100,
+        "power": -2,
+        "diffuseness": 0.2,
+        "interaction": "coulomb",
+        "secondInteraction": "soft",
+        "secondStrength": -2,
+        "secondRange": 0.5,
+        "secondDiffuseness": 0.1,
+        "secondStiffness": 100,
+        "frame": "lab"
+      },
+      "note": "A finite contact spring supplements the inverse-square force."
+    }
+  ],
+  "closeups": [
+    {
+      "id": "contact",
+      "label": "Zoom · encounter"
+    },
+    {
+      "id": "momentum",
+      "label": "Zoom · momenta"
+    },
+    {
+      "id": "potential",
+      "label": "Zoom · potential"
+    },
+    {
+      "id": "scattering",
+      "label": "Zoom · scattering"
+    },
+    {
+      "id": "cross-section",
+      "label": "Zoom · cross section"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "motion",
+      "label": "Separation",
+      "unit": "m",
+      "series": [
+        {
+          "key": "separation",
+          "label": "r",
+          "color": "#8ab9ff"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy",
+      "unit": "J",
+      "series": [
+        {
+          "key": "kinetic",
+          "label": "K",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "potential",
+          "label": "U",
+          "color": "#b0d8ad"
+        },
+        {
+          "key": "dissipated",
+          "label": "Q",
+          "color": "#bcabef"
+        },
+        {
+          "key": "accountedEnergy",
+          "label": "E + Q",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "momentum",
+      "label": "Total momentum",
+      "unit": "kg m/s",
+      "series": [
+        {
+          "key": "px",
+          "label": "Px",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "py",
+          "label": "Py",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "phase",
+      "label": "Radial phase space",
+      "unit": "m · m/s",
+      "kind": "phase",
+      "series": [
+        {
+          "key": "separation",
+          "label": "r"
+        },
+        {
+          "key": "radialSpeed",
+          "label": "dr/dt"
+        }
+      ]
+    },
+    {
+      "id": "potential",
+      "label": "Effective potential · r (m), U (J)",
+      "kind": "custom"
+    },
+    {
+      "id": "scattering",
+      "label": "Scattering · b (m), θ (rad)",
+      "kind": "custom"
+    },
+    {
+      "id": "cross-section",
+      "label": "Cross section · θ (rad), m²/sr",
+      "kind": "custom"
+    }
+  ]
+}

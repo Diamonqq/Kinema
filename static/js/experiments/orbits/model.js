@@ -16,7 +16,7 @@ const params = [
     ['transfer','Hohmann first burn'],['escape','Escape threshold']]),
   number('targetRadius','Transfer destination','r_2','m',1,100,.1,20),
   number('alpha','Extra inverse-cube attraction','\\alpha','m',0,1,.01,0,'Force'),
-  choice('frame','Frame','cm',[['cm','Centre of mass'],['primary','Primary body'],['secondary','Body 2'],
+  choice('frame','Frame','primary',[['cm','Centre of mass'],['primary','Primary body'],['secondary','Body 2'],
     ['third','Body 3'],['universe','Inertial'],['rotating','Rotating with bodies 1–2']]),
   choice('system','System','two-body', [['two-body','Two bodies'],['custom-nbody','Custom 3–5 bodies'],
     ['sun-earth-moon','Sun–Earth–Moon analogue'],['solar-system','Solar system analogue'],
@@ -51,7 +51,7 @@ export const model = {
   presets:[
     preset('circular','Circular',{launch:'circular'},'Gravity supplies exactly the centripetal acceleration.'),
     preset('ellipse','Equal areas',{},'The companion speeds up near the primary; equal times sweep equal areas.'),
-    preset('binary','Binary stars',{m2:1e12,launch:'circular'},'Both equal masses orbit the stationary centre of mass.'),
+    preset('binary','Binary stars',{m2:1e12,launch:'circular',frame:'cm'},'Both equal masses orbit the stationary centre of mass.'),
     preset('transfer','Hohmann first burn',{launch:'transfer'},'One launch impulse enters the transfer ellipse; the second circularising burn is not applied.'),
     preset('escape','Just escape',{launch:'escape'},'Zero relative energy is the boundary between bound and unbound motion.'),
     preset('precession','Precessing ellipse',{alpha:.6},'An added inverse-cube force rotates the line of apsides; this is a toy force, not general relativity.'),
@@ -61,7 +61,7 @@ export const model = {
       .map(([system,label])=>preset(system,label,{system},'Compact planar teaching analogue; not an ephemeris.')),
     preset('thrust','Prograde thrust',{launch:'circular',thrustAlong:.01},'Continuous acceleration adds orbital energy; its work and impulse are tracked.'),
   ],
-  observables:[['r','Separation','r','m'],['speed','Relative speed','v','m/s'],
+  observables:[['r','Separation','r','m'],['radialSpeed','Radial speed','v_r','m/s'],['speed','Relative speed','v','m/s'],
     ['energy','Energy','E','J'],['kinetic','Kinetic energy','K','J'],['potential','Potential energy','U','J'],
     ['angularMomentum','Angular momentum','L','kg m²/s'],['eccentricity','Osculating eccentricity','e',''],
     ['semiMajorAxis','Osculating semimajor axis','a','m'],['period','Kepler period','T','s'],
@@ -165,7 +165,7 @@ export const model = {
       const disc=Math.max(0,mu*mu+4*specific*barrier);
       const periapsis=barrier>0 ? 2*barrier/(mu+Math.sqrt(disc)) : 0;
       const apoapsis=specific < -1e-12*mu/p.r0 ? (-mu-Math.sqrt(disc))/(2*specific) : 0;
-      return {t,r,speed:Math.sqrt(v2),...energy,eccentricity,semiMajorAxis,
+      return {t,r,radialSpeed:(x*vx+y*vy)/r,speed:Math.sqrt(v2),...energy,eccentricity,semiMajorAxis,
         period:keplerBound ? 2*Math.PI*Math.sqrt(semiMajorAxis**3/mu) : 0,
         periapsis,apoapsis,escapeSpeed:Math.sqrt(mu*(2/r+p.alpha/(r*r))),
         sweptArea:area,areaRate:h/2,bound,keplerExact:p.alpha===0,work:0,jacobi:0,

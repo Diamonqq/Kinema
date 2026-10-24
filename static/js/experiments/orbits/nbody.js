@@ -245,7 +245,7 @@ export function createNBody({bodies,gravity=GRAVITY,alpha=0,maxStep=.01,directio
   function sample() {
     const a=b[0],q=b[1],x=q.x-a.x,y=q.y-a.y,vx=q.vx-a.vx,vy=q.vy-a.vy,r=Math.hypot(x,y);
     const inv=invariants(),d=diagnostics(),e=d.elements[0],mu=gravity*(a.mass+q.mass),h=x*vy-y*vx;
-    return {t,physicalTime,...inv,r,speed:Math.hypot(vx,vy),eccentricity:e.e,semiMajorAxis:e.a,period:e.period,
+    return {t,physicalTime,...inv,r,radialSpeed:(x*vx+y*vy)/r,speed:Math.hypot(vx,vy),eccentricity:e.e,semiMajorAxis:e.a,period:e.period,
       periapsis:e.periapsis,apoapsis:e.apoapsis,escapeSpeed:Math.sqrt(mu*(2/r+alpha/(r*r))),
       sweptArea:area,areaRate:h/2,bound:e.a>0,keplerExact:N===2&&!driven&&alpha===0,
       areaLawApplicable:N===2&&!driven,bodyCount:N,jacobi:d.jacobi,jacobiApplicable:d.jacobiApplicable,
