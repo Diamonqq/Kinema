@@ -6,7 +6,7 @@ const load=async name=>import('data:text/javascript;base64,'+Buffer.from(await r
 const {model}=await load('model.js');
 const source=await readFile(new URL('view.js',dir),'utf8');
 // Pure equation/descriptor tests only. Actual three.js is checked by the browser fixture.
-const {view,available,sceneLayout}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(/^import .*;\r?\n/,'const THREE={};\n')).toString('base64'));
+const {view,available,sceneLayout,cameraExtentFactor}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(/^import .*;\r?\n/,'const THREE={};\n')).toString('base64'));
 const manifest=JSON.parse(await readFile(new URL('manifest.json',dir),'utf8'));
 const frame=values=>{const instance=model.create(values);return {instance,params:values,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:''};};
 test('manifest matches every model parameter and complete preset exactly (zero tolerance)',()=>{
@@ -38,4 +38,15 @@ test('scene viewport stays above reserved rows at every height from 280 to 850 (
 });
 test('280 px scenes keep one target-chip row and a full positive body viewport',()=>{
  for(const preset of model.presets){const f=frame(preset.values),anchors=view.closeupAnchors({w:300,h:280},f);assert.ok(Object.keys(anchors).length<=2);assert.ok(Object.values(anchors).every(a=>a.y===226));assert.equal(sceneLayout(300,280).area.h,164);}
+});
+test('compact desktop magnification preserves the full motion sphere; phone and closeups unchanged (1e-12)',()=>{
+ for(const height of [280,340,419]){
+  const factor=cameraExtentFactor(569,height);
+  assert.ok(Math.abs(factor*1.6-1.04)<1e-12);
+  assert.equal(cameraExtentFactor(300,height),1);
+  for(const {id} of view.closeups)assert.equal(cameraExtentFactor(569,height,id),1);
+  const f=frame(model.presets[0].values),anchors=view.closeupAnchors({w:569,h:height},f);
+  assert.ok(Object.values(anchors).every(a=>a.y===height-70));
+ }
+ assert.equal(cameraExtentFactor(569,470),1);
 });

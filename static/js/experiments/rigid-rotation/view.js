@@ -55,14 +55,20 @@ export function sceneLayout(width,height,closeup='') {
  const bottom=closeup?32:(compact?78:155);
  return {compact,top,bottom,area:{x:0,y:top,w:width,h:Math.max(1,height-top-bottom)}};
 }
+// Compact desktop panels are wide enough for tip captions beside the apparatus.
+// Use almost the full fixed motion sphere rather than the spacious main-view
+// margin. The 1.6 sphere margin in rebuild leaves 4% around the full motion here.
+export function cameraExtentFactor(width,height,closeup='') {
+ return width>=430&&height<420&&!closeup ? .65 : 1;
+}
 function visibleTargets(f,height){const ids=available(f);return height<420?['inertia',ids.find(id=>!['body','frames','inertia'].includes(id))].filter(Boolean):ids;}
 export const view={graphs,closeups,
  key:f=>f.compact?'\u03c9 rad/s \u00b7 L kg m\u00b2/s \u00b7 \u03c4 N m':f.closeup==='energy'?'Velocity space · radius is angular speed':'ω rad/s · L kg m²/s · τ N m · independent fixed arrow scales',
- closeupAnchors(s,f){const ids=visibleTargets(f,s.h);return Object.fromEntries(ids.map((id,i)=>[id,{x:s.w*(i%2?.73:.27),y:s.h-(s.h<420?54:134)+Math.floor(i/2)*30}]));},
+ closeupAnchors(s,f){const ids=visibleTargets(f,s.h),compactDesktop=s.w>=430&&s.h<420;return Object.fromEntries(ids.map((id,i)=>[id,{x:s.w*(i%2?.73:.27),y:s.h-(compactDesktop?70:s.h<420?54:134)+Math.floor(i/2)*30}]));},
  equations(f){const g=f.geometry;return [...euler(f),...(f.params.mode==='heavy-top'?closeupEquations({...f,closeup:'gravity'}):f.params.mode==='tilt-torque'?closeupEquations({...f,closeup:'tilt'}):f.params.mode==='fixed-axis'?closeupEquations({...f,closeup:'support'}):['\\frac{d\\mathbf L_s}{dt}=\\boldsymbol\\tau_s']),`T=\\tfrac12\\sum I_i\\omega_i^2=${n(f.sample.kinetic)}\\,\\mathrm J`];},
  closeupEquation:closeupEquations,
  // Honest projected gallery thumbnail; the full experiment always mounts three.js.
- draw(s,f){const {w,h}=s,cy=h*.46,scale=Math.min(w,h)*.52/Math.max(f.params.a,f.params.b,f.params.c,1),body=f.geometry;const corners=[];for(const x of [-1,1])for(const y of [-1,1])for(const z of [-1,1]){const point=v([x*f.params.a/2,y*f.params.b/2,z*f.params.c/2]).applyQuaternion(q(body.quaternion));corners.push([w/2+scale*(point.x+.35*point.y),cy-scale*(point.z+.25*point.y)]);}for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if([1,2,4].includes(i^j))s.line(...corners[i],...corners[j],C.body,2);s.text('A spinning body. A fixed angular momentum.',w/2,h-25,C.L,11);},
+ draw(s,f){const {w,h}=s,body=f.geometry,points=[];for(const x of [-1,1])for(const y of [-1,1])for(const z of [-1,1]){const point=v([x*f.params.a/2,y*f.params.b/2,z*f.params.c/2]).applyQuaternion(q(body.quaternion));points.push([point.x+.35*point.y,-point.z-.25*point.y]);}const lo=[0,1].map(i=>Math.min(...points.map(p=>p[i]))),hi=[0,1].map(i=>Math.max(...points.map(p=>p[i]))),scale=.78*Math.min(w/(hi[0]-lo[0]||1),h/(hi[1]-lo[1]||1));const corners=points.map(p=>[w/2+scale*(p[0]-(lo[0]+hi[0])/2),h/2+scale*(p[1]-(lo[1]+hi[1])/2)]);for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if([1,2,4].includes(i^j))s.line(...corners[i],...corners[j],C.body,2);},
  mount(shell){
   const host=shell.scene,root=document.createElement('div');root.className='rr-view';root.innerHTML='<div class="rr-captions"><span class="rr-title"></span><span class="rr-readout"></span></div><svg class="rr-leaders" aria-hidden="true"></svg><div class="rr-vector-labels"></div><div class="rr-frame-captions"></div>';
   const style=document.createElement('style');style.textContent=`.rr-experiment .exp-scene{min-height:470px;flex-basis:470px}.rr-experiment .exp-scene.is-closeup{min-height:450px}.rr-experiment.is-graphs-open .exp-scene{min-height:280px;flex:0 0 280px}.rr-view{position:absolute;inset:0;pointer-events:none}.rr-experiment.rr-breakdown .exp-scene{min-height:280px;flex:0 0 340px}.rr-compact .rr-readout{display:none}.rr-compact .rr-captions{font-size:11px}.rr-experiment .exp-note{padding-bottom:14px}.rr-experiment .exp-transport{background:#191e26;z-index:5}.rr-experiment .exp-tools{background:#191e26;z-index:5}.rr-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.rr-view canvas{position:absolute;inset:0;width:100%;height:100%}.rr-captions{position:absolute;left:12px;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:12px;z-index:1}.rr-title{color:#d5e0ed}.rr-readout{color:#8d9db2;font-size:11px;font-variant-numeric:tabular-nums}.is-closeup .rr-captions{top:45px}.rr-vector-labels{position:absolute;inset:0;z-index:1}.rr-vector-labels span{position:absolute;font-size:12px;padding:2px 5px;background:#111923d9;border-radius:4px;white-space:nowrap}.rr-frame-captions{position:absolute;inset:0;display:flex;justify-content:space-around;color:#8d9db2;font-size:11px}.rr-experiment .exp-closeups,.rr-experiment .exp-key{z-index:2}.rr-experiment .exp-closeups button{font-size:10px;padding:4px 7px;min-height:26px;height:26px;max-height:26px;line-height:16px;box-sizing:border-box}.rr-experiment .exp-key{font-size:10px;line-height:1.4}.rr-experiment .exp-equation{min-width:0;overflow:auto}.rr-experiment .exp-equation .katex{font-size:1em}@media(max-width:500px){.rr-experiment .exp-scene{min-height:465px}.rr-experiment .exp-scene.is-closeup{min-height:510px}.rr-experiment .exp-key{left:14px;right:14px}.rr-captions{font-size:11px}.rr-readout{font-size:10px}}`;
@@ -116,7 +122,8 @@ export const view={graphs,closeups,
    panels.forEach((r,index)=>{
     dispose(vectorLayer);const bodyFrame=energy?index===0:compare?index===1:isBody;
     content.quaternion.copy(bodyFrame?q(g.quaternion).invert():new THREE.Quaternion());body.position.copy(v(g.centreOfMass));body.quaternion.copy(q(g.quaternion));body.visible=!energy;
-    const extent=bounds/zoom;cameraFor(r.w,r.h,extent);renderer.setViewport(r.x,height-r.y-r.h,r.w,r.h);renderer.setScissor(r.x,height-r.y-r.h,r.w,r.h);
+    const factor=cameraExtentFactor(width,height,f.closeup),cornerPadding=factor<1&&p.shape==='corner-masses' ? .11*Math.min(p.a,p.b,p.c) : 0;
+    const extent=bounds/zoom*factor+cornerPadding;cameraFor(r.w,r.h,extent);renderer.setViewport(r.x,height-r.y-r.h,r.w,r.h);renderer.setScissor(r.x,height-r.y-r.h,r.w,r.h);
     const origin=[0,0,0],basis=bodyFrame?[[1,0,0],[0,1,0],[0,0,1]]:g.principalAxes;
     if(energy){
      content.quaternion.identity();const scale=bounds*.65/Math.max(...g.inertiaEllipsoidRadii,1);const point=(bodyFrame?g.omegaBody:g.omegaSpace).map(x=>x*scale);

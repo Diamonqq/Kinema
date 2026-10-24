@@ -348,3 +348,20 @@ vectors. The final label layout uses nearby tip anchors and bounded alternative
 positions, smoothing only when the interpolated position stays clear and within
 40 px of the tip. The browser overlap checks also enforce that bound. The
 transport has an opaque background so the final caption cannot peek beneath it.
+
+Run 9 verified the compact body bounds and nearby labels: 170/170 checks, 26
+captures, no browser exceptions. That state is checkpoint commit `df1632e`.
+The subsequent desktop-only framing refinement removes the main-view margin
+from compact panels: a fixed 1.04-radius motion envelope (including extra corner
+mass sphere padding) replaces 1.6 radii. Chip rows move 16 px nearer the apparatus.
+Phone, full scenes and all close-up cameras are unchanged. This is fixed by
+parameters and viewport, never by the instantaneous body orientation. The gallery
+now fits the projected apparatus to 78% of its thumbnail and draws no caption.
+
+Final verification: Node 29/29 passed. Lead browser run 10 passed 170/170,
+including 64 projected-body checks, with 26 captures and no browser exceptions;
+source/kit/harness hashes stayed unchanged during the run. Desktop Breakdown
+and Graphs and phone Breakdown captures were inspected. The thumbnail was
+inspected separately in `lead/sheets/rigid10-thumb.png`, since the lane's gallery
+capture precedes the kit's thumbnail loading. Receipt: `rigid-views/browser.json`;
+run log: `lead/rigid-run10.log`. This is isolated fixture verification.
