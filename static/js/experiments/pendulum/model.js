@@ -1,0 +1,29 @@
+import {param as p, observable as o, parameters, engine, rk4, verlet, ellipticK} from '../motion-generator/numerics.js';
+export function exactPeriod(amplitude,length=1,gravity=9.81){
+  if(!Number.isFinite(amplitude)||!Number.isFinite(length)||!Number.isFinite(gravity)||length<=0||gravity<=0) throw new RangeError('Finite amplitude and positive length/gravity required');
+  if(Math.abs(amplitude)>=Math.PI) return Infinity;
+  return 4*Math.sqrt(length/gravity)*ellipticK(Math.sin(Math.abs(amplitude)/2));
+}
+const params=[p('mass','Bob mass','m','kg',.1,10,.1,1),p('length','Length','L','m',.1,5,.1,1),p('gravity','Gravity','g','m/s²',.1,20,.01,9.81),p('theta0','Initial angle','θ_0','rad',-6.3,6.3,.01,.3,'Initial conditions'),p('omega0','Initial angular velocity','ω_0','rad/s',-20,20,.1,0,'Initial conditions'),p('damping','Damping torque coefficient','b','N·m·s/rad',0,10,.01,0,'Drive'),p('drive','Drive torque amplitude','τ_d','N·m',0,20,.01,0,'Drive'),p('driveOmega','Drive frequency','Ω','rad/s',1/300,20,1/300,2/3,'Drive'),p('drivePhase','Drive phase','φ','rad',-3.15,3.15,.01,0,'Drive'),p('separation','Nearby initial angle offset','δθ_0','rad',1e-10,.1,1e-10,1e-8,'Comparison'),{key:'linear',label:'Restoring law',symbol:'linear',unit:'',group:'Comparison',value:'exact',options:[{value:'exact',label:'Exact sine'},{value:'linear',label:'Small angle'}]}];
+const preset=(id,label,values,note)=>({id,label,values:Object.fromEntries(params.map(p=>[p.key,values[p.key]??p.value])),note});
+const wrap=x=>Math.atan2(Math.sin(x),Math.cos(x));
+export const model={id:'pendulum',title:'Pendulum',params,
+  presets:[preset('small','Small angle',{theta0:.1},'The sine and linear models nearly agree.'),preset('large','Large angle',{theta0:2.6},'Large swings take longer; compare the exact period.'),preset('decay','Damped',{theta0:.2,damping:.3},'The amplitude envelope falls exponentially for small angles.'),preset('resonance','Driven resonance',{theta0:0,damping:.4,drive:.2,driveOmega:3.13},'At resonance the drive supplies the lost energy.'),preset('period-two','Period doubling',{gravity:1,damping:.5,drive:1.07,theta0:.2},'After transients, two distinct stroboscopic points alternate.'),preset('chaos','Sensitivity',{gravity:1,damping:.5,drive:1.2,theta0:.2},'Nearby initial angles diverge under identical forcing.')],
+  observables:[o('theta','Angle','θ','rad'),o('omega','Angular velocity','ω','rad/s'),o('alpha','Angular acceleration','α','rad/s²'),o('x','Bob x','x','m'),o('y','Bob y','y','m'),o('kinetic','Kinetic energy','K','J'),o('potential','Potential energy','U','J'),o('energy','Mechanical energy','E','J'),o('work','Drive work','W','J'),o('heat','Dissipated energy','Q','J'),o('separation','Nearby-state distance','δ','rad'),o('drivePhase','Drive phase','φ','rad')],
+  create(values){
+    const c=parameters(params,values);c.linear=c.linear==='linear';const I=c.mass*c.length*c.length,w0=Math.sqrt(c.gravity/c.length), nonlinear=x=>c.linear?x:Math.sin(x);
+    const torque=(t,s)=>({gravity:-c.mass*c.gravity*c.length*nonlinear(s[0]),damping:-c.damping*s[1],drive:c.drive*Math.cos(c.driveOmega*t+c.drivePhase)});
+    const accel=(t,s)=>[(-c.mass*c.gravity*c.length*nonlinear(s[0])-c.damping*s[1]+c.drive*Math.cos(c.driveOmega*t+c.drivePhase))/I,(-c.mass*c.gravity*c.length*nonlinear(s[2])-c.damping*s[3]+c.drive*Math.cos(c.driveOmega*t+c.drivePhase))/I];
+    const derivative=(t,s)=>{const a=accel(t,s),f=torque(t,s);return [s[1],a[0],s[3],a[1],f.drive*s[1],c.damping*s[1]*s[1]];};
+    const conservative=!c.damping&&!c.drive;
+    const h=Math.min(.001,.02/Math.max(w0,c.driveOmega,c.damping/I));
+    const e=engine([c.theta0,c.omega0,c.theta0+c.separation,c.omega0,0,0],(s,t,h)=>conservative?verlet(s,t,h,accel,2):rk4(s,t,h,derivative),h,c.drive?2*Math.PI/c.driveOmega:0,s=>({theta:wrap(s[0]),omega:s[1]}));
+    const sample=()=>{const [theta,omega,nearTheta,nearOmega,work,heat]=e.state,kinetic=I*omega*omega/2,potential=c.mass*c.gravity*c.length*(c.linear?theta*theta/2:1-Math.cos(theta));return {t:e.t,theta,omega,alpha:accel(e.t,e.state)[0],x:c.length*Math.sin(theta),y:-c.length*Math.cos(theta),kinetic,potential,energy:kinetic+potential,work,heat,separation:Math.hypot(wrap(nearTheta-theta),(nearOmega-omega)/w0),drivePhase:wrap(c.driveOmega*e.t+c.drivePhase)};};
+    const initialEnergy=sample().energy;
+    return {get t(){return e.t;},step:dt=>e.step(dt),reset:()=>e.reset(),sample,section:()=>e.section(),
+      period(){if(!conservative)return null;const E=sample().energy;if(c.linear)return 2*Math.PI/w0;return E>=2*c.mass*c.gravity*c.length?Infinity:4*ellipticK(Math.sqrt(Math.max(0,E/(2*c.mass*c.gravity*c.length))))/w0;},
+      invariants(){const s=sample();return {energy:s.energy,angularMomentum:I*s.omega,energyBalance:s.energy-s.work+s.heat-initialEnergy};},
+      geometry(){const s=sample(),near=e.state[2];return {pivot:[0,0,0],bob:[s.x,s.y,0],nearbyBob:[c.length*Math.sin(near),-c.length*Math.cos(near),0],length:c.length,theta:s.theta,torques:torque(e.t,e.state),tension:c.mass*(c.gravity*Math.cos(s.theta)+c.length*s.omega*s.omega),rigidRod:true};},
+    };
+  },
+};
