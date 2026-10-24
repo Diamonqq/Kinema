@@ -113,7 +113,7 @@ export class Teacher {
           <button type="button" class="tv-row" data-act="daily">${ICON.bolt}<span>Daily problem</span></button>
           <button type="button" class="tv-row" data-act="path">${ICON.route}<span>Chapters</span></button>
           <button type="button" class="tv-row" data-act="library">${ICON.book}<span>Library</span></button>
-          <button type="button" class="tv-row" data-act="sim-lab">${ICON.route}<span>Simulation lab</span></button>
+          <button type="button" class="tv-row" data-act="sim-lab">${ICON.cube}<span>Simulation lab</span></button>
           <button type="button" class="tv-row" data-act="experiments">${ICON.experiment}<span>Experiments</span></button>
         </nav>
         <div class="tv-chat-heading"><span>Chats</span></div><label class="tv-chat-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="tv-search" placeholder="Search chats" aria-label="Search chats"></label>
