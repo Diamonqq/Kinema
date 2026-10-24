@@ -28,7 +28,7 @@ const params=[
   num('secondDiffuseness','Second surface diffuseness','a_2','m',.05,2,.05,.1,'Combined force'),
   num('secondStiffness','Second contact stiffness','k_2','N/m',1,1000,1,100,'Combined force'),
   {key:'frame',label:'Frame',symbol:'',unit:'',value:'lab',group:'View',
-    options:[{value:'lab',label:'Laboratory'},{value:'cm',label:'Centre of mass'}]},
+    options:[{value:'lab',label:'Laboratory'},{value:'cm',label:'Center of mass'}]},
 ];
 const defaults=Object.fromEntries(params.map(p=>[p.key,p.value]));
 const preset=(id,label,values,note)=>({id,label,values:{...defaults,...values},note});

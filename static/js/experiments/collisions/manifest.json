@@ -277,7 +277,7 @@
         },
         {
           "value": "cm",
-          "label": "Centre of mass"
+          "label": "Center of mass"
         }
       ]
     }
@@ -732,17 +732,20 @@
     },
     {
       "id": "potential",
-      "label": "Effective potential · r (m), U (J)",
+      "label": "Effective potential",
+      "unit": "r (m), U (J)",
       "kind": "custom"
     },
     {
       "id": "scattering",
-      "label": "Scattering · b (m), θ (rad)",
+      "label": "Scattering",
+      "unit": "b (m), θ (rad)",
       "kind": "custom"
     },
     {
       "id": "cross-section",
-      "label": "Cross section · θ (rad), m²/sr",
+      "label": "Cross section",
+      "unit": "θ (rad), m²/sr",
       "kind": "custom"
     }
   ]

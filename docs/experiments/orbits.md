@@ -250,3 +250,30 @@ Final small polish removes in-canvas custom graph titles (the shell owns them),
 rounds section tick labels to two significant figures and reserves a separate
 tick row above the crossing-count caption. This follow-up has Node checks;
 the lead merged review is responsible for the final rendered check.
+
+## Shared polish pass
+
+The primary-frame trail is the model's sampled trajectory, not a fitted circle.
+Each plotted separation is checked against sample.r to 1e-10 m. The former
+low-eccentricity ellipse (about 0.215) looked nearly circular; the default launch
+is now 1.9 m/s, making its eccentricity about 0.508 and its displaced center
+visually obvious. The primary remains the focus, not the ellipse center.
+
+These are explicitly scaled point-mass teaching systems, not an Earth satellite
+or an ephemeris. The scene identifies M0 = 10^12 kg; force readouts use
+F0 = 10^11 N and energy panels E0 = 10^12 J. Their equations/panel headers
+state those SI conversions. Lengths and times remain m and s. All presets use
+the same display scales; model parameters, geometry, invariants and tutor
+observations remain honest SI quantities.
+
+Physical zoom chips use fixed initial-body, center-of-mass and focus landmarks;
+only potential and Poincare share the measured wrapping row. Graph chips show
+names; units belong to graph headers. Custom energy uses the completed local
+forecast for its fixed y range and a window of up to five periods. It draws no
+in-canvas title. Canvas minus signs and significant figures follow the shared
+convention; component arrows coinciding with the full velocity are hidden.
+
+Chaotic sections may reach 320 crossings or the finite 100000 s horizon depending
+on the JavaScript engine. Node 22/24 checks retain a robust 100-crossing floor,
+finite coordinates, exact section y=0, increasing crossing times, bounded time
+and an honest completion reason. They do not compare chaotic paths bitwise.

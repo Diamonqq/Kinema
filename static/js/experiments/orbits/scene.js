@@ -1,9 +1,37 @@
 // Shared by these two experiments only. Coordinates are SI; plot pixels are uniform.
 export const C={blue:'#8ab9ff',pale:'#e1e5ed',green:'#b0d8ad',amber:'#e9bb88',purple:'#bcabef',muted:'#8496ae',grid:'#334256'};
 const scientific=n=>Math.abs(n)>=1e5||Math.abs(n)>0&&Math.abs(n)<.001;
-export const fmt=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>'×10'+(sign==='-'?'⁻':'')+String(Number(power)).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d])):(Math.abs(n)<.0005?0:n).toFixed(2);
-export const tex=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>String.raw`\times10^{${sign==='-'?'-':''}${Number(power)}}`):fmt(n);
-export const sectionTick=n=>String(Number(n.toPrecision(2)));
+export const fmt=n=>(scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>'×10'+(sign==='-'?'⁻':'')+String(Number(power)).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d])):String(Number(n.toPrecision(3)))).replace(/^-/, '−');
+export const tex=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>String.raw`\times10^{${sign==='-'?'-':''}${Number(power)}}`):fmt(n).replace('−','-');
+export const sectionTick=n=>String(Number(n.toPrecision(2))).replace(/^-/, '−');
+export function sceneHeight(shell,narrowHeight,closeup){
+ if(!shell?.scene)return;
+ const height=closeup?360:shell.stage.w<460?narrowHeight:420;
+ if(shell.scene.style.minHeight!==height+'px'){
+  shell.scene.style.minHeight=height+'px';shell.scene.style.flexBasis=height+'px';shell.stage.resize();
+ }
+}
+// Target chips use fixed forecast landmarks, not the moving body. Nonphysical
+// views share a measured wrapping row. Sizes remain entirely kit controlled.
+export function targetChips(s,targets,rowIds,shell){
+ const sizes=id=>{const b=shell?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
+ const anchors={},boxes=[];let row=[],width=0,y=12;
+ const flush=()=>{let x=(s.w-width)/2;for(const id of row){const b=sizes(id);anchors[id]={x:x+b.w/2,y};boxes.push({x,y,width:b.w,height:b.h});x+=b.w+6;}row=[];width=0;y+=38;};
+ for(const id of rowIds){const b=sizes(id);if(row.length&&width+6+b.w>s.w-16)flush();width+=b.w+(row.length?6:0);row.push(id);}if(row.length)flush();
+ for(const [id,p] of Object.entries(targets)){
+  const b=sizes(id),candidates=p.offsets||[[0,-48],[65,28],[-65,28],[0,54],[90,-42],[-90,-42]];
+  let box;
+  for(const [dx,dy] of candidates){
+   const x=Math.max(8,Math.min(s.w-b.w-8,p.x+dx-b.w/2)),yy=Math.max(y+8,Math.min(s.h-100-b.h,p.y+dy));
+   const q={x,y:yy,width:b.w,height:b.h};
+   if(!boxes.some(a=>a.x<q.x+q.width+8&&a.x+a.width+8>q.x&&a.y<q.y+q.height+8&&a.y+a.height+8>q.y)){box=q;break;}
+  }
+  if(!box)box={x:8,y:y+Object.keys(anchors).length*38,width:b.w,height:b.h};
+  anchors[id]={x:box.x+b.w/2,y:box.y};boxes.push(box);
+  s.line(p.x,p.y,box.x+b.w/2,box.y+(p.y>box.y?b.h:0),C.grid,1);
+ }
+ s.chipRects=boxes;s.targetAnchors=anchors;return anchors;
+}
 export function camera(s,bounds,top=100,bottom=58){
  const [a,b,c,d]=bounds,scale=Math.min((s.w-40)/Math.max(.01,b-a),(s.h-top-bottom)/Math.max(.01,d-c));
  const target={cx:(a+b)/2,cy:(c+d)/2,scale};
@@ -35,7 +63,7 @@ export function label(s,text,x,y,color=C.pale){
  x=Math.max(width/2+8,Math.min(s.w-width/2-8,x));
  for(const delta of [0,16,-16,32,-32]){const box={x:x-width/2,y:yy+delta-7,width,height:14};
   if(box.y<35||box.y+14>s.h-35)continue;
-  if(s.labels.every(a=>!(a.x<box.x+width+3&&a.x+a.width+3>box.x&&a.y<box.y+14+3&&a.y+a.height+3>box.y))){s.text(text,x,yy+delta,color,12);return true;}}
+  if([...s.labels,...(s.chipRects||[])].every(a=>!(a.x<box.x+width+3&&a.x+a.width+3>box.x&&a.y<box.y+14+3&&a.y+a.height+3>box.y))){s.text(text,x,yy+delta,color,12);return true;}}
  return false;
 }
 export function vector(s,x,y,dx,dy,color,text){if(Math.hypot(dx,dy)<.05)return;s.arrow(x,y,x+dx,y+dy,color,2);if(text)label(s,text,x+dx+Math.sign(dx||1)*12,y+dy-10,color);}

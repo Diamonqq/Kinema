@@ -251,3 +251,14 @@ The whole-motion bounds remain fixed during replay.
 
 Both cross-section views clamp the nonnegative vertical axis at exactly zero;
 positive-range padding is applied only at the top.
+
+## Shared polish pass
+
+The narrow scene reserves 620 px, giving each stacked frame at least 150 px;
+Lab and Center of mass retain their common physical pixel scale. Abstract views
+share a measured wrapping row. Encounter and momenta chips point to fixed
+closest-approach and initial-body landmarks, not moving targets. b has a separate
+caption at narrow widths. The gallery shows both bodies on their own incoming
+rays, preserving their impact offset rather than drawing one misleading ray.
+Graph chips have names only, panel headers carry units, and each time-series
+window follows the actual encounter duration. All visible text uses US spelling.

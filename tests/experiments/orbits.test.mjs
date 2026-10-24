@@ -77,10 +77,10 @@ test('inverse-cube perturbation: apsidal advance agrees with Binet formula withi
   let lastRadial=g.x*g.vx+g.y*g.vy,angle=0,lastAngle=0,periAngles=[];
   let worst=0;
   for(let i=0;i<12000;i++) {
-    s.step(.01);const q=s.geometry().relative,a=Math.atan2(q.y,q.x);
+    s.step(.01);const q=s.geometry().relative,a=Math.atan2(q.y,q.x),priorAngle=angle;
     angle+=Math.atan2(Math.sin(a-lastAngle),Math.cos(a-lastAngle));lastAngle=a;
     const radial=q.x*q.vx+q.y*q.vy;
-    if(lastRadial<0 && radial>=0) periAngles.push(angle);
+    if(lastRadial<0 && radial>=0) periAngles.push(priorAngle+(angle-priorAngle)*(-lastRadial)/(radial-lastRadial));
     lastRadial=radial;worst=Math.max(worst,Math.abs(s.invariants().energy/initial.energy-1));
   }
   assert.ok(periAngles.length>=3);

@@ -1,13 +1,13 @@
 import {model,interactionAt,scatteringCurve,differentialCrossSection} from './model.js';
-import {C,fmt,tex,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label} from '../orbits/scene.js';
+import {C,fmt,tex,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,targetChips,sceneHeight} from '../orbits/scene.js';
 export const graphs=[
  {id:'motion',label:'Separation',unit:'m',series:[{key:'separation',label:'r',color:C.blue}]},
  {id:'energy',label:'Energy',unit:'J',series:[{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.green},{key:'dissipated',label:'Q',color:C.purple},{key:'accountedEnergy',label:'E + Q',color:C.amber}]},
  {id:'momentum',label:'Total momentum',unit:'kg m/s',series:[{key:'px',label:'Px',color:C.blue},{key:'py',label:'Py',color:C.amber}]},
  {id:'phase',label:'Radial phase space',unit:'m · m/s',kind:'phase',series:[{key:'separation',label:'r'},{key:'radialSpeed',label:'dr/dt'}]},
- {id:'potential',label:'Effective potential · r (m), U (J)',kind:'custom'},
- {id:'scattering',label:'Scattering · b (m), θ (rad)',kind:'custom'},
- {id:'cross-section',label:'Cross section · θ (rad), m²/sr',kind:'custom'},
+ {id:'potential',label:'Effective potential',unit:'r (m), U (J)',kind:'custom'},
+ {id:'scattering',label:'Scattering',unit:'b (m), θ (rad)',kind:'custom'},
+ {id:'cross-section',label:'Cross section',unit:'θ (rad), m²/sr',kind:'custom'},
 ];
 export const closeups=[{id:'contact',label:'Zoom · encounter'},{id:'momentum',label:'Zoom · momenta'},
  {id:'potential',label:'Zoom · potential'},{id:'scattering',label:'Zoom · scattering'},{id:'cross-section',label:'Zoom · cross section'}];
@@ -33,7 +33,7 @@ function curveFor(params){let state=curves.get(params);if(state)return state;
  }catch(e){state.error=e.message;state.done=true;}};setTimeout(next,0);return state;
 }
 export function comparisonPanels(s,rows){
- const narrow=s.w<460,top=narrow?140:112,height=s.h-top-65,gap=38;
+ const narrow=s.w<460,top=150,height=s.h-top-90,gap=52;
  const rects=narrow?
   [{x:5,y:top,w:s.w-10,h:(height-gap)/2},{x:5,y:top+(height+gap)/2,w:s.w-10,h:(height-gap)/2}]:
   [{x:5,y:top,w:s.w/2-12,h:height},{x:s.w/2+7,y:top,w:s.w/2-12,h:height}];
@@ -85,8 +85,9 @@ function encounter(s,f,data){
  if(Math.abs(theta)>.015){s.ctx.beginPath();s.ctx.arc(px,py,23,start,start-theta,theta>0);s.ctx.strokeStyle=C.purple;s.ctx.stroke();label(s,'θ',px+sign*34*Math.cos(theta/2),py-sign*34*Math.sin(theta/2),C.purple);}
  s.text(visible?'Live · t = '+fmt(f.t)+' s':'Closest approach preview · '+fmt(nearest.t)+' s',s.w/2,s.h-43,C.muted,12);
 }
-export const view={graphs,closeups,closeupAnchors:s=>chipAnchors(s,closeups.map(c=>c.id)),
+export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
  mount(shell){shells.set(shell.stage,shell);transportWindow(shell);},
+ graphDescriptors:p=>graphs.map(g=>({...g,window:durationFor(p)})),
  paramVisible(d,p){const k=d.key,kind=p.interaction,second=p.secondInteraction;
   if(k==='secondInteraction')return kind==='coulomb';if(k.startsWith('second')){
    if(kind!=='coulomb'||second==='none')return false;if(k==='secondStrength')return ['yukawa','woods-saxon'].includes(second);
@@ -103,8 +104,9 @@ export const view={graphs,closeups,closeupAnchors:s=>chipAnchors(s,closeups.map(
  key:f=>f.closeup==='momentum'?'Blue p₁ · amber p₂ · green total P':f.closeup==='potential'?'Blue Ueff · amber relative E · white r':
   f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?'Blue projectile · amber target · green force':'Blue projectile · amber target · + CM',
  draw(s,f){
+  const owner=shells.get(s);if(owner)sceneHeight(owner,620,!!f.closeup);s.chipRects=[];
   if(s.h<200){const b=f.geometry.frames.lab,bounds=boundsFor([{geometry:f.geometry}],'lab'),map=camera(s,bounds,12,12);
-   s.ctx.setLineDash([3,5]);s.line(map.x(b[0].x),map.y(b[0].y),map.x(b[1].x),map.y(b[0].y),C.muted);s.ctx.setLineDash([]);
+   s.ctx.setLineDash([3,5]);s.line(map.x(b[0].x),map.y(b[0].y),map.x(b[1].x),map.y(b[0].y),C.muted);s.line(map.x(b[0].x),map.y(b[1].y),map.x(b[1].x),map.y(b[1].y),C.amber);s.ctx.setLineDash([]);
    b.forEach((q,i)=>s.circle(map.x(q.x),map.y(q.y),Math.max(3,q.radius*map.scale),i?C.amber:C.blue));return;
   }
   const shell=shells.get(s);if(shell)transportWindow(shell);
@@ -119,14 +121,16 @@ export const view={graphs,closeups,closeupAnchors:s=>chipAnchors(s,closeups.map(
    if(!curve.done)s.text('Computing '+curve.points.length+' / '+curve.total,s.w/2,70,C.muted,11);return;
   }
   if(!data.done){s.text(data.error||'Preparing the fixed 60 s motion window…',s.w/2,s.h*.55,C.muted,s.w<380?11:13);return;}
-  const panes=comparisonPanels(s,data.rows);
+  const panes=comparisonPanels(s,data.rows),first=data.rows[0].geometry.frames.lab,nearest=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b).geometry.frames.lab;
+  const start=first[0],encounterPoint={x:(nearest[0].x+nearest[1].x)/2,y:(nearest[0].y+nearest[1].y)/2},lab=panes[0].map;
+  targetChips(s,{contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y),offsets:[[45,-65],[70,35],[-65,35],[0,55]]},momentum:{x:lab.x(start.x),y:lab.y(start.y),offsets:[[0,-65],[30,40],[100,-45],[100,35]]}},['potential','scattering','cross-section'],owner);
   for(const [i,frame] of ['lab','cm'].entries()){
    const {rect,map}=panes[i],b=g.frames[frame];
-   s.text(frame==='lab'?'Laboratory':'Centre of mass',rect.x+rect.w/2,rect.y-8,C.pale,12);
+   s.text(frame==='lab'?'Laboratory':'Center of mass',rect.x+rect.w/2,rect.y-8,C.pale,12);
    const initial=data.rows[0].geometry.frames[frame],last=data.rows.at(-1).geometry.frames[frame];
    s.ctx.setLineDash([3,5]);s.line(map.x(initial[0].x),map.y(initial[0].y),map.x(initial[1].x),map.y(initial[0].y),C.grid);s.ctx.setLineDash([]);
    if(i===0&&Math.abs(f.params.b)>.001){const x=map.x(initial[0].x)-9;
-    s.line(x,map.y(initial[0].y),x,map.y(initial[1].y),C.muted);label(s,'b',x-9,(map.y(initial[0].y)+map.y(initial[1].y))/2,C.muted);}
+    s.line(x,map.y(initial[0].y),x,map.y(initial[1].y),C.muted);if(s.w<460)s.text('b = '+fmt(f.params.b)+' m',rect.x+48,rect.y+12,C.muted,11);else label(s,'b',x-9,(map.y(initial[0].y)+map.y(initial[1].y))/2,C.muted);}
    for(let j=0;j<2;j++){
     linePath(s,data.rows.map(r=>r.geometry.frames[frame][j]),map,(j?C.amber:C.blue)+'30');
     linePath(s,data.rows.filter(r=>r.t<=f.t).map(r=>r.geometry.frames[frame][j]),map,j?C.amber:C.blue,1.5);

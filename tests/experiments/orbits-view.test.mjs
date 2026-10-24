@@ -32,7 +32,7 @@ test('equal-time sectors use equal durations and equal integrated areas (1e-10 r
  const bands=equalTimeSectors(result.rows,result.rows[0].sample.period),areas=bands.map(rows=>rows.at(-1).sample.sweptArea-rows[0].sample.sweptArea);
  assert.ok(Math.abs((bands[0].at(-1).t-bands[0][0].t)-(bands[1].at(-1).t-bands[1][0].t))<1e-10);
  assert.ok(Math.abs(areas[0]/areas[1]-1)<1e-10);
- assert.equal(tex(-5.52e10),String.raw`-5.52\times10^{10}`);assert.equal(fmt(-5.52e10),'-5.52\u00d710\u00b9\u2070');
+ assert.equal(tex(-5.52e10),String.raw`-5.52\times10^{10}`);assert.equal(fmt(-5.52e10),'\u22125.52\u00d710\u00b9\u2070');
  assert.deepEqual(orbitBounds([result.rows[0]],p,p.frame),orbitBounds(result.rows,p,p.frame));
 });
 
