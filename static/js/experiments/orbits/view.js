@@ -1,7 +1,8 @@
 import {num as fmt,texNum as tex} from '../kit/format.js';
 import {model,G} from './model.js';
 import {startSection,crossingElapsed} from './section.js';
-import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,axes,label,targetChips,sceneHeight} from './scene.js';
+import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,axes,label,sceneHeight} from './scene.js';
+import {placeChips} from '../collisions/chips.js';
 export const ENERGY_UNIT=1e12,FORCE_UNIT=1e11;
 // Scaled masses give huge forces; show them with an SI prefix (66.7 GN, not 6.67×10¹⁰ N).
 const SI=[['',''],['k','10³'],['M','10⁶'],['G','10⁹'],['T','10¹²']];
@@ -58,7 +59,7 @@ export function orbitBounds(rows,params,frame){
 }
 // Fixed chip obstacles include the entire orbit and every Breakdown arrow,
 // so seeking or playing cannot move the apparatus underneath a chip.
-const layoutCache=new WeakMap();
+const layoutCache=new WeakMap(),chipLayouts=new WeakMap();
 export function breakdownSegments(f,map,w){
  const g=f.geometry,q=f.sample,a=g.bodies[0],b=g.bodies[1],r=g.relative,mag=q.r;
  const x=map.x(b.x),y=map.y(b.y),nx=r.x/mag,ny=r.y/mag,v=values(f);
@@ -72,19 +73,26 @@ export function breakdownSegments(f,map,w){
  return segments;
 }
 export const segmentRect=(a,pad=3)=>({x:Math.min(a.x,a.ex)-pad,y:Math.min(a.y,a.ey)-pad,width:Math.abs(a.ex-a.x)+2*pad,height:Math.abs(a.ey-a.y)+2*pad});
+// Chips sit beside fixed points next to their targets (no leader lines), in the same place in every view. Keep-outs: the
+// bodies, the orbit and every Breakdown arrow, plus the room each Breakdown label needs at its arrow tip.
 export function orbitChipLayout(rows,params,map,w){
  const key=[w,map.x(0),map.y(0),map.scale].join(':'),cached=layoutCache.get(rows);
  if(cached?.key===key&&cached.params===params)return cached;
- const obstacles=[],first=rows[0].geometry,initial=first.frames[params.frame]||first.bodies,tip=breakdownSegments({...rows[0],params},map,w).find(v=>v.id==='v');
- for(const row of rows){
-  for(const b of row.geometry.frames[params.frame]||row.geometry.bodies)obstacles.push({x:map.x(b.x)-8,y:map.y(b.y)-8,width:16,height:16});
-  for(const a of breakdownSegments({...row,params},map,w))obstacles.push(segmentRect(a,5));
+ const rects=[],segments=[],first=rows[0].geometry,initial=first.frames[params.frame]||first.bodies,start=breakdownSegments({...rows[0],params},map,w),tip=start.find(v=>v.id==='v');
+ rows.forEach((row,k)=>{
+  const bodies=row.geometry.frames[params.frame]||row.geometry.bodies,last=k>0?rows[k-1].geometry:null,before=last?last.frames[params.frame]||last.bodies:null;
+  if(k%4===0)for(const b of bodies)rects.push({x:map.x(b.x)-8,y:map.y(b.y)-8,width:16,height:16});
+  if(before)bodies.forEach((b,i)=>segments.push([map.x(before[i].x),map.y(before[i].y),map.x(b.x),map.y(b.y)]));
+  // Breakdown arrows move with the body, so chips keep clear of their t = 0 position (the orbit itself is kept clear throughout).
+  if(k===0)for(const a of breakdownSegments({...row,params},map,w))segments.push([a.x,a.y,a.ex,a.ey]);
+ });
+ for(const a of start){
+  rects.push({x:a.ex-22,y:a.ey-17,width:44,height:34});
+  if(a.id==='r')rects.push({x:(a.x+a.ex)/2-22,y:(a.y+a.ey)/2-22,width:44,height:44});
  }
- const ys=obstacles.map(a=>a.y+a.height),bottom=Math.max(...ys),top=Math.min(...obstacles.map(a=>a.y));
- const targets={periapsis:{x:tip.ex,y:tip.ey,offsets:[[0,-55],[65,-55],[-65,-55],[0,40]]},
-  barycentre:{x:map.x(first.centreOfMass.x),y:map.y(first.centreOfMass.y),offsets:[[65,bottom-map.y(first.centreOfMass.y)+15],[-65,bottom-map.y(first.centreOfMass.y)+15],[-75,top-map.y(first.centreOfMass.y)-55]]},
-  area:{x:map.x(initial[0].x),y:map.y(initial[0].y),offsets:[[-65,bottom-map.y(initial[0].y)+15],[65,bottom-map.y(initial[0].y)+15],[-75,top-map.y(initial[0].y)-55]]}};
- const layout={key,params,targets,obstacles};layoutCache.set(rows,layout);return layout;
+ const cm=first.centreOfMass;rects.push({x:map.x(cm.x)-7,y:map.y(cm.y)-7,width:14,height:14});
+ const targets={periapsis:{x:tip.ex,y:tip.ey},barycentre:{x:map.x(cm.x),y:map.y(cm.y)},area:{x:map.x(initial[0].x),y:map.y(initial[0].y)}};
+ const layout={key,params,targets,rects,segments};layoutCache.set(rows,layout);return layout;
 }
 function decomposition(s,f){
  title(s,'Gravity bends the velocity');const {vr,vt,force}=values(f),w=s.w,h=s.h;
@@ -151,7 +159,8 @@ export const view={graphs,closeups,
   if(s.h<200){
    const q=f.sample,r=f.geometry.relative,e=q.eccentricity,a=q.semiMajorAxis,mu=G*(f.params.m1+f.params.m2),h=r.x*r.vy-r.y*r.vx,
     ex=r.vy*h/mu-r.x/q.r,ey=-r.vx*h/mu-r.y/q.r,angle=Math.atan2(ey,ex),R=q.apoapsis||q.r*2,
-    map=camera(s,[-R*1.1,R*1.1,-R*1.1,R*1.1],8,8);
+    closed=a>0&&e<1,cx=closed?-a*e*Math.cos(angle):0,cy=closed?-a*e*Math.sin(angle):0,half=(closed?a:R)*1.1,
+    map=camera(s,[cx-half,cx+half,cy-half,cy+half],8,8);
    if(a>0&&e<1)linePath(s,Array.from({length:181},(_,i)=>{const v=2*Math.PI*i/180,radius=a*(1-e*e)/(1+e*Math.cos(v));return {x:radius*Math.cos(v+angle),y:radius*Math.sin(v+angle)};}),map,C.blue+'70');
    s.circle(map.x(0),map.y(0),5,C.pale);s.circle(map.x(r.x),map.y(r.y),3,C.blue);return;
   }
@@ -178,8 +187,9 @@ export const view={graphs,closeups,
   }
   const map=camera(s,bounds,f.closeup?70:s.w<460?160:85,f.closeup?95:s.w<460?160:95);
   if(!f.closeup&&data.done){
-   const layout=orbitChipLayout(rows,f.params,map,s.w);
-   targetChips(s,layout.targets,[],shell,layout.obstacles);s.pathObstacles=layout.obstacles;
+   const layout=orbitChipLayout(rows,f.params,map,s.w),sizes=id=>{const b=shell?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
+   const placed=chipLayouts.get(layout)||chipLayouts.set(layout,placeChips(layout.targets,sizes,{width:s.w,top:8,bottom:s.h-100,rects:layout.rects,segments:layout.segments})).get(layout);
+   s.chipTargets=layout.targets;s.chipRects=Object.values(placed.boxes);s.targetAnchors=Object.fromEntries(Object.entries(placed.boxes).map(([id,b])=>[id,{x:b.x+b.width/2,y:b.y}]));s.pathObstacles=layout.rects;
   }
   if(f.closeup==='barycentre'){
    title(s,'Both bodies orbit their center of mass');

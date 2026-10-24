@@ -7,10 +7,12 @@ const scientific=n=>Math.abs(n)>=1e5||Math.abs(n)>0&&Math.abs(n)<.001;
 export const fmt=n=>(scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>'×10'+(sign==='-'?'⁻':'')+String(Number(power)).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d])):String(Number(n.toPrecision(3)))).replace(/^-/, '−');
 export const tex=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>String.raw`\times10^{${sign==='-'?'-':''}${Number(power)}}`):fmt(n).replace('−','-');
 export const sectionTick=n=>String(Number(n.toPrecision(2))).replace(/^-/, '−');
-export function sceneHeight(shell,narrowHeight,closeup,cap=false){
+// cap: the stage keeps exactly this height in every view (the kit stylesheet otherwise lets it grow), so a lab's
+// apparatus and chips sit at the same pixels in Scene, Breakdown and Graphs.
+export function sceneHeight(shell,narrowHeight,closeup,cap=false,wideHeight=420,closeupHeight=360){
  if(!shell?.scene)return;
- const height=closeup?360:shell.stage.w<460?narrowHeight:420;
- if(cap){shell.scene.style.flexGrow='0';shell.scene.style.maxHeight=height+'px';}
+ const height=closeup?closeupHeight:shell.stage.w<460?narrowHeight:wideHeight;
+ if(cap){shell.scene.style.setProperty('flex-grow','0','important');shell.scene.style.setProperty('max-height',height+'px','important');}
  if(shell.scene.style.minHeight!==height+'px'){
   shell.scene.style.minHeight=height+'px';shell.scene.style.flexBasis=height+'px';shell.stage.resize();
  }

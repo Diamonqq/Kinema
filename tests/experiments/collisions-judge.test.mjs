@@ -12,5 +12,5 @@ test('impact parameter caption is complete, above its bar and contained in Lab a
 });
 test('collision momentum readout retains 3 significant figures and leaves exact zeros unpadded',()=>{
  const params=Object.fromEntries(model.params.map(d=>[d.key,d.value])),sim=model.create(params),eq=view.equations({params,sample:sim.sample(),geometry:sim.geometry()}).join(' ');
- assert.ok(eq.includes(String.raw`=2.00\;\mathrm{kg\,m/s}`));assert.ok(eq.includes(String.raw`P_y=0+(0)`));
+ assert.ok(eq.includes(String.raw`P_x=2.00\;\mathrm{kg\,m/s}`));assert.ok(eq.includes(String.raw`P_y=0\;\mathrm{kg\,m/s}`));assert.ok(!eq.includes('+(0)'));
 });

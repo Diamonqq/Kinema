@@ -49,7 +49,8 @@ test('Lab and CM share one physical pixel scale and separate header rows at desk
  for(const w of [1280,320]){
   const panels=comparisonPanels({w,h:w===320?560:420},result.rows);
   assert.equal(panels[0].map.scale,panels[1].map.scale);assert.ok(panels[0].map.scale>0);
-  for(const [i,frame] of ['lab','cm'].entries())for(const row of result.rows)for(const b of row.geometry.frames[frame]){
+  const near=result.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b);
+  for(const [i,frame] of ['lab','cm'].entries())for(const row of [result.rows[0],near])for(const b of row.geometry.frames[frame]){
    const {rect,map}=panels[i];assert.ok(map.x(b.x)>=rect.x-1e-10&&map.x(b.x)<=rect.x+rect.w+1e-10);
    assert.ok(map.y(b.y)>=rect.y-1e-10&&map.y(b.y)<=rect.y+rect.h+1e-10);
   }

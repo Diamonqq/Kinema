@@ -2,15 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {model} from '../../static/js/experiments/orbits/model.js';
 import {view,orbitBounds,orbitChipLayout} from '../../static/js/experiments/orbits/view.js';
-import {motionBatches,camera,targetChips,sceneHeight} from '../../static/js/experiments/orbits/scene.js';
+import {motionBatches,camera,sceneHeight,segmentHitsRect} from '../../static/js/experiments/orbits/scene.js';
+import {placeChips} from '../../static/js/experiments/collisions/chips.js';
 const hit=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 test('three scene chips clear every preset trajectory and Breakdown arrow at 1280,390,320 layouts (0 px overlap)',()=>{
  assert.equal(view.closeups.length,3);assert.ok(view.graphs.some(g=>g.id==='potential'));assert.ok(view.graphs.some(g=>g.id==='poincare'));
  for(const preset of model.presets){let data;for(const batch of motionBatches(model,preset.values))data=batch;
   for(const w of [560,370,300]){
    const narrow=w<460,s={w,h:narrow?500:420,line:()=>{}},p=preset.values,map=camera(s,orbitBounds(data.rows,p,p.frame),narrow?160:85,narrow?160:95),layout=orbitChipLayout(data.rows,p,map,w);
-   targetChips(s,layout.targets,[],null,layout.obstacles);
-   for(const rect of s.chipRects){assert.ok(rect.x>=0&&rect.y>=0&&rect.x+rect.width<=s.w&&rect.y+rect.height<=s.h);assert.ok(!layout.obstacles.some(o=>hit(rect,o)),preset.id+' '+w);}
+   const {boxes}=placeChips(layout.targets,()=>({w:narrow?96:110,h:narrow?24:32}),{width:s.w,top:8,bottom:s.h-100,rects:layout.rects,segments:layout.segments});
+   for(const [id,rect] of Object.entries(boxes)){
+    assert.ok(rect.x>=0&&rect.y>=0&&rect.x+rect.width<=s.w&&rect.y+rect.height<=s.h);
+    assert.ok(!layout.rects.some(o=>hit(rect,o)),preset.id+' '+w+' '+id);
+    assert.ok(!layout.segments.some(l=>segmentHitsRect(l[0],l[1],l[2],l[3],rect,0)),preset.id+' '+w+' '+id+' sits on a drawn line');
+    const t=layout.targets[id],d=Math.hypot(t.x-Math.max(rect.x,Math.min(rect.x+rect.width,t.x)),t.y-Math.max(rect.y,Math.min(rect.y+rect.height,t.y)));
+    assert.ok(d<=120,preset.id+' '+w+' '+id+' beside its target: '+d);
+   }
   }
  }
 });
@@ -23,7 +30,7 @@ test('Breakdown defines tangential speed as a scalar magnitude and gives force d
  assert.ok(rev.includes('=1.90'));assert.ok(rev.includes(String.raw`|\dot A|`));
 });
 test('capped orbit scene has no flex growth or unbounded empty bands on phone Graphs',()=>{
- const scene={style:{}},stage={w:300,resize:()=>{}},shell={scene,stage};
+ const scene={style:{setProperty(k,v){this[k.replace(/-./g,m=>m[1].toUpperCase())]=v;}}},stage={w:300,resize:()=>{}},shell={scene,stage};
  sceneHeight(shell,500,false,true);assert.equal(scene.style.flexGrow,'0');assert.equal(scene.style.maxHeight,'500px');assert.equal(scene.style.flexBasis,'500px');
  sceneHeight(shell,500,true,true);assert.equal(scene.style.maxHeight,'360px');
 });
