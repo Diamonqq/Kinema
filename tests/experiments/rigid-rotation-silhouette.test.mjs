@@ -7,6 +7,7 @@ const formatURL=new URL('../../static/js/experiments/kit/format.js',import.meta.
 const modelURL='data:text/javascript;base64,'+Buffer.from(await readFile(new URL('model.js',dir),'utf8')).toString('base64');
 const text=await readFile(new URL('view.js',dir),'utf8');
 const source=text.replace("'/vendor/three/build/three.module.js'",JSON.stringify(threeURL)).replace("'./model.js'",JSON.stringify(modelURL)).replace("'../kit/format.js'",JSON.stringify(formatURL));
+const {model:rotationModel}=await import(modelURL);
 const {convexHull,rectHitsConvex,pointDepth,energyCurves}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const square=[{x:0,y:0},{x:10,y:0},{x:10,y:10},{x:0,y:10}];
 
@@ -51,4 +52,12 @@ test('energyCurves precomputes finite polhode and herpolhode paths that stay on 
  const norm=a=>Math.hypot(...a),first=norm(curves.body[0]);
  for(const p of curves.body)assert.ok(Math.abs(norm(p)-first)<first);
  assert.equal(energyCurves(params),curves);
+});
+
+test('the flip polhode lies on the drawn ellipsoid and is a long closed curve between ±e₂',()=>{
+ const params=rotationModel.presets.find(p=>p.id==='flip').values,curves=energyCurves(params),radii=rotationModel.create(params).geometry().inertiaEllipsoidRadii;
+ assert.ok(curves.closed);
+ for(const p of curves.body)assert.ok(Math.abs(p.reduce((a,x,i)=>a+(x/radii[i])**2,0)-1)<2e-3);
+ assert.ok(Math.max(...curves.body.map(p=>p[1]))>3.9&&Math.min(...curves.body.map(p=>p[1]))<-3.9);
+ assert.ok(Math.max(...curves.body.map(p=>Math.abs(p[0])))>1.5);
 });

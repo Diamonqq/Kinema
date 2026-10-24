@@ -187,7 +187,7 @@ export const view={graphs,closeups,
    instance=probe;traceBody=[];traceSpace=[];lastTrace=-1;
   }
   function cameraFor(width,height,extent){const aspect=width/Math.max(1,height);const halfHeight=extent/Math.min(1,aspect);camera.left=-halfHeight*aspect;camera.right=halfHeight*aspect;camera.top=halfHeight;camera.bottom=-halfHeight;camera.near=.01;camera.far=100;camera.updateProjectionMatrix();camera.updateMatrixWorld(true);}
-  const origin3=new THREE.Vector3(),labelNodes=new Map(),leaderNodes=new Map(),panelLabels=[];let currentPanel=0,currentObstacles=[],currentShapes=[],hullBoxes=[],arrowBoxes=[],topMargin=3,area3={x:0,y:0,w:0,h:0},leaderLengths=[],tips=[];
+  const origin3=new THREE.Vector3(),labelNodes=new Map(),leaderNodes=new Map(),panelLabels=[];let labelSession=null,currentPanel=0,currentObstacles=[],currentShapes=[],hullBoxes=[],arrowBoxes=[],topMargin=3,area3={x:0,y:0,w:0,h:0},leaderLengths=[],tips=[];
   function cachedText(el,text){if(el.textContent!==text)el.textContent=text;}
   function cachedAttribute(el,name,value){if(el.getAttribute(name)!==value)el.setAttribute(name,value);}
 
@@ -218,7 +218,8 @@ export const view={graphs,closeups,
    let first=-1,position=null;const count=LABEL_TURNS.length*LABEL_TIERS.length;
    // A new choice keeps 16 px from the silhouette so a turning body does not push it away again at once; a kept one may come within 1 px.
    const search=()=>{for(const pad of [16,8,1])for(let n=0;n<count;n++)if(valid(candidate(n),pad))return n;return -1;};
-   first=search();
+   const searchNear=()=>{const near=search();if(near<0||leaderLength(candidate(near))<=20)return near;let best=near,score=leaderLength(candidate(near));for(const [pad,cost] of [[8,8],[1,16]])for(let n=0;n<count;n++){const c=candidate(n),v=leaderLength(c)+cost;if(v<score&&valid(c,pad)){score=v;best=n;}}return best;};
+   first=entry.choice<0?searchNear():search();
    if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}
    // A crowded cluster may take a longer leader rather than lose the label.
    if(first<0){leash+=24;tips.at(-1).depth=depth+24;squeeze=false;bounds=rect;first=search();if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}}
@@ -305,7 +306,7 @@ export const view={graphs,closeups,
    cachedText(caption,f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' ')));
    let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a = ${num(p.a)} m · b = ${num(p.b)} m · c = ${num(p.c)} m`:`θ = ${num(f.sample.theta)} rad · T = ${num(f.sample.kinetic)} J`;
    if(norm(g.torqueSpace)<1e-10&&!energy)readoutText+=' · τ = 0 N m';cachedText(readout,readoutText);
-   leaderLengths=[];tips=[];arrowBoxes=[];hullBoxes=[];for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
+   leaderLengths=[];tips=[];arrowBoxes=[];hullBoxes=[];if(labelSession!==f.closeup){for(const entry of labelNodes.values())entry.choice=-1;labelSession=f.closeup;}for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
    if(f.t-lastTrace>.025){traceBody.push([...g.omegaBody]);traceSpace.push([...g.omegaSpace]);if(traceBody.length>800){traceBody.shift();traceSpace.shift();}lastTrace=f.t;}
    const target=f.closeup?1.18:1,dt=Math.min(.1,(performance.now()-(draw.last||performance.now()))/1000);draw.last=performance.now();zoom+= (target-zoom)*(1-Math.exp(-dt*10));if(shell.stage.snap){zoom=target;shell.stage.snap=false;}
    const narrow=width<430,{top,area}=layout,showAxes=!layout.compact||f.closeup==='axis';
@@ -335,11 +336,13 @@ export const view={graphs,closeups,
     const origin=[0,0,0],basis=bodyFrame?[[1,0,0],[0,1,0],[0,0,1]]:g.principalAxes;
     if(energy){
      content.quaternion.identity();const scale=bounds*.65/Math.max(...g.inertiaEllipsoidRadii,1);const point=(bodyFrame?g.omegaBody:g.omegaSpace).map(x=>x*scale);
-     if(bodyFrame){const ell=retained.mesh('ellipsoid',()=>new THREE.Mesh(new THREE.SphereGeometry(1,36,24),new THREE.MeshBasicMaterial({color:C.omega,wireframe:true,transparent:true,opacity:.18})));ell.scale.set(...g.inertiaEllipsoidRadii.map(x=>x*scale));}
+     if(bodyFrame){const ell=retained.mesh('ellipsoid',()=>new THREE.Mesh(new THREE.SphereGeometry(1,36,24),new THREE.MeshBasicMaterial({color:C.omega,wireframe:true,transparent:true,opacity:.07})));ell.scale.set(...g.inertiaEllipsoidRadii.map(x=>x*scale));}
      else {const size=bounds*.9,plane=retained.mesh('tangent',()=>new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshBasicMaterial({color:C.L,side:THREE.DoubleSide,transparent:true,opacity:.12})));const L=v(g.angularMomentumSpace);plane.quaternion.setFromUnitVectors(v([0,0,1]),L.clone().normalize());plane.position.copy(L.clone().multiplyScalar(2*f.sample.kinetic/(L.lengthSq()||1)*scale));const center=plane.position.clone().project(camera),corners=[];for(const x of [-size/2,size/2])for(const y of [-size/2,size/2])corners.push(v([x,y,0]).applyQuaternion(plane.quaternion).add(plane.position).project(camera));plane.scale.setScalar(finitePatchScale(center,corners));}
-     const curves=energyCurves(f.params),trace=bodyFrame?curves.body:curves.space;shell.rotationEnergyCurves={body:curves.body.length,space:curves.space.length,closed:curves.closed,drawn:trace.length>1};if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),C.L);
+     const curves=energyCurves(f.params),trace=bodyFrame?curves.body:curves.space;shell.rotationEnergyCurves={body:curves.body.length,space:curves.space.length,closed:curves.closed,drawn:trace.length>1};
+     if(trace.length>1){const sig=curves.body.length+':'+Math.round(scale*1e4)+':'+bodyFrame,tube=retained.mesh('polhode-'+(bodyFrame?'body':'space'),()=>{const m=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshBasicMaterial({color:C.L,depthTest:false,depthWrite:false,transparent:true,opacity:.95}));m.renderOrder=25;return m;});
+      if(tube.userData.sig!==sig){const stride=Math.max(1,Math.floor(trace.length/240)),pts=trace.filter((a,i)=>i%stride===0||i===trace.length-1).map(a=>new THREE.Vector3(...a).multiplyScalar(scale));tube.geometry.dispose();tube.geometry=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,false),Math.min(480,pts.length*2),bounds*.0065,5,false);tube.userData.sig=sig;}}
      // The ellipsoid is the drawing's body here: labels keep clear of its outline.
-     if(bodyFrame){content.updateMatrixWorld(true);const rad=g.inertiaEllipsoidRadii.map(x=>x*scale),pts=[];for(let i=0;i<=12;i++)for(let j=0;j<24;j++){const th=Math.PI*i/12,ph=2*Math.PI*j/24,pt=scratch.set(rad[0]*Math.sin(th)*Math.cos(ph),rad[1]*Math.sin(th)*Math.sin(ph),rad[2]*Math.cos(th)).applyMatrix4(content.matrixWorld).project(camera);pts.push({x:r.x+(pt.x+1)*r.w/2,y:r.y+(1-pt.y)*r.h/2});}shapes.push(convexHull(pts));}
+     if(bodyFrame){content.updateMatrixWorld(true);const rad=g.inertiaEllipsoidRadii.map(x=>x*scale),pts=[];for(let i=0;i<=12;i++)for(let j=0;j<24;j++){const th=Math.PI*i/12,ph=2*Math.PI*j/24,pt=scratch.set(rad[0]*Math.sin(th)*Math.cos(ph),rad[1]*Math.sin(th)*Math.sin(ph),rad[2]*Math.cos(th)).applyMatrix4(content.matrixWorld).project(camera);pts.push({x:r.x+(pt.x+1)*r.w/2,y:r.y+(1-pt.y)*r.h/2});}shapes.push(convexHull(pts));}else if(trace.length>1){content.updateMatrixWorld(true);const pts=trace.map(a=>{const pt=scratch.set(a[0]*scale,a[1]*scale,a[2]*scale).applyMatrix4(content.matrixWorld).project(camera);return {x:r.x+(pt.x+1)*r.w/2,y:r.y+(1-pt.y)*r.h/2};});shapes.push(convexHull(pts));}
      A(origin,point,norm(point),C.omega,'energy-angular-velocity');
      textAt(bodyFrame?'ω body':'ω space',v(point),C.omega,r,placed);
     }else {
