@@ -23,7 +23,7 @@ function eventBounds(f,key){const a=coord(selected(f,key),f.params.length),span=
 function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   const L=f.params.length,g=f.geometry[key],b=beta(f.params),base=context(f).bounds;
   const bounds=zoom?eventBounds(f,key):base,m=mapPanel(s,p,bounds,key),primed=key==='moving';
-  axes(s,m,p,{title:primed?'S′ · moving frame':'S · ground frame',x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L'});
+  axes(s,m,p,{title:primed?'S′ · moving frame':'S · ground frame',x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',labels:!f.thumbnail});
   // The other frame's axes are transformed basis vectors, not an ordinary rotation.
   const transform=primed?b:invert(b),ex=coord(boost({t:0,x:L},transform),L),et=coord(boost({t:L/C,x:0},transform),L);
   const range=Math.max(...bounds.map(Math.abs))*4+4;
@@ -56,7 +56,7 @@ function spatial(s,f,p){
   const L=f.params.length,selectedFrame=f.params.frame,g=f.geometry[selectedFrame],points=g.worldlines.flatMap(l=>l.points),solids=f.geometry.solids;
   // Full worldline endpoints bound every authored spatial position; never follow motion.
   const xs=points.map(a=>a.x/L),ys=points.map(a=>a.y/L);const extent=Math.max(2,...xs.map(Math.abs),...ys.map(Math.abs));
-  const m=mapPanel(s,p,[-extent,extent,-extent,extent],'spatial');axes(s,m,p,{title:'Spatial slice · '+(selectedFrame==='ground'?'S':'S′'),x:'x / L',y:'y / L'});
+  const m=mapPanel(s,p,[-extent,extent,-extent,extent],'spatial');axes(s,m,p,{title:'Spatial slice · '+(selectedFrame==='ground'?'S':'S′'),x:'x / L',y:'y / L',labels:!f.thumbnail});
   for(const [i,solid] of solids.entries()){
     const a=solid[selectedFrame];a.forEach((v,j)=>{if(a.length>1&&(j||a.length>2)){const prev=a[(j+a.length-1)%a.length];line(s,m,p,[prev.x/L,prev.y/L],[v.x/L,v.y/L],colors[i%6],2);}
       if(inside(m,p,v.x/L,v.y/L,4))s.circle(m.x(v.x/L),m.y(v.y/L),a.length===1?4:2,colors[i%6]);});
@@ -69,7 +69,7 @@ function spatial(s,f,p){
 }
 function calculator(s,f,p){
   const c=f.geometry.calculator,isTensor=f.params.scenario==='tensor',values=isTensor?c.tensor.cubeGround.concat(c.tensor.cubeMoving):[c.vector.ground,c.vector.moving];
-  const e=Math.max(1,...values.flat().map(Math.abs))*1.25,m=mapPanel(s,p,[-e,e,-e,e],'components');axes(s,m,p,{title:isTensor?'Tensor · x / ct projection':'Four-vector · x / ct projection',x:'x component',y:'ct component'});
+  const e=Math.max(1,...values.flat().map(Math.abs))*1.25,m=mapPanel(s,p,[-e,e,-e,e],'components');axes(s,m,p,{title:isTensor?'Tensor · x / ct projection':'Four-vector · x / ct projection',x:'x component',y:'ct component',labels:!f.thumbnail});
   if(isTensor){for(const [k,arr] of [c.tensor.cubeGround,c.tensor.cubeMoving].entries())for(let i=0;i<16;i++)for(let bit=0;bit<4;bit++){const j=i^(1<<bit);if(j>i)line(s,m,p,[arr[i][1],arr[i][0]],[arr[j][1],arr[j][0]],colors[k]+'90',1);}}
   else [c.vector.ground,c.vector.moving].forEach((a,i)=>s.arrow(m.x(0),m.y(0),m.x(a[1]),m.y(a[0]),colors[i],2.5));
 }
@@ -93,7 +93,7 @@ export const view={closeups,graphs,paramVisible,
   key:f=>f.closeup==='transform'?'Blue: S · warm: S′ · interval stays invariant':'Bodies · warm light · dashed: other frame axes',
   closeupAnchors:s=>({event:{x:s.w*.28,y:s.h-74},transform:{x:s.w*.73,y:s.h-74}}),
   draw(s,f){
-    if(s.w<200||s.h<180){drawDiagram(s,f,{left:28,top:28,width:s.w-45,height:s.h-58},'ground',{cone:true});return;}
+    if(f.thumbnail||s.w<200||s.h<180){f={...f,thumbnail:true,breakdown:false};drawDiagram(s,f,{left:28,top:28,width:s.w-45,height:s.h-58},'ground',{cone:true});return;}
     const ps=panels(s,{bottom:130,top:f.closeup?78:44});
     if(['four-vector','tensor'].includes(f.params.scenario))calculator(s,f,{left:40,top:f.closeup?85:55,width:s.w-65,height:s.h-(f.closeup?190:160)});
     else if(f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario))spatial(s,f,{left:40,top:85,width:s.w-65,height:s.h-190});

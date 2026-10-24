@@ -204,10 +204,16 @@ The projection views do not claim to be a rendered 3D worldtube.
 
 The two view test files add descriptor consistency, fixed cameras, 45-degree
 screen slopes (1e-9 px), finite drawing coordinates at narrow/wide sizes, equal-scale momentum-circle rendering (1e-9 px), and
-scenario-scoped Setup checks to the 32 analytic core tests: 40 tests total.
+scenario-scoped Setup checks to the 32 analytic core tests: 44 tests total.
 Rendered browser evidence lives in `round-156/rel-views/browser.json` and adjacent
 1280/320 PNG captures. It covers the actual gallery, transport, all presets,
 Setup changes, close-up return, expanded view, equations, every graph and the
 forbidden reaction state. These are hidden isolated-browser checks, not a real
 phone/account or original DOS executable comparison. The coordinator owns the
 independent visual judgment and final release integration.
+
+Polish verification: gallery thumbnails draw apparatus without text; custom plots
+keep zero and avoid padding past physical angle/speed/cosine domains. Incoming
+momentum uses clearly visible dashed arrows even for forbidden reactions, without
+inventing outgoing particles. The energy-budget bars and signed Q form one compact
+group. Four additional view checks bring the lane to 44 passing tests.

@@ -40,3 +40,19 @@ test('Breakdown conservation sums follow the selected CM frame (1e-8 MeV/c)',()=
  const equation=view.equations(f).find(x=>x.includes('(E,p_x,p_y)'));
  assert.match(equation,/\(134\.977,0,0\)/);
 });
+
+test('physical angle and fraction graph axes stay within their domains (exact endpoint labels)',()=>{
+ const f=frame(model,{reaction:'compton'});
+ for(const id of ['compton','energy-angle']){const s=fakeStage(560,170);view.drawGraph(s,view.graphs.find(g=>g.id===id),f);assert.ok(s.labels.some(l=>l.text==='0'));assert.ok(s.labels.some(l=>l.text==='180'));assert.ok(!s.labels.some(l=>l.text==='-12.6'||l.text==='192.6'));}
+ for(const variable of ['theta','openingAngle','cosTheta','beta']){const f=frame(model,{xVariable:variable,yVariable:variable}),s=fakeStage(560,170);view.drawGraph(s,view.graphs.find(g=>g.id==='scatter'),f);assert.ok(s.lines.flatMap(a=>a.slice(0,4)).every(Number.isFinite));}
+});
+test('forbidden event retains visible incoming momentum arrows and thumbnails contain no readouts',()=>{
+ const f=frame(model,{reaction:'pp-pion',kinetic:1}),s=fakeStage(300,700);view.draw(s,f);
+ assert.equal(s.arrows.length,3);assert.ok(s.arrows.every(a=>a[4]==='#a7b6cc'&&Math.hypot(a[2]-a[0],a[3]-a[1])>20));
+ for(const [w,h] of [[280,155],[640,440]]){const s=fakeStage(w,h);view.draw(s,{...f,thumbnail:true});assert.equal(s.labels.length,0);assert.ok(s.arrows.length>0);}
+});
+test('energy budget groups the required bar value and signed Q within 40 px',()=>{
+ const f=frame(model),s=fakeStage(560,800);f.closeup='budget';view.draw(s,f);
+ const q=s.labels.find(l=>l.text.startsWith('Q = ')),values=s.labels.filter(l=>/^[0-9].* MeV$/.test(l.text));
+ assert.equal(values.length,2);assert.ok(q.y-Math.max(...values.map(l=>l.y))<=40);
+});

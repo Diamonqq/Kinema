@@ -5,8 +5,8 @@ import {model,C} from '../../static/js/experiments/minkowski/model.js';
 import {view,boundsFor} from '../../static/js/experiments/minkowski/view.js';
 import {clipLine} from '../../static/js/experiments/minkowski/drawing.js';
 export function fakeStage(w=640,h=440){
- const noop=()=>{},s={w,h,snap:true,labels:[],lines:[],ctx:new Proxy({measureText:text=>({width:String(text).length*6})},{get:(o,k)=>o[k]??noop})};
- for(const k of ['line','arrow','circle'])s[k]=(...a)=>{assert.ok(a.slice(0,k==='circle'?3:4).every(Number.isFinite),k+' finite coordinates');if(k==='line')s.lines.push(a);};
+ const noop=()=>{},s={w,h,snap:true,labels:[],lines:[],arrows:[],ctx:new Proxy({measureText:text=>({width:String(text).length*6})},{get:(o,k)=>o[k]??noop})};
+ for(const k of ['line','arrow','circle'])s[k]=(...a)=>{assert.ok(a.slice(0,k==='circle'?3:4).every(Number.isFinite),k+' finite coordinates');if(k==='line')s.lines.push(a);if(k==='arrow')s.arrows.push(a);};
  s.text=(text,x,y,color,size=13,align='center')=>{assert.ok(Number.isFinite(x+y));const width=String(text).length*size*.5;s.labels.push({text,x:x-(align==='center'?width/2:align==='right'?width:0),y:y-size/2,width,height:size});};
  return s;
 }
@@ -30,4 +30,8 @@ test('minkowski all presets, close-ups and graphs draw finite data at 320 and 12
   for(const graph of view.graphDescriptors(f.params))if(graph.kind==='custom')view.drawGraph(fakeStage(w,170),graph,f);
  }
  const f=frame(model,{scenario:'objects',betaY:.2});assert.ok(view.equations(f).some(x=>x.includes('boldsymbol')));
+});
+
+test('Minkowski gallery thumbnail contains apparatus without text at either canvas size',()=>{
+ for(const [w,h] of [[280,155],[640,440]]){const f=frame(model),s=fakeStage(w,h);f.thumbnail=true;view.draw(s,f);assert.equal(s.labels.length,0);assert.ok(s.lines.length>0);}
 });

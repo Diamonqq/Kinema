@@ -242,8 +242,14 @@ All model descriptors are retained; Setup exposes only scenario-relevant fields.
 Momentum diagrams describe reaction kinematics; they do not imply an interaction
 force, a decay lifetime, or cross-section-weighted event generation.
 
-The 40 core/view tests and isolated browser evidence are shared with the Minkowski
+The 44 core/view tests and isolated browser evidence are shared with the Minkowski
 lane. `round-156/rel-views/browser.json` records actual checks and adjacent PNGs
 show desktop, narrow, expanded and forbidden-state renders. See minkowski.md for
 verification scope and shared workflow friction. No installed app or real-device
 check was performed.
+
+Polish verification: gallery thumbnails draw apparatus without text; custom plots
+keep zero and avoid padding past physical angle/speed/cosine domains. Incoming
+momentum uses clearly visible dashed arrows even for forbidden reactions, without
+inventing outgoing particles. The energy-budget bars and signed Q form one compact
+group. Four additional view checks bring the lane to 44 passing tests.

@@ -29,16 +29,19 @@ export function line(s,m,p,a,b,color,width=1,dash=[]) {
   s.ctx.setLineDash(dash);s.line(...v,color,width);s.ctx.setLineDash([]);
 }
 export function inside(m,p,x,y,pad=0){return m.x(x)>=p.left+pad&&m.x(x)<=p.left+p.width-pad&&m.y(y)>=p.top+pad&&m.y(y)<=p.top+p.height-pad;}
-export function axes(s,m,p,{x='x / L',y='ct / L',title='',color='#526176'}={}) {
+export function axes(s,m,p,{x='x / L',y='ct / L',title='',color='#526176',labels=true}={}) {
   line(s,m,p,[-1e8,0],[1e8,0],color);line(s,m,p,[0,-1e8],[0,1e8],color);
+  if(!labels)return;
   s.text(title,p.left+p.width/2,p.top-16,'#cad8ea',12);
   s.text(x,p.left+p.width,Math.max(p.top+14,Math.min(p.top+p.height-5,m.y(0)+14)),'#8296b0',10,'right');
   s.text(y,p.left,p.top-3,'#8296b0',10,'left');
 }
-export function plot(s,{title,xLabel,yLabel,points=[],marker=null,bounds=null,bars=false,dots=false,equalScale=false}) {
+export function plot(s,{title,xLabel,yLabel,points=[],marker=null,bounds=null,bars=false,dots=false,equalScale=false,xLimits=null,yLimits=null}) {
   const p={left:47,top:40,width:Math.max(10,s.w-64),height:Math.max(20,s.h-76)};
-  if(!bounds){const xs=points.map(a=>a[0]),ys=points.map(a=>a[1]);let x0=Math.min(0,...xs),x1=Math.max(.001,...xs),y0=Math.min(0,...ys),y1=Math.max(.001,...ys);if(x0===x1)x1=x0+1;if(y0===y1)y1=y0+1;const dx=(x1-x0)*.07,dy=(y1-y0)*.12;bounds=[x0-dx,x1+dx,y0-dy,y1+dy];}
+  if(!bounds){const xs=points.map(a=>a[0]),ys=points.map(a=>a[1]);let x0=Math.min(0,...xs),x1=Math.max(.001,...xs),y0=Math.min(0,...ys),y1=Math.max(.001,...ys);if(x0===x1)x1=x0+1;if(y0===y1)y1=y0+1;const dx=(x1-x0)*.07,dy=(y1-y0)*.12;bounds=[x0<0?x0-dx:0,x1>0?x1+dx:0,y0<0?y0-dy:0,y1>0?y1+dy:0];}
   if(equalScale){const [a,b,c,d]=bounds,scale=Math.min(p.width/(b-a),p.height/(d-c)),cx=(a+b)/2,cy=(c+d)/2;bounds=[cx-p.width/(2*scale),cx+p.width/(2*scale),cy-p.height/(2*scale),cy+p.height/(2*scale)];}
+  const limit=(a,b,d)=>{if(!d)return [a,b];a=Math.max(a,d[0]);b=Math.min(b,d[1]);return b>a?[a,b]:[d[0],Number.isFinite(d[1])?d[1]:d[0]+1];};
+  bounds=[...limit(bounds[0],bounds[1],xLimits),...limit(bounds[2],bounds[3],yLimits)];
   const [x0,x1,y0,y1]=bounds,m={x:v=>p.left+(v-x0)/(x1-x0)*p.width,y:v=>p.top+p.height-(v-y0)/(y1-y0)*p.height};
   s.text(title,s.w/2,14,'#c7d6ea',11);s.text(yLabel,8,31,'#90a6c2',10,'left');
   s.line(p.left,p.top,p.left,p.top+p.height,'#3b4a5e',1);s.line(p.left,p.top+p.height,p.left+p.width,p.top+p.height,'#3b4a5e',1);

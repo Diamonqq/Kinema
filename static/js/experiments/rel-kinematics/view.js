@@ -3,6 +3,7 @@ import {colors,fmt,panels,mapPanel,line,inside,axes,plot} from '../minkowski/dra
 const caches=new WeakMap();
 export const closeups=[{id:'balance',label:'Zoom · momentum'},{id:'budget',label:'Zoom · energy'}];
 export const graphs=[['flight','Free flight'],['ellipse','Momentum ellipse'],['energy-angle','Energy vs angle'],['threshold','Threshold'],['invariant','Invariant mass'],['compton','Compton shift'],['scatter','Scatter plot'],['histogram','Histogram']].map(([id,label])=>({id,label,kind:'custom'}));
+function physicalLimits(variable){return ['theta','openingAngle'].includes(variable)?[0,180]:variable==='cosTheta'?[-1,1]:variable==='beta'?[0,1]:variable==='transferSquared'?null:[0,Infinity];}
 function data(f){let d=caches.get(f.params);if(!d){const e=eventFor(f.params),sweep=Array.from({length:73},(_,i)=>eventFor({...f.params,angle:i*2.5}));
   const qs=[...e.initial,...e.final,...e.cmInitial,...e.cmFinal,...sweep.flatMap(a=>[...a.final,...a.cmFinal])];
   d={e,sweep,extent:Math.max(.01,...qs.map(a=>Math.hypot(a.px,a.py)))*1.22};caches.set(f.params,d);}return d;}
@@ -18,10 +19,10 @@ function labelTip(s,p,text,x,y,color){
 function momentum(s,f,p,key,headTail=false){
   const d=data(f),e=f.geometry[key],extent=d.extent,zoom=headTail?.92:1;
   const m=mapPanel(s,p,[-extent*zoom,extent*zoom,-extent*zoom,extent*zoom],key);
-  axes(s,m,p,{title:key==='lab'?'Lab frame':'CM frame',x:'pₓ · MeV/c',y:'pᵧ'});
+  axes(s,m,p,{title:key==='lab'?'Lab frame':'CM frame',x:'pₓ · MeV/c',y:'pᵧ',labels:!f.thumbnail});
   // Incoming arrows are subdued; no false minimum length for massive targets at rest.
   e.initial.forEach((a,i)=>{
-    line(s,m,p,[0,0],[a.px,a.py],'#91a0b275',1.2,[3,4]);
+    if(Math.hypot(a.px,a.py)>1e-9){s.ctx.setLineDash([6,4]);s.arrow(m.x(0),m.y(0),m.x(a.px),m.y(a.py),'#a7b6cc',2);s.ctx.setLineDash([]);}
     if(f.breakdown&&Math.hypot(a.px,a.py)>1e-8)labelTip(s,p,i?'p target':'p in',m.x(a.px),m.y(a.py),'#8e9cb0');
   });
   let x=0,y=0;
@@ -59,24 +60,24 @@ function budget(f){const e=data(f).e,cm=f.params.frame==='cm',a=sumMomentum(cm?e
   return {e,a,b,mass:invariantMass(a),finalMass:e.requiredMass};}
 function drawBudget(s,f){
   const {e}=data(f),max=Math.max(.001,e.W,e.requiredMass)*1.18,left=32,right=s.w-32,width=right-left;
-  const y1=120,y2=Math.min(s.h-180,230),bar=18;
+  const y1=112,y2=196,bar=18;
   s.text('Center-of-momentum energy budget',s.w/2,63,'#c7d9ee',s.w<470?12:15);
   for(const [i,[label,value,color]] of [[0,['√s · available',e.W,colors[0]]],[1,['Σmc² · required',e.requiredMass,e.allowed?colors[2]:'#e4a9bd']]]){
     const y=i?y2:y1;s.text(label,left,y-24,color,12,'left');s.ctx.fillStyle=color+'a0';s.ctx.fillRect(left,y,width*value/max,bar);
     s.text(fmt(value)+' MeV',left,y+bar+18,color,11,'left');
   }
-  const Q=e.W-e.requiredMass;s.text('Q = '+(Q>=0?'+':'')+fmt(Q)+' MeV',s.w/2,Math.min(s.h-115,y2+80),Q>=0?colors[2]:'#e4a9bd',14);
+  const Q=e.W-e.requiredMass;s.text('Q = '+(Q>=0?'+':'')+fmt(Q)+' MeV',s.w/2,y2+64,Q>=0?colors[2]:'#e4a9bd',14);
 }
 export const view={closeups,graphs,paramVisible,
   mount(shell){shell.scene.style.minHeight='440px';shell.scene.style.flexBasis='440px';},
   graphDescriptors:p=>graphs.filter(g=>g.id==='compton'?p.reaction==='compton':g.id==='threshold'?!['pion-decay','decay','muon'].includes(p.reaction):true),
   key:f=>!f.geometry.allowed?'Below threshold · no outgoing event':f.closeup==='balance'?'Head-to-tail sum · blue p1 · warm p2 · green p3':'Blue p1 · warm p2 · green p3 · dashed incoming',
   closeupAnchors:s=>({balance:{x:s.w*.26,y:s.h-69},budget:{x:s.w*.74,y:s.h-69}}),
-  draw(s,f){if(s.h<180){momentum(s,f,{left:28,top:28,width:s.w-48,height:s.h-58},'lab');return;}
+  draw(s,f){if(f.thumbnail||s.h<180){f={...f,thumbnail:true,breakdown:false};momentum(s,f,{left:28,top:28,width:s.w-48,height:s.h-58},'lab');return;}
     const compact=s.w<470,ps=panels(s,{top:f.closeup?78:44,bottom:130});
     if(f.closeup==='budget')drawBudget(s,f);else for(const [i,k] of ['lab','cm'].entries())momentum(s,f,ps[i],k,f.closeup==='balance');
     const {e}=data(f),caption=f.closeup==='budget'?`√s = ${fmt(e.W)} MeV · final rest energy ${fmt(e.requiredMass)} MeV`:`√s = ${fmt(e.W)} MeV · reaction at t = 0`;
-    if(s.w>260&&s.h>200)s.text(compact?`√s = ${fmt(e.W)} MeV`:caption,s.w/2,s.h-100,'#bccde3',compact?11:12);
+    if(f.closeup!=='budget'&&s.w>260&&s.h>200)s.text(compact?`√s = ${fmt(e.W)} MeV`:caption,s.w/2,s.h-100,'#bccde3',compact?11:12);
     s.camera={bounds:[-data(f).extent,data(f).extent,-data(f).extent,data(f).extent],zoom:f.closeup};s.snap=false;
   },
   equations(f){const {e,a,b,mass}=budget(f),sum=v=>`(${fmt(v.E)},${fmt(v.px)},${fmt(v.py)})`;
@@ -103,6 +104,6 @@ export const view={closeups,graphs,paramVisible,
     if(d.id==='compton'){const E=e.initial[0].E;points=Array.from({length:73},(_,i)=>[i*2.5,comptonEnergy(E,i*Math.PI/72)]);marker=[f.params.angle,e.photonEnergy];xLabel='Lab photon angle · °';yLabel='photon energy · MeV';}
     if(d.id==='scatter'){points=scatter.points.map(v=>[v.x,v.y]);const xv=plotVariables.find(v=>v.value===scatter.x.variable),yv=plotVariables.find(v=>v.value===scatter.y.variable);xLabel=`${xv?.label||''} · ${scatter.x.frame}`;yLabel=yv?.unit||yv?.label||'';title='Allowed kinematics · '+(scatter.distribution==='isotropic'?'isotropic toy sample':'locus');bounds=[scatter.x.min,scatter.x.max,scatter.y.min,scatter.y.max];}
     if(d.id==='histogram'){const h=scatter.histogram;points=h.counts.map((v,i)=>[(h.edges[i]+h.edges[i+1])/2,v]);xLabel=plotVariables.find(v=>v.value===scatter.x.variable)?.label||'';yLabel='sample count';title=scatter.distribution==='isotropic'?'Isotropic toy sample · no cross section':'Locus sample counts · not event rates';bars=true;bounds=[h.min,h.max,0,Math.max(1,...h.counts)*1.2];}
-    plot(s,{title,xLabel,yLabel,points,marker,bounds,bars,dots:d.id==='scatter',equalScale:d.id==='ellipse'});
+    plot(s,{title,xLabel,yLabel,points,marker,bounds,bars,dots:d.id==='scatter',equalScale:d.id==='ellipse',xLimits:['compton','energy-angle'].includes(d.id)?[0,180]:d.id==='threshold'?[0,Infinity]:['scatter','histogram'].includes(d.id)?physicalLimits(scatter.x.variable):null,yLimits:d.id==='scatter'?physicalLimits(scatter.y.variable):null});
   },
 };
