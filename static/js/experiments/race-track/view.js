@@ -1,4 +1,4 @@
-import {curveForces,speedLimits,trackPoint} from './model.js';
+import {curveForces,speedLimits,trackPoint,model} from './model.js';
 import {easeCamera} from '../kit/stage.js';
 import {num,texNum} from '../kit/format.js';
 const blue='#8ab9ff',green='#b0c9ad',orange='#e9bb88',purple='#bcabef',muted='#8c9cb2',rad=Math.PI/180;
@@ -43,7 +43,17 @@ function projection(s,x,y,dx,dy,label,color){
  if(Math.hypot(dx,dy)<MIN_ARROW)return;
  s.ctx.setLineDash([4,4]);s.arrow(x,y,x+dx,y-dy,color,1.4);s.ctx.setLineDash([]);tipLabel(s,label,x+dx,y-dy,color);
 }
-export function bankSnapshot(f){return curveForces({...f.params,speed:f.sample.speed,radius:f.params.radius,bank:f.params.bank});}
+// One fixed corner state: the speed at corner entry, independent of the transport time.
+const entryCache=new Map();
+export function cornerSpeed(p){
+ const key=JSON.stringify(p);if(entryCache.has(key))return entryCache.get(key);
+ let v=p.speed;
+ if(p.halfStraight>0){const i=model.create(p);let prev=i.sample();for(let n=0;n<4000;n++){i.step(.05);const q=i.sample();if(q.distance>=p.halfStraight){v=prev.speed+(q.speed-prev.speed)*(p.halfStraight-prev.distance)/Math.max(1e-9,q.distance-prev.distance);break;}if(q.lostGrip||q.speed<=0){v=q.speed;break;}prev=q;}}
+ if(entryCache.size>30)entryCache.delete(entryCache.keys().next().value);entryCache.set(key,v);return v;
+}
+export function bankSnapshot(f){return curveForces({...f.params,speed:cornerSpeed(f.params),radius:f.params.radius,bank:f.params.bank});}
+// The live state at the transport time: on a straight the road is flat and f⊥ is zero.
+export function liveSnapshot(f){const p=f.params,point=trackPoint(f.sample.distance,p);return curveForces({...p,speed:f.sample.speed,radius:point.curvature?p.radius:Infinity,bank:point.curvature?p.bank:0});}
 let drawnForces=new Set(['N','mg','f']),gripTire=true;
 function bank(s,f,box,components){
  const {x,y,w,h}=box,theta=f.params.bank*rad,c=Math.cos(theta),sn=Math.sin(theta),force=bankSnapshot(f),cx=x+w*.5,cy=y+h*.53,len=Math.min(w*.33,h*.39),k=len/Math.max(force.normal,f.params.mass*f.params.gravity,Math.abs(force.lateral),1);
@@ -74,7 +84,7 @@ function bank(s,f,box,components){
  s.forceLabelObstacle=null;return force;
 }
 function grip(s,f,box){
- const force=bankSnapshot(f),{x,y,w,h}=box,cx=x+w/2,cy=y+h/2,r=Math.min(w*.29,h*.33),extent=Math.max(force.capacity,Math.abs(force.lateral),Math.abs(f.params.drive),1),k=r/extent;
+ const force=liveSnapshot(f),{x,y,w,h}=box,cx=x+w/2,cy=y+h/2,r=Math.min(w*.29,h*.33),extent=Math.max(force.capacity,Math.abs(force.lateral),Math.abs(f.params.drive),1),k=r/extent;
  s.line(cx-r-8,cy,cx+r+8,cy,'#425066',1);s.line(cx,cy-r-7,cx,cy+r+7,'#425066',1);
  s.ctx.strokeStyle=orange;s.ctx.lineWidth=1.5;s.ctx.beginPath();s.ctx.arc(cx,cy,force.capacity*k,0,2*Math.PI);s.ctx.stroke();
  const tx=cx+force.longitudinal*k,ty=cy-force.lateral*k;gripTire=Math.hypot(tx-cx,ty-cy)>=MIN_FRICTION;if(gripTire){s.arrow(cx,cy,tx,ty,force.grip?green:'#e4a9bd',2);s.circle(tx,ty,3,green);}
@@ -86,8 +96,8 @@ function grip(s,f,box){
 export const view={graphs,closeups,
  graphDescriptors:p=>graphs.map(g=>({...g,window:Math.max(5,(4*p.halfStraight+2*Math.PI*p.radius)/Math.max(1,p.speed))})),
  mount(shell){shell.q('.exp-transport').style.background='#191e26';shell.equations.style.paddingBottom='64px';shell.scene.style.minHeight='440px';},
- closeupAnchors(s,f){if(f.closeup)return {};if(f.breakdown){const narrow=s.w<440;return {corner:narrow?{x:80,y:184}:{x:s.w*.27-110,y:54+(s.h-184)*.53+52},grip:{x:s.w*.73,y:s.h-86}};}const p=f.params,pad=Math.max(4,p.radius*.08),m=world(s,[-p.halfStraight-p.radius-pad,p.halfStraight+p.radius+pad,-p.radius-pad,p.radius+pad],100,s.h-132);return {corner:{x:m.x(p.halfStraight),y:m.y(p.radius)-48},grip:{x:m.x(0),y:m.y(-p.radius)+52}};},
- key:f=>f.closeup==='grip'?(Math.abs(f.params.drive-bankSnapshot(f).longitudinal)>1?(gripTire?'Solid: tire force \u00b7 hollow: requested drive':'Hollow: requested drive \u00b7 radius: \u03bcN'):gripTire?'Solid: tire force \u00b7 radius: \u03bcN':'Radius: \u03bcN'):f.closeup||f.breakdown?'Blue N · amber mg'+(drawnForces.has('f')?' · green f':'')+' · right is inward':'Track centerline · tire grip sets the corner limit',
+ closeupAnchors(s,f){if(f.closeup)return {};if(f.breakdown){const narrow=s.w<440;return {corner:narrow?{x:80,y:184}:{x:s.w*.27-110,y:54+(s.h-184)*.53+52},grip:{x:s.w*.73,y:s.h-86}};}const p=f.params,pad=Math.max(4,p.radius*.08),m=world(s,[-p.halfStraight-p.radius-pad,p.halfStraight+p.radius+pad,-p.radius-pad,p.radius+pad],100,s.h-132);return {corner:{x:m.x(p.halfStraight+p.radius)-78,y:m.y(0)},grip:{x:m.x(0),y:m.y(-p.radius)+52}};},
+ key:f=>f.closeup==='grip'?(Math.abs(f.params.drive-liveSnapshot(f).longitudinal)>1?(gripTire?'Solid: tire force \u00b7 hollow: requested drive':'Hollow: requested drive \u00b7 radius: \u03bcN'):gripTire?'Solid: tire force \u00b7 radius: \u03bcN':'Radius: \u03bcN'):f.closeup||f.breakdown?'Blue N · amber mg'+(drawnForces.has('f')?' · green f':'')+' · right is inward':'Track centerline · tire grip sets the corner limit',
  draw(s,f){
   const p=f.params,q=f.sample,narrow=s.w<440;
   if(f.breakdown||f.closeup){
@@ -113,17 +123,17 @@ export const view={graphs,closeups,
   car(s,m.x(point.x),m.y(point.y),f.geometry.heading,m.scale,carColor);
   if(!thumb)s.text(q.lostGrip?'Grip exceeded · change setup':`${num(q.speed)} m/s · lap ${q.laps+1}`,s.w/2,29,q.lostGrip?'#e4a9bd':muted,narrow?11:13);
  },
- equations(f){const p=f.params,a=bankSnapshot(f);return [
+ equations(f){const p=f.params,a=bankSnapshot(f),live=liveSnapshot(f);return [
   String.raw`N\sin\theta+f\cos\theta=\frac{mv^2}{r}`,
   String.raw`N=${forceValue(a.normal)},\quad f=${forceValue(a.lateral)}`,
-  String.raw`F_{\rm in}=${forceValue(p.mass*f.sample.speed**2/p.radius)}`,
+  String.raw`F_{\rm in}=${forceValue(p.mass*cornerSpeed(p)**2/p.radius)}`,
   String.raw`N\cos\theta-f\sin\theta=mg`,
   String.raw`F_y=${forceValue(p.mass*p.gravity)}`,
   String.raw`f_\parallel^2+f_\perp^2\le(\mu N)^2`,
-  String.raw`\mu N=${forceValue(a.capacity)}`,
+  String.raw`\mu N=${forceValue(live.capacity)}`,
  ];},
- closeupEquation(f){const p=f.params,a=bankSnapshot(f),limit=speedLimits(p);
-  if(f.closeup==='grip')return [String.raw`f_\parallel^2+f_\perp^2\le(\mu N)^2`,String.raw`f_\perp=${forceValue(a.lateral)}`,String.raw`f_\parallel=${forceValue(a.longitudinal)}`,String.raw`\mu N=${forceValue(a.capacity)}`];
+ closeupEquation(f){const p=f.params,a=bankSnapshot(f),live=liveSnapshot(f),limit=speedLimits(p);
+  if(f.closeup==='grip')return [String.raw`f_\parallel^2+f_\perp^2\le(\mu N)^2`,String.raw`f_\perp=${forceValue(live.lateral)}`,String.raw`f_\parallel=${forceValue(live.longitudinal)}`,String.raw`\mu N=${forceValue(live.capacity)}`];
   return [String.raw`N=m(g\cos\theta+\tfrac{v^2}{r}\sin\theta)`,String.raw`N=${forceValue(a.normal)}`,String.raw`f=m(\tfrac{v^2}{r}\cos\theta-g\sin\theta)`,String.raw`f=${forceValue(a.lateral)}`,String.raw`v_{\max}=${texNum(limit.maxSpeed)}\,\mathrm{m/s}`];
  },
 };

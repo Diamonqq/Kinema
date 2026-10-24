@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {model} from '../../static/js/experiments/projectile-air/model.js';
+import {num} from '../../static/js/experiments/kit/format.js';
 import {view,preview,mapWorld,segmentHitsRect} from '../../static/js/experiments/projectile-air/view.js';
 const params=Object.fromEntries(model.params.map(p=>[p.key,p.value]));
 test('projectile manifest is exactly synchronized with parameter, preset, graph and close-up descriptors',()=>{
@@ -127,6 +128,7 @@ test('apex zoom draws F_D at the mg scale, labels it at its tip, names drag in t
  assert.ok(Math.abs(len(drag)/len(mg)-ratio)<1e-6,`${len(drag)/len(mg)} vs ${ratio}`);
  assert.ok(Math.hypot(fd.x+fd.width/2-drag[2],fd.y+fd.height/2-drag[3])<30);
  assert.ok(r.labels.some(l=>/drag remain/.test(l.text)));
+ const apexT=r.labels.find(l=>/^At the apex, t = /.test(l.text));assert.ok(apexT&&apexT.text===`At the apex, t = ${num(p.apex.t)} s`,JSON.stringify(r.labels.map(l=>l.text)));
  const v=run({...params,drag:'vacuum'});
 console.log(v.labels.map(l=>l.text)); assert.ok(!v.labels.some(l=>l.text==='F_D')&&!v.labels.some(l=>/drag/.test(l.text))&&v.labels.some(l=>/gravity remains/.test(l.text)));
 });

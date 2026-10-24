@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {model} from '../../static/js/experiments/race-track/model.js';
-import {view,bankSnapshot} from '../../static/js/experiments/race-track/view.js';
+import {view,bankSnapshot,liveSnapshot,cornerSpeed} from '../../static/js/experiments/race-track/view.js';
 test('race manifest exactly mirrors all model and view descriptors',()=>{
  const m=JSON.parse(fs.readFileSync(new URL('../../static/js/experiments/race-track/manifest.json',import.meta.url)));assert.equal(m.group,'Mechanics');for(const k of ['params','presets'])assert.deepEqual(m[k],model[k]);for(const k of ['graphs','closeups'])assert.deepEqual(m[k],view[k]);
 });
@@ -86,4 +86,23 @@ test('Breakdown panel titles say which state each shows, at 1280 and 320 widths'
   view.draw(s,{params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:true});
   assert.ok(texts.includes('In the corner')&&texts.includes('Now'),w);assert.ok(!texts.includes('Corner cross-section')&&!texts.includes('Friction circle'),w);
  }
+});
+
+test('corner panels share one corner state at any time, and Now follows the live sample',()=>{
+ const params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),bank:10,drag:.5,rolling:.01},instance=model.create(params),at=t=>{instance.reset();instance.step(t);return {params,instance,sample:instance.sample(),geometry:instance.geometry(),t};};
+ const a=at(0),b=at(1.5),c=at(12);
+ for(const g of [b,c]){assert.deepEqual(bankSnapshot(g),bankSnapshot(a));
+  assert.deepEqual(view.closeupEquation({...g,closeup:'corner'}),view.closeupEquation({...a,closeup:'corner'}));
+  assert.deepEqual(view.equations(g).slice(0,4),view.equations(a).slice(0,4));}
+ assert.ok(cornerSpeed(params)<params.speed);
+ for(const g of [a,b,c]){const live=liveSnapshot(g),q=g.sample;
+  assert.ok(Math.abs(live.lateral-q.lateralFriction)<1e-6&&Math.abs(live.capacity-q.frictionCapacity)<1e-6&&Math.abs(live.longitudinal-q.longitudinalFriction)<1e-6);}
+ assert.ok(Math.abs(liveSnapshot(a).lateral)<1e-6,'f⊥ is zero on the straight');
+ assert.ok(Math.abs(bankSnapshot(a).lateral)>1);
+});
+
+test('bank chip sits beside the corner, at one place relative to the track',()=>{
+ const params=Object.fromEntries(model.params.map(p=>[p.key,p.value])),instance=model.create(params),f={params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:false};
+ for(const w of [1000,320]){const s={w,h:440},a=view.closeupAnchors(s,f).corner;
+  assert.ok(a.x>0&&a.x<w&&a.y>150&&a.y<300,JSON.stringify(a));}
 });
