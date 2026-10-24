@@ -52,6 +52,12 @@ export function fixedMap(s,bounds,{bottom=100,top=35,padding=30}={}){
  if(!s.camera||s.snap)s.camera=target;else if(easeCamera(s.camera,target))s.animating=true;
  s.snap=false;const c=s.camera;return {x:x=>s.w/2+(x-c.cx)*c.scale,y:y=>s.h/2-(y-c.cy)*c.scale,scale:c.scale};
 }
+// At most three round ticks at least minGap px apart; when the range only yields 0, the largest round value (1, 2, 4 or 5 x 10^n) inside the range on each side.
+export function sparseTicks(lo,hi,px,count=3,minGap=18){
+ for(let c=count;c>=1;c--){const t=niceTicks(lo,hi,c);if(t.ticks.length>=2&&t.ticks.length<=3&&t.step*px/(hi-lo)>=minGap)return t;}
+ const round=v=>{if(!(v>0))return 0;const p=10**Math.floor(Math.log10(v)),u=v/p;return (u>=5?5:u>=4?4:u>=2?2:1)*p;},up=round(hi),down=round(-lo),ticks=[...(down?[-down]:[]),0,...(up?[up]:[])];
+ return {step:Math.min(...ticks.filter(v=>v!==0).map(Math.abs),1),ticks};
+}
 export function linePlot(s,{title,points=[],xkey='x',ykey='y',cursor,color=C.blue,xlabel='',ylabel='',scatter=false,yFloor,yTicks,pad=.12}){
  s.resize();s.begin();const w=s.w,h=s.h,r=w-17,t=48,b=h-34;let l=42;
  const data=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
@@ -61,7 +67,7 @@ export function linePlot(s,{title,points=[],xkey='x',ykey='y',cursor,color=C.blu
  const dy=(ymax-ymin)*pad;ymin=yFloor??ymin-dy;ymax+=dy;
  // Round ticks (zero included when in range); the left gutter widens to fit the widest tick text.
  s.ctx.font='9px system-ui,sans-serif';
- const yt=niceTicks(ymin,ymax,yTicks??Math.max(2,Math.floor((b-t)/38))),ylabels=yt.ticks.map(v=>tickLabel(v,yt.step));
+ const yt=yTicks===undefined?niceTicks(ymin,ymax,Math.max(2,Math.floor((b-t)/38))):sparseTicks(ymin,ymax,b-t,yTicks),ylabels=yt.ticks.map(v=>tickLabel(v,yt.step));
  l=Math.max(42,Math.ceil(Math.max(0,...ylabels.map(x=>s.ctx.measureText(x).width)))+11);
  const xt=niceTicks(xmin,xmax,Math.max(2,Math.floor((r-l)/64))),xlabels=xt.ticks.map(v=>tickLabel(v,xt.step));
  s.plotBounds={xmin,xmax,ymin,ymax,left:l,right:r,top:t,bottom:b};const xx=x=>l+(r-l)*(x-xmin)/(xmax-xmin),yy=y=>b-(b-t)*(y-ymin)/(ymax-ymin);
