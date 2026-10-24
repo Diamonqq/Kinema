@@ -35,11 +35,11 @@ test('uniform box, plate and cylindrical rod inertia from SI dimensions (1e-14 k
 });
 
 test('symmetric free body: body precession Ω=(I3−I1)ω3/I1 (2e-8 rad/s), space cone rate |L|/I1 (2e-8 rad/s)',()=>{
-  const m=model.create({I1:.4,I2:.4,I3:.6,w1:.7,w2:0,w3:3,tilt:.6});
+  const m=model.create({shape:'custom',I1:.4,I2:.4,I3:.6,w1:.7,w2:0,w3:3,tilt:.6});
   const expected=1.5, dt=.001;
   m.step(dt);const g=m.geometry();near(Math.atan2(g.omegaBody[1],g.omegaBody[0])/dt,expected,2e-8);
   // Angular derivative of the body symmetry axis projected around the fixed space L.
-  const a=model.create({I1:.4,I2:.4,I3:.6,w1:.7,w2:0,w3:3,tilt:.6});
+  const a=model.create({shape:'custom',I1:.4,I2:.4,I3:.6,w1:.7,w2:0,w3:3,tilt:.6});
   const g0=a.geometry(), L=g0.angularMomentumSpace, u=L.map(v=>v/norm(L));
   const dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0);
   const transverse=v=>v.map((x,i)=>x-dot(v,u)*u[i]);
@@ -49,7 +49,7 @@ test('symmetric free body: body precession Ω=(I3−I1)ω3/I1 (2e-8 rad/s), spac
 });
 
 test('asymmetric free rotation conserves energy, |L| and space L for 120 s (relative 2e-8), normalized quaternion (4e-16)',()=>{
-  const m=model.create({I1:.3,I2:.5,I3:.7,w1:2,w2:3,w3:4}), start=m.invariants();
+  const m=model.create({shape:'custom',I1:.3,I2:.5,I3:.7,w1:2,w2:3,w3:4}), start=m.invariants();
   for(let i=0;i<2400;i++){
     m.step(.05);const s=m.invariants();
     near(s.energy/start.energy,1,2e-8);
@@ -62,7 +62,7 @@ test('asymmetric free rotation conserves energy, |L| and space L for 120 s (rela
 test('minimum and maximum axes remain stable for 40 s (transverse rates < 5e-4 rad/s)',()=>{
   for(const axis of [0,2]){
     const w=[1e-4,1e-4,1e-4];w[axis]=4;
-    const m=model.create({I1:.3,I2:.5,I3:.7,w1:w[0],w2:w[1],w3:w[2]});
+    const m=model.create({shape:'custom',I1:.3,I2:.5,I3:.7,w1:w[0],w2:w[1],w3:w[2]});
     for(let i=0;i<800;i++){m.step(.05);const wb=m.geometry().omegaBody;near(Math.hypot(...wb.filter((_,i)=>i!==axis)),0,5e-4);}
   }
 });
@@ -71,7 +71,7 @@ test('intermediate-axis unstable eigenmode grows at linearized rate (relative 2e
   const I1=.3,I2=.5,I3=.7,W=4;
   const rate=W*Math.sqrt((I3-I2)*(I2-I1)/(I1*I3));
   const x=1e-6,z=-rate*I1*x/((I3-I2)*W);
-  const m=model.create({I1,I2,I3,w1:x,w2:W,w3:z});
+  const m=model.create({shape:'custom',I1,I2,I3,w1:x,w2:W,w3:z});
   advance(m,2);near(m.sample().w1/(x*Math.exp(rate*2)),1,2e-5);
   let flipped=false;for(let i=0;i<260;i++){m.step(.05);if(m.sample().w2<-3)flipped=true;}assert.ok(flipped);
 });
@@ -118,7 +118,7 @@ test('inertia ellipsoid and invariable plane geometry (1e-12 J); output mutation
 });
 
 test('invalid parameters and impossible heavy-top states fail explicitly; dt rejects reversal and nonfinite input',()=>{
-  for(const p of [null,[],{mass:null},{unknown:1},{w1:NaN},{mass:0},{I1:.1,I2:.1,I3:.7},{shape:'garbage'},{mode:'heavy-top',initial:'slow'},{initial:'slow'},{mode:'fixed-axis',torquex:1},{mode:'heavy-top',shape:'symmetric-top',initial:'slow',w3:0},{mode:'heavy-top',shape:'symmetric-top',initial:'slow',tilt:0}]) assert.throws(()=>model.create(p),RangeError);
+  for(const p of [null,[],{mass:null},{unknown:1},{w1:NaN},{mass:0},{shape:'custom',I1:.1,I2:.1,I3:.7},{shape:'garbage'},{mode:'heavy-top',initial:'slow'},{initial:'slow'},{mode:'fixed-axis',torquex:1},{mode:'heavy-top',shape:'symmetric-top',initial:'slow',w3:0},{mode:'heavy-top',shape:'symmetric-top',initial:'slow',tilt:0}]) assert.throws(()=>model.create(p),RangeError);
   const m=model.create();for(const dt of [-1,Infinity,NaN,61])assert.throws(()=>m.step(dt),RangeError);
   assert.equal(steadyPrecessionRates([1,1,1],0,1,9.81,1,.1),null);
 });
@@ -134,7 +134,7 @@ test('corner point masses use TOTAL mass: explicit sum of eight mr² agrees (2e-
 });
 
 test('CM tilt torque matches κ z×axis, no parallel-axis shift (1e-14); dL/dt agrees (3e-6 N m)',()=>{
-  const m=model.create({mode:'tilt-torque',I1:.3,I2:.5,I3:.7,w1:.2,w2:.3,w3:3,tilt:.7,azimuth:.4,phase:.2,tiltTorque:.8});
+  const m=model.create({mode:'tilt-torque',shape:'custom',I1:.3,I2:.5,I3:.7,w1:.2,w2:.3,w3:3,tilt:.7,azimuth:.4,phase:.2,tiltTorque:.8});
   const g=m.geometry(),axis=g.bodyAxisSpace;
   g.torqueSpace.forEach((v,i)=>near(v,[-.8*axis[1],.8*axis[0],0][i],1e-14));
   assert.deepEqual(g.principalMoments,g.centreMoments);assert.deepEqual(g.centreOfMass,[0,0,0]);assert.deepEqual(g.gravityForce,[0,0,0]);
@@ -143,7 +143,7 @@ test('CM tilt torque matches κ z×axis, no parallel-axis shift (1e-14); dL/dt a
 
 test('asymmetric CM/pivot tops conserve E and vertical L for 15 s (relative 3e-7); axial L is not spuriously held fixed',()=>{
   for(const [mode,tiltTorque] of [['tilt-torque',.4],['tilt-torque',-.4],['heavy-top',.4]]){
-    const m=model.create({mode,I1:.3,I2:.5,I3:.7,w1:1,w2:.4,w3:6,tilt:.8,tiltTorque}),a=m.invariants();
+    const m=model.create({mode,shape:'custom',I1:.3,I2:.5,I3:.7,w1:1,w2:.4,w3:6,tilt:.8,tiltTorque}),a=m.invariants();
     let axialChange=0;
     for(let i=0;i<300;i++){
       m.step(.05);const b=m.invariants();near(b.energy/a.energy,1,3e-7);near(b.verticalAngularMomentum/a.verticalAngularMomentum,1,3e-7);
@@ -195,7 +195,7 @@ test('timeline sampling is lazy, batched, cancellable and independent; samples m
 });
 
 test('spherical body analytic attitude after 3 s (2e-9 quaternion distance); rest and vertical states remain finite (1e-12)',()=>{
-  const m=model.create({I1:.4,I2:.4,I3:.4,w1:0,w2:0,w3:3,tilt:0,azimuth:0,phase:0});
+  const m=model.create({shape:'custom',I1:.4,I2:.4,I3:.4,w1:0,w2:0,w3:3,tilt:0,azimuth:0,phase:0});
   m.step(3);near(distance(m.geometry().quaternion,[Math.cos(4.5),0,0,Math.sin(4.5)]),0,2e-9);
   for(const mode of ['free','heavy-top','fixed-axis']){
     const rest=model.create({mode,shape:'symmetric-top',tilt:0,w1:0,w2:0,w3:0});

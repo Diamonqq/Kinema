@@ -13,14 +13,14 @@ const number = (key,label,symbol,unit,min,max,step,value,group) => ({key,label,s
 const choice = (key,label,value,options) => ({key,label,symbol:'',unit:'',value,options:options.map(value=>({value,label:value})),group:'Body'});
 const params = [
   choice('mode','Motion','free',['free','heavy-top','tilt-torque','fixed-axis']),
-  choice('shape','Mass distribution','custom',['custom','box','corner-masses','plate','rod','symmetric-top']),
+  choice('shape','Mass distribution','box',['custom','box','corner-masses','plate','rod','symmetric-top']),
   choice('initial','Initial motion','components',['components','slow','fast']),
   number('mass','Total mass','m','kg',.05,20,.05,1,'Body'),
-  number('a','Width / diameter','a','m',.02,3,.01,1,'Body'),
+  number('a','Width / diameter','a','m',.02,3,.01,1.2,'Body'),
   number('b','Depth','b','m',.002,3,.001,.6,'Body'),
-  number('c','Height / length','c','m',.002,3,.001,.2,'Body'),
+  number('c','Height / length','c','m',.002,3,.001,.12,'Body'),
   ...[1,2,3].map((i)=>number('I'+i,'Principal moment '+i,'I_'+i,'kg m²',.000001,100,.000001,[.3,.5,.7][i-1],'Custom inertia')),
-  ...[1,2,3].map((i)=>number('w'+i,'Initial body rate '+i,'ω_'+i,'rad/s',-100,100,.001,[.05,4,.02][i-1],'Initial conditions')),
+  ...[1,2,3].map((i)=>number('w'+i,'Initial body rate '+i,'ω_'+i,'rad/s',-100,100,.001,[.015,4,.008][i-1],'Initial conditions')),
   number('tilt','Initial tilt','θ₀','rad',0,Math.PI,.01,.5,'Initial conditions'),
   number('azimuth','Initial azimuth','φ₀','rad',-6.3,6.3,.001,0,'Initial conditions'),
   number('phase','Initial body phase','ψ₀','rad',-6.3,6.3,.001,0,'Initial conditions'),
@@ -53,7 +53,7 @@ export function steadyPrecessionRates(I,omega3,m,g,d,theta) {
 }
 
 export const model = {
-  id:'rigid-rotation', title:'Rigid body rotation', version:'1.1.0', params,
+  id:'rigid-rotation', title:'Rigid body rotation', version:'1.2.0', params,
   presets:[
     {id:'flip',label:'Intermediate-axis flip',values:{mode:'free',shape:'box',mass:1,a:1.2,b:.6,c:.12,w1:.015,w2:4,w3:.008,tilt:.5},note:'The middle principal axis is unstable.'},
     {id:'minimum',label:'Smallest moment',values:{mode:'free',shape:'box',a:1.2,b:.6,c:.12,w1:4,w2:.015,w3:.008},note:'A small wobble stays bounded.'},

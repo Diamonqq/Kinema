@@ -1,6 +1,6 @@
 # Rigid body rotation — physics and renderer handoff
 
-Headless model version 1.1.0. This pass adds no gallery entry or rendered view.
+Model version 1.2.0 and a mounted three.js experiment, discovered through its manifest.
 The public/installed app version belongs to the integrator; no shared version file
 is changed by this lane. Morin chapters 8–9 are the teaching context.
 
@@ -32,13 +32,13 @@ representation. Improvements are uniform solid-box/cylinder and thin-plate inert
 from actual SI dimensions, independently supplied physically admissible principal
 moments, gravity with an explicit mass/lever arm/pivot, stable slow and fast
 steady-precession initialization, genuine intermediate-axis flips, and energy/work
-and frame-resolved data suitable for linked plots. Renderer quality, stereoscopy,
-saved configurations and UI integration are outside this pass.
+and frame-resolved data suitable for linked plots. The view adds space/body comparisons, gravity geometry, and linked histories.
+Stereoscopy is deliberately omitted; persistence and tutor validation use the kit.
 
 ## CUPS coverage
 
-Status describes tested headless capability, not a completed view. All drawing
-rows still require the planned renderer. Source anchors refer to the preserved
+Status covers the tested headless core and the current renderer. The browser
+receipt at `../rigid-views/browser.json` records actual UI coverage. Source anchors refer to the preserved
 local PAS/HLP above; the HLP includes boilerplate for other CUPS programs, which
 must not be mistaken for ROTATE-specific time-series plots or integrator menus.
 
@@ -56,16 +56,16 @@ must not be mistaken for ROTATE-specific time-series plots or integrator menus.
 | Default fixed-axis example: tilted long rectangular body, space-vertical spin | PAS ProblemInit 1150, FixedRotation | Yes | Added `tilted-fixed` corner-body preset near 30° and near space-vertical; scaled apparatus and documented rounded angle/rates, not bitwise DOS reproduction |
 | Default free example: long body, tilted orientation and off-axis initial spin, zero torque | PAS ProblemInit 1150, FixedTorque | Yes | `corner-body` is the corresponding long-body wobble; `free-top` additionally contrasts a squat body's free precession. Exact legacy values/normalization deliberately not reproduced |
 | Default top example: long symmetric body near horizontal, spinning and precessing | PAS ProblemInit 1150, SpinningTop; HLP SpinTopHelp | Improved | Added `cm-top` near horizontal, with exact steady initialization for its chosen angle instead of a merely approximate steady release; `asymmetric-top` exposes the general CM torque case |
-| Fixed-frame 3D plot of body plus coordinate axes | PAS DrawScreen 449 / OpenPlot 653 | Yes | Quaternion and principal axes/dimensions support the planned space view; no view authored yet |
-| Body-centred 3D plot with transformed space coordinate axes | PAS DrawScreen 449 / ChangeDisplays 697 | Yes | Inverse q and body-frame vectors support the planned frame comparison |
-| Independently show/hide body, ω, L, torque in each frame | PAS ChangeDisplays 697 | Yes | All vectors are supplied in each frame; renderer toggles remain follow-up |
-| Draw torque starting at L tip to convey dL/dt | PAS CalcTorque 523 / GenVector; HLP ChangeDisplaysHelp | Improved | Correct space/body torque vectors, finite-difference derivative test, planned L-tip inset with units and fixed scales |
-| Independent vector display scale factors | PAS ChangeDisplays 697 | Yes | Physical vectors stay in SI; renderer can scale each without modifying physics |
+| Fixed-frame 3D plot of body plus coordinate axes | PAS DrawScreen 449 / OpenPlot 653 | Yes | Mounted three.js space view uses quaternion orientation and real SI dimensions |
+| Body-centred 3D plot with transformed space coordinate axes | PAS DrawScreen 449 / ChangeDisplays 697 | Yes | Body view and a linked space/body comparison use inverse q; comparisons stack at narrow width |
+| Independently show/hide body, ω, L, torque in each frame | PAS ChangeDisplays 697 | Yes | Both frames show the body, principal triad and distinctly coloured vectors. Independent visibility toggles deliberately omitted to keep one compact view; body/frame close-ups provide the comparison |
+| Draw torque starting at L tip to convey dL/dt | PAS CalcTorque 523 / GenVector; HLP ChangeDisplaysHelp | Improved | Correct frame-resolved torque, finite-difference derivative test and live dL/dt equation; a separate L-tip inset is deferred to avoid another competing scale |
+| Independent vector display scale factors | PAS ChangeDisplays 697 | Yes | Physical vectors stay in SI; renderer sets independent fixed arrow scales when setup changes. Interactive scale sliders deliberately omitted |
 | Numerical t, φ, θ, ψ readouts | PAS PrintData 423 | Improved | Added live `phi`, `psi`, existing theta/time, plus `eulerRegular` pole-uniqueness flag; signed standard ZYZ radians rather than legacy absolute-angle display |
 | Numerical moments while changing dimensions | PAS PrintMomentofInertia 1037 | Improved | Geometry supplies CM and pivot moments separately; tested point-mass and solid formulas |
 | Euler equations with RK4, including constant-axis attitude integration | PAS CalcRK4P 852 / ConstantOmega 969 | Improved | Quaternion RK4 with bounded substeps, normalization and explicit analytic/conservation tolerances |
 | Step, pause, speed and physical-history reversal | PAS HandleHotKey 1251 / SetUpHotKeys | Yes | `step/reset` support single-step/playback; reverse time is reset/replay through the same dynamics. Negative dt integration is deliberately omitted to avoid cumulative reverse numerical error |
-| Stereoscopic copies of the same two 3D plots | PAS DrawScreen / ChangeDisplays | Deliberately omitted | Does not add another physical observable. Interactive depth/orbit viewing is the modern renderer plan; no claim of stereo support |
+| Stereoscopic copies of the same two 3D plots | PAS DrawScreen / ChangeDisplays | Deliberately omitted | Does not add another physical observable. Fixed oblique depth view and explicit frame comparisons replace stereo; no orbit control moves the camera |
 | Generic HLP time-series or arbitrary-function plots, selectable numerical variables, Euler/RK2 selector | HLP GetPlotVariableHelp 327 / GetNumericalParametersHelp 435 | Deliberately omitted as legacy generic features | ROTATE.PAS registers no such function list or selector and draws no scalar history plot. New linked histories for actual sample fields improve coverage without pretending these existed in ROTATE |
 
 No other built-in physics examples or plot types occur in the complete PAS.
@@ -186,36 +186,19 @@ without changing `model.create` or any required instance method:
    duration to 0–60 s, interval to .001–1 s and batchSize to 1–120; no arrays
    of the full forecast, timers, background jobs or global caches are retained.
 
-Required kit work (not implemented by changing shared files here):
+The current kit supplies transactional candidate creation, cancellable batched
+forecasting and cancellable asynchronous seeking. It retains the previous valid
+scene on a rejected update. The optional helpers remain compatible. No shared
+kit files were edited by this lane. The browser harness waits for the seek job
+before checking the selected time; a range input event itself is not completion.
 
-- Catch candidate creation errors **before** assigning shell params/instance.
-  Commit the pair only after success; on failure retain scene, time, controls,
-  graph samples and saved values, display the message, and restore input values.
-  This may use prepareUpdate or an equivalent generic try/catch around create.
-  Restored invalid values at initial entry need an explicit error/recovery screen.
-- Remove resetModel's unconditional 3,600-step forecast loop. Start with only
-  the current sample; compute graph batches on demand and yield an event-loop
-  turn between batches. A synchronous `for...of` over the iterator would still
-  block and is **not** a fix. Do not offer play against an incompletely replaced
-  instance or pretend a partial graph covers the full duration.
-- Cancel the previous iterator with `return()` on parameter change, destroy or
-  superseding graph request, and use a generation ID before accepting each
-  batch. Bound retained graph data (the default is at most 1,801 samples).
-  Render the valid scene immediately; graph progress/error is local and quiet.
-  Seek/replay should likewise be chunked for responsiveness on numerical tops.
-
-The tests prove candidate-update isolation, bounded/lazy work per iterator pull,
-cancel behavior and sample correctness. They do not prove a responsive browser:
-the kit has not adopted these helpers in this pass, and real timing varies with
-moments, torque and hardware. There is no managed background waiter or job.
-
-## Exact renderer plan (next pass)
+## Renderer specification and implemented views
 
 Use the shared shell and three.js mount hook. Default preset is the flip. Start
 paused, centered on the body, with a solid softly lit rectangular slab and one
-asymmetric corner mark that makes orientation legible. Show only the body and
-compact fixed key “L · angular momentum / ω · spin”; selecting a vector in the
-key reveals it. Use blue ω, mint L, peach τ, matching all graphs. Never let
+asymmetric corner mark that makes orientation legible. The latest assignment
+requests visible ω, L, τ and body axes on entry, superseding the earlier
+key-to-reveal proposal. Use blue ω, mint L, peach τ, matching all graphs. Never let
 arrow scaling imply ω and L have the same units. Keep their scales fixed during
 play and show units in the key. Reset restores the fixed camera and trace buffers.
 
@@ -266,7 +249,7 @@ for CM tilt torque and a physical distance/gravity pair only for pivot-top mode.
 Command on installed Node 22.23.2 in this sandbox:
 
 ```
-node --test --experimental-test-isolation=none tests/experiments/rigid-rotation.test.mjs
+node --test --experimental-test-isolation=none tests/experiments/rigid-rotation.test.mjs tests/experiments/rigid-rotation-view.test.mjs
 ```
 
 The default isolated runner is blocked at child spawn (`EPERM`); this supported
@@ -284,10 +267,55 @@ transactional setup handling and lazy/cancellable graph-batch checks.
 The guarantee is those tested conditions, not every combination of extreme
 slider limits. Very small moments with large torques can be expensive; the
 renderer should constrain ordinary setup choices and show invalid states cleanly.
-The current kit eagerly computes a full 60 s graph timeline during reset and
-does not catch model.create errors in setParams. Integration must address these
-behaviors before exposing dependent heavy-top/custom-moment controls; this lane
-does not edit shared shell files. At zero kinetic energy hide the collapsed
-ellipsoid instead of dividing by its zero radii.
-UI, real-device speed, appearance, shared shell error handling, saved experiments,
-bounded trace replay and tutor actions await renderer/integration follow-up.
+At zero kinetic energy the velocity ellipsoid collapses honestly; no division
+by a radius occurs. The view tests add exact manifest parity, finite graph fields
+for all presets, close-up reachability and signed equation checks. The default
+setup now equals the flip preset's dimensional box and rates; analytic tests
+that require independently entered moments explicitly select `shape=custom`.
+
+Current view choices and limits:
+
+- Nine close-ups: body frame, frame comparison, middle axis, inertia, gravity,
+  CM torque, precession, energy geometry and fixed-axis support. Chips appear
+  only in applicable modes and occupy separate fixed-height caption rows.
+- The body, mass corners, thin plate and cylinder use actual dimensions.
+  Custom inertia is an open neutral glyph, never an invented uniform solid.
+  The camera has fixed bounds from pivot distance plus body bounding radius;
+  close-up zoom eases between authored fixed views. No Fit or orbit control.
+- Arrows render above the body. Their fixed caption slots connect to the actual
+  arrow tips through coloured leaders, including when ω and L are parallel.
+  Zero torque is explicitly labelled. Secondary axis labels appear only in the
+  middle-axis close-up. Actual DOM label rectangles feed stage.labels.
+- Graphs: body rates, energy/work, space L including its magnitude, tilt,
+  precession rate, polhode projection and quaternion norm. Wrapped azimuth/body
+  phase histories are deliberately omitted to avoid drawing false wrap spikes.
+  Absolute energy and |L| are the invariant diagnostics; no misleading claim of
+  constancy is made for driven/support motion.
+- Energy geometry shows the instantaneous body velocity ellipsoid and the space
+  tangent plane. Trace buffers contain only observed playback (800 points max);
+  seeking starts a new observed trace rather than inventing unseen history.
+- Inertia close-up dimensions are drawn on boxes/corner-mass bodies. Other shapes
+  show their correct inertia formula and numeric moments; no fake box dimensions.
+- The separate torque-at-L-tip inset and full precession-cone history remain
+  deferred. The torque vectors, exact r×mg decomposition and equations are present.
+- This lane does not verify real-device speed, real provider sign-in or the
+  installed app. Parent integration and independent visual judgment remain.
+
+Workflow friction: Windows PowerShell-to-Python stdin replaced literal Greek
+characters with question marks in one edit; use apply_patch or ASCII Unicode
+escapes for source edits. Browser inspection exposed this before handoff. The
+browser process itself requires the parent's runner because this worker's Edge
+spawn is refused with EPERM; the isolated fixture starts successfully here.
+
+Final rendered verification: 26 Node tests passed (0 failed; 3.446 s). The parent
+ran `../rigid-views/browser.cjs` in headless Edge against the isolated fixture on
+8845: 106 checks passed, zero browser exceptions, 26 captures. Coverage includes
+all 15 presets; mass setup change; play/pause and exact asynchronous seek to
+1.36 s; Reset camera; every close-up and return at 1280/320; actual text/chip
+rectangle overlap checks; live Euler/gravity KaTeX; every graph; narrow fitting;
+closing to the composer and reopening. Captures and `browser.json` are in
+`../rigid-views/`. The final scene, gravity, frame comparison, energy geometry,
+Breakdown and narrow Graphs captures were inspected by this author. The parent
+provided additional visual defect findings, which were corrected and rerun.
+`cleanup.json` confirms fixture PID 9492 exited and port 8845 is free. These are
+isolated rendered checks; they do not establish installation or owner approval.

@@ -1,0 +1,904 @@
+{
+  "id": "rigid-rotation",
+  "title": "Rigid body rotation",
+  "group": "Mechanics",
+  "description": "See angular momentum stay steady while a body flips, or follow the torque that turns a gyroscope.",
+  "params": [
+    {
+      "key": "mode",
+      "label": "Motion",
+      "symbol": "",
+      "unit": "",
+      "value": "free",
+      "options": [
+        {
+          "value": "free",
+          "label": "free"
+        },
+        {
+          "value": "heavy-top",
+          "label": "heavy-top"
+        },
+        {
+          "value": "tilt-torque",
+          "label": "tilt-torque"
+        },
+        {
+          "value": "fixed-axis",
+          "label": "fixed-axis"
+        }
+      ],
+      "group": "Body"
+    },
+    {
+      "key": "shape",
+      "label": "Mass distribution",
+      "symbol": "",
+      "unit": "",
+      "value": "box",
+      "options": [
+        {
+          "value": "custom",
+          "label": "custom"
+        },
+        {
+          "value": "box",
+          "label": "box"
+        },
+        {
+          "value": "corner-masses",
+          "label": "corner-masses"
+        },
+        {
+          "value": "plate",
+          "label": "plate"
+        },
+        {
+          "value": "rod",
+          "label": "rod"
+        },
+        {
+          "value": "symmetric-top",
+          "label": "symmetric-top"
+        }
+      ],
+      "group": "Body"
+    },
+    {
+      "key": "initial",
+      "label": "Initial motion",
+      "symbol": "",
+      "unit": "",
+      "value": "components",
+      "options": [
+        {
+          "value": "components",
+          "label": "components"
+        },
+        {
+          "value": "slow",
+          "label": "slow"
+        },
+        {
+          "value": "fast",
+          "label": "fast"
+        }
+      ],
+      "group": "Body"
+    },
+    {
+      "key": "mass",
+      "label": "Total mass",
+      "symbol": "m",
+      "unit": "kg",
+      "min": 0.05,
+      "max": 20,
+      "step": 0.05,
+      "value": 1,
+      "group": "Body"
+    },
+    {
+      "key": "a",
+      "label": "Width / diameter",
+      "symbol": "a",
+      "unit": "m",
+      "min": 0.02,
+      "max": 3,
+      "step": 0.01,
+      "value": 1.2,
+      "group": "Body"
+    },
+    {
+      "key": "b",
+      "label": "Depth",
+      "symbol": "b",
+      "unit": "m",
+      "min": 0.002,
+      "max": 3,
+      "step": 0.001,
+      "value": 0.6,
+      "group": "Body"
+    },
+    {
+      "key": "c",
+      "label": "Height / length",
+      "symbol": "c",
+      "unit": "m",
+      "min": 0.002,
+      "max": 3,
+      "step": 0.001,
+      "value": 0.12,
+      "group": "Body"
+    },
+    {
+      "key": "I1",
+      "label": "Principal moment 1",
+      "symbol": "I_1",
+      "unit": "kg m²",
+      "min": 0.000001,
+      "max": 100,
+      "step": 0.000001,
+      "value": 0.3,
+      "group": "Custom inertia"
+    },
+    {
+      "key": "I2",
+      "label": "Principal moment 2",
+      "symbol": "I_2",
+      "unit": "kg m²",
+      "min": 0.000001,
+      "max": 100,
+      "step": 0.000001,
+      "value": 0.5,
+      "group": "Custom inertia"
+    },
+    {
+      "key": "I3",
+      "label": "Principal moment 3",
+      "symbol": "I_3",
+      "unit": "kg m²",
+      "min": 0.000001,
+      "max": 100,
+      "step": 0.000001,
+      "value": 0.7,
+      "group": "Custom inertia"
+    },
+    {
+      "key": "w1",
+      "label": "Initial body rate 1",
+      "symbol": "ω_1",
+      "unit": "rad/s",
+      "min": -100,
+      "max": 100,
+      "step": 0.001,
+      "value": 0.015,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "w2",
+      "label": "Initial body rate 2",
+      "symbol": "ω_2",
+      "unit": "rad/s",
+      "min": -100,
+      "max": 100,
+      "step": 0.001,
+      "value": 4,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "w3",
+      "label": "Initial body rate 3",
+      "symbol": "ω_3",
+      "unit": "rad/s",
+      "min": -100,
+      "max": 100,
+      "step": 0.001,
+      "value": 0.008,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "tilt",
+      "label": "Initial tilt",
+      "symbol": "θ₀",
+      "unit": "rad",
+      "min": 0,
+      "max": 3.141592653589793,
+      "step": 0.01,
+      "value": 0.5,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "azimuth",
+      "label": "Initial azimuth",
+      "symbol": "φ₀",
+      "unit": "rad",
+      "min": -6.3,
+      "max": 6.3,
+      "step": 0.001,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "phase",
+      "label": "Initial body phase",
+      "symbol": "ψ₀",
+      "unit": "rad",
+      "min": -6.3,
+      "max": 6.3,
+      "step": 0.001,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "distance",
+      "label": "Pivot to centre of mass",
+      "symbol": "d",
+      "unit": "m",
+      "min": 0,
+      "max": 2,
+      "step": 0.01,
+      "value": 0.4,
+      "group": "Gravity"
+    },
+    {
+      "key": "g",
+      "label": "Gravity",
+      "symbol": "g",
+      "unit": "m/s²",
+      "min": 0,
+      "max": 30,
+      "step": 0.01,
+      "value": 9.81,
+      "group": "Gravity"
+    },
+    {
+      "key": "tiltTorque",
+      "label": "Tilt torque coefficient",
+      "symbol": "κ",
+      "unit": "N m",
+      "min": -100,
+      "max": 100,
+      "step": 0.001,
+      "value": 0.5,
+      "group": "Tilt torque"
+    },
+    {
+      "key": "torquex",
+      "label": "Space torque x",
+      "symbol": "τ_x",
+      "unit": "N m",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "value": 0,
+      "group": "External torque"
+    },
+    {
+      "key": "torquey",
+      "label": "Space torque y",
+      "symbol": "τ_y",
+      "unit": "N m",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "value": 0,
+      "group": "External torque"
+    },
+    {
+      "key": "torquez",
+      "label": "Space torque z",
+      "symbol": "τ_z",
+      "unit": "N m",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "value": 0,
+      "group": "External torque"
+    }
+  ],
+  "presets": [
+    {
+      "id": "flip",
+      "label": "Intermediate-axis flip",
+      "values": {
+        "mode": "free",
+        "shape": "box",
+        "initial": "components",
+        "mass": 1,
+        "a": 1.2,
+        "b": 0.6,
+        "c": 0.12,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0.015,
+        "w2": 4,
+        "w3": 0.008,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "The middle principal axis is unstable."
+    },
+    {
+      "id": "minimum",
+      "label": "Smallest moment",
+      "values": {
+        "mode": "free",
+        "shape": "box",
+        "initial": "components",
+        "mass": 1,
+        "a": 1.2,
+        "b": 0.6,
+        "c": 0.12,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 4,
+        "w2": 0.015,
+        "w3": 0.008,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "A small wobble stays bounded."
+    },
+    {
+      "id": "maximum",
+      "label": "Largest moment",
+      "values": {
+        "mode": "free",
+        "shape": "box",
+        "initial": "components",
+        "mass": 1,
+        "a": 1.2,
+        "b": 0.6,
+        "c": 0.12,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0.015,
+        "w2": 0.008,
+        "w3": 4,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "The largest-moment axis is also stable."
+    },
+    {
+      "id": "free-top",
+      "label": "Free precession",
+      "values": {
+        "mode": "free",
+        "shape": "symmetric-top",
+        "initial": "components",
+        "mass": 1,
+        "a": 0.8,
+        "b": 0.6,
+        "c": 0.2,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 1,
+        "w2": 0,
+        "w3": 8,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "A fixed space angular momentum and a moving angular velocity."
+    },
+    {
+      "id": "slow",
+      "label": "Slow precession",
+      "values": {
+        "mode": "heavy-top",
+        "shape": "symmetric-top",
+        "initial": "slow",
+        "mass": 1,
+        "a": 0.8,
+        "b": 0.6,
+        "c": 0.2,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0.015,
+        "w2": 4,
+        "w3": 40,
+        "tilt": 0.6,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "Gravity turns angular momentum at constant tilt."
+    },
+    {
+      "id": "fast",
+      "label": "Fast precession",
+      "values": {
+        "mode": "heavy-top",
+        "shape": "symmetric-top",
+        "initial": "fast",
+        "mass": 1,
+        "a": 0.8,
+        "b": 0.6,
+        "c": 0.2,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0.015,
+        "w2": 4,
+        "w3": 40,
+        "tilt": 0.6,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "The second steady solution has the same spin and tilt."
+    },
+    {
+      "id": "nutation",
+      "label": "Release a gyroscope",
+      "values": {
+        "mode": "heavy-top",
+        "shape": "symmetric-top",
+        "initial": "components",
+        "mass": 1,
+        "a": 0.8,
+        "b": 0.6,
+        "c": 0.2,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0,
+        "w2": 0,
+        "w3": 35,
+        "tilt": 1.1,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "A released spinning top both precesses and nods."
+    },
+    {
+      "id": "torque",
+      "label": "Turn angular momentum",
+      "values": {
+        "mode": "free",
+        "shape": "box",
+        "initial": "components",
+        "mass": 1,
+        "a": 1.2,
+        "b": 0.6,
+        "c": 0.12,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0,
+        "w2": 0,
+        "w3": 4,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0.1,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "A constant space torque gives L(t) = L(0) + τt."
+    },
+    {
+      "id": "fixed",
+      "label": "Constrained rotation",
+      "values": {
+        "mode": "fixed-axis",
+        "shape": "box",
+        "initial": "components",
+        "mass": 1,
+        "a": 1.2,
+        "b": 0.6,
+        "c": 0.12,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 2,
+        "w2": 1,
+        "w3": 3,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "The support must supply ω × L."
+    },
+    {
+      "id": "plate",
+      "label": "Thin plate",
+      "values": {
+        "mode": "free",
+        "shape": "plate",
+        "initial": "components",
+        "mass": 1,
+        "a": 1,
+        "b": 0.6,
+        "c": 0.12,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 1,
+        "w2": 0.2,
+        "w3": 3,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "The perpendicular-axis relation is I₃ = I₁ + I₂."
+    },
+    {
+      "id": "rod",
+      "label": "Long rod",
+      "values": {
+        "mode": "free",
+        "shape": "rod",
+        "initial": "components",
+        "mass": 1,
+        "a": 0.08,
+        "b": 0.6,
+        "c": 1.2,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0.3,
+        "w2": 0,
+        "w3": 8,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "Dimensions determine very different axial and transverse moments."
+    },
+    {
+      "id": "corner-body",
+      "label": "Eight corner masses",
+      "values": {
+        "mode": "free",
+        "shape": "corner-masses",
+        "initial": "components",
+        "mass": 1,
+        "a": 0.4,
+        "b": 0.4,
+        "c": 1,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 1,
+        "w2": 0,
+        "w3": 6,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "Move the same total mass to the corners and compare the inertia with a solid box."
+    },
+    {
+      "id": "cm-top",
+      "label": "Horizontal CM top",
+      "values": {
+        "mode": "tilt-torque",
+        "shape": "symmetric-top",
+        "initial": "slow",
+        "mass": 1,
+        "a": 0.4,
+        "b": 0.6,
+        "c": 1,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0.015,
+        "w2": 4,
+        "w3": 30,
+        "tilt": 1.57,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "A nearly horizontal axis precesses under a tilt-dependent torque about the centre of mass."
+    },
+    {
+      "id": "asymmetric-top",
+      "label": "Unequal top moments",
+      "values": {
+        "mode": "tilt-torque",
+        "shape": "box",
+        "initial": "components",
+        "mass": 1,
+        "a": 0.6,
+        "b": 0.4,
+        "c": 1,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": 0.2,
+        "w2": 0,
+        "w3": 20,
+        "tilt": 0.5,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.3,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "Tilt-dependent torque also acts on a body with unequal transverse moments."
+    },
+    {
+      "id": "tilted-fixed",
+      "label": "Tilted long-body constraint",
+      "values": {
+        "mode": "fixed-axis",
+        "shape": "corner-masses",
+        "initial": "components",
+        "mass": 1,
+        "a": 0.3,
+        "b": 0.3,
+        "c": 0.8,
+        "I1": 0.3,
+        "I2": 0.5,
+        "I3": 0.7,
+        "w1": -2.981,
+        "w2": 0,
+        "w3": 5.207,
+        "tilt": 0.52,
+        "azimuth": 0,
+        "phase": 0,
+        "distance": 0.4,
+        "g": 9.81,
+        "tiltTorque": 0.5,
+        "torquex": 0,
+        "torquey": 0,
+        "torquez": 0
+      },
+      "note": "A long body tilted about 30 degrees rotates around a nearly vertical space axis; the support supplies torque."
+    }
+  ],
+  "closeups": [
+    {
+      "id": "body",
+      "label": "Body frame"
+    },
+    {
+      "id": "frames",
+      "label": "Compare frames"
+    },
+    {
+      "id": "axis",
+      "label": "Zoom · middle axis"
+    },
+    {
+      "id": "inertia",
+      "label": "Zoom · inertia"
+    },
+    {
+      "id": "gravity",
+      "label": "Zoom · gravity"
+    },
+    {
+      "id": "tilt",
+      "label": "Zoom · CM torque"
+    },
+    {
+      "id": "precession",
+      "label": "Zoom · precession"
+    },
+    {
+      "id": "energy",
+      "label": "Zoom · energy geometry"
+    },
+    {
+      "id": "support",
+      "label": "Zoom · support"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "omega",
+      "label": "Body angular velocity",
+      "unit": "rad/s",
+      "series": [
+        {
+          "key": "w1",
+          "label": "ω₁",
+          "color": "#d99ba8"
+        },
+        {
+          "key": "w2",
+          "label": "ω₂",
+          "color": "#d7c77e"
+        },
+        {
+          "key": "w3",
+          "label": "ω₃",
+          "color": "#a7a0df"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy and external work",
+      "unit": "J",
+      "series": [
+        {
+          "key": "energy",
+          "label": "E",
+          "color": "#8fd5b4"
+        },
+        {
+          "key": "kinetic",
+          "label": "T",
+          "color": "#82b5ff"
+        },
+        {
+          "key": "potential",
+          "label": "U",
+          "color": "#efa67f"
+        },
+        {
+          "key": "work",
+          "label": "W",
+          "color": "#d6bd7f"
+        }
+      ]
+    },
+    {
+      "id": "momentum",
+      "label": "Space angular momentum",
+      "unit": "kg m²/s",
+      "series": [
+        {
+          "key": "Lx",
+          "label": "Lx",
+          "color": "#d99ba8"
+        },
+        {
+          "key": "Ly",
+          "label": "Ly",
+          "color": "#d7c77e"
+        },
+        {
+          "key": "Lz",
+          "label": "Lz",
+          "color": "#a7a0df"
+        },
+        {
+          "key": "angularMomentum",
+          "label": "|L|",
+          "color": "#8fd5b4"
+        }
+      ]
+    },
+    {
+      "id": "angles",
+      "label": "Tilt",
+      "unit": "rad",
+      "series": [
+        {
+          "key": "theta",
+          "label": "θ",
+          "color": "#82b5ff"
+        }
+      ]
+    },
+    {
+      "id": "precession",
+      "label": "Space precession rate",
+      "unit": "rad/s",
+      "series": [
+        {
+          "key": "precessionRate",
+          "label": "φ̇",
+          "color": "#8fd5b4"
+        }
+      ]
+    },
+    {
+      "id": "polhode",
+      "label": "Body polhode projection",
+      "unit": "rad/s",
+      "kind": "phase",
+      "series": [
+        {
+          "key": "w1",
+          "label": "ω₁"
+        },
+        {
+          "key": "w3",
+          "label": "ω₃"
+        }
+      ]
+    },
+    {
+      "id": "norm",
+      "label": "Attitude normalization",
+      "unit": "",
+      "series": [
+        {
+          "key": "quaternionNorm",
+          "label": "|q|",
+          "color": "#8fd5b4"
+        }
+      ]
+    }
+  ]
+}
