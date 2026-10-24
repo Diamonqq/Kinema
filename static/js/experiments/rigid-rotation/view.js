@@ -108,6 +108,7 @@ export function finitePatchScale(center,corners){
 // Convex hull (monotone chain) of projected corner points, and tests against it for label boxes.
 // The whole polhode (tip of ω in the body frame) and the herpolhode (tip of ω in space) for a torque-free setup, from t = 0 until the
 // polhode closes (at most 20 s). Both lie on ΣIω² = 2T and on the plane ω·L = 2T, so they are drawn from the first frame.
+const dot=f=>f.params.shape==='custom'?'':' · yellow dot: marked point';
 const curveCache={params:null,result:null};
 export function energyCurves(params){
  if(curveCache.params===params)return curveCache.result;
@@ -148,7 +149,7 @@ function visibleTargets(f){return available(f).filter(id=>!['body','frames'].inc
 export const view={graphs,closeups,
   paramVisible(spec,values){return !/^I[123]$/.test(spec.key)||values.shape==='custom';},
  graphDescriptors(params){const window=graphWindow(params);return graphs.map(g=>g.kind?g:{...g,window});},
- key:f=>f.compact?'\u03c9 rad/s \u00b7 L kg m\u00b2/s \u00b7 \u03c4 N m':f.closeup==='energy'?'Velocity space · radius is angular speed':'ω rad/s · L kg m²/s · τ N m · arrows use separate fixed scales',
+ key:f=>f.compact?'\u03c9 rad/s \u00b7 L kg m\u00b2/s \u00b7 \u03c4 N m'+dot(f):f.closeup==='energy'?'Velocity space · radius is angular speed':'ω rad/s · L kg m²/s · τ N m · arrows use separate fixed scales'+dot(f),
  closeupAnchors(s,f){return f.rotationAnchors||Object.fromEntries(visibleTargets(f).map((id,i)=>[id,{x:s.w*(i===0?.27:i===1?.73:.5),y:i<2?(s.h<420?42:67):s.h-62}]));},
  equations(f){const g=f.geometry;return [...euler(f),...(f.params.mode==='heavy-top'?closeupEquations({...f,closeup:'gravity'}):f.params.mode==='tilt-torque'?closeupEquations({...f,closeup:'tilt'}):f.params.mode==='fixed-axis'?closeupEquations({...f,closeup:'support'}):['\\frac{d\\mathbf L_s}{dt}=\\boldsymbol\\tau_s']),`T=\\tfrac12\\sum I_i\\omega_i^2=${texNum(f.sample.kinetic)}\\,\\mathrm J`];},
  closeupEquation:closeupEquations,
@@ -200,7 +201,7 @@ export const view={graphs,closeups,
    const centre=origin3.set(0,0,0).project(camera),ox=rect.x+(centre.x+1)*rect.w/2,oy=rect.y+(1-centre.y)*rect.h/2;
    const nodeKey=currentPanel+':'+text;let entry=labelNodes.get(nodeKey);
    if(!entry){const el=document.createElement('span');el.textContent=text;el.style.color=color;labels.append(el);entry={el,width:el.offsetWidth,height:el.offsetHeight,choice:-1};labelNodes.set(nodeKey,entry);retained.allocations.labels++;}
-   const el=entry.el;entry.used=true;el.hidden=false;tips.push({text,x,y,box:null,panel:currentPanel});if(entry.color!==color){el.style.color=color;entry.color=color;}
+   const el=entry.el;entry.used=true;el.hidden=false;tips.push({text,x,y,box:null,panel:currentPanel});tips.at(-1).el=el;if(entry.color!==color){el.style.color=color;entry.color=color;}
    const width=entry.width,height=entry.height;
    let dx=x-ox,dy=y-oy;const len=Math.hypot(dx,dy);if(len<1e-6){dx=1;dy=0;}else{dx/=len;dy/=len;}
    const intersects=a=>placed.some(b=>a.x<b.x+b.width+3&&a.x+width+3>b.x&&a.y<b.y+b.height+3&&a.y+height+3>b.y);
@@ -218,17 +219,17 @@ export const view={graphs,closeups,
    let first=-1,position=null;const count=LABEL_TURNS.length*LABEL_TIERS.length;
    // A new choice keeps 16 px from the silhouette so a turning body does not push it away again at once; a kept one may come within 1 px.
    const search=()=>{for(const pad of [16,8,1])for(let n=0;n<count;n++)if(valid(candidate(n),pad))return n;return -1;};
-   const searchNear=()=>{const near=search();if(near<0||leaderLength(candidate(near))<=20)return near;let best=near,score=leaderLength(candidate(near));for(const [pad,cost] of [[8,8],[1,16]])for(let n=0;n<count;n++){const c=candidate(n),v=leaderLength(c)+cost;if(v<score&&valid(c,pad)){score=v;best=n;}}return best;};
+   const searchNear=()=>{const near=search();if(near<0||leaderLength(candidate(near))<=8)return near;let best=near,score=leaderLength(candidate(near));for(const [pad,cost] of [[8,3],[1,6]])for(let n=0;n<count;n++){const c=candidate(n),v=leaderLength(c)+cost;if(v<score&&valid(c,pad)){score=v;best=n;}}return best;};
    first=entry.choice<0?searchNear():search();
    if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}
    // A crowded cluster may take a longer leader rather than lose the label.
    if(first<0){leash+=24;tips.at(-1).depth=depth+24;squeeze=false;bounds=rect;first=search();if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}}
    // Keep the previous choice while it is valid; when it is not, move to the valid candidate nearest the old position.
-   if(first>=0&&entry.choice>=0&&entry.choice<count){if(valid(candidate(entry.choice))){if(leaderLength(candidate(entry.choice))<=Math.max(18,leaderLength(candidate(first))+14))first=entry.choice;}else{const was=candidate(entry.choice);let best=1e9;for(const pad of [16,8,1]){for(let n=0;n<count;n++){const c=candidate(n),d=Math.hypot(c.x-was.x,c.y-was.y);if(d<best&&valid(c,pad)){best=d;first=n;}}if(best<1e9)break;}}}
-   if(first<0){entry.choice=-1;el.hidden=true;return;}
+   if(first>=0&&entry.choice>=0&&entry.choice<count){if(valid(candidate(entry.choice))){if(leaderLength(candidate(entry.choice))<=24||leaderLength(candidate(first))>10)first=entry.choice;}else{const was=candidate(entry.choice);let best=1e9;for(const cap of [1e9]){for(const pad of [16,8,1]){for(let n=0;n<count;n++){const c=candidate(n),d=Math.hypot(c.x-was.x,c.y-was.y);if(d<best&&leaderLength(c)<=cap&&valid(c,pad)){best=d;first=n;}}if(best<1e9)break;}if(best<1e9)break;}}}
+   if(first<0){entry.choice=-1;entry.ready=false;el.hidden=true;return;}
    entry.choice=first;position=candidate(first);
    tips.at(-1).box={x:position.x,y:position.y,width,height};
-   const transform=`translate(${position.x}px,${position.y}px)`;if(el.style.transform!==transform)el.style.transform=transform;entry.bounds={...position,width,height,text};placed.push(entry.bounds);
+   const transform=`translate(${position.x}px,${position.y}px)`;if(el.style.transform!==transform){el.style.transition=entry.ready?'transform 120ms ease-out':'none';el.style.transform=transform;}entry.ready=true;entry.bounds={...position,width,height,text};placed.push(entry.bounds);
    const length=leaderLength(position);leaderLengths.push(length);
    if(length>7){
     const tx=Math.max(position.x,Math.min(position.x+width,x)),ty=Math.max(position.y,Math.min(position.y+height,y));
@@ -306,7 +307,7 @@ export const view={graphs,closeups,
    cachedText(caption,f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' ')));
    let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a = ${num(p.a)} m · b = ${num(p.b)} m · c = ${num(p.c)} m`:`θ = ${num(f.sample.theta)} rad · T = ${num(f.sample.kinetic)} J`;
    if(norm(g.torqueSpace)<1e-10&&!energy)readoutText+=' · τ = 0 N m';cachedText(readout,readoutText);
-   leaderLengths=[];tips=[];arrowBoxes=[];hullBoxes=[];if(labelSession!==f.closeup){for(const entry of labelNodes.values())entry.choice=-1;labelSession=f.closeup;}for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
+   leaderLengths=[];tips=[];arrowBoxes=[];hullBoxes=[];if(labelSession!==f.closeup){for(const entry of labelNodes.values()){entry.choice=-1;entry.ready=false;}labelSession=f.closeup;}for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
    if(f.t-lastTrace>.025){traceBody.push([...g.omegaBody]);traceSpace.push([...g.omegaSpace]);if(traceBody.length>800){traceBody.shift();traceSpace.shift();}lastTrace=f.t;}
    const target=f.closeup?1.18:1,dt=Math.min(.1,(performance.now()-(draw.last||performance.now()))/1000);draw.last=performance.now();zoom+= (target-zoom)*(1-Math.exp(-dt*10));if(shell.stage.snap){zoom=target;shell.stage.snap=false;}
    const narrow=width<430,{top,area}=layout,showAxes=!layout.compact||f.closeup==='axis';
@@ -353,7 +354,7 @@ export const view={graphs,closeups,
      if(p.mode==='heavy-top'){
       line(vectorLayer,[origin,g.centreOfMass],C.torque);retained.mesh('pivot',()=>new THREE.Mesh(new THREE.SphereGeometry(bounds*.025,12,10),new THREE.MeshBasicMaterial({color:'#d2d9e3'})));
       if(f.breakdown||['gravity','precession'].includes(f.closeup)){
-       const arm=g.centreOfMass,forceLength=bounds*.48;A(arm,g.gravityForce,forceLength,C.torque,'gravity');later(1,()=>textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed));if(!narrow)later(3,()=>textAt('r',v(arm).multiplyScalar(.5).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
+       const arm=g.centreOfMass,forceLength=bounds*.48;A(arm,g.gravityForce,forceLength,C.torque,'gravity');later(1,()=>textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed));if(!narrow)later(3,()=>textAt('r',v(arm).multiplyScalar(.25).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
        line(vectorLayer,[origin,[0,0,p.distance]],'#8a99ad',true);line(vectorLayer,[arm,[0,0,arm[2]]],'#d6bd82',true);
        const az=Math.atan2(arm[1],arm[0]),arc=Array.from({length:33},(_,i)=>{const t=f.sample.theta*i/32;return [Math.cos(az)*Math.sin(t)*p.distance*.45,Math.sin(az)*Math.sin(t)*p.distance*.45,Math.cos(t)*p.distance*.45];});line(vectorLayer,arc,'#d6bd82');
        if(!narrow)later(3,()=>textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
@@ -364,7 +365,7 @@ export const view={graphs,closeups,
      if(f.closeup==='inertia'&&['box','corner-masses'].includes(p.shape)){
       const local=[[-p.a/2,-p.b/2,-p.c/2],[p.a/2,-p.b/2,-p.c/2],[-p.a/2,p.b/2,-p.c/2],[-p.a/2,-p.b/2,p.c/2]];
       const points=local.map(a=>v(a).applyQuaternion(q(g.quaternion)).add(v(g.centreOfMass)));
-      for(let i=1;i<4;i++){line(vectorLayer,[points[0].toArray(),points[i].toArray()],C.axes[i-1]);later(3,()=>textAt(['a','b','c'][i-1],points[i].clone().applyQuaternion(content.quaternion),C.axes[i-1],r,placed));}
+      for(let i=1;i<4;i++){line(vectorLayer,[points[0].toArray(),points[i].toArray()],C.axes[i-1]);later(3,()=>textAt(['a','b','c'][i-1],points[0].clone().add(points[i]).multiplyScalar(.5).applyQuaternion(content.quaternion),C.axes[i-1],r,placed));}
      }
      if(bodyFrame){for(let i=0;i<3;i++){const a=[0,0,0];a[i]=bounds*.8;line(vectorLayer,[origin,a],'#536279',true);}}
      // Place labels in priority order; a label that finds no clear spot is promoted and the whole panel is placed again (a few rounds at most).
@@ -381,11 +382,11 @@ export const view={graphs,closeups,
 
    });renderer.setScissorTest(false);
    // Record actual visible DOM bounds for the same overlap checks as canvas stages.
-   for(const entry of labelNodes.values())if(!entry.used)entry.el.hidden=true;
+   for(const entry of labelNodes.values())if(!entry.used){entry.el.hidden=true;entry.ready=false;}
    for(const entry of leaderNodes.values())if(!entry.used)entry.el.style.display='none';
    const hr=host.getBoundingClientRect();shell.stage.labels=[caption,readout,...panelLabels].filter(el=>!el.hidden&&el.textContent).map(el=>{const r=el.getBoundingClientRect();return {text:el.textContent,x:r.x-hr.x,y:r.y-hr.y,width:r.width,height:r.height};});
    for(const entry of labelNodes.values())if(entry.used&&!entry.el.hidden)shell.stage.labels.push(entry.bounds);
-   shell.rotationLeaderLengths=[...leaderLengths];shell.rotationTips=tips.map(t=>({...t}));shell.rotationArrows=arrowBoxes.map(o=>({...o}));shell.rotationBodyHulls=hullBoxes;shell.rotationBodyBounds={scene:{width,height},compact:layout.compact,panels:projectedBodies};shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
+   shell.rotationLeaderLengths=[...leaderLengths];shell.rotationTips=tips.map(({el,...t})=>Object.defineProperty(t,'el',{value:el}));shell.rotationArrows=arrowBoxes.map(o=>({...o}));shell.rotationBodyHulls=hullBoxes;shell.rotationBodyBounds={scene:{width,height},compact:layout.compact,panels:projectedBodies};shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
   }
   return {draw,resize(){},destroy(){dispose(content);renderer.dispose();renderer.forceContextLoss();root.remove();style.remove();shell.host.classList.remove('rr-experiment');}};
  }

@@ -61,3 +61,9 @@ test('the flip polhode lies on the drawn ellipsoid and is a long closed curve be
  assert.ok(Math.max(...curves.body.map(p=>p[1]))>3.9&&Math.min(...curves.body.map(p=>p[1]))<-3.9);
  assert.ok(Math.max(...curves.body.map(p=>Math.abs(p[0])))>1.5);
 });
+
+test('round 5: the marked point is named, edge labels sit at edge midpoints, and labels glide instead of jumping',()=>{
+ assert.match(text,/yellow dot: marked point/);
+ assert.match(text,/points\[0\]\.clone\(\)\.add\(points\[i\]\)\.multiplyScalar\(\.5\)/);
+ assert.match(text,/transform 120ms ease-out/);
+});
