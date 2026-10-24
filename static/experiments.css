@@ -12,6 +12,8 @@
 .tv-experiment-thread:not(.tv-paged) .artifact-toolbar{background:none;border:0}.tv-experiment-thread .artifact-scene{min-width:0}
 .exp-back,.exp-reopen{border:0;background:#ffffff09;color:#b9c7db;border-radius:18px;padding:7px 12px;cursor:pointer;font:inherit;font-size:12px}.exp-reopen{margin:16px 0}.exp-action-chip{display:block;width:fit-content;max-width:100%;font-size:12px;color:#a9c6eb;background:#91b9ed0c;padding:4px 10px;border-radius:16px;margin:10px 0 0;overflow-wrap:anywhere}
 .exp-shell{height:100%;width:100%;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;display:flex;flex-direction:column;background:#191e26;color:#cdd7e5;font:13px/1.45 system-ui,sans-serif;position:relative;scrollbar-width:thin;scrollbar-color:#465265 transparent}
+/* The lab host is also the artifact scene; its panel overflow:hidden must not stop Breakdown and Graphs from scrolling. */
+.problem-artifact .artifact-scene.exp-shell{overflow:auto}
 .exp-shell *{box-sizing:border-box}.exp-shell [hidden]{display:none!important}
 .exp-shell button{font:inherit;cursor:pointer;border:0;border-radius:18px;background:#ffffff08;color:#c6d2e3;padding:7px 11px;white-space:nowrap;min-height:32px}.exp-shell button:hover{background:#ffffff12}.exp-shell button[aria-pressed=true],.exp-shell button[aria-expanded=true]{color:#b7d3fa;background:#81adf724}
 .exp-shell button:focus-visible,.exp-shell input:focus-visible,.exp-shell select:focus-visible{outline:2px solid #82b5ff;outline-offset:2px}
