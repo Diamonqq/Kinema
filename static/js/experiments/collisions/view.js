@@ -66,13 +66,27 @@ function potential(s,f){
  const points=Array.from({length:160},(_,i)=>{const r=min+(max-min)*i/159;return {r,u:interactionAt(p,r).potential+L*L/(2*mu*r*r)};});
  plot(s,points,{xkey:'r',ykey:'u',energy:E,cursor:{x:Math.max(min,f.sample.separation)},label:'r (m) · Ueff (J)'+(hard?' · wall at R':'')});
 }
+const contactPreviews=new WeakMap();
 // Hard contact is an event, not the nearest 0.1 s forecast sample.
 export function encounterPreview(params,rows){
+ if(contactPreviews.has(rows))return contactPreviews.get(rows);
  const nearest=rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b);
  const event=rows.find(row=>row.geometry.contact)?.geometry.contact;
  if(params.interaction!=='hard'&&params.secondInteraction!=='hard'||!event)return nearest;
  const sim=model.create(params);sim.step(event.t);
- return {t:sim.t,sample:sim.sample(),geometry:sim.geometry()};
+ const geometry=sim.geometry(),sample=sim.sample(),R=params.secondInteraction==='hard'?params.secondRange:params.radius;
+ // The event metadata is authoritative even when replay lands a few ulps on
+ // the other side of the discontinuity. Retain the tangential velocity.
+ const n=event.normal,u=geometry.relative,un=u.vx*n.x+u.vy*n.y;
+ const after=-params.restitution*event.relativeNormalBefore,delta=after-un;
+ u.x=R*n.x;u.y=R*n.y;u.vx+=delta*n.x;u.vy+=delta*n.y;
+ for(const frame of ['lab','cm']){
+  const cm=frame==='lab'?{x:-params.distance*params.m1/(params.m1+params.m2)+(params.m1*params.speed+params.m2*params.targetSpeed)/(params.m1+params.m2)*event.t,y:params.b*params.m1/(params.m1+params.m2)}:{x:0,y:0};
+  geometry.frames[frame].forEach((b,i)=>{const f=i?-params.m1/(params.m1+params.m2):params.m2/(params.m1+params.m2);b.x=cm.x+f*u.x;b.y=cm.y+f*u.y;});
+ }
+ geometry.contact=event;sample.radialSpeed=after;sample.separation=R;
+ sample.scatteringAngle=Math.atan2((Math.sign(params.speed-params.targetSpeed)||1)*u.vy,(Math.sign(params.speed-params.targetSpeed)||1)*u.vx);
+ const preview={t:event.t,sample,geometry,impact:{before:event.relativeNormalBefore,after}};contactPreviews.set(rows,preview);return preview;
 }
 export function forecastObstacles(panes,rows){
  const obstacles=[];
@@ -92,7 +106,7 @@ function encounter(s,f,data){
  const map=camera(s,[-extent,extent,-extent*.8,extent*.8],75,65),b=g.frames.cm;
  linePath(s,data.rows.filter(row=>row.sample.separation<extent*2.2).map(row=>row.geometry.frames.cm[0]),map,C.blue+'50');
  linePath(s,data.rows.filter(row=>row.sample.separation<extent*2.2).map(row=>row.geometry.frames.cm[1]),map,C.amber+'50');
- const visible=b.every(q=>Math.abs(q.x)<extent&&Math.abs(q.y)<extent*.8);
+ const visible=!nearest.impact&&b.every(q=>Math.abs(q.x)<extent&&Math.abs(q.y)<extent*.8);
  const active=visible?b:nearest.geometry.frames.cm;
  active.forEach((q,i)=>s.circle(map.x(q.x),map.y(q.y),['hard','soft'].includes(f.params.interaction)||['hard','soft'].includes(f.params.secondInteraction)?Math.max(2,q.radius*map.scale):5,i?C.amber:C.blue));
  const [a,z]=active,dx=z.x-a.x,dy=z.y-a.y,r=Math.hypot(dx,dy),F=interactionAt(f.params,r).force;
@@ -102,7 +116,8 @@ function encounter(s,f,data){
  s.ctx.setLineDash([3,4]);s.line(px,py,px+sign*ray,py,C.muted,1);s.ctx.setLineDash([]);
  vector(s,px,py,sign*ray*Math.cos(theta),-sign*ray*Math.sin(theta),C.blue,'u');
  if(Math.abs(theta)>.015){s.ctx.beginPath();s.ctx.arc(px,py,23,start,start-theta,theta>0);s.ctx.strokeStyle=C.purple;s.ctx.stroke();label(s,'θ',px+sign*34*Math.cos(theta/2),py-sign*34*Math.sin(theta/2),C.purple);}
- s.text(visible?'Live · t = '+fmt(f.t)+' s':'Closest approach preview · '+fmt(nearest.t)+' s',s.w/2,s.h-43,C.muted,12);
+ const spring=f.params.interaction==='soft'||f.params.secondInteraction==='soft';
+ s.text(spring?'Spring contact \u00b7 discs show compression':visible?'Live \u00b7 t = '+fmt(f.t)+' s':(nearest.impact?'Contact preview \u00b7 ':'Closest approach \u00b7 ')+fmt(nearest.t)+' s',s.w/2,s.h-43,C.muted,12);
 }
 export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
  mount(shell){shells.set(shell.stage,shell);transportWindow(shell);},
@@ -169,12 +184,12 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   String.raw`P_x=${tex(p.m1*q.vx1)}+(${tex(p.m2*q.vx2)})`,String.raw`=${tex(q.px)}\;\mathrm{kg\,m/s}`,
   String.raw`P_y=${tex(p.m1*q.vy1)}+(${tex(p.m2*q.vy2)})`,String.raw`=${tex(q.py)}\;\mathrm{kg\,m/s}`,
   String.raw`Q=${tex(q.dissipated)}\;\mathrm J`];},
- closeupEquation(f){let q=f.sample,r=f.geometry.relative;const p=f.params;
+ closeupEquation(f){let q=f.sample,r=f.geometry.relative,impact;const p=f.params;
   if(f.closeup==='contact'){
    const data=trajectory(p);if(data.done&&data.rows.length){const nearest=encounterPreview(p,data.rows),R=p.secondInteraction==='hard'?p.secondRange:p.radius,extent=Math.max(R*1.9,nearest.sample.separation*1.8,.4);
-    if(!f.geometry.frames.cm.every(b=>Math.abs(b.x)<extent&&Math.abs(b.y)<extent*.8)){q=nearest.sample;r=nearest.geometry.relative;}}
+    impact=nearest.impact;if(impact||!f.geometry.frames.cm.every(b=>Math.abs(b.x)<extent&&Math.abs(b.y)<extent*.8)){q=nearest.sample;r=nearest.geometry.relative;}}
   }
-  const normal=(r.x*r.vx+r.y*r.vy)/q.separation;
+  const normal=impact?.before??(r.x*r.vx+r.y*r.vy)/q.separation;
   if(f.closeup==='momentum')return [String.raw`\sum_i\mathbf p_i^{\rm before}=\sum_i\mathbf p_i^{\rm after}`,String.raw`\mathbf v_i^*=\mathbf v_i-\mathbf V_{CM}`,String.raw`\mathbf P=(${tex(q.px)},${tex(q.py)})`];
   if(f.closeup==='potential')return [String.raw`U_{\rm eff}=U(r)+\frac{L^2}{2\mu_r r^2}`,String.raw`\mu_r=\frac{m_1m_2}{m_1+m_2}`,String.raw`E_{\rm rel}=E-\tfrac12 MV_{CM}^2`];
   if(f.closeup==='scattering'||f.closeup==='cross-section')return [String.raw`\theta=\operatorname{atan2}(u_y,u_x)`,String.raw`\theta_{CM}=${tex(q.scatteringAngle)}\;\mathrm{rad}`,String.raw`\frac{d\sigma}{d\Omega}=\left|\frac{b}{\sin\theta}\frac{db}{d\theta}\right|`];
@@ -183,6 +198,6 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
    const R=p.secondInteraction==='soft'?p.secondRange:p.radius,k=p.secondInteraction==='soft'?p.secondStiffness:p.stiffness;
    return [String.raw`F=k\max(0,R-r)`,String.raw`k=${tex(k)},\quad r=${tex(q.separation)}`,String.raw`F=${tex(k*Math.max(0,R-q.separation))}\;\mathrm N`];
   }
-  return [String.raw`u'_n=-e u_n,\quad u'_t=u_t`,String.raw`J=-(1+e)\mu_r u_n`,String.raw`u_n=${tex(normal)}\;\mathrm{m/s}`,String.raw`e=${tex(p.restitution)}`];
+  return [String.raw`u'_n=-e u_n,\quad u'_t=u_t`,String.raw`J=-(1+e)\mu_r u_n`,String.raw`u_n=${tex(normal)}\;\mathrm{m/s}`,String.raw`u'_n=${tex(impact?.after??-p.restitution*normal)}\;\mathrm{m/s}`,String.raw`e=${tex(p.restitution)}`];
  }
 };

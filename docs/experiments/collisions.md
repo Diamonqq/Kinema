@@ -268,3 +268,9 @@ forecast in both frames. A hard-contact preview uses the exact impulse event,
 so the two contact radii just touch (tested to 1e-9 m); spring-contact previews
 explicitly identify compression of the contact discs. The 0.1 s forecast samples
 remain the displayed trajectories, without substituting sample times for contact.
+
+Hard-contact equations use the event-recorded pre-impact normal speed, never
+the nearest sampled velocity after the impulse. The preview freezes at that
+same event time; approaching u_n is negative and outgoing u_n = -e u_n.
+The browser check compares the caption and equations at both widths using
+identical parameters, and tests cover elastic, partially inelastic and e=0.

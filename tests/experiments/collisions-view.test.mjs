@@ -74,3 +74,20 @@ test('hard contact preview uses exact event radii; chips avoid both full forecas
   }
  }
 });
+
+test('exact impulse displays approaching u_n and restitution-consistent outgoing u_n at both widths (1e-12 m/s)',()=>{
+ const preset=model.presets.find(p=>p.id==='glancing').values;
+ for(const e of [1,.4,0]){
+  const p={...preset,restitution:e};let data;
+  for(const batch of motionBatches(model,p,{duration:durationFor(p)}))data=batch;
+  const results=[1280,320].map(width=>{
+   const preview=encounterPreview(p,data.rows);assert.ok(preview.impact.before<0);
+   assert.ok(Math.abs(preview.impact.after+e*preview.impact.before)<1e-12);
+   if(e===1)assert.ok(Math.abs(Math.abs(preview.impact.after)-Math.abs(preview.impact.before))<1e-12);
+   const event=data.rows.find(row=>row.geometry.contact).geometry.contact;
+   assert.equal(preview.t,event.t);assert.equal(preview.impact.before,event.relativeNormalBefore);
+   return {t:preview.t,...preview.impact};
+  });
+  assert.deepEqual(results[0],results[1]);
+ }
+});
