@@ -25,8 +25,8 @@ test('projectile thumbnail draws apparatus without readouts or captions',()=>{
 test('narrow framing reserves drag and velocity tip margins (1e-9 px tolerance)',()=>{
  for(const preset of model.presets)for(const w of [300,370]){
   const data=preview(preset.values),map=mapWorld({w,h:440,snap:true},data.bounds);
-  assert.ok(map.x(0)>=64-1e-9,preset.id);
-  assert.ok(Math.max(...data.path.map(q=>map.x(q.x)))<=w-48+1e-9,preset.id);
+  assert.ok(map.x(0)>=54-1e-9,preset.id);
+  assert.ok(Math.max(...data.path.map(q=>map.x(q.x)))<=w-22+1e-9,preset.id);
  }
 });
 
@@ -60,4 +60,12 @@ test('all flight arrows and component labels stay inside 1280/390/320 viewports 
   for(const r of stage.labels)assert.ok(r.x>=-1e-7&&r.y>=-1e-7&&r.x+r.width<=width+1e-7&&r.y+r.height<=440+1e-7,`${preset.id} ${width} ${t}: ${r.text}`);
   if(instance.sample().speed>1e-3){assert.ok(stage.labels.some(r=>r.text==='v_x'));if(Math.abs(instance.sample().vy)>1e-3)assert.ok(stage.labels.some(r=>r.text==='v_y'));}
  }
+});
+
+test('launch chip stays put between Scene and Breakdown and the velocity resultant is labeled at its tip',()=>{
+ const instance=model.create(),ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})});
+ const mk=breakdown=>({w:1000,h:500,ctx,labels:[],line(){},circle(){},arrow(){},text(t,x,y){this.labels.push({text:t,x,y});}}),f=b=>({params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:b});
+ const a=mk(false),b=mk(true);view.draw(a,f(false));view.draw(b,f(true));
+ assert.deepEqual(view.closeupAnchors(a,f(false)).angle,view.closeupAnchors(b,f(true)).angle);
+ assert.ok(b.labels.some(l=>l.text==='v'));
 });

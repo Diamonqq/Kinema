@@ -27,7 +27,7 @@ export function preview(p){
  const result={path,ghost,apex,bounds:[xmin-pad,xmax+pad,-pad,ymax+pad]};
  if(cache.size>30)cache.delete(cache.keys().next().value);cache.set(key,result);return result;
 }
-export function mapWorld(stage,bounds,top=50,bottom=stage.h-150,padding=stage.w<440?{left:64,right:48}:72){
+export function mapWorld(stage,bounds,top=50,bottom=stage.h-150,padding=stage.w<440?{left:54,right:22}:72){
  const [a,b,c,d]=bounds,w=stage.w,h=Math.max(30,bottom-top),left=typeof padding==='number'?padding:padding.left,right=typeof padding==='number'?padding:padding.right,target={cx:(a+b)/2,cy:(c+d)/2,scale:Math.min((w-left-right)/(b-a),h/(d-c))};
  if(!stage.camera||stage.snap)stage.camera={...target};else if(easeCamera(stage.camera,target))stage.animating=true;
  stage.snap=false;const cam=stage.camera;
@@ -58,9 +58,11 @@ function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset){
   return !(s.vectorChips||[]).some(a=>segmentHitsRect(tx,ty,px,py,a));
  };
  let selected;
- outer:for(const oy of [0,18,-18,36,-36,54,-54,72,-72,90,-90])for(const ox of [0,32,-32,60,-60,90,-90]){
+ const spots=[];for(const oy of [0,10,-10,20,-20,34,-34,52,-52,72,-72,90,-90])for(const ox of [0,12,-12,24,-24,40,-40,60,-60,90,-90])spots.push([ox,oy]);
+ spots.sort((a,b)=>Math.hypot(a[0],a[1])-Math.hypot(b[0],b[1]));
+ for(const [ox,oy] of spots){
   const px=Math.max(width/2+7,Math.min(s.w-width/2-7,baseX+ox)),py=baseY+oy;
-  if(clear(px,py)){selected={px,py};break outer;}
+  if(clear(px,py)){selected={px,py};break;}
  }
  const {px,py}=selected||{px:Math.max(width/2+7,Math.min(s.w-width/2-7,baseX)),py:Math.max(10,Math.min(s.h-15,baseY))};
  if(Math.hypot(px-tx,py-ty)>27)s.line(tx,ty,px,py,color+'80',.8);label(s,term,px,py,color,12);
@@ -73,7 +75,7 @@ function triangle(s,f,live=false){
  s.ctx.setLineDash([3,5]);s.line(x2,cy,x2,y2,green,1);s.ctx.setLineDash([]);
  vector(s,cx,cy,vx,0,live?'v cos φ':'v₀ cos θ',blue,scale);
  vector(s,x2,cy,0,vy,live?'v sin φ':'v₀ sin θ',green,scale);
- s.arrow(cx,cy,x2,y2,purple,2);label(s,live?'v':'v₀',(cx+x2)/2-9,(cy+y2)/2-13,purple,12);
+ vector(s,cx,cy,vx,vy,live?'v':'v₀',purple,scale);
  const a=Math.atan2(vy,vx);s.ctx.beginPath();s.ctx.arc(cx,cy,26,Math.min(0,-a),Math.max(0,-a));s.ctx.strokeStyle=muted;s.ctx.stroke();
  label(s,live?'φ':'θ',cx+36*Math.cos(a/2),cy-36*Math.sin(a/2),muted,13);
  label(s,live?'Velocity components now':'Launch components',s.w/2,42,muted,12);
@@ -96,7 +98,7 @@ function forceBall(s,f){
 }
 export const view={graphs,closeups,
  mount(shell){shell.q('.exp-transport').style.background='#191e26';shell.equations.style.paddingBottom='64px';shell.scene.style.minHeight='440px';},
- closeupAnchors(s,f){if(f.closeup)return {};const data=preview(f.params),m=mapWorld(s,data.bounds),q=data.path[Math.min(data.path.length-1,Math.max(1,Math.floor(data.path.length*.2)))];return {angle:{x:m.x(0)+(s.w<440?0:(f.breakdown?0:-70)),y:m.y(f.params.height)+(s.w<440?-85:(f.breakdown?65:-40))},'air-force':{x:m.x((data.ghost[0].x+data.ghost.at(-1).x)/2)+(s.w<440?30:0),y:m.y(0)+14},apex:{x:m.x(data.apex.x),y:Math.max(35,m.y(data.apex.y)-120)}};},
+ closeupAnchors(s,f){if(f.closeup)return {};for(const b of s.canvas?.parentElement?.querySelectorAll('.exp-closeups button')||[]){b.style.padding='0 9px';b.style.minHeight='0';b.style.height='24px';b.style.lineHeight='24px';b.style.fontSize='10px';b.style.background='#1f2b3c';b.style.color='#8fb0d8';}const data=preview(f.params),m=mapWorld(s,data.bounds),q=data.path[Math.min(data.path.length-1,Math.max(1,Math.floor(data.path.length*.2)))];const top=m.y(Math.max(...data.ghost.map(g=>g.y),data.apex.y));return {angle:{x:m.x(0)+20,y:m.y(f.params.height)+(s.w<440?62:70)},'air-force':{x:m.x((data.ghost[0].x+data.ghost.at(-1).x)/2)+(s.w<440?30:0),y:m.y(0)+14},apex:{x:m.x(data.apex.x),y:Math.max(35,top-40)}};},
  key:f=>f.closeup==='air-force'?['Blue: u',...(Math.hypot(f.geometry.forces.drag.x,f.geometry.forces.drag.y)>1e-7?['Green: drag']:[]),'Amber: gravity',...(Math.hypot(f.geometry.forces.lift.x,f.geometry.forces.lift.y)>1e-7?['Violet: lift']:[])].join(' \u00b7 '):f.closeup?'Angles measured from horizontal':'Blue: projectile \u00b7 dashed: vacuum',
  draw(s,f){
   s.vectorObstacles=[];s.vectorChips=[];const data=preview(f.params);
@@ -109,25 +111,27 @@ export const view={graphs,closeups,
    else{const apex=data.apex,map=mapWorld(s,[apex.x-10,apex.x+10,apex.y-4,apex.y+4],65,s.h-75);path(s,data.path,map,blue);s.circle(map.x(apex.x),map.y(apex.y),5,blue);vector(s,map.x(apex.x),map.y(apex.y),apex.vx,0,'v_x',blue,Math.min(70,s.w*.22)/Math.max(1,Math.abs(apex.vx)));vector(s,map.x(apex.x),map.y(apex.y),0,-1,'mg',orange,38);label(s,'At the top: v_y = 0, but gravity remains',s.w/2,48,muted,s.w<340?10:12);}
    return;
   }
-  const m=mapWorld(s,data.bounds,f.thumbnail?12:50,f.thumbnail?s.h-12:s.h-150,f.thumbnail?22:(s.w<440?{left:64,right:48}:72)),p=f.geometry.position;
+  const m=mapWorld(s,data.bounds,f.thumbnail?12:50,f.thumbnail?s.h-12:s.h-150,f.thumbnail?22:(s.w<440?{left:54,right:22}:72)),p=f.geometry.position;
   s.line(m.x(data.bounds[0]),m.y(0),m.x(data.bounds[1]),m.y(0),'#465669',1);
   path(s,data.ghost,m,'#8c9cb250',true);path(s,data.path,m,blue+'aa');path(s,data.path.filter(q=>q.t<=f.t+.001),m,blue);
   // Actual diameter is preserved; the luminous halo is an explicit locator.
   const r=f.geometry.radius*m.scale;s.circle(m.x(p.x),m.y(p.y),Math.max(5,r+4),blue+'25');s.circle(m.x(p.x),m.y(p.y),Math.max(.6,r),blue);
   if(!f.thumbnail)label(s,f.sample.landed?`Landed · ${num(f.sample.range)} m`:`Height ${num(f.sample.y)} m`,s.w-12,29,muted,11,'right');
   if(f.breakdown){
-   const widths={angle:93,'air-force':105,apex:84};
-   s.vectorObstacles=Object.entries(view.closeupAnchors(s,f)).map(([id,a])=>{const w=widths[id];return {x:Math.max(w/2+8,Math.min(s.w-w/2-8,a.x))-w/2,y:Math.min(s.h-40,a.y),width:w,height:32};});
+   const widths={angle:80,'air-force':92,apex:74};
+   s.vectorObstacles=Object.entries(view.closeupAnchors(s,f)).map(([id,a])=>{const w=widths[id];return {x:Math.max(w/2+8,Math.min(s.w-w/2-8,a.x))-w/2,y:Math.min(s.h-40,a.y),width:w,height:26};});
    s.vectorChips=[...s.vectorObstacles];
    for(const q of data.path)s.vectorObstacles.push({x:m.x(q.x)-1,y:m.y(q.y)-1,width:2,height:2});
    for(let x=0;x<s.w;x+=6)s.vectorObstacles.push({x,y:m.y(0)-1,width:6,height:2});
    const len=Math.min(48,s.w*.11),v=f.geometry.velocity,vscale=len/Math.max(1,Math.hypot(v.x,v.y));
-   {vector(s,m.x(p.x),m.y(p.y),v.x,0,'v_x',blue,vscale);vector(s,m.x(p.x),m.y(p.y),0,v.y,'v_y',green,vscale);}
-   const a=f.params.angle*rad,l=Math.min(34,s.w*.09),lx=m.x(0),ly=m.y(f.params.height);s.arrow(lx,ly,lx+l*Math.cos(a),ly-l*Math.sin(a),purple,1.5);
-   if(f.t>.2&&s.w>=440){vector(s,lx,ly,l*Math.cos(a),0,'v_0x',blue,1,-15);vector(s,lx,ly,0,l*Math.sin(a),'v_0y',green);}
+   {vector(s,m.x(p.x),m.y(p.y),v.x,0,'v_x',blue,vscale,14);vector(s,m.x(p.x),m.y(p.y),0,v.y,'v_y',green,vscale);}
+   // The velocity itself is the purple resultant of its two components.
+   vector(s,m.x(p.x),m.y(p.y),v.x,v.y,'v',purple,vscale);
+   const a=f.params.angle*rad,l=Math.min(34,s.w*.09),lx=m.x(0),ly=m.y(f.params.height);
+   if(f.t>.2&&s.w>=440){vector(s,lx,ly,Math.cos(a),Math.sin(a),'v₀',purple,l);vector(s,lx,ly,l*Math.cos(a),0,'v_0x',blue,1,-15);vector(s,lx,ly,0,l*Math.sin(a),'v_0y',green);}
    // Force vectors on the moving ball; labels use fixed caption rows below.
    const fs=f.geometry.forces,max=Math.max(.001,...Object.values(fs).map(q=>Math.hypot(q.x,q.y))),k=34/max;
-   if(!f.sample.landed)for(const [name,c,term] of [['gravity',orange,'mg'],['drag',green,'F_D'],['lift',purple,'F_L']]){const q=fs[name];vector(s,m.x(p.x),m.y(p.y),q.x,q.y,term,c,k,s.w<440&&name==='drag'?-24:undefined);}
+   if(!f.sample.landed)for(const [name,c,term] of [['gravity',orange,'mg'],['drag',green,'F_D'],['lift',purple,'F_L']]){const q=fs[name];vector(s,m.x(p.x),m.y(p.y),q.x,q.y,term,c,k);}
   }
  },
  equations(f){const p=f.params,q=f.sample,g=f.geometry,theta=p.angle*rad;return [

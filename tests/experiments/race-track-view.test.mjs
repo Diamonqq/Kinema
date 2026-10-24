@@ -37,3 +37,11 @@ test('tiny signed force substitutions use shared TeX formatting without e notati
  const instance=model.create(params),f={params,instance,sample:instance.sample(),geometry:instance.geometry()};
  assert.ok(view.equations(f).some(e=>e.includes('\\times10^{')));assert.ok(view.equations(f).every(e=>!/[0-9]e[+-][0-9]/.test(e)));
 });
+
+test('default graphs are the two that change on the default lap, and the breakdown caption names only drawn forces',()=>{
+ assert.deepEqual(view.graphs.slice(0,2).map(g=>g.id),['grip','distance']);
+ const params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),bank:20,speed:13.4,halfStraight:0},instance=model.create(params),labels=[];
+ const ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})}),s={w:600,h:440,ctx,labels,line(){},circle(){},arrow(){},text(t){labels.push(t);}};
+ const f={params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'corner',breakdown:false};
+ view.draw(s,f);assert.equal(labels.includes('f'),false);assert.equal(/green f/.test(view.key(f)),false);
+});

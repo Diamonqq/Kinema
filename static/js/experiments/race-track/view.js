@@ -5,11 +5,12 @@ const blue='#8ab9ff',green='#b0c9ad',orange='#e9bb88',purple='#bcabef',muted='#8
 
 const forceValue=n=>String.raw`${texNum(Math.abs(n)>=1000?n/1000:n)}\,\mathrm{${Math.abs(n)>=1000?'kN':'N'}}`;
 export const closeups=[{id:'corner',label:'Zoom · bank forces'},{id:'grip',label:'Zoom · tire grip'}];
+// The first two open by default: the ones that change on the default lap.
 export const graphs=[
- {id:'speed',label:'Speed · next corner limits',unit:'m/s',series:[{key:'speed',label:'v',color:blue},{key:'cornerMaxSpeed',label:'max',color:orange},{key:'cornerMinSpeed',label:'min',color:purple}]},
  {id:'grip',label:'Tire forces',unit:'N',series:[{key:'lateralFriction',label:'f⊥',color:green},{key:'longitudinalFriction',label:'f∥',color:purple},{key:'frictionCapacity',label:'μN',color:orange}]},
- {id:'energy',label:'Energy ledger',unit:'J',series:[{key:'energy',label:'K',color:blue},{key:'dissipatedWork',label:'D',color:orange},{key:'driveWork',label:'W',color:green}]},
  {id:'distance',label:'Distance traveled',unit:'m',series:[{key:'distance',label:'s',color:blue}]},
+ {id:'speed',label:'Speed · next corner limits',unit:'m/s',series:[{key:'speed',label:'v',color:blue},{key:'cornerMaxSpeed',label:'max',color:orange},{key:'cornerMinSpeed',label:'min',color:purple}]},
+ {id:'energy',label:'Energy ledger',unit:'J',series:[{key:'energy',label:'K',color:blue},{key:'dissipatedWork',label:'D',color:orange},{key:'driveWork',label:'W',color:green}]},
 ];
 function world(s,bounds,top,bottom){
  const [a,b,c,d]=bounds,target={cx:(a+b)/2,cy:(c+d)/2,scale:Math.min((s.w-42)/(b-a),Math.max(30,bottom-top)/(d-c))};
@@ -38,6 +39,7 @@ function projection(s,x,y,dx,dy,label,color){
  s.ctx.setLineDash([4,4]);s.arrow(x,y,x+dx,y-dy,color,1.4);s.ctx.setLineDash([]);if(s.w>=440)tipLabel(s,label,x+dx,y-dy,color);
 }
 export function bankSnapshot(f){return curveForces({...f.params,speed:f.sample.speed,radius:f.params.radius,bank:f.params.bank});}
+let drawnForces=new Set(['N','mg','f']);
 function bank(s,f,box,components){
  const {x,y,w,h}=box,theta=f.params.bank*rad,c=Math.cos(theta),sn=Math.sin(theta),force=bankSnapshot(f),cx=x+w*.5,cy=y+h*.53,len=Math.min(w*.33,h*.39),k=len/Math.max(force.normal,f.params.mass*f.params.gravity,Math.abs(force.lateral),1);
  // +x points inward/right, road slopes down toward the centre. Normal points
@@ -48,6 +50,7 @@ function bank(s,f,box,components){
  arrow(s,cx,cy,force.normal*sn*k,force.normal*c*k,'N',blue);
  arrow(s,cx,cy,0,-f.params.mass*f.params.gravity*k,'mg',orange);
  arrow(s,cx,cy,force.lateral*c*k,-force.lateral*sn*k,'f',green);
+ drawnForces=new Set(['N','mg']);if(Math.hypot(force.lateral*c*k,force.lateral*sn*k)>=1.5)drawnForces.add('f');
  if(components&&f.params.bank>=1){
   // Orthogonal projections and completion guides form the actual vector
   // rectangle, all at the same force scale and the same contact origin.
@@ -77,7 +80,7 @@ export const view={graphs,closeups,
  graphDescriptors:p=>graphs.map(g=>({...g,window:Math.max(5,(4*p.halfStraight+2*Math.PI*p.radius)/Math.max(1,p.speed))})),
  mount(shell){shell.q('.exp-transport').style.background='#191e26';shell.equations.style.paddingBottom='64px';shell.scene.style.minHeight='440px';},
  closeupAnchors(s,f){if(f.closeup)return {};if(f.breakdown)return {corner:{x:s.w*.28,y:s.h-82},grip:{x:s.w*.73,y:s.h-86}};const p=f.params,pad=Math.max(4,p.radius*.08),m=world(s,[-p.halfStraight-p.radius-pad,p.halfStraight+p.radius+pad,-p.radius-pad,p.radius+pad],100,s.h-132);return {corner:{x:m.x(p.halfStraight+p.radius),y:m.y(p.radius)-48},grip:{x:m.x(0),y:m.y(-p.radius)+52}};},
- key:f=>f.closeup==='grip'?(Math.abs(f.params.drive-bankSnapshot(f).longitudinal)>1?'Solid: tire force \u00b7 hollow: requested drive':'Solid: tire force \u00b7 radius: \u03bcN'):f.closeup||f.breakdown?'Blue N · amber mg · green f · right is inward':'Track centerline · tire grip sets the corner limit',
+ key:f=>f.closeup==='grip'?(Math.abs(f.params.drive-bankSnapshot(f).longitudinal)>1?'Solid: tire force \u00b7 hollow: requested drive':'Solid: tire force \u00b7 radius: \u03bcN'):f.closeup||f.breakdown?'Blue N · amber mg'+(drawnForces.has('f')?' · green f':'')+' · right is inward':'Track centerline · tire grip sets the corner limit',
  draw(s,f){
   const p=f.params,q=f.sample,narrow=s.w<440;
   if(f.breakdown||f.closeup){
@@ -99,7 +102,8 @@ export const view={graphs,closeups,
   c.beginPath();for(let j=0;j<=240;j++){const a=trackPoint(length*j/240,p);j?c.lineTo(m.x(a.x),m.y(a.y)):c.moveTo(m.x(a.x),m.y(a.y));}
   c.strokeStyle='#28394e';c.lineWidth=Math.max(2,Math.min(9,4*m.scale));c.stroke();c.strokeStyle='#60748e';c.lineWidth=1;c.setLineDash([3,5]);c.stroke();c.setLineDash([]);
   s.line(m.x(0),m.y(-R)-6,m.x(0),m.y(-R)+6,'#b1c3db',2);
-  const point=f.geometry.position;car(s,m.x(point.x),m.y(point.y),f.geometry.heading,m.scale,q.lostGrip?'#e4a9bd':blue);s.circle(m.x(point.x),m.y(point.y),5,blue+'25');
+  const point=f.geometry.position;const carColor=q.lostGrip?'#e4a9bd':blue;if(!thumb){s.circle(m.x(point.x),m.y(point.y),16,carColor+'18');c.beginPath();c.arc(m.x(point.x),m.y(point.y),16,0,2*Math.PI);c.strokeStyle=carColor+'70';c.lineWidth=1;c.stroke();}
+  car(s,m.x(point.x),m.y(point.y),f.geometry.heading,m.scale,carColor);
   if(!thumb)s.text(q.lostGrip?'Grip exceeded · change setup':`${num(q.speed)} m/s · lap ${q.laps+1}`,s.w/2,29,q.lostGrip?'#e4a9bd':muted,narrow?11:13);
  },
  equations(f){const p=f.params,a=bankSnapshot(f);return [

@@ -221,28 +221,6 @@
   ],
   "graphs": [
     {
-      "id": "speed",
-      "label": "Speed · next corner limits",
-      "unit": "m/s",
-      "series": [
-        {
-          "key": "speed",
-          "label": "v",
-          "color": "#8ab9ff"
-        },
-        {
-          "key": "cornerMaxSpeed",
-          "label": "max",
-          "color": "#e9bb88"
-        },
-        {
-          "key": "cornerMinSpeed",
-          "label": "min",
-          "color": "#bcabef"
-        }
-      ]
-    },
-    {
       "id": "grip",
       "label": "Tire forces",
       "unit": "N",
@@ -265,6 +243,40 @@
       ]
     },
     {
+      "id": "distance",
+      "label": "Distance traveled",
+      "unit": "m",
+      "series": [
+        {
+          "key": "distance",
+          "label": "s",
+          "color": "#8ab9ff"
+        }
+      ]
+    },
+    {
+      "id": "speed",
+      "label": "Speed · next corner limits",
+      "unit": "m/s",
+      "series": [
+        {
+          "key": "speed",
+          "label": "v",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "cornerMaxSpeed",
+          "label": "max",
+          "color": "#e9bb88"
+        },
+        {
+          "key": "cornerMinSpeed",
+          "label": "min",
+          "color": "#bcabef"
+        }
+      ]
+    },
+    {
       "id": "energy",
       "label": "Energy ledger",
       "unit": "J",
@@ -283,18 +295,6 @@
           "key": "driveWork",
           "label": "W",
           "color": "#b0c9ad"
-        }
-      ]
-    },
-    {
-      "id": "distance",
-      "label": "Distance traveled",
-      "unit": "m",
-      "series": [
-        {
-          "key": "distance",
-          "label": "s",
-          "color": "#8ab9ff"
         }
       ]
     }
