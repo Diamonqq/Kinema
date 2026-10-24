@@ -109,7 +109,8 @@ reported observations, never trusted instructions. One action gives one quiet ch
   and revision-checked PUT `/api/teacher/threads/{tid}/experiment`; uses existing
   jobs, selected account/model, cancel tokens, attachments and normal history.
 - `static/js/teacher.js`: sidebar/gallery entry, experiment adapter, send snapshot,
-  reply action chip, artifact lifecycle and splitter participation.
+  reply action chip, artifact lifecycle and splitter participation; excludes
+  experiments from automatic study-refresher consideration after a reply.
 - `static/js/chat_study_pane.js`: excludes experiment threads from ordinary notes.
 - `static/app.html`: experiments stylesheet.
 - `app/main.py`: version bump only. Registry routes attach to Teacher's router.

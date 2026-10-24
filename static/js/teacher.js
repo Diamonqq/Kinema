@@ -526,7 +526,7 @@ export class Teacher {
     this.setCrumb(); this.renderStatus(); this.renderThreads(); this.syncSend();
     if (was?.id === t.id && was.pending && !t.pending && t.notify) this.notifyDone(t.id, t.label || t.title);
     if (was?.id === t.id && was.pending && !t.pending && this.studyMode === 'path') this.path?.refresh();   // a tutor reply may mark the practice as helped
-    if (was?.id === t.id && was.pending && !t.pending) { const r = (t.messages || []).findLast(m => m.role === 'assistant' && m.kind !== 'session'); if (r?.text) window.KinemaRefresher?.consider({ title: '', text: r.text, source: 'tutor' }); }   // a weak prerequisite in the reply may slide in a refresher card
+    if (was?.id === t.id && was.pending && !t.pending && t.mode!=='experiment') { const r = (t.messages || []).findLast(m => m.role === 'assistant' && m.kind !== 'session'); if (r?.text) window.KinemaRefresher?.consider({ title: '', text: r.text, source: 'tutor' }); }   // a weak prerequisite in a study reply may slide in a refresher card
     this.syncVisual();
     this.path?.setExploring(this.guideExplored());
     this.follow();
