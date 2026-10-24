@@ -26,12 +26,18 @@ test('A/B letters and all four coordinate rows are unclipped and non-overlapping
  }
 });
 
-test('momentum indices are Unicode subscripts and component letters are smaller and lowered',()=>{
+test('momentum indices are typeset subscripts of at least 10 px, lowered beside their letter',()=>{
  const f=frame(model);f.breakdown=true;const s=fakeStage(560,620);view.draw(s,f);
- assert.ok(s.labels.some(l=>l.text==='p\u2081'));assert.ok(s.labels.some(l=>l.text==='p\u2082'));
- assert.ok(s.labels.some(l=>l.text==='\u03b8\u2081'));assert.ok(!s.labels.some(l=>/p[123]|\u03b81/.test(l.text)));
- for(const y of s.labels.filter(l=>l.text==='y')){assert.equal(y.height,8);assert.ok(s.labels.some(l=>l.text==='p\u2081'&&y.y>l.y&&Math.abs(y.y-l.y)<7));}
- assert.ok(s.labels.some(l=>l.text==='y'));
+ assert.ok(!s.labels.some(l=>/[₀-₟ᵢ-ᵪ]/.test(l.text)));
+ assert.ok(s.labels.every(l=>l.height>=10),'no text under 10 px');
+ for(const [base,sub] of [['p','1'],['p','2'],['θ','1'],['p','y'],['p','x']]){
+  assert.ok(s.labels.some((l,i)=>l.text===sub&&s.labels[i-1]?.text===base&&l.y>s.labels[i-1].y&&l.y-s.labels[i-1].y<6),base+sub+' is a lowered subscript');
+ }
+});
+test('scene labels p1 and p2 sit just past their arrow tips without breakdown',()=>{
+ const f=frame(model),s=fakeStage(560,620);view.draw(s,f);
+ for(const [index,sub] of [[0,'1'],[1,'2']]){const label=s.labels.find((l,i)=>l.text===sub&&s.labels[i-1]?.text==='p'),arrow=s.arrows.filter(a=>a[4]!=='#a7b6cc')[index];
+  assert.ok(label&&arrow);assert.ok(Math.hypot(label.x-arrow[2],label.y-arrow[3])<28,'p'+sub+' within 28 px of its tip');}
 });
 
 test('custom graph canvas has no repeated card title or header units',()=>{

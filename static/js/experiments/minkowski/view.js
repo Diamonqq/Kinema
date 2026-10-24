@@ -1,6 +1,6 @@
 import {C,boost,interval,gamma,addVelocity} from './model.js';
 import {num} from '../kit/format.js';
-import {colors,fmt,panels,mapPanel,line,inside,axes,plot,clipPanel,clipLine} from './drawing.js';
+import {colors,fmt,panels,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth} from './drawing.js';
 const cache=new WeakMap();
 export const closeups=[{id:'event',label:'Zoom · events'},{id:'transform',label:'Zoom · transform'}];
 export const graphs=[
@@ -13,11 +13,11 @@ const invert=b=>typeof b==='number'?-b:{x:-b.x,y:-b.y,z:-b.z};
 const coord=(a,L)=>[a.x/L,C*a.t/L];
 export function boundsFor(g,L,desktop=true){
   const events=['ground','moving'].flatMap(k=>g[k].events).map(a=>coord(a,L));
-  if(desktop&&events.length&&Math.max(...events.map(a=>a[1]))>0){const xs=events.map(a=>a[0]),ys=events.map(a=>a[1]),max=Math.max(...ys),dx=Math.max(.15,(Math.max(...xs)-Math.min(...xs))*.05);return [Math.min(...xs)-dx,Math.max(...xs)+dx,Math.min(-.25*max,...ys),max*1.05];}
+  if(desktop&&events.length&&Math.max(...events.map(a=>a[1]))>0){const xs=events.map(a=>a[0]),ys=events.map(a=>a[1]),max=Math.max(...ys),dx=Math.max(.2,(Math.max(...xs)-Math.min(...xs))*.1);const half=Math.max(Math.abs(Math.min(...xs)),Math.abs(Math.max(...xs)))+dx;return [-half,half,Math.min(-.25*max,...ys),max*1.05];}
   const points=['ground','moving'].flatMap(k=>[...g[k].events,...g[k].worldlines.flatMap(l=>l.points)]).map(a=>coord(a,L));
   if(!points.length)return [-2,2,-1,3];
   let x0=Math.min(-.3,...points.map(a=>a[0])),x1=Math.max(.3,...points.map(a=>a[0])),y0=Math.min(-.3,...points.map(a=>a[1])),y1=Math.max(.3,...points.map(a=>a[1]));
-  const dx=(x1-x0)*.13,dy=(y1-y0)*.1;return [x0-dx,x1+dx,y0-dy,y1+dy];
+  const dx=(x1-x0)*.13,dy=(y1-y0)*.1,half=Math.max(Math.abs(x0-dx),Math.abs(x1+dx));return desktop?[-half,half,y0-dy,y1+dy]:[x0-dx,x1+dx,y0-dy,y1+dy];
 }
 function context(f){let c=cache.get(f.instance);if(!c){const g=f.geometry,L=f.params.length;
   c={bounds:boundsFor(g,L),narrowBounds:boundsFor(g,L,false),selected:g.ground.events.find(e=>e.id==='reflect'||e.id==='turn'||e.id==='right-strike')||g.ground.events.at(-1)||{t:0,x:0,y:0,z:0}};cache.set(f.instance,c);}return c;}
@@ -30,11 +30,12 @@ export function eventReadouts(f){return namedEvents(f).flatMap(({name,event})=>{
   const a=coord(event,f.params.length),b=coord(boost(event,beta(f.params)),f.params.length);
   return [`${name}  S: (x, ct) = (${num(a[0])}, ${num(a[1])}) L`,`${name}  S′: (x′, ct′) = (${num(b[0])}, ${num(b[1])}) L`];
 });}
-function eventLetter(s,f,p,m,key,record){
+function eventLetter(s,f,p,m,key,record,extra=[]){
   const e=key==='moving'?boost(record.event,beta(f.params)):record.event,[x,y]=coord(e,f.params.length);
   if(!inside(m,p,x,y,3))return;
   const px=m.x(x),py=m.y(y);s.ctx.font='12px system-ui';const width=s.ctx.measureText(record.name).width;
   const segments=f.geometry[key].worldlines.flatMap(l=>l.points.slice(1).map((b,i)=>{const a=l.points[i];return [m.x(a.x/f.params.length),m.y(C*a.t/f.params.length),m.x(b.x/f.params.length),m.y(C*b.t/f.params.length)];}));
+  segments.push(...extra);
   for(const [dx,dy] of [[12,-18],[-24,-18],[12,18],[-24,18],[22,0],[-30,0],[20,-32],[-30,32]]){
     const box={left:px+dx-2,top:py+dy-8,width:width+4,height:16};
     if(box.left<p.left||box.top<p.top||box.left+box.width>p.left+p.width||box.top+box.height>p.top+p.height)continue;
@@ -43,15 +44,30 @@ function eventLetter(s,f,p,m,key,record){
     s.text(record.name,px+dx,py+dy,'#e8f2ff',12,'left');return;
   }
 }
+// The green hyperbola is every event at interval L from the origin; it has the same shape in S and S′.
+function intervalCaption(s,f,p,m,key,curve,guides=[]){
+  const text='invariant interval',width=richWidth(s,text,11),worldlines=f.geometry[key].worldlines.flatMap(l=>l.points.slice(1).map((b,i)=>{const a=l.points[i];return [m.x(a.x/f.params.length),m.y(C*a.t/f.params.length),m.x(b.x/f.params.length),m.y(C*b.t/f.params.length)];}));
+  const axesBox=[[p.left,m.y(0),p.left+p.width,m.y(0)],[m.x(0),p.top,m.x(0),p.top+p.height]];
+  for(const index of [32,28,36,24,40,20,44,16,48,12,52,8,56,4,60,0,63]){
+    const a=curve[index];if(!a)continue;
+    for(const [dx,dy,align] of [[10,-8,'left'],[-10,-8,'right'],[10,16,'left'],[-10,16,'right'],[8,-24,'left'],[-8,-24,'right'],[8,32,'left'],[-8,32,'right']]){
+      const x=a[0]+dx,left=align==='left'?x:x-width,box={left:left-2,top:a[1]+dy-8,width:width+4,height:16};
+      if(box.left<p.left||box.top<p.top||box.left+box.width>p.left+p.width||box.top+box.height>p.top+p.height)continue;
+      if(s.labels.some(l=>box.left<l.x+l.width&&box.left+box.width>l.x&&box.top<l.y+l.height&&box.top+box.height>l.y))continue;
+      if([...curve,...worldlines,...axesBox,...guides].some(v=>clipLine(...v,box)))continue;
+      richText(s,text,x,a[1]+dy,colors[2],11,align);return;
+    }
+  }
+}
 function eventBounds(f,key){const a=coord(selected(f,key),f.params.length),span=Math.max(.4,Math.min(1.4,(context(f).bounds[3]-context(f).bounds[2])*.18));return [a[0]-span,a[0]+span,a[1]-span,a[1]+span];}
 function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   const L=f.params.length,g=f.geometry[key],b=beta(f.params),base=s.w<470||f.graph||f.thumbnail?context(f).narrowBounds:context(f).bounds;
   const bounds=zoom?eventBounds(f,key):base,m=mapPanel(s,p,bounds,key),primed=key==='moving';
   axes(s,m,p,{title:f.graph?'':primed?'S′ · moving frame':'S · ground frame',x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',labels:!f.thumbnail});
-  clipPanel(s,p,()=>{
   // The other frame's axes are transformed basis vectors, not an ordinary rotation.
   const transform=primed?b:invert(b),ex=coord(boost({t:0,x:L},transform),L),et=coord(boost({t:L/C,x:0},transform),L);
   const range=Math.max(...bounds.map(Math.abs))*4+4;
+  clipPanel(s,p,()=>{
   for(const v of [ex,et])line(s,m,p,v.map(x=>-range*x),v.map(x=>range*x),'#8ab9ff70',1,[4,4]);
   if(cone){const origins=f.params.scenario==='flashes'||f.params.scenario==='objects'&&g.events.length?g.events.map(e=>coord(e,L)):[zoom?coord(selected(f,key),L):[0,0]];
     for(const a of origins)for(const sign of [-1,1])line(s,m,p,[a[0]-range,a[1]-sign*range],[a[0]+range,a[1]+sign*range],'#e9bb8840',1);}
@@ -75,7 +91,9 @@ function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   for(const record of namedEvents(f)){const a=coord(key==='moving'?boost(record.event,beta(f.params)):record.event,L);
   if(inside(m,p,...a,4)){s.ctx.strokeStyle='#e8f2ff';s.ctx.beginPath();s.ctx.arc(m.x(a[0]),m.y(a[1]),7,0,2*Math.PI);s.ctx.stroke();}}
   });
-  if(!f.thumbnail&&!f.graph)for(const record of namedEvents(f))eventLetter(s,f,p,m,key,record);
+  const curve=calibration&&!zoom&&!f.thumbnail&&!f.graph?f.geometry.calibration[key].slice(1).map((b,i)=>{const a=f.geometry.calibration[key][i];return [m.x(a.x/L),m.y(C*a.t/L),m.x(b.x/L),m.y(C*b.t/L)];}):[];
+  if(curve.length)intervalCaption(s,f,p,m,key,curve,[ex,et].map(v=>[m.x(-range*v[0]),m.y(-range*v[1]),m.x(range*v[0]),m.y(range*v[1])]).concat([[-1,-1],[1,-1]].map(([a,c])=>[m.x(-range*a),m.y(-range*c),m.x(range*a),m.y(range*c)])));
+  if(!f.thumbnail&&!f.graph)for(const record of namedEvents(f))eventLetter(s,f,p,m,key,record,curve);
   return m;
 }
 function spatial(s,f,p){
@@ -117,20 +135,25 @@ export function paramVisible(spec,p){const k=spec.key,sc=p.scenario;
   if(k==='widthRatio')return ['rectangle','rocket','barn'].includes(p.objectType);
   return p.objectType==='flash'&&['emissionTime','offsetX'].includes(k);
 }
+// Pane geometry shared by drawing and the zoom chips, which sit just under the panes.
+function layoutFor(s,f){
+  const calc=['four-vector','tensor'].includes(f.params.scenario),spatialZoom=f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario);
+  const hasEvents=!calc&&!spatialZoom&&namedEvents(f).length>0,ps=panels(s,{bottom:hasEvents?204:130,top:f.closeup?78:44,maxHeight:280,maxStacked:160}),last=ps[s.w<470?1:0],calcTop=f.closeup?85:55,calcHeight=Math.min(s.h-calcTop-105,300);
+  return {calc,spatialZoom,hasEvents,ps,calcTop,calcHeight,chipTop:(calc?calcTop+calcHeight:last.top+last.height)+4};
+}
 export const view={closeups,graphs,paramVisible,
   mount(shell){shell.scene.style.minHeight='620px';shell.scene.style.flexBasis='620px';},
   graphDescriptors:p=>graphs.filter(g=>g.id==='four-vector'?p.scenario==='four-vector':g.id==='tensor'?p.scenario==='tensor':true).map(g=>g.id==='clocks'?{...g,window:10*gamma(p.beta)*p.length/C}:g),
-  key:f=>['four-vector','tensor'].includes(f.params.scenario)?'Blue: S \u00b7 warm: S\u2032':f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario)?'Spatial slice'+(f.geometry.wavefronts.some(a=>a.visible)||f.geometry.ground.worldlines.some(a=>a.kind==='light')?' \u00b7 warm: light':''):'Worldlines'+(f.geometry.ground.worldlines.some(a=>a.kind==='light')?' \u00b7 warm: light':'')+' \u00b7 dashed: other-frame axes',
-  closeupAnchors:s=>({event:{x:s.w*.28,y:s.h-74},transform:{x:s.w*.73,y:s.h-74}}),
+  key:f=>['four-vector','tensor'].includes(f.params.scenario)?'Blue: S \u00b7 warm: S\u2032':f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario)?'Spatial slice'+(f.geometry.wavefronts.some(a=>a.visible)||f.geometry.ground.worldlines.some(a=>a.kind==='light')?' \u00b7 warm: light':''):'Worldlines'+(f.geometry.ground.worldlines.some(a=>a.kind==='light')?' \u00b7 warm: light':'')+' \u00b7 dashed: other-frame axes'+(f.breakdown?' \u00b7 green: c\u00b2t\u00b2 \u2212 x\u00b2 = L\u00b2':''),
+  closeupAnchors:(s,f)=>{const l=layoutFor(s,f),xs=s.w<470||l.calc?[s.w*.27,s.w*.73]:l.ps.map(a=>a.left+a.width/2);return {event:{x:xs[0],y:l.chipTop},transform:{x:xs[1],y:l.chipTop}};},
   draw(s,f){
     if(f.thumbnail||s.w<200||s.h<180){f={...f,thumbnail:true,breakdown:false};drawDiagram(s,f,{left:28,top:28,width:s.w-45,height:s.h-58},'ground',{cone:true});return;}
-    const hasEvents=!['four-vector','tensor'].includes(f.params.scenario)&&!(f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario))&&namedEvents(f).length>0;
-    const ps=panels(s,{bottom:hasEvents?204:130,top:f.closeup?78:44});
-    if(['four-vector','tensor'].includes(f.params.scenario))calculator(s,f,{left:40,top:f.closeup?85:55,width:s.w-65,height:s.h-(f.closeup?190:160)});
+    const layout=layoutFor(s,f),{hasEvents,ps}=layout;
+    if(['four-vector','tensor'].includes(f.params.scenario))calculator(s,f,{left:40,top:layout.calcTop,width:s.w-65,height:layout.calcHeight});
     else if(f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario))spatial(s,f,{left:40,top:85,width:s.w-65,height:s.h-190});
     else for(const [i,k] of ['ground','moving'].entries())drawDiagram(s,f,ps[i],k,{cone:true,calibration:f.breakdown,zoom:!!f.closeup});
-    if(hasEvents)eventReadouts(f).forEach((text,i)=>s.text(text,s.w/2,s.h-184+i*18,'#b8cce4',s.w<470?10:11));
-    if(f.closeup==='transform')s.text(`\u03b2 = ${fmt(f.params.beta)}    \u03b3 = ${fmt(f.sample.gamma)}`,s.w/2,s.h-103,'#bfd0e7',s.w<470?10:12);
+    if(hasEvents)eventReadouts(f).forEach((text,i)=>s.text(text,s.w/2,layout.chipTop+46+i*18,'#b8cce4',s.w<470?10:11));
+    if(f.closeup==='transform')s.text(`\u03b2 = ${fmt(f.params.beta)}    \u03b3 = ${fmt(f.sample.gamma)}`,s.w/2,layout.chipTop+46+4*18+14,'#bfd0e7',s.w<470?10:12);
     s.camera={bounds:[...(s.w<470?context(f).narrowBounds:context(f).bounds)],zoom:f.closeup};s.snap=false;
   },
   equations(f){const a=context(f).selected,b=boost(a,beta(f.params)),L=f.params.length,g=f.sample.gamma;
