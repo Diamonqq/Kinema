@@ -262,3 +262,9 @@ caption at narrow widths. The gallery shows both bodies on their own incoming
 rays, preserving their impact offset rather than drawing one misleading ray.
 Graph chips have names only, panel headers carry units, and each time-series
 window follows the actual encounter duration. All visible text uses US spelling.
+
+Encounter and momenta chips avoid the swept discs of both bodies over the full
+forecast in both frames. A hard-contact preview uses the exact impulse event,
+so the two contact radii just touch (tested to 1e-9 m); spring-contact previews
+explicitly identify compression of the contact discs. The 0.1 s forecast samples
+remain the displayed trajectories, without substituting sample times for contact.

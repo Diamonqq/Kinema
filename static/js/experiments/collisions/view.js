@@ -66,9 +66,28 @@ function potential(s,f){
  const points=Array.from({length:160},(_,i)=>{const r=min+(max-min)*i/159;return {r,u:interactionAt(p,r).potential+L*L/(2*mu*r*r)};});
  plot(s,points,{xkey:'r',ykey:'u',energy:E,cursor:{x:Math.max(min,f.sample.separation)},label:'r (m) · Ueff (J)'+(hard?' · wall at R':'')});
 }
+// Hard contact is an event, not the nearest 0.1 s forecast sample.
+export function encounterPreview(params,rows){
+ const nearest=rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b);
+ const event=rows.find(row=>row.geometry.contact)?.geometry.contact;
+ if(params.interaction!=='hard'&&params.secondInteraction!=='hard'||!event)return nearest;
+ const sim=model.create(params);sim.step(event.t);
+ return {t:sim.t,sample:sim.sample(),geometry:sim.geometry()};
+}
+export function forecastObstacles(panes,rows){
+ const obstacles=[];
+ for(const [i,frame] of ['lab','cm'].entries()){
+  const {map,rect}=panes[i];obstacles.push({x:rect.x,y:rect.y-22,width:rect.w,height:46});
+  for(const row of rows)for(const q of row.geometry.frames[frame]){
+   const radius=Math.max(5,q.radius*map.scale);
+   obstacles.push({x:map.x(q.x)-radius,y:map.y(q.y)-radius,width:2*radius,height:2*radius});
+  }
+ }
+ return obstacles;
+}
 function encounter(s,f,data){
  title(s,'The encounter · common physical scale');if(!data.done)return;
- const nearest=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b),R=f.params.secondInteraction==='hard'?f.params.secondRange:f.params.radius,
+ const nearest=encounterPreview(f.params,data.rows),R=f.params.secondInteraction==='hard'?f.params.secondRange:f.params.radius,
    extent=Math.max(R*1.9,nearest.sample.separation*1.8,.4),g=f.geometry;
  const map=camera(s,[-extent,extent,-extent*.8,extent*.8],75,65),b=g.frames.cm;
  linePath(s,data.rows.filter(row=>row.sample.separation<extent*2.2).map(row=>row.geometry.frames.cm[0]),map,C.blue+'50');
@@ -123,7 +142,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   if(!data.done){s.text(data.error||'Preparing the fixed 60 s motion window…',s.w/2,s.h*.55,C.muted,s.w<380?11:13);return;}
   const panes=comparisonPanels(s,data.rows),first=data.rows[0].geometry.frames.lab,nearest=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b).geometry.frames.lab;
   const start=first[0],encounterPoint={x:(nearest[0].x+nearest[1].x)/2,y:(nearest[0].y+nearest[1].y)/2},lab=panes[0].map;
-  targetChips(s,{contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y),offsets:[[45,-65],[70,35],[-65,35],[0,55]]},momentum:{x:lab.x(start.x),y:lab.y(start.y),offsets:[[0,-65],[30,40],[100,-45],[100,35]]}},['potential','scattering','cross-section'],owner);
+  targetChips(s,{contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y),offsets:[[45,-65],[70,35],[-65,35],[0,55]]},momentum:{x:lab.x(start.x),y:lab.y(start.y),offsets:[[0,-65],[30,40],[100,-45],[100,35]]}},['potential','scattering','cross-section'],owner,forecastObstacles(panes,data.rows));
   for(const [i,frame] of ['lab','cm'].entries()){
    const {rect,map}=panes[i],b=g.frames[frame];
    s.text(frame==='lab'?'Laboratory':'Center of mass',rect.x+rect.w/2,rect.y-8,C.pale,12);
@@ -152,7 +171,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   String.raw`Q=${tex(q.dissipated)}\;\mathrm J`];},
  closeupEquation(f){let q=f.sample,r=f.geometry.relative;const p=f.params;
   if(f.closeup==='contact'){
-   const data=trajectory(p);if(data.done&&data.rows.length){const nearest=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b),R=p.secondInteraction==='hard'?p.secondRange:p.radius,extent=Math.max(R*1.9,nearest.sample.separation*1.8,.4);
+   const data=trajectory(p);if(data.done&&data.rows.length){const nearest=encounterPreview(p,data.rows),R=p.secondInteraction==='hard'?p.secondRange:p.radius,extent=Math.max(R*1.9,nearest.sample.separation*1.8,.4);
     if(!f.geometry.frames.cm.every(b=>Math.abs(b.x)<extent&&Math.abs(b.y)<extent*.8)){q=nearest.sample;r=nearest.geometry.relative;}}
   }
   const normal=(r.x*r.vx+r.y*r.vy)/q.separation;

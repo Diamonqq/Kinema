@@ -13,18 +13,20 @@ export function sceneHeight(shell,narrowHeight,closeup){
 }
 // Target chips use fixed forecast landmarks, not the moving body. Nonphysical
 // views share a measured wrapping row. Sizes remain entirely kit controlled.
-export function targetChips(s,targets,rowIds,shell){
+export function targetChips(s,targets,rowIds,shell,obstacles=[]){
  const sizes=id=>{const b=shell?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
  const anchors={},boxes=[];let row=[],width=0,y=12;
  const flush=()=>{let x=(s.w-width)/2;for(const id of row){const b=sizes(id);anchors[id]={x:x+b.w/2,y};boxes.push({x,y,width:b.w,height:b.h});x+=b.w+6;}row=[];width=0;y+=38;};
  for(const id of rowIds){const b=sizes(id);if(row.length&&width+6+b.w>s.w-16)flush();width+=b.w+(row.length?6:0);row.push(id);}if(row.length)flush();
  for(const [id,p] of Object.entries(targets)){
-  const b=sizes(id),candidates=p.offsets||[[0,-48],[65,28],[-65,28],[0,54],[90,-42],[-90,-42]];
+  const b=sizes(id),preferred=p.offsets||[[0,-48],[65,28],[-65,28],[0,54],[90,-42],[-90,-42]];
+  const search=[];if(obstacles.length)for(let yy=y+8;yy<=s.h-100-b.h;yy+=8)for(let xx=8;xx<=s.w-b.w-8;xx+=8)search.push([xx+b.w/2-p.x,yy-p.y]);
+  search.sort((a,b)=>Math.hypot(...a)-Math.hypot(...b));const candidates=[...preferred,...search];
   let box;
   for(const [dx,dy] of candidates){
    const x=Math.max(8,Math.min(s.w-b.w-8,p.x+dx-b.w/2)),yy=Math.max(y+8,Math.min(s.h-100-b.h,p.y+dy));
    const q={x,y:yy,width:b.w,height:b.h};
-   if(!boxes.some(a=>a.x<q.x+q.width+8&&a.x+a.width+8>q.x&&a.y<q.y+q.height+8&&a.y+a.height+8>q.y)){box=q;break;}
+   if(![...boxes,...obstacles].some(a=>a.x<q.x+q.width+8&&a.x+a.width+8>q.x&&a.y<q.y+q.height+8&&a.y+a.height+8>q.y)){box=q;break;}
   }
   if(!box)box={x:8,y:y+Object.keys(anchors).length*38,width:b.w,height:b.h};
   anchors[id]={x:box.x+b.w/2,y:box.y};boxes.push(box);
