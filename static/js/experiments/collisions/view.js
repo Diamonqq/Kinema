@@ -242,6 +242,8 @@ export function forecastSegments(panes,rows){
  }
  return segments;
 }
+// Height the scattering and cross-section plots use: their x title rises this much clear of the caption below (two lines when narrow).
+export const graphHeight=s=>s.h-(s.w<460?24:8);
 function encounter(s,f,data){
  title(s,'The encounter · common physical scale');if(!data.done)return;
  const nearest=encounterPreview(f.params,data.rows),R=f.params.secondInteraction==='hard'?f.params.secondRange:f.params.radius,
@@ -298,7 +300,8 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   if(f.closeup==='scattering'||f.closeup==='cross-section'){
    const cross=f.closeup==='cross-section';title(s,cross?'Classical differential cross section':'Scattering and the impact parameter');const curve=curveFor(f.params,curveLifecycle(f));
    const points=cross?sectionPoints(f.params,curve.points).map(p=>({x:p.angle,y:p.sigma})):curve.points.filter(p=>p.complete).map(p=>({x:p.b,y:Math.abs(p.angle)}));
-   plot(s,points,{zero:cross,label:cross?'|θCM| (rad)':'Initial b (m)',ytitle:cross?'dσ/dΩ · m²/sr':'|θCM| · rad',cursor:cross?null:{x:Math.abs(f.params.b),y:Math.abs(f.sample.scatteringAngle)}});
+   // The plot (and its x title) rise to leave the caption below clear room; a narrow stage wraps it onto two lines.
+   plot(Object.create(s,{h:{value:graphHeight(s)}}),points,{zero:cross,label:cross?'|θCM| (rad)':'Initial b (m)',ytitle:cross?'dσ/dΩ · m²/sr':'|θCM| · rad',cursor:cross?null:{x:Math.abs(f.params.b),y:Math.abs(f.sample.scatteringAngle)}});
    if(!curve.done)s.text('Computing '+curve.points.length+' / '+curve.total,s.w/2,64,C.muted,11);return;
   }
   if(!data.done){s.text(data.error||'Preparing the fixed 60 s motion window…',s.w/2,s.h*.55,C.muted,s.w<380?11:13);return;}
