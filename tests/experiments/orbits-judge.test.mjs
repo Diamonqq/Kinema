@@ -18,7 +18,7 @@ test('Breakdown defines tangential speed as a scalar magnitude and gives force d
  const params=Object.fromEntries(model.params.map(d=>[d.key,d.value])),sim=model.create(params),frame={params,sample:sim.sample(),geometry:sim.geometry()};
  const equations=view.equations(frame).join(' ');
  assert.ok(equations.includes(String.raw`v_t=\frac{|\mathbf r\times\mathbf v|}{r}`));
- assert.ok(equations.includes(String.raw`F_r=-6.67\times10^{10}\;\mathrm N`));assert.ok(!equations.includes('F_0'));
+ assert.ok(equations.includes(String.raw`F_r=-66.7\;\mathrm{GN}`));assert.ok(!equations.includes('F_0'));
  const reverse=model.create({...params,vy0:-params.vy0}),rev=view.equations({...frame,sample:reverse.sample(),geometry:reverse.geometry()}).join(' ');
  assert.ok(rev.includes('=1.90'));assert.ok(rev.includes(String.raw`|\dot A|`));
 });

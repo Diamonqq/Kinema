@@ -1,5 +1,6 @@
 import {runBatches} from './work.js';
 import {easeCamera} from '../kit/stage.js';
+import {niceTicks,tickLabel} from '../kit/format.js';
 // Shared by these two experiments only. Coordinates are SI; plot pixels are uniform.
 export const C={blue:'#8ab9ff',pale:'#e1e5ed',green:'#b0d8ad',amber:'#e9bb88',purple:'#bcabef',muted:'#8496ae',grid:'#334256'};
 const scientific=n=>Math.abs(n)>=1e5||Math.abs(n)>0&&Math.abs(n)<.001;
@@ -17,31 +18,45 @@ export function sceneHeight(shell,narrowHeight,closeup,cap=false){
 // Target chips use fixed forecast landmarks, not the moving body. Nonphysical
 // views share a measured wrapping row. Sizes remain entirely kit controlled.
 const chipLayouts=new WeakMap(),noObstacles=Object.freeze([]);
-export function targetChips(s,targets,rowIds,shell,obstacles=noObstacles){
- const signature=JSON.stringify([s.w,s.h,targets,rowIds]),cached=chipLayouts.get(s);
+// Does the segment (x0,y0)-(x1,y1) cross the padded rectangle? (Liang-Barsky clipping.)
+export function segmentHitsRect(x0,y0,x1,y1,r,pad=2){
+ const dx=x1-x0,dy=y1-y0;let lo=0,hi=1;
+ for(const [p,q] of [[-dx,x0-(r.x-pad)],[dx,r.x+r.width+pad-x0],[-dy,y0-(r.y-pad)],[dy,r.y+r.height+pad-y0]]){
+  if(Math.abs(p)<1e-10){if(q<0)return false;continue;}const t=q/p;if(p<0)lo=Math.max(lo,t);else hi=Math.min(hi,t);if(lo>hi)return false;
+ }return true;
+}
+// `height` is the nominal layout height (so chips do not depend on the stage's flexible height); `avoid` lists
+// rectangles (labels, titles) that leader lines must route around; `floor` is the lowest chip bottom.
+export function targetChips(s,targets,rowIds,shell,obstacles=noObstacles,{height=s.h,avoid=noObstacles,floor=height-100}={}){
+ const signature=JSON.stringify([s.w,height,floor,targets,rowIds,avoid]),cached=chipLayouts.get(s);
  const draw=layout=>{
   s.chipRects=layout.boxes;s.targetAnchors=layout.anchors;
   for(const [id,p] of Object.entries(targets)){const a=layout.anchors[id],b=layout.targetBoxes[id];s.line(p.x,p.y,a.x,b.y+(p.y>b.y?b.height:0),C.grid,1);}
   return layout.anchors;
  };
  if(cached&&cached.signature===signature&&cached.params===shell?.params&&cached.obstacles===obstacles)return draw(cached);
- const targetBoxes={};
+ const targetBoxes={},leaders=[];
  const sizes=id=>{const b=shell?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
  const anchors={},boxes=[];let row=[],width=0,y=12;
  const flush=()=>{let x=(s.w-width)/2;for(const id of row){const b=sizes(id);anchors[id]={x:x+b.w/2,y};boxes.push({x,y,width:b.w,height:b.h});x+=b.w+6;}row=[];width=0;y+=38;};
  for(const id of rowIds){const b=sizes(id);if(row.length&&width+6+b.w>s.w-16)flush();width+=b.w+(row.length?6:0);row.push(id);}if(row.length)flush();
  for(const [id,p] of Object.entries(targets)){
   const b=sizes(id),preferred=p.offsets||[[0,-48],[65,28],[-65,28],[0,54],[90,-42],[-90,-42]];
-  const search=[];if(obstacles.length)for(let yy=y+8;yy<=s.h-100-b.h;yy+=8)for(let xx=8;xx<=s.w-b.w-8;xx+=8)search.push([xx+b.w/2-p.x,yy-p.y]);
+  const search=[];if(obstacles.length)for(let yy=y+8;yy<=floor-b.h;yy+=8)for(let xx=8;xx<=s.w-b.w-8;xx+=8)search.push([xx+b.w/2-p.x,yy-p.y]);
   search.sort((a,b)=>Math.hypot(...a)-Math.hypot(...b));const candidates=[...preferred,...search];
   let box;
-  for(const [dx,dy] of candidates){
-   const x=Math.max(8,Math.min(s.w-b.w-8,p.x+dx-b.w/2)),yy=Math.max(y+8,Math.min(s.h-100-b.h,p.y+dy));
-   const q={x,y:yy,width:b.w,height:b.h};
-   if(![...boxes,...obstacles].some(a=>a.x<q.x+q.width+8&&a.x+a.width+8>q.x&&a.y<q.y+q.height+8&&a.y+a.height+8>q.y)){box=q;break;}
+  const clear=q=>!leaders.some(l=>segmentHitsRect(l[0],l[1],l[2],l[3],q,0))&&![...boxes,...obstacles].some(a=>a.x<q.x+q.width+8&&a.x+a.width+8>q.x&&a.y<q.y+q.height+8&&a.y+a.height+8>q.y);
+  const leaderClear=q=>![...avoid,...boxes].some(a=>segmentHitsRect(p.x,p.y,q.x+q.width/2,q.y+(p.y>q.y?q.height:0),a));
+  for(const strict of [true,false]){
+   for(const [dx,dy] of candidates){
+    const x=Math.max(8,Math.min(s.w-b.w-8,p.x+dx-b.w/2)),yy=Math.max(y+8,Math.min(floor-b.h,p.y+dy));
+    const q={x,y:yy,width:b.w,height:b.h};
+    if(clear(q)&&(!strict||leaderClear(q))){box=q;break;}
+   }
+   if(box)break;
   }
   if(!box)box={x:8,y:y+Object.keys(anchors).length*38,width:b.w,height:b.h};
-  anchors[id]={x:box.x+b.w/2,y:box.y};boxes.push(box);
+  anchors[id]={x:box.x+b.w/2,y:box.y};boxes.push(box);leaders.push([p.x,p.y,box.x+b.w/2,box.y+(p.y>box.y?box.height:0)]);
   targetBoxes[id]=box;
  }
  const layout={signature,params:shell?.params,obstacles,anchors,boxes,targetBoxes};chipLayouts.set(s,layout);return draw(layout);
@@ -84,7 +99,16 @@ export function label(s,text,x,y,color=C.pale){
  return false;
 }
 export function vector(s,x,y,dx,dy,color,text){if(Math.hypot(dx,dy)<.05)return;s.arrow(x,y,x+dx,y+dy,color,2);if(text)label(s,text,x+dx+Math.sign(dx||1)*12,y+dy-10,color);}
-export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',scatter=false,zero=false,pointColor=()=>C.blue,tickFormat=fmt}={}){
+// Shared graph axes: round ticks, faint gridlines, a brighter zero line and 9 px dim tick text.
+const GRID='rgba(160,180,210,0.10)',ZERO='rgba(160,180,210,0.24)';
+export function axes(s,{left,right,top,bottom,xmin,xmax,lo,hi,x,y,xunit=''}){
+ const yt=niceTicks(lo,hi,Math.max(2,Math.floor((bottom-top)/34))),xt=niceTicks(xmin,xmax,Math.max(2,Math.floor((right-left)/64)));
+ for(const v of yt.ticks){const py=y(v);if(py<top-.5||py>bottom+.5)continue;s.line(left,py,right,py,v===0?ZERO:GRID,1);s.text(tickLabel(v,yt.step),left-5,py,C.muted,9,'right');}
+ for(const v of xt.ticks){const px=x(v);if(px<left-.5||px>right+.5)continue;s.line(px,top,px,bottom,v===0?ZERO:GRID,1);s.text(tickLabel(v,xt.step)+xunit,px,bottom+13,C.muted,9);}
+ s.line(left,top,left,bottom,C.grid);s.line(left,bottom,right,bottom,C.grid);
+ return {xticks:xt.ticks,yticks:yt.ticks};
+}
+export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',scatter=false,zero=false,pointColor=()=>C.blue}={}){
  const compact=s.h<220,left=76,right=s.w-28,top=compact?32:90,bottom=s.h-(compact?32:scatter?84:68),values=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
  if(!values.length){s.text('No completed points yet',s.w/2,s.h/2,C.muted,13);return;}
  let xmin=Math.min(...values.map(p=>p[xkey])),xmax=Math.max(...values.map(p=>p[xkey])),lo=Math.min(...values.map(p=>p[ykey])),hi=Math.max(...values.map(p=>p[ykey]));
@@ -99,9 +123,7 @@ export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',
  const span=Math.max(1e-9,hi-lo),xspan=Math.max(.01,xmax-xmin);lo-=span*.12;hi+=span*.12;
  if(zero&&values.every(p=>p[ykey]>=0)&&!(energy<0))lo=0;
  const x=v=>left+(v-xmin)/xspan*(right-left),y=v=>bottom-(v-lo)/(hi-lo)*(bottom-top);
- s.line(left,top,left,bottom,C.grid);s.line(left,bottom,right,bottom,C.grid);
- s.text(tickFormat(xmin),left,bottom+17,C.muted,10);s.text(tickFormat(xmax),right,bottom+17,C.muted,10);
- s.text(tickFormat(hi),left-5,top,C.muted,10,'right');s.text(tickFormat(lo),left-5,bottom,C.muted,10,'right');
+ axes(s,{left,right,top,bottom,xmin,xmax,lo,hi,x,y});
  if(scatter)values.forEach(p=>s.circle(x(p[xkey]),y(p[ykey]),2.5,pointColor(p)));else linePath(s,values.map(p=>({x:p[xkey],y:p[ykey]})),{x,y},C.blue,2);
  if(Number.isFinite(energy)){s.line(left,y(energy),right,y(energy),C.amber,1.5);s.text('E',right-5,y(energy)-10,C.amber,12);}
  if(cursor&&cursor.x>=xmin&&cursor.x<=xmax){s.line(x(cursor.x),top,x(cursor.x),bottom,C.pale,1);if(Number.isFinite(cursor.y)&&cursor.y>=lo&&cursor.y<=hi)s.circle(x(cursor.x),y(cursor.y),4,C.pale);}

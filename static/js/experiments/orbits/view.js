@@ -1,8 +1,13 @@
 import {num as fmt,texNum as tex} from '../kit/format.js';
 import {model,G} from './model.js';
 import {startSection,crossingElapsed} from './section.js';
-import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sectionTick,targetChips,sceneHeight} from './scene.js';
+import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,axes,label,targetChips,sceneHeight} from './scene.js';
 export const ENERGY_UNIT=1e12,FORCE_UNIT=1e11;
+// Scaled masses give huge forces; show them with an SI prefix (66.7 GN, not 6.67×10¹⁰ N).
+const SI=[['',''],['k','10³'],['M','10⁶'],['G','10⁹'],['T','10¹²']];
+export const forceScale=value=>{const a=Math.abs(value);return a>=1e3?Math.min(4,Math.floor(Math.log10(a)/3)):0;};
+export const forceTex=value=>{const n=forceScale(value);return tex(value/10**(3*n))+String.raw`\;\mathrm{${SI[n][0]}N}`;};
+export const massNote=value=>{const n=forceScale(value);return 'Scaled masses · M₀ = 10¹² kg'+(n?' · 1 '+SI[n][0]+'N = '+SI[n][1]+' N':'');};
 export const graphs=[
  {id:'radius',label:'Separation',unit:'m',series:[{key:'r',label:'r',color:C.blue}]},
  {id:'energy',label:'Energy',unit:'E₀ (10¹² J)',kind:'custom',series:[{key:'energy',label:'E',color:C.amber},{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.green}]},
@@ -37,7 +42,7 @@ function drawSection(s,f,compact=false){
  if(state.error){s.text('Section stopped: '+state.error,s.w/2,s.h/2,C.muted,11);return;}
  // Wait for the bounded integration before drawing axes: their final bounds
  // stay fixed while playback moves the bright time selection through the cloud.
- plot(s,state.points,{xkey:'x',ykey:'vx',scatter:true,tickFormat:sectionTick,
+ plot(s,state.points,{xkey:'x',ykey:'vx',scatter:true,
   pointColor:p=>crossingElapsed(p)<=f.t?C.blue:C.blue+'45',
   label:count+' crossings · '+Math.round(state.time)+' s integrated'});
 }
@@ -127,11 +132,10 @@ export const view={graphs,closeups,
    const all=data.rows.map(row=>row.sample),values=all.flatMap(p=>[p.energy/ENERGY_UNIT,p.kinetic/ENERGY_UNIT,p.potential/ENERGY_UNIT]),lo=Math.min(0,...values),hi=Math.max(1e-9,...values),span=hi-lo,left=76,right=s.w-28,top=32,bottom=s.h-32,
     window=Math.min(60,d.window||60),start=Math.max(0,Math.min(60-window,f.t-window*.75)),end=start+window,
     rows=all.filter(p=>p.t>=start&&p.t<=end),map={x:t=>left+(right-left)*(t-start)/window,y:e=>bottom-(bottom-top)*(e-lo)/span};
-   s.line(left,top,left,bottom,C.grid);s.line(left,bottom,right,bottom,C.grid);
-   s.text(fmt(hi),left-5,top,C.muted,10,'right');s.text(fmt(lo),left-5,bottom,C.muted,10,'right');
+   axes(s,{left,right,top,bottom,xmin:start,xmax:end,lo,hi,x:map.x,y:map.y,xunit:' s'});
    for(const v of d.series)linePath(s,rows.map(p=>({x:p.t,y:p[v.key]/ENERGY_UNIT})),map,v.color,1.5);
    if(f.t<=end)s.line(map.x(f.t),top,map.x(f.t),bottom,C.pale,1);
-   s.text(fmt(start)+' s',left,bottom+16,C.muted,10);s.text(fmt(end)+' s',right,bottom+16,C.muted,10,'right');return;
+   return;
   }
   if(d.id==='poincare'){drawSection(s,f,true);return;}
   const p=f.geometry.effectivePotential;if(p.available===false){s.text('No exact N-body radial reduction',s.w/2,s.h/2,C.muted,11);return;}
@@ -204,10 +208,17 @@ export const view={graphs,closeups,
   if(f.breakdown){
    s.physicsSegments=breakdownSegments(f,map,s.w);s.labelObstacles=s.physicsSegments.flatMap(a=>{const count=Math.max(1,Math.ceil(Math.hypot(a.ex-a.x,a.ey-a.y)/6));return Array.from({length:count+1},(_,i)=>({x:a.x+(a.ex-a.x)*i/count-3,y:a.y+(a.ey-a.y)*i/count-3,width:6,height:6}));});
    sectors(s,f,data,map);const x=map.x(b.x),y=map.y(b.y),r=g.relative,mag=q.r;
-   s.line(map.x(a.x),map.y(a.y),x,y,C.muted,1);label(s,'r',map.x((a.x+b.x)/2)+24*r.y/mag,map.y((a.y+b.y)/2)+24*r.x/mag,C.muted);
+   s.line(map.x(a.x),map.y(a.y),x,y,C.muted,1);
+   // The r label sits beside the line's midpoint, clear of the orbit ring.
+   const mx=(map.x(a.x)+x)/2,my=(map.y(a.y)+y)/2,ring=rows.map(p=>(p.geometry.frames[frame]||p.geometry.bodies)[1]).map(p=>[map.x(p.x),map.y(p.y)]);
+   const side=[12,-12,18,-18,26,-26].find(k=>ring.every(([px,py])=>Math.hypot(px-(mx+k*r.y/mag),py-(my+k*r.x/mag))>9))??12;
+   label(s,'r',mx+side*r.y/mag,my+side*r.x/mag,C.muted);
    const factor=Math.min(25,s.w*.16/Math.max(q.speed,1)),v=values(f),nx=r.x/mag,ny=r.y/mag;
    const velocity=f.params.frame==='rotating'?{vx:v.vr,vy:v.vt}:r;
-   if(v.force>0){s.arrow(x,y,x-nx*45,y+ny*45,C.green,2);label(s,'Fᵣ',x-nx*45-ny*20,y+ny*45-nx*20,C.green);}
+   if(v.force>0){
+    // Label at the arrow tip, offset sideways toward the body's direction of travel (away from the swept sector).
+    const tx=x-nx*45,ty=y+ny*45,k=-(Math.sign(v.vt)||1)*15;s.arrow(x,y,tx,ty,C.green,2);label(s,'Fᵣ',tx+k*ny-nx*3,ty+k*nx+ny*3,C.green);
+   }
    const vx=x+velocity.vx*factor,vy=y-velocity.vy*factor;
    s.arrow(x,y,vx,vy,C.blue,2);label(s,'v',vx+18,vy-22,C.blue);
    if(s.w>460&&Math.abs(v.vr)>1e-6&&Math.abs(v.vt)>1e-6){
@@ -216,12 +227,12 @@ export const view={graphs,closeups,
     s.arrow(x,y,tx,ty,C.purple,2);label(s,'vₜ',tx-22,ty+18,C.purple);
    }
   }
-  s.text('Scaled masses · M₀ = 10¹² kg',s.w/2,s.h-66,C.muted,11);
+  s.text(massNote(values(f).force),s.w/2,s.h-66,C.muted,11);
   caption(s,q.status!=='running'?'Close encounter · point-mass limit':data.done?'60 s forecast · brighter trail = elapsed':'Preparing paths · fixed full-orbit envelope');
  },
  equations(f){const v=values(f),q=f.sample;return [
   String.raw`F_r=-\frac{Gm_1m_2}{r^2}\left(1+\frac{\alpha}{r}\right)`,
-  String.raw`F_r=${tex(-v.force)}\;\mathrm N`,
+  String.raw`F_r=${forceTex(-v.force)}`,
   String.raw`v_r=\mathbf v\cdot\hat{\mathbf r}=${tex(v.vr)}\;\mathrm{m/s}`,
   String.raw`v_t=\frac{|\mathbf r\times\mathbf v|}{r}=${tex(Math.abs(v.vt))}\;\mathrm{m/s}`,
   String.raw`|\dot A|=\frac{rv_t}{2}=${tex(Math.abs(q.areaRate))}\;\mathrm{m^2/s}`];},

@@ -63,14 +63,20 @@ export function impactCaption(panel,initial,b){
  const bar={x:Math.max(rect.x+12,map.x(initial[0].x)-9),y:Math.min(map.y(initial[0].y),map.y(initial[1].y)),bottom:Math.max(map.y(initial[0].y),map.y(initial[1].y))};
  return {text,x:Math.max(rect.x+width/2+6,Math.min(rect.x+rect.w-width/2-6,bar.x)),y:Math.max(rect.y+12,bar.y-18),width,bar};
 }
+// The two frames depend only on the stage width, never its flexible height, so the apparatus and the chips
+// beside it stay put when Breakdown or Graphs change the stage height. Equal side margins keep them centered.
+export function frameLayout(w){
+ const narrow=w<460,top=narrow?78:70,height=(narrow?620:420)-top-90;
+ return {narrow,top,height,bottom:top+height};
+}
 export function comparisonPanels(s,rows){
- const key=s.w+':'+s.h,cached=panelCache.get(rows);if(cached?.key===key)return cached.panes;
- const narrow=s.w<460,top=150,height=s.h-top-90,gap=52;
+ const key=String(s.w),cached=panelCache.get(rows);if(cached?.key===key)return cached.panes;
+ const {narrow,top,height}=frameLayout(s.w),gap=52,m=narrow?12:16,pw=(s.w-3*m)/2;
  const rects=narrow?
-  [{x:5,y:top,w:s.w-10,h:(height-gap)/2},{x:5,y:top+(height+gap)/2,w:s.w-10,h:(height-gap)/2}]:
-  [{x:5,y:top,w:s.w/2-12,h:height},{x:s.w/2+7,y:top,w:s.w/2-12,h:height}];
+  [{x:m,y:top,w:s.w-2*m,h:(height-gap)/2},{x:m,y:top+(height+gap)/2,w:s.w-2*m,h:(height-gap)/2}]:
+  [{x:m,y:top,w:pw,h:height},{x:2*m+pw,y:top,w:pw,h:height}];
  const bounds=['lab','cm'].map(frame=>boundsFor(rows,frame));
- const scale=Math.min(...rects.map((r,i)=>Math.min((r.w-40)/Math.max(.01,bounds[i][1]-bounds[i][0]),(r.h-40)/Math.max(.01,bounds[i][3]-bounds[i][2]))));
+ const scale=Math.min(...rects.map((r,i)=>Math.min((r.w-64)/Math.max(.01,bounds[i][1]-bounds[i][0]),(r.h-48)/Math.max(.01,bounds[i][3]-bounds[i][2]))));
  const panes=rects.map((rect,i)=>{const [xmin,xmax,ymin,ymax]=bounds[i];return {rect,map:{
   x:v=>rect.x+rect.w/2+(v-(xmin+xmax)/2)*scale,
   y:v=>rect.y+rect.h/2-(v-(ymin+ymax)/2)*scale,scale}};});
@@ -197,8 +203,13 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   const panes=comparisonPanels(s,data.rows),first=data.rows[0].geometry.frames.lab,nearest=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b).geometry.frames.lab;
   const impact=impactCaption(panes[0],first,f.params.b);
   const start=first[0],encounterPoint={x:(nearest[0].x+nearest[1].x)/2,y:(nearest[0].y+nearest[1].y)/2},lab=panes[0].map;
-  s.pathObstacles=forecastObstacles(panes,data.rows);
-  targetChips(s,{contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y),offsets:[[45,-65],[70,35],[-65,35],[0,55]]},momentum:{x:lab.x(start.x),y:lab.y(start.y),offsets:[[0,-65],[30,40],[100,-45],[100,35]]}},['potential','scattering','cross-section'],owner,forecastObstacles(panes,data.rows));
+  s.pathObstacles=forecastObstacles(panes,data.rows);s.paneRects=panes.map(p=>p.rect);
+  const cmMap=panes[1].map,layout=frameLayout(s.w),first_cm=data.rows[0].geometry.frames.cm,last_lab=data.rows.at(-1).geometry.frames.lab[0],last_cm=data.rows.at(-1).geometry.frames.cm[0];
+  const avoid=panes.map(({rect})=>({x:rect.x+rect.w/2-48,y:rect.y-17,width:96,height:17}));
+  if(Math.abs(f.params.b)>.001)avoid.push({x:impact.x-impact.width/2,y:impact.y-8,width:impact.width,height:16},{x:impact.bar.x-1,y:impact.bar.y,width:2,height:impact.bar.bottom-impact.bar.y});
+  targetChips(s,{momentum:{x:lab.x(start.x),y:lab.y(start.y),offsets:[[0,62],[70,62],[-20,-70],[0,-65]]},contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y),offsets:[[45,-65],[70,35],[-65,35],[0,55]]},
+   potential:{x:cmMap.x(first_cm[1].x),y:cmMap.y(first_cm[1].y)},scattering:{x:lab.x(last_lab.x),y:lab.y(last_lab.y)},'cross-section':{x:cmMap.x(last_cm.x),y:cmMap.y(last_cm.y)}},
+   [],owner,forecastObstacles(panes,data.rows),{height:layout.narrow?620:420,floor:layout.bottom+28,avoid});
   for(const [i,frame] of ['lab','cm'].entries()){
    const {rect,map}=panes[i],b=g.frames[frame];
    s.text(frame==='lab'?'Laboratory':'Center of mass',rect.x+rect.w/2,rect.y-8,C.pale,12);

@@ -53,7 +53,7 @@ test('Lab and CM share one physical pixel scale and separate header rows at desk
    const {rect,map}=panels[i];assert.ok(map.x(b.x)>=rect.x-1e-10&&map.x(b.x)<=rect.x+rect.w+1e-10);
    assert.ok(map.y(b.y)>=rect.y-1e-10&&map.y(b.y)<=rect.y+rect.h+1e-10);
   }
-  assert.ok(panels[0].rect.y>=112);if(w===320)for(const p of panels)assert.ok(p.rect.h>=150);
+  assert.ok(panels[0].rect.y>=60);if(w===320)for(const p of panels)assert.ok(p.rect.h>=150);
   if(w===320)assert.ok(panels[1].rect.y-(panels[0].rect.y+panels[0].rect.h)>=38);
  }
 });
