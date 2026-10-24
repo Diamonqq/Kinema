@@ -37,6 +37,7 @@ const ONBOARDED = 'kinema.onboarded';
 const WELCOME = 'kinema.welcome.v2';
 // Explicit "Explore without AI" choice; cleared when an account is used or signed in.
 const BROWSE = 'kinema.browseOnly';
+const CLASS_STEP = 'kinema.welcome.classStep';   // set while the class step is open: a reload there resumes it
 const readFlag = key => { try { return localStorage.getItem(key) === '1'; } catch { return false; } };
 const writeFlag = (key, on) => { try { if (on) localStorage.setItem(key, '1'); else localStorage.removeItem(key); } catch {} };
 // Official CLI rows and API-key rows (which carry key_url) share one account list.
@@ -107,7 +108,7 @@ export class AccountPanel {
   async init() {
     if (this.initialized) return this;
     this.initialized = true;
-    try { await this.refresh(); if (this.data.onboarding_required || !readFlag(WELCOME)) this.openWelcome(); else this.markOnboarded(); }
+    try { await this.refresh(); if (this.data.onboarding_required) this.openWelcome(); else if (!readFlag(WELCOME)) { if (readFlag(CLASS_STEP)) this.resumeClass = true; else this.openWelcome(); } else this.markOnboarded(); }
     catch {
       // Account details did not load. A first run keeps its walkthrough with a retry and Explore without AI; an installed app keeps working.
       this.loadFailed = true; if (!readFlag(WELCOME)) this.openWelcome();
@@ -115,6 +116,13 @@ export class AccountPanel {
     finally { document.documentElement.classList.remove('ka-first-run-check'); this.syncFooter(); }
     this.refresh(true).then(() => this.watch()).catch(() => {});
     return this;
+  }
+  /** Start already finished (onboarding saved) but the class step was not: a reload there resumes at that step, not the whole welcome. */
+  async resumeClassStep() {
+    if (!this.resumeClass) return; this.resumeClass = false;
+    const profile = window.KinemaProfile;
+    if (!profile?.get?.() || profile.get().asked) { writeFlag(CLASS_STEP, false); return this.closeWelcome(); }
+    this.openWelcome(); await this.courseStep(); this.closeWelcome();
   }
   async token() { if (!this.data) await this.refresh(); return this.data.token; }
   markOnboarded() { try { localStorage.setItem(ONBOARDED, '1'); } catch {} }
@@ -347,8 +355,8 @@ export class AccountPanel {
   async courseStep() {
     const profile = window.KinemaProfile, host = this.welcome?.querySelector('.kw-inner');
     if (!host || typeof profile?.askCourse !== 'function' || !profile.get?.() || profile.get().asked) return;
-    this.asking = true; host.innerHTML = '';
-    try { await profile.askCourse({host}); } catch {} finally { this.asking = false; }
+    this.asking = true; host.innerHTML = ''; writeFlag(CLASS_STEP, true);
+    try { await profile.askCourse({host}); } catch {} finally { this.asking = false; writeFlag(CLASS_STEP, false); }
   }
   async finishSignIn(pid) {
     // Sign-in succeeded: the server already saved the recommended models. Signing in is a choice to use AI.

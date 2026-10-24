@@ -122,6 +122,7 @@ let NATIVE_FORCE_INTENT = createForceIntent();
   await languages.init();
   await accountPanel.init();
   await settings.init();
+  accountPanel.resumeClassStep();
   if (vw === 'settings') settings.open(qs.get('section') || null);
   window.__studioReady = true;
 })();

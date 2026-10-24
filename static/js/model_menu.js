@@ -151,7 +151,7 @@ export class ModelMenu {
     const active = this.restoreFocus || (this.pop.contains(document.activeElement) ? document.activeElement.dataset.action : null);
     this.restoreFocus = null;
     if (this.kind === 'model') {
-      this.pop.innerHTML = '<div class="km-heading"><button type="button" class="km-back" data-action="back" aria-label="Back to effort">'+chevronBack+'</button><b>Model</b></div>'+(listed().length>12?'<div class="km-catalog-filters"><input type="search" data-model-search placeholder="Search models" aria-label="Search models" value="'+esc(this.query || '')+'"></div>':'')+'<div class="km-catalog-results"></div>'+(!model ? '<p class="km-note">Saved model: '+esc(modelName(c.model))+'. Choose another to change it.</p>' : '');
+      this.pop.innerHTML = '<div class="km-heading"><button type="button" class="km-back" data-action="back" aria-label="Back to effort">'+chevronBack+'</button><b>Model</b></div>'+(listed().length>12?'<div class="km-catalog-filters"><input type="search" data-model-search placeholder="Search models" aria-label="Search models" value="'+esc(this.query || '')+'"></div>':'')+'<div class="km-catalog-results"></div>'+(!model && listed().length ? '<p class="km-note">Saved model: '+esc(modelName(c.model))+'. Choose another to change it.</p>' : '');
       this.renderModelResults();
     } else if (this.kind === 'effort') {
       const levels = model?.efforts || [], idx = levels.indexOf(c.effort), fast = model?.speeds?.includes('fast');

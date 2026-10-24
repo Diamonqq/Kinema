@@ -110,7 +110,7 @@ export class Teacher {
         <div class="tv-side-top"><div class="tv-brand"><span class="kinema-mark">${kinemaMark}</span>Kinema</div><button type="button" class="tv-icon" data-act="side" aria-label="Hide sidebar" title="Hide sidebar">${ICON.side}</button></div>
         <nav class="tv-nav" id="tv-nav" aria-label="Kinema">
           <button type="button" class="tv-row" data-act="new-chat" id="tv-new">${ICON.plus}<span>New chat</span></button>
-          <button type="button" class="tv-row" data-act="daily">${ICON.bolt}<span>Daily problem</span></button>
+          <button type="button" class="tv-row" data-act="daily" hidden>${ICON.bolt}<span>Daily problem</span></button>
           <button type="button" class="tv-row" data-act="path">${ICON.route}<span>Chapters</span></button>
           <button type="button" class="tv-row" data-act="library">${ICON.book}<span>Library</span></button>
           <button type="button" class="tv-row" data-act="sim-lab">${ICON.cube}<span>Simulation lab</span></button>
@@ -313,7 +313,13 @@ export class Teacher {
     math(this.el.crumb);
   }
   /* Daily problem, Library and Settings take the place of the chat inside the same shell */
+  /* Daily needs a matching book; without one it has no nav entry at all. Checked at boot and whenever a page opens, so an imported book shows it. */
+  async refreshDaily() {
+    const row = this.host.querySelector('.tv-nav [data-act="daily"]'); if (!row) return;
+    try { row.hidden = !(await this.d.api(this.d.url('/api/daily/peek')))?.id; } catch { row.hidden = true; }
+  }
   openPage(name) {
+    this.refreshDaily();
     if (this.page === name) { if (name === 'path') this.renderPathPage(); return; }
     this.navigationEpoch = (this.navigationEpoch || 0) + 1; closeScreenshotPicker();
     this.workspace?.history.set(null); this.workspace?.remember(); this.saveDraft();
@@ -369,6 +375,7 @@ export class Teacher {
     try { b = await this.d.api(this.d.url('/api/teacher/bootstrap')); }
     catch (e) { this.loaded = null; this.renderUnavailable(e); return; }
     this.courses = b.courses || []; this.threads = b.threads || [];
+    this.refreshDaily();
     const saved = store.get('course');
     const current = this.threads.find(t => t.id === b.current_thread);
     this.courseId = current?.course_id || (this.courses.some(c => c.id === saved) ? saved : this.courses[0]?.id) || null;

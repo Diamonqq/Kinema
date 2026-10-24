@@ -29,6 +29,7 @@ def catalog():
                 continue
             # Validate author errors before offering a card.
             validate_params(manifest, {p['key']: p['value'] for p in manifest['params']})
+            check_applies(manifest)
             out.append(manifest)
         except (ValueError, TypeError, KeyError, OSError):
             continue
@@ -59,6 +60,26 @@ def validate_params(manifest, values):
             raise ValueError('Parameter is outside its range or step.')
         result[key] = value
     return result
+
+
+def check_applies(manifest):
+    """Author check for the optional param field appliesWhen: {otherParamKey: [allowed values...]}."""
+    schema = {p['key']: p for p in manifest['params']}
+    for p in manifest['params']:
+        rule = p.get('appliesWhen')
+        if rule is None:
+            continue
+        if not isinstance(rule, dict) or not rule:
+            raise ValueError('appliesWhen must be a non-empty object.')
+        for key, allowed in rule.items():
+            if key == p['key'] or key not in schema or not isinstance(allowed, list) or not allowed:
+                raise ValueError('appliesWhen names another parameter and lists its values.')
+
+
+def is_inert(param, params):
+    """True when the param's appliesWhen is unmet by `params`: every key must hold one of its listed values (AND across keys, OR within a list)."""
+    rule = param.get('appliesWhen')
+    return bool(rule) and any(key in params and params[key] not in allowed for key, allowed in rule.items())
 
 
 def initial(manifest):
@@ -95,8 +116,10 @@ def snapshot(manifest, raw, previous=None):
     return state
 
 
-def validate_action(manifest, raw):
-    """Invalid action drops as a whole; keep the tutor's explanation."""
+def validate_action(manifest, raw, state=None):
+    """Invalid action drops as a whole; keep the tutor's explanation.
+    With the current state, a set_params that would change a parameter inert in the resulting setup also drops, so only a
+    request that sets the controlling parameter together with the dependent one gets through."""
     if raw is None:
         return None
     try:
@@ -110,7 +133,11 @@ def validate_action(manifest, raw):
         if kind not in fields or set(raw) != fields[kind]:
             return None
         if kind == 'set_params':
-            validate_params(manifest, raw['values'])
+            values = validate_params(manifest, raw['values'])
+            if state is not None:
+                after = {**state['params'], **values}
+                if any(is_inert(p, after) for p in manifest['params'] if p['key'] in values):
+                    return None
         if kind == 'preset' and raw['id'] not in [p['id'] for p in manifest.get('presets', [])]:
             return None
         if kind == 'closeup' and raw['id'] not in ['', *[p['id'] for p in manifest.get('closeups', [])]]:
@@ -182,8 +209,32 @@ def chip(manifest, action):
     return {'play': 'Playing', 'pause': 'Paused', 'reset': 'Reset'}[kind]
 
 
+def compact(manifest, params):
+    """What the tutor needs of a manifest: limits, labels, preset notes and ids, and which params are inert right now. Drops
+    preset values (a preset action only needs its id), groups, defaults and drawing details."""
+    def param(p):
+        out = {k: p[k] for k in ('key', 'label', 'symbol', 'unit') if p.get(k)}
+        if 'options' in p:
+            out['options'] = [o['value'] if o.get('label', o['value']) == o['value'] else {'value': o['value'], 'label': o['label']} for o in p['options']]
+        else:
+            out.update({k: p[k] for k in ('min', 'max', 'step')})
+        if p.get('appliesWhen'):
+            out['appliesWhen'] = p['appliesWhen']
+            if is_inert(p, params):
+                out['inert'] = True
+        return out
+    out = {'id': manifest['id'], 'title': manifest['title'], 'description': manifest.get('description', ''),
+           'params': [param(p) for p in manifest['params']],
+           'presets': [{k: r[k] for k in ('id', 'label', 'note') if r.get(k)} for r in manifest.get('presets', [])],
+           'closeups': [{'id': r['id'], 'label': r['label']} for r in manifest.get('closeups', [])],
+           'graphs': [{'id': r['id'], 'label': r['label']} for r in manifest.get('graphs', [])]}
+    if manifest.get('observables'):
+        out['observables'] = [{k: r[k] for k in ('key', 'label', 'symbol', 'unit') if r.get(k)} for r in manifest['observables']]
+    return out
+
+
 def run_reply(choice, manifest, state, messages, job, images=None, attachments=None):
-    context = {'experiment': manifest, 'current_state': state,
+    context = {'experiment': compact(manifest, state['params']), 'current_state': state,
                'observations_are_client_reported': True, 'conversation': messages[-24:],
                'attachments': attachments or []}
     rules = ('You are Kinema, a concise physics tutor beside a live experiment. Explain one idea at a time. '
@@ -196,6 +247,9 @@ def run_reply(choice, manifest, state, messages, job, images=None, attachments=N
              '{type:"play"}, {type:"pause"}, {type:"reset"}, {type:"closeup",id}, '
              '{type:"breakdown",enabled:boolean}, {type:"graph",id,enabled:boolean}. '
              'Only use exact manifest keys, limits, steps and IDs. Extra fields invalidate the action. '
+             'A parameter marked inert has no effect in the current setup (appliesWhen lists what enables it): never suggest or change it '
+             'on your own. If the student asks for it, name the setting that enables it and offer to set both together; a request that '
+             'sets the controlling parameter and the dependent one in one set_params is fine. '
              'Act only on an explicit request to change or show something; a question gets an explanation with action=null. '
              'When the request matches a preset, use the preset action (it replaces every parameter, so say so briefly) '
              'instead of editing parameters by hand. '
@@ -210,7 +264,7 @@ def run_reply(choice, manifest, state, messages, job, images=None, attachments=N
               'required': ['reply', 'action'], 'additionalProperties': False}
     job.hold_answer = True
     job.phase = 'thinking'
-    text, meta = model_choices.run(choice, json.dumps(context, ensure_ascii=False), system=rules,
+    text, meta = model_choices.run(choice, json.dumps(context, ensure_ascii=False, separators=(',', ':')), system=rules,
                                   schema_text=json.dumps(schema), images=images or [],
                                   on_event=job.on_event, cancel=job.cancel, timeout=600)
     if job.cancel.is_set():
@@ -218,4 +272,4 @@ def run_reply(choice, manifest, state, messages, job, images=None, attachments=N
     out = providers.extract_json(text)
     if not isinstance(out, dict) or not isinstance(out.get('reply'), str) or not out['reply'].strip():
         raise providers.ProviderError('The teacher returned an unreadable experiment reply.')
-    return {'reply': out['reply'].strip()[:16000], 'action': validate_action(manifest, out.get('action'))}, meta
+    return {'reply': out['reply'].strip()[:16000], 'action': validate_action(manifest, out.get('action'), state)}, meta

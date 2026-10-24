@@ -61,20 +61,33 @@ def _runtime(pid):
     return cli_runners.resolve_binary(pid), cli_runners.capabilities(pid)
 
 
+_ALIAS_NAMES = {'opus': 'Claude Opus 5.5', 'sonnet': 'Claude Sonnet 5.5', 'haiku': 'Claude Haiku 5.5', 'fable': 'Claude Fable 5.1'}
+
+
+def display_name(slug, label=None):
+    """A student-facing model name: a CLI row that only repeats its own id ("haiku", "gpt-5.5") gets a proper name."""
+    if label and label.strip().lower() != slug.lower(): return label
+    if slug in _ALIAS_NAMES: return _ALIAS_NAMES[slug]
+    m = re.fullmatch(r'claude-(fable|opus|sonnet|haiku)-(\d+)(?:-(\d{1,2}))?', slug)
+    if m: return f'Claude {m[1].title()} {m[2]}' + (f'.{m[3]}' if m[3] else '')
+    m = re.fullmatch(r'gpt-(\d[\w.]*)((?:-[a-z][a-z0-9]*)*)', slug, re.I)
+    if m: return 'GPT-' + m[1] + ''.join(' ' + w.title() for w in m[2].split('-') if w)
+    return label or slug
+
+
 def _models(pid, caps):
-    names = {'opus': 'Claude Opus', 'sonnet': 'Claude Sonnet', 'haiku': 'Claude Haiku', 'fable': 'Claude Fable'}
     efforts = list(caps.get('efforts') or ['default'])
     default = 'medium' if 'medium' in efforts else 'default' if 'default' in efforts else efforts[0]
     rows = caps.get('model_rows')
     if rows:
-        return [{'id': pid + ':' + row['id'], 'label': row.get('label') or names.get(row['id'], row['id']),
+        return [{'id': pid + ':' + row['id'], 'label': display_name(row['id'], row.get('label')),
                  'provider': pid, 'connection': 'cli', 'efforts': row.get('efforts') or efforts,
                  'default_effort': row.get('default_effort') or ('medium' if 'medium' in (row.get('efforts') or efforts) else (row.get('efforts') or efforts)[0]),
                  'speeds': row.get('speeds') or ['standard'], 'image_input': row.get('images') is True,
                  'availability': 'CLI-supported model; account access is checked when used.'}
                 for row in rows if isinstance(row, dict) and isinstance(row.get('id'), str)
                 and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._/-]{0,190}', row['id'])]
-    return [{'id': pid + ':' + slug, 'label': names.get(slug, slug), 'provider': pid,
+    return [{'id': pid + ':' + slug, 'label': display_name(slug), 'provider': pid,
              'connection': 'cli', 'efforts': efforts, 'default_effort': default,
              'speeds': ['standard'], 'image_input': caps.get('images') is True,
              'availability': 'CLI-supported model; account access is checked when used.'}

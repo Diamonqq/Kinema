@@ -264,7 +264,7 @@ export class SettingsPage {
       };
       const paint = () => {
         const c = course && this.classOf(course);
-        box.innerHTML = !c ? `<div class="kp-ask"><h2 id="kp-ask-h">Which class are you in?</h2><p>Kinema uses it to pick your Daily problem. You can change it any time in Settings.</p>
+        box.innerHTML = !c ? `<div class="kp-ask"><h2 id="kp-ask-h">Which class are you in?</h2><p>Kinema uses it to start you at the right chapters. You can change it any time in Settings.</p>
           <div class="kp-choices">${this.data.classes.map(x => `<button type="button" class="kp-choice" data-kp-course="${esc(x.id)}"><b>${esc(x.id === 'other' ? 'Other' : x.id)}</b><small>${esc(x.id === 'other' ? 'Another class or on my own' : x.subtitle)}</small></button>`).join('')}</div>
           <button type="button" class="kp-skip" data-kp-skip>Skip</button></div>`
           : `<div class="kp-ask"><button type="button" class="kp-back" data-kp-back aria-label="Back to classes">${controlIcon('left')} ${esc(c.id === 'other' ? 'Other' : c.id)}</button><h2 id="kp-ask-h">Which chapter are you on?</h2><p>Morin, <i>Introduction to Classical Mechanics</i>.</p>

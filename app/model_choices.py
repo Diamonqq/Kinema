@@ -38,6 +38,14 @@ def catalog():
     return list({m['id']: m for m in reversed(combined)}.values())[::-1]
 
 
+def signed_in_catalog():
+    """What the model picker lists: a CLI provider's models appear only once that account is signed in, so a fresh install never
+    offers models it cannot use. The full catalog still validates saved choices."""
+    from .cli_connections import manager
+    states = manager().states
+    return [m for m in catalog() if m.get('connection') != 'cli' or states.get(m.get('provider'), {}).get('state') == 'signed_in']
+
+
 def label(mid):
     if mid in dict(MODELS):
         return dict(MODELS)[mid]
