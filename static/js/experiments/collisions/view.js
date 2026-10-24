@@ -1,7 +1,8 @@
 import {num as fmt,texNum as tex} from '../kit/format.js';
 import {runBatches} from '../orbits/work.js';
 import {model,interactionAt,scatteringCurve,differentialCrossSection} from './model.js';
-import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,targetChips,sceneHeight} from '../orbits/scene.js';
+import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sceneHeight} from '../orbits/scene.js';
+import {placeChips} from './chips.js';
 export const graphs=[
  {id:'motion',label:'Separation',unit:'m',series:[{key:'separation',label:'r',color:C.blue}]},
  {id:'energy',label:'Energy',unit:'J',series:[{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.green},{key:'dissipated',label:'Q',color:C.purple},{key:'accountedEnergy',label:'E + Q',color:C.amber}]},
@@ -56,27 +57,33 @@ export function curveFor(params,lifecycle={}){
  }}
  return runBatches(batches(),state,lifecycle);
 }
-const panelCache=new WeakMap(),obstacleCache=new WeakMap();
+const panelCache=new WeakMap(),obstacleCache=new WeakMap(),chipCache=new WeakMap();
+function chipLayout(s,owner,rows,panes,targets,avoid,layout){
+ const cached=chipCache.get(rows),key=JSON.stringify([s.w,layout.oy,targets]);if(cached?.key===key&&cached.panes===panes)return cached.result;
+ const sizes=id=>{const b=owner?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
+ const result=placeChips(targets,sizes,{width:s.w,top:layout.oy+8,bottom:layout.oy+layout.height-58,obstacles:forecastObstacles(panes,rows),avoid});
+ chipCache.set(rows,{key,panes,result});return result;
+}
 
 export function impactCaption(panel,initial,b){
  const {rect,map}=panel,text='b = '+fmt(b)+' m',width=text.length*6.5;
  const bar={x:Math.max(rect.x+12,map.x(initial[0].x)-9),y:Math.min(map.y(initial[0].y),map.y(initial[1].y)),bottom:Math.max(map.y(initial[0].y),map.y(initial[1].y))};
  return {text,x:Math.max(rect.x+width/2+6,Math.min(rect.x+rect.w-width/2-6,bar.x)),y:Math.max(rect.y+12,bar.y-18),width,bar};
 }
-// The two frames depend only on the stage width, never its flexible height, so the apparatus and the chips
-// beside it stay put when Breakdown or Graphs change the stage height. Equal side margins keep them centered.
-export function frameLayout(w){
- const narrow=w<460,top=narrow?78:70,height=(narrow?620:420)-top-90;
- return {narrow,top,height,bottom:top+height};
+// The frames are one fixed-size block (side by side on desktop, stacked when narrow) centered in the live stage, so the
+// scale never changes with the stage height and the chips keep the same offset from their targets as the block re-centers.
+export function frameLayout(w,h=0){
+ const narrow=w<460,height=narrow?560:420,oy=Math.max(0,Math.round(((h||height)-height)/2)),top=58+oy,bottom=oy+height-58,gap=44;
+ return {narrow,height,oy,top,bottom,gap,side:bottom-top,stack:(bottom-top-gap)/2};
 }
 export function comparisonPanels(s,rows){
- const key=String(s.w),cached=panelCache.get(rows);if(cached?.key===key)return cached.panes;
- const {narrow,top,height}=frameLayout(s.w),gap=52,m=narrow?12:16,pw=(s.w-3*m)/2;
- const rects=narrow?
-  [{x:m,y:top,w:s.w-2*m,h:(height-gap)/2},{x:m,y:top+(height+gap)/2,w:s.w-2*m,h:(height-gap)/2}]:
-  [{x:m,y:top,w:pw,h:height},{x:2*m+pw,y:top,w:pw,h:height}];
+ const layout=frameLayout(s.w,s.h),key=s.w+':'+layout.oy,cached=panelCache.get(rows);if(cached?.key===key)return cached.panes;
+ const {narrow,top,gap,side,stack}=layout,m=narrow?12:16,pw=(s.w-3*m)/2;
  const bounds=['lab','cm'].map(frame=>boundsFor(rows,frame));
- const scale=Math.min(...rects.map((r,i)=>Math.min((r.w-64)/Math.max(.01,bounds[i][1]-bounds[i][0]),(r.h-48)/Math.max(.01,bounds[i][3]-bounds[i][2]))));
+ const stacked=[{x:m,y:top,w:s.w-2*m,h:stack},{x:m,y:top+stack+gap,w:s.w-2*m,h:stack}],beside=[{x:m,y:top,w:pw,h:side},{x:2*m+pw,y:top,w:pw,h:side}];
+ const fit=rs=>Math.min(...rs.map((r,i)=>Math.min((r.w-48)/Math.max(.01,bounds[i][1]-bounds[i][0]),(r.h-28)/Math.max(.01,bounds[i][3]-bounds[i][2]))));
+ // Side by side or stacked, whichever draws the shared scale larger; the choice depends only on the width and the motion.
+ const rects=narrow||fit(stacked)>fit(beside)*1.08?stacked:beside,scale=fit(rects);
  const panes=rects.map((rect,i)=>{const [xmin,xmax,ymin,ymax]=bounds[i];return {rect,map:{
   x:v=>rect.x+rect.w/2+(v-(xmin+xmax)/2)*scale,
   y:v=>rect.y+rect.h/2-(v-(ymin+ymax)/2)*scale,scale}};});
@@ -127,14 +134,39 @@ export function encounterPreview(params,rows){
  sample.scatteringAngle=Math.atan2((Math.sign(params.speed-params.targetSpeed)||1)*u.vy,(Math.sign(params.speed-params.targetSpeed)||1)*u.vx);
  const preview={t:event.t,sample,geometry,impact:{before:event.relativeNormalBefore,after}};contactPreviews.set(rows,preview);return preview;
 }
+export function momentumArrows(bodies,map,rect){
+ const [q,z]=bodies,scale=Math.min(30,rect.w*.18/Math.max(q.mass*Math.hypot(q.vx,q.vy),z.mass*Math.hypot(z.vx,z.vy),1));
+ return [q,z].map((b,j)=>({id:j?'p2':'p1',x:map.x(b.x),y:map.y(b.y),ex:map.x(b.x)+b.mass*b.vx*scale,ey:map.y(b.y)-b.mass*b.vy*scale}));
+}
+const overlap=(a,b,pad=0)=>a.x<b.x+b.width+pad&&a.x+a.width+pad>b.x&&a.y<b.y+b.height+pad&&a.y+a.height+pad>b.y;
+// A label at its arrow tip: just past the tip, else beside it, clear of markers, other labels and chips.
+function tipLabel(s,text,a,color){
+ s.ctx.font='12px system-ui';const w=s.ctx.measureText(text).width,h=14,len=Math.hypot(a.ex-a.x,a.ey-a.y),ux=(a.ex-a.x)/len,uy=(a.ey-a.y)/len,nx=-uy,ny=ux;
+ const blocked=[...s.labels,...s.chipRects,...s.labelObstacles];let pick=null;
+ for(const [u,n] of [[13,0],[8,12],[8,-12],[0,16],[0,-16],[18,13],[18,-13],[0,24],[0,-24],[26,0]]){
+  const x=a.ex+ux*u+nx*n,y=a.ey+uy*u+ny*n,box={x:x-w/2,y:y-h/2,width:w,height:h};
+  if(box.x<6||box.x+w>s.w-6||box.y<34||box.y+h>s.h-34)continue;
+  if(!blocked.some(o=>overlap(box,o,2))){pick={x,y};break;}
+ }
+ pick??={x:a.ex+ux*13,y:a.ey+uy*13};s.text(text,pick.x,pick.y,color,12);
+}
 export function forecastObstacles(panes,rows){
  const cached=obstacleCache.get(panes);if(cached?.rows===rows)return cached.obstacles;
  const obstacles=[];
  for(const [i,frame] of ['lab','cm'].entries()){
-  const {map,rect}=panes[i];obstacles.push({x:rect.x,y:rect.y-22,width:rect.w,height:46});
-  for(const row of rows)for(const q of row.geometry.frames[frame]){
-   const radius=Math.max(5,q.radius*map.scale);
-   obstacles.push({x:map.x(q.x)-radius,y:map.y(q.y)-radius,width:2*radius,height:2*radius});
+  const {map,rect}=panes[i];obstacles.push({x:rect.x+rect.w/2-52,y:rect.y-24,width:104,height:24});
+  for(const row of rows){
+   const bodies=row.geometry.frames[frame];
+   for(const q of bodies){
+    const radius=Math.max(5,q.radius*map.scale);
+    obstacles.push({x:map.x(q.x)-radius,y:map.y(q.y)-radius,width:2*radius,height:2*radius});
+   }
+   // Breakdown arrows and the room their labels need are kept clear too, so chips never move when it opens.
+   for(const a of momentumArrows(bodies,map,rect)){
+    const len=Math.hypot(a.ex-a.x,a.ey-a.y);if(len<.05)continue;
+    obstacles.push({x:Math.min(a.x,a.ex)-4,y:Math.min(a.y,a.ey)-4,width:Math.abs(a.ex-a.x)+8,height:Math.abs(a.ey-a.y)+8},
+     {x:a.ex+(a.ex-a.x)/len*13-17,y:a.ey+(a.ey-a.y)/len*13-11,width:34,height:22});
+   }
   }
  }
  const impact=impactCaption(panes[0],rows[0].geometry.frames.lab,rows[0].geometry.impactParameter);
@@ -183,7 +215,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
  key:f=>f.closeup==='momentum'?'Blue p₁ · amber p₂ · green total P':f.closeup==='potential'?'Blue Ueff · amber relative E · white r':
   f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?('Blue projectile \u00b7 amber target \u00b7 '+(f.contactForceDrawn?'green F':'blue u')):'Blue projectile · amber target · + CM',
  draw(s,f){
-  const owner=shells.get(s);if(owner){parameterShells.set(f.params,owner);sceneHeight(owner,620,!!f.closeup);}s.chipRects=[];s.pathObstacles=[];s.physicsSegments=[];s.labelObstacles=[];
+  const owner=shells.get(s);if(owner){parameterShells.set(f.params,owner);sceneHeight(owner,560,!!f.closeup,true);}s.chipRects=[];s.pathObstacles=[];s.physicsSegments=[];s.labelObstacles=[];
   if(s.h<200){const b=f.geometry.frames.lab,bounds=boundsFor([{geometry:f.geometry}],'lab'),map=camera(s,bounds,12,12);
    s.ctx.setLineDash([3,5]);s.line(map.x(b[0].x),map.y(b[0].y),map.x(b[1].x),map.y(b[0].y),C.muted);s.line(map.x(b[0].x),map.y(b[1].y),map.x(b[1].x),map.y(b[1].y),C.amber);s.ctx.setLineDash([]);
    b.forEach((q,i)=>s.circle(map.x(q.x),map.y(q.y),Math.max(3,q.radius*map.scale),i?C.amber:C.blue));return;
@@ -204,12 +236,12 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   const impact=impactCaption(panes[0],first,f.params.b);
   const start=first[0],encounterPoint={x:(nearest[0].x+nearest[1].x)/2,y:(nearest[0].y+nearest[1].y)/2},lab=panes[0].map;
   s.pathObstacles=forecastObstacles(panes,data.rows);s.paneRects=panes.map(p=>p.rect);
-  const cmMap=panes[1].map,layout=frameLayout(s.w),first_cm=data.rows[0].geometry.frames.cm,last_lab=data.rows.at(-1).geometry.frames.lab[0],last_cm=data.rows.at(-1).geometry.frames.cm[0];
+  const cmMap=panes[1].map,layout=frameLayout(s.w,s.h),first_cm=data.rows[0].geometry.frames.cm,last_lab=data.rows.at(-1).geometry.frames.lab[0],last_cm=data.rows.at(-1).geometry.frames.cm[0];
   const avoid=panes.map(({rect})=>({x:rect.x+rect.w/2-48,y:rect.y-17,width:96,height:17}));
   if(Math.abs(f.params.b)>.001)avoid.push({x:impact.x-impact.width/2,y:impact.y-8,width:impact.width,height:16},{x:impact.bar.x-1,y:impact.bar.y,width:2,height:impact.bar.bottom-impact.bar.y});
-  targetChips(s,{momentum:{x:lab.x(start.x),y:lab.y(start.y),offsets:[[0,62],[70,62],[-20,-70],[0,-65]]},contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y),offsets:[[45,-65],[70,35],[-65,35],[0,55]]},
-   potential:{x:cmMap.x(first_cm[1].x),y:cmMap.y(first_cm[1].y)},scattering:{x:lab.x(last_lab.x),y:lab.y(last_lab.y)},'cross-section':{x:cmMap.x(last_cm.x),y:cmMap.y(last_cm.y)}},
-   [],owner,forecastObstacles(panes,data.rows),{height:layout.narrow?620:420,floor:layout.bottom+28,avoid});
+  const chips=chipLayout(s,owner,data.rows,panes,{momentum:{x:lab.x(start.x),y:lab.y(start.y)},contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y)},
+   potential:{x:cmMap.x(first_cm[1].x),y:cmMap.y(first_cm[1].y)},scattering:{x:lab.x(last_lab.x),y:lab.y(last_lab.y)},'cross-section':{x:cmMap.x(last_cm.x),y:cmMap.y(last_cm.y)}},avoid,layout);
+  s.chipRects=Object.values(chips.boxes);s.chipLeaders=Object.values(chips.leaders);s.targetAnchors=Object.fromEntries(Object.entries(chips.boxes).map(([id,b])=>[id,{x:b.x+b.width/2,y:b.y}]));
   for(const [i,frame] of ['lab','cm'].entries()){
    const {rect,map}=panes[i],b=g.frames[frame];
    s.text(frame==='lab'?'Laboratory':'Center of mass',rect.x+rect.w/2,rect.y-8,C.pale,12);
@@ -227,11 +259,15 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
    }
    const cm=frame==='cm'?{x:0,y:0}:g.centreOfMass;s.line(map.x(cm.x)-3,map.y(cm.y),map.x(cm.x)+3,map.y(cm.y),C.green);s.line(map.x(cm.x),map.y(cm.y)-3,map.x(cm.x),map.y(cm.y)+3,C.green);
    if(f.breakdown){
-    const q=b[0],z=b[1],scale=Math.min(30,rect.w*.18/Math.max(q.mass*Math.hypot(q.vx,q.vy),z.mass*Math.hypot(z.vx,z.vy),1));
-    s.physicsSegments.push({id:'p1',x:map.x(q.x),y:map.y(q.y),ex:map.x(q.x)+q.mass*q.vx*scale,ey:map.y(q.y)-q.mass*q.vy*scale},{id:'p2',x:map.x(z.x),y:map.y(z.y),ex:map.x(z.x)+z.mass*z.vx*scale,ey:map.y(z.y)-z.mass*z.vy*scale});
-    vector(s,map.x(q.x),map.y(q.y),q.mass*q.vx*scale,-q.mass*q.vy*scale,C.blue,'p₁');
-    vector(s,map.x(z.x),map.y(z.y),z.mass*z.vx*scale,-z.mass*z.vy*scale,C.amber,'p₂');
+    const arrows=momentumArrows(b,map,rect);s.physicsSegments.push(...arrows);
+    s.labelObstacles.push({x:map.x(cm.x)-7,y:map.y(cm.y)-7,width:14,height:14},...b.map(q=>({x:map.x(q.x)-8,y:map.y(q.y)-8,width:16,height:16})),
+     ...arrows.flatMap(a=>{const n=Math.max(1,Math.ceil(Math.hypot(a.ex-a.x,a.ey-a.y)/6));return Array.from({length:n+1},(_,k)=>({x:a.x+(a.ex-a.x)*k/n-3,y:a.y+(a.ey-a.y)*k/n-3,width:6,height:6}));}));
+    arrows.forEach((a,j)=>{if(Math.hypot(a.ex-a.x,a.ey-a.y)<.05)return;s.arrow(a.x,a.y,a.ex,a.ey,j?C.amber:C.blue,2);tipLabel(s,j?'p₂':'p₁',a,j?C.amber:C.blue);});
    }
+  }
+  // Short straight leaders from each chip to its fixed point; pale and thin so they read apart from the paths.
+  for(const l of Object.values(chips.leaders)){
+   const len=Math.hypot(l[2]-l[0],l[3]-l[1]),k=Math.min(6,len*.4)/len;s.line(l[0]+(l[2]-l[0])*k,l[1]+(l[3]-l[1])*k,l[2],l[3],'rgba(225,229,237,0.55)',1);
   }
   s.text(fmt(durationFor(f.params))+' s forecast · brighter paths = elapsed',s.w/2,s.h-43,C.muted,11);
  },

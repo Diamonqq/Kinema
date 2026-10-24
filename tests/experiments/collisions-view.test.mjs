@@ -47,13 +47,13 @@ test('Lab and CM share one physical pixel scale and separate header rows at desk
  let result;const p=model.presets.find(p=>p.id==='glancing').values;
  for(const batch of motionBatches(model,p,{duration:durationFor(p)}))result=batch;
  for(const w of [1280,320]){
-  const panels=comparisonPanels({w,h:w===320?620:460},result.rows);
+  const panels=comparisonPanels({w,h:w===320?560:420},result.rows);
   assert.equal(panels[0].map.scale,panels[1].map.scale);assert.ok(panels[0].map.scale>0);
   for(const [i,frame] of ['lab','cm'].entries())for(const row of result.rows)for(const b of row.geometry.frames[frame]){
    const {rect,map}=panels[i];assert.ok(map.x(b.x)>=rect.x-1e-10&&map.x(b.x)<=rect.x+rect.w+1e-10);
    assert.ok(map.y(b.y)>=rect.y-1e-10&&map.y(b.y)<=rect.y+rect.h+1e-10);
   }
-  assert.ok(panels[0].rect.y>=60);if(w===320)for(const p of panels)assert.ok(p.rect.h>=150);
+  assert.ok(panels[0].rect.y>=50);if(w===320)for(const p of panels)assert.ok(p.rect.h>=150);
   if(w===320)assert.ok(panels[1].rect.y-(panels[0].rect.y+panels[0].rect.h)>=38);
  }
 });
