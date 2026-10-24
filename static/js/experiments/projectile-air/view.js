@@ -57,15 +57,17 @@ function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset,place){
   const rect={x:px-width/2-4,y:py-9,width:width+8,height:18};
   if([...(s.labels||[]),...(s.vectorObstacles||[])].some(a=>rect.x<a.x+a.width+5&&rect.x+rect.width>a.x-5&&rect.y<a.y+a.height+5&&rect.y+rect.height>a.y-5))return false;
   // A vertical downward force keeps its label beyond the tip or beside it, never on its shaft.
-  if(dy<0&&Math.abs(dx)<1e-9&&py<ty+12&&Math.abs(px-x)<width/2+10)return false;
+  if(dy<0&&Math.abs(dx)<1e-9&&py<ty+12&&Math.abs(px-x)<width/2+4)return false;
   if(segmentHitsRect(x,y,tx,ty,rect))return false;
   if((s.shafts||[]).some(a=>!(Math.abs(a.x0-x)+Math.abs(a.y0-y)+Math.abs(a.x1-tx)+Math.abs(a.y1-ty)<1e-6)&&segmentHitsRect(a.x0,a.y0,a.x1,a.y1,rect)))return false;
   return !(s.vectorChips||[]).some(a=>segmentHitsRect(tx,ty,px,py,a));
  };
  let selected;
+ // A vertical downward force prefers the spot just right of its own tip.
+ if(!place&&dy<0&&Math.abs(dx)<1e-9){for(const gap of [8,5])for(const oy of [0,-8,-16]){const px=tx+width/2+gap;if(!selected&&clear(px,ty+oy))selected={px,py:ty+oy};}}
  const spots=[];for(const oy of [0,10,-10,20,-20,34,-34,52,-52,72,-72,90,-90])for(const ox of [0,12,-12,24,-24,40,-40,60,-60,90,-90])spots.push([ox,oy]);
  spots.sort((a,b)=>Math.hypot(a[0],a[1])-Math.hypot(b[0],b[1]));
- for(const [ox,oy] of spots){
+ for(const [ox,oy] of selected?[]:spots){
   const px=Math.max(width/2+7,Math.min(s.w-width/2-7,baseX+ox)),py=baseY+oy;
   if(clear(px,py)){selected={px,py};break;}
  }
@@ -73,7 +75,7 @@ function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset,place){
  if(!place&&Math.hypot(px-tx,py-ty)>27)s.line(tx,ty,px,py,color+'80',.8);label(s,term,px,py,color,12,place?.[2]);
 }
 function triangle(s,f,live=false){
- const p=f.params,q=f.sample,top=55,bottom=s.h-62,cx=s.w*.3,cy=(top+bottom)/2+15;
+ const p=f.params,q=f.sample,top=s.w<440?85:55,bottom=s.h-62,cx=s.w*.3,cy=(top+bottom)/2+15;
  const vx=live?q.vx:p.speed*Math.cos(p.angle*rad),vy=live?q.vy:p.speed*Math.sin(p.angle*rad),v=Math.hypot(vx,vy);
  const length=Math.min(s.w*.43,(bottom-top)*.58),scale=length/Math.max(1,v),x2=cx+vx*scale,y2=cy-vy*scale;
  s.line(cx,cy,cx+length+10,cy,'#455164',1);s.circle(cx,cy,6,blue);
@@ -85,7 +87,7 @@ function triangle(s,f,live=false){
  vector(s,x2,cy,0,vy,live?'v sin φ':'v₀ sin θ',green,scale,undefined,[x2+10,(cy+y2)/2,'left']);
  vector(s,cx,cy,vx,vy,live?'v':'v₀',purple,scale,undefined,[x2-6,y2-15]);s.ctx.beginPath();s.ctx.arc(cx,cy,26,Math.min(0,-a),Math.max(0,-a));s.ctx.strokeStyle=muted;s.ctx.stroke();
  label(s,live?'φ':'θ',cx+36*Math.cos(a/2),cy-36*Math.sin(a/2),muted,13);
- label(s,live?'Velocity components now':'Launch components',s.w/2,42,muted,12);
+ label(s,live?'Velocity components now':'Launch components',s.w/2,s.w<440?68:42,muted,12);
  label(s,`${num(vx)} m/s horizontal`,s.w/2,s.h-76,blue,12);label(s,`${num(vy)} m/s vertical`,s.w/2,s.h-53,green,12);
 }
 function forceBall(s,f){

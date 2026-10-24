@@ -66,3 +66,14 @@ test('Breakdown draws friction at its true scale with a tip label and caption, a
  assert.ok(labels.includes('N sin θ')&&labels.includes('N cos θ'));
  const a=view.closeupAnchors({w:320,h:440},f);assert.ok(a.corner.y<200&&a.corner.y>150);
 });
+
+test('f label sits past its own tip away from N, and the grip zoom names only what it draws',()=>{
+ const params=Object.fromEntries(model.params.map(p=>[p.key,p.value])),instance=model.create(params),texts=[],tips=[];
+ const ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})}),s={w:320,h:440,ctx,labels:[],line(){},circle(){},arrow(x,y,tx,ty){tips.push([x,y,tx,ty]);},text(t,x,y){texts.push({t,x,y});}};
+ const f=c=>({params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:c,breakdown:!c});
+ view.draw(s,f(''));const lab=texts.find(l=>l.t==='f'),fa=tips.find(a=>Math.hypot(a[2]-a[0],a[3]-a[1])<14&&Math.hypot(a[2]-a[0],a[3]-a[1])>=4),n=tips[0];
+ assert.ok(lab&&fa);assert.ok(lab.y>fa[3]+8,'f below the slope, away from N (N points up)');assert.ok(lab.x>fa[0]+8,'beyond the tip, off the mg shaft');
+ // Tire force far under 4 px in the grip zoom: no arrow, caption names only the radius.
+ const banked=model.presets.find(p=>p.id==='banked').values,bi=model.create(banked),g={params:banked,instance:bi,sample:bi.sample(),geometry:bi.geometry(),t:0,closeup:'grip',breakdown:false};
+ tips.length=0;view.draw(s,g);assert.equal(tips.length,0);assert.equal(view.key(g),'Radius: μN');
+});

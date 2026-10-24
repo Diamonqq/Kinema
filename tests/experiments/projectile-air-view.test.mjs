@@ -103,3 +103,11 @@ test('apex zoom has no angle caption, and the launch triangle labels v₀ at the
  view.draw(s,f('angle'));const v0=labels.find(l=>l.text==='v₀'),tip=tips.at(-1);
  assert.ok(Math.hypot(v0.x-tip[0],v0.y-tip[1])<25,JSON.stringify([v0,tip]));
 });
+
+test('narrow launch title sits below the button row, and mg takes the spot beside its own tip',()=>{
+ const instance=model.create(),labels=[],ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})});
+ const f=c=>({params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:c,breakdown:!c});
+ const s=w=>({w,h:440,ctx,labels,line(){},circle(){},arrow(){},text(t,x,y){labels.push({text:t,x,y});}});
+ view.draw(s(320),f('angle'));assert.ok(labels.find(l=>l.text==='Launch components').y>=60);
+ labels.length=0;view.draw(s(1000),f('angle'));assert.ok(labels.find(l=>l.text==='Launch components').y<=45);
+});
