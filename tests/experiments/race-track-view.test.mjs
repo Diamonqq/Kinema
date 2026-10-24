@@ -16,7 +16,7 @@ test('short gallery thumbnail produces positive physical scale and car dimension
 
 
 test('bank force projections originate at contact and sum to each force (absolute 1e-9 px)',()=>{
- const params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),bank:20,speed:10},instance=model.create(params),arrows=[];let dash=[];
+ const params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),bank:20,speed:25},instance=model.create(params),arrows=[];let dash=[];
  const ctx=new Proxy({setLineDash(v){dash=v;},measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})});
  const s={w:300,h:440,ctx,labels:[],line(){},circle(){},text(){},arrow(x,y,tx,ty){arrows.push({x,y,dx:tx-x,dy:ty-y,dashed:dash.length>0});}};
  view.draw(s,{params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'corner',breakdown:false});
@@ -44,4 +44,11 @@ test('default graphs are the two that change on the default lap, and the breakdo
  const ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})}),s={w:600,h:440,ctx,labels,line(){},circle(){},arrow(){},text(t){labels.push(t);}};
  const f={params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'corner',breakdown:false};
  view.draw(s,f);assert.equal(labels.includes('f'),false);assert.equal(/green f/.test(view.key(f)),false);
+});
+
+test('Breakdown draws and labels no arrow shorter than 14 px, and never stretches one',()=>{
+ const params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),bank:20,speed:13.4,halfStraight:0},instance=model.create(params),labels=[],arrows=[];
+ const ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})}),s={w:320,h:440,ctx,labels,line(){},circle(){},arrow(x,y,tx,ty){arrows.push(Math.hypot(tx-x,ty-y));},text(t){labels.push(t);}};
+ view.draw(s,{params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:true});
+ assert.ok(arrows.every(l=>l>=14-1e-9),arrows.join());assert.equal(labels.includes('f'),false);
 });

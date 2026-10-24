@@ -21,8 +21,10 @@ function car(s,x,y,heading,scale,color=blue){
  const c=s.ctx;c.save();c.translate(x,y);c.rotate(-heading);const a=Math.max(14,4.5*scale),b=Math.max(6,1.8*scale);
  c.fillStyle=color+'40';c.strokeStyle=color;c.lineWidth=1.2;c.beginPath();c.roundRect(-a/2,-b/2,a,b,Math.min(a*.1,3));c.fill();c.stroke();c.fillStyle=color;c.fillRect(a*.15,-b*.38,a*.14,b*.76);c.restore();
 }
+// Vectors keep their true proportion; one too short to read is neither labeled nor drawn (its value stays in the equations).
+const MIN_ARROW=14;
 function arrow(s,x,y,dx,dy,label,color){
- if(Math.hypot(dx,dy)<1.5)return;const tx=x+dx,ty=y-dy;s.arrow(x,y,tx,ty,color,2);
+ if(Math.hypot(dx,dy)<MIN_ARROW)return;const tx=x+dx,ty=y-dy;s.arrow(x,y,tx,ty,color,2);
  tipLabel(s,label,tx,ty,color);
 }
 // Keep every component rooted at contact; labels may move to the nearest
@@ -35,7 +37,7 @@ function tipLabel(s,label,tx,ty,color){
  const p=choices.find(fits)||choices.at(-1);if(Math.hypot(p.x-tx,p.y-ty)>26)s.line(tx,ty,p.x,p.y,color+'70',.8);s.text(label,p.x,p.y,color,11,p.align);
 }
 function projection(s,x,y,dx,dy,label,color){
- if(Math.hypot(dx,dy)<1.5)return;
+ if(Math.hypot(dx,dy)<MIN_ARROW)return;
  s.ctx.setLineDash([4,4]);s.arrow(x,y,x+dx,y-dy,color,1.4);s.ctx.setLineDash([]);if(s.w>=440)tipLabel(s,label,x+dx,y-dy,color);
 }
 export function bankSnapshot(f){return curveForces({...f.params,speed:f.sample.speed,radius:f.params.radius,bank:f.params.bank});}
@@ -50,14 +52,14 @@ function bank(s,f,box,components){
  arrow(s,cx,cy,force.normal*sn*k,force.normal*c*k,'N',blue);
  arrow(s,cx,cy,0,-f.params.mass*f.params.gravity*k,'mg',orange);
  arrow(s,cx,cy,force.lateral*c*k,-force.lateral*sn*k,'f',green);
- drawnForces=new Set(['N','mg']);if(Math.hypot(force.lateral*c*k,force.lateral*sn*k)>=1.5)drawnForces.add('f');
+ drawnForces=new Set(['N','mg']);if(Math.abs(force.lateral)*k>=MIN_ARROW)drawnForces.add('f');
  if(components&&f.params.bank>=1){
   // Orthogonal projections and completion guides form the actual vector
   // rectangle, all at the same force scale and the same contact origin.
   const nx=force.normal*sn*k,ny=force.normal*c*k,fx=force.lateral*c*k,fy=-force.lateral*sn*k;
   s.ctx.setLineDash([2,4]);
-  s.line(cx+nx,cy,cx+nx,cy-ny,blue+'60',1);s.line(cx,cy-ny,cx+nx,cy-ny,blue+'60',1);
-  if(Math.hypot(fx,fy)>=1.5){s.line(cx+fx,cy,cx+fx,cy-fy,green+'60',1);s.line(cx,cy-fy,cx+fx,cy-fy,green+'60',1);}
+  if(Math.abs(nx)>=MIN_ARROW){s.line(cx+nx,cy,cx+nx,cy-ny,blue+'60',1);s.line(cx,cy-ny,cx+nx,cy-ny,blue+'60',1);}
+  if(Math.hypot(fx,fy)>=MIN_ARROW){s.line(cx+fx,cy,cx+fx,cy-fy,green+'60',1);s.line(cx,cy-fy,cx+fx,cy-fy,green+'60',1);}
   s.ctx.setLineDash([]);
   projection(s,cx,cy,nx,0,'N sin \u03b8',blue);
   projection(s,cx,cy,0,ny,'N cos \u03b8',blue);
@@ -70,10 +72,10 @@ function grip(s,f,box){
  const force=bankSnapshot(f),{x,y,w,h}=box,cx=x+w/2,cy=y+h/2,r=Math.min(w*.29,h*.33),extent=Math.max(force.capacity,Math.abs(force.lateral),Math.abs(f.params.drive),1),k=r/extent;
  s.line(cx-r-8,cy,cx+r+8,cy,'#425066',1);s.line(cx,cy-r-7,cx,cy+r+7,'#425066',1);
  s.ctx.strokeStyle=orange;s.ctx.lineWidth=1.5;s.ctx.beginPath();s.ctx.arc(cx,cy,force.capacity*k,0,2*Math.PI);s.ctx.stroke();
- const tx=cx+force.longitudinal*k,ty=cy-force.lateral*k;s.arrow(cx,cy,tx,ty,force.grip?green:'#e4a9bd',2);s.circle(tx,ty,3,green);
+ const tx=cx+force.longitudinal*k,ty=cy-force.lateral*k;if(Math.hypot(tx-cx,ty-cy)>=MIN_ARROW)s.arrow(cx,cy,tx,ty,force.grip?green:'#e4a9bd',2);s.circle(tx,ty,3,green);
  if(Math.abs(f.params.drive-force.longitudinal)>1){s.ctx.strokeStyle=purple;s.ctx.beginPath();s.ctx.arc(cx+f.params.drive*k,ty,4,0,2*Math.PI);s.ctx.stroke();}
  s.text('f∥',cx+r+10,cy,muted,11,'left');s.text('f⊥',cx,cy-r-16,muted,11);
- const radius=force.capacity*k,rx=cx-radius/Math.sqrt(2),ry=cy+radius/Math.sqrt(2);s.line(cx,cy,rx,ry,orange,1.2);if(radius>2)s.text('\u03bcN',rx+7,ry-16,orange,11);
+ const radius=force.capacity*k,rx=cx-radius/Math.sqrt(2),ry=cy+radius/Math.sqrt(2);s.line(cx,cy,rx,ry,orange,1.2);if(radius>2)s.text('\u03bcN',rx-4,ry+12,orange,11,'right');
  return force;
 }
 export const view={graphs,closeups,

@@ -58,7 +58,10 @@ test('all flight arrows and component labels stay inside 1280/390/320 viewports 
   instance.step(t);stage.begin();view.draw(stage,{params:instance.params||preset.values,instance,sample:instance.sample(),geometry:instance.geometry(),t,closeup:'',breakdown:true});
   for(const a of arrows)assert.ok(a.every((v,j)=>v>=-1e-7&&v<=(j%2?440:width)+1e-7),`${preset.id} ${width} ${t}: arrow ${a}`);
   for(const r of stage.labels)assert.ok(r.x>=-1e-7&&r.y>=-1e-7&&r.x+r.width<=width+1e-7&&r.y+r.height<=440+1e-7,`${preset.id} ${width} ${t}: ${r.text}`);
-  if(instance.sample().speed>1e-3){assert.ok(stage.labels.some(r=>r.text==='v_x'));if(Math.abs(instance.sample().vy)>1e-3)assert.ok(stage.labels.some(r=>r.text==='v_y'));}
+  // Components shorter than 14 px are neither drawn nor labeled.
+  const q=instance.sample(),vscale=Math.min(48,width*.11)/Math.max(1,Math.hypot(q.vx,q.vy));
+  assert.equal(stage.labels.some(r=>r.text==='v_x'),Math.abs(q.vx)*vscale>=14,`${preset.id} ${width} ${t}: v_x`);
+  assert.equal(stage.labels.some(r=>r.text==='v_y'),Math.abs(q.vy)*vscale>=14,`${preset.id} ${width} ${t}: v_y`);
  }
 });
 
@@ -68,4 +71,14 @@ test('launch chip stays put between Scene and Breakdown and the velocity resulta
  const a=mk(false),b=mk(true);view.draw(a,f(false));view.draw(b,f(true));
  assert.deepEqual(view.closeupAnchors(a,f(false)).angle,view.closeupAnchors(b,f(true)).angle);
  assert.ok(b.labels.some(l=>l.text==='v'));
+});
+
+test('Breakdown substitutions carry units and chip anchors do not depend on Breakdown',()=>{
+ const instance=model.create(),ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})});
+ const f=b=>({params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:b});
+ const eq=view.equations(f(true));
+ assert.ok(eq.some(e=>e.includes(String.raw`(40.0\,\mathrm{m/s})\cos(40.0^\circ)`)));
+ for(const e of eq){const z=e.replace(/_\{[^}]*\}|_[A-Za-z0-9]|\^\{[^}]*\}|\^2|\\(theta|phi|mu|rho|frac12|ne0)|\{2\}|\\mathrm\{[^}]*\}|\\text\{[^}]*\}/g,'');assert.ok(!/\d/.test(z)||e.includes('mathrm'),e);}
+ const mk=()=>({w:1000,h:500,ctx,labels:[],line(){},circle(){},arrow(){},text(){}});
+ assert.deepEqual(view.closeupAnchors(mk(),f(false)),view.closeupAnchors(mk(),f(true)));
 });
