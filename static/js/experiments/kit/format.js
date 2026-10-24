@@ -22,3 +22,13 @@ export function texNum(value,sig=3,{lo=1e-3,hi=1e5}={}){
 }
 // Value and unit for a label: withUnit(-0.631,'N') → "−0.631 N".
 export const withUnit=(value,unit,sig=3)=>num(value,sig)+(unit?' '+unit:'');
+// Axis ticks at round values (1, 2 or 5 × 10ⁿ) covering [lo, hi]; zero is a tick whenever it lies in range.
+// niceTicks(-0.37, 1.9) → {step:0.5, ticks:[0, 0.5, 1, 1.5]}.
+export function niceTicks(lo,hi,count=5){
+ if(!Number.isFinite(lo)||!Number.isFinite(hi))return {step:0,ticks:[]};
+ if(hi<lo)[lo,hi]=[hi,lo];
+ const span=hi-lo||Math.abs(hi)||1,rough=span/Math.max(1,count),power=10**Math.floor(Math.log10(rough)),unit=rough/power;
+ const step=(unit<1.5?1:unit<3.5?2:unit<7.5?5:10)*power,ticks=[];
+ for(let k=Math.ceil(lo/step-1e-9);k*step<=hi+step*1e-9;k++)ticks.push(Math.abs(k)<1e-12?0:+(k*step).toPrecision(12));
+ return {step,ticks};
+}
