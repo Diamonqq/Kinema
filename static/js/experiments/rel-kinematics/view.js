@@ -46,6 +46,14 @@ function momentum(s,f,p,key,headTail=false){
   let x=0,y=0;
   const incoming=e.initial.filter(a=>Math.hypot(a.px,a.py)>1e-9).map(a=>({a,v:[m.x(0),m.y(0),m.x(a.px),m.y(a.py)]}));
   const outgoing=e.final.map((a,i)=>{const origin=headTail?[x,y]:[0,0];x=headTail?x+a.px:a.px;y=headTail?y+a.py:a.py;return {a,i,v:[m.x(origin[0]),m.y(origin[1]),m.x(x),m.y(y)]};});
+  // Head to tail, a product that runs back along an earlier one is shifted sideways a few pixels so both arrows stay visible.
+  if(headTail)outgoing.forEach((o,k)=>{
+    const [x1,y1,x2,y2]=o.v,len=Math.hypot(x2-x1,y2-y1);if(len<1)return;
+    const near=(q,px,py)=>Math.abs((px-q[0])*(q[3]-q[1])-(py-q[1])*(q[2]-q[0]))/(Math.hypot(q[2]-q[0],q[3]-q[1])||1)<1.5;
+    const shared=outgoing.slice(0,k).filter(q=>{const u=q.v,l=Math.hypot(u[2]-u[0],u[3]-u[1]);if(l<1||!near(u,x1,y1)||!near(u,x2,y2))return false;
+      const ts=[((x1-u[0])*(u[2]-u[0])+(y1-u[1])*(u[3]-u[1]))/l,((x2-u[0])*(u[2]-u[0])+(y2-u[1])*(u[3]-u[1]))/l];return Math.min(l,Math.max(...ts))-Math.max(0,Math.min(...ts))>3;}).length;
+    if(shared){const off=6*shared,nx=-(y2-y1)/len*off,ny=(x2-x1)/len*off;o.v=[x1+nx,y1+ny,x2+nx,y2+ny];}
+  });
   segments.push(...incoming.map(a=>a.v),...outgoing.map(a=>a.v));
   clipPanel(s,p,()=>{
     for(const {v} of incoming){s.ctx.setLineDash([6,4]);s.arrow(...v,'#a7b6cc',2);s.ctx.setLineDash([]);}
@@ -88,14 +96,15 @@ export function paramVisible(spec,p){const k=spec.key,r=p.reaction,decay=['pion-
 function budget(f){const e=data(f).e,cm=f.params.frame==='cm',a=sumMomentum(cm?e.cmInitial:e.initial),b=sumMomentum(cm?e.cmFinal:e.final);
   return {e,a,b,mass:invariantMass(a),finalMass:e.requiredMass};}
 function drawBudget(s,f){
-  const {e}=data(f),max=Math.max(.001,e.W,e.requiredMass)*1.18,left=32,right=s.w-32,width=right-left;
-  const y1=112,y2=196,bar=18;
-  s.text('Center-of-momentum energy budget',s.w/2,63,'#c7d9ee',s.w<470?12:15);
+  // The title, both bars and Q form one block centered in the stage; the larger bar spans the whole centered track.
+  const {e}=data(f),max=Math.max(.001,e.W,e.requiredMass),width=Math.min(s.w-64,520),left=(s.w-width)/2;
+  const top=Math.max(30,(s.h-226)/2),y1=top+62,y2=top+146,bar=18;
+  s.text('Center-of-momentum energy budget',s.w/2,top+8,'#c7d9ee',s.w<470?12:15);
   for(const [i,[label,value,color]] of [[0,['√s · available',e.W,colors[0]]],[1,['Σmc² · required',e.requiredMass,e.allowed?colors[2]:'#e4a9bd']]]){
     const y=i?y2:y1;s.text(label,left,y-24,color,12,'left');s.ctx.fillStyle=color+'a0';s.ctx.fillRect(left,y,width*value/max,bar);if(value===0)s.line(left,y-4,left,y+bar+4,color,2);
     s.text(fmt(value)+' MeV',left,y+bar+18,color,11,'left');
   }
-  const Q=e.W-e.requiredMass;s.text('Q = '+(Q>=0?'+':'')+fmt(Q)+' MeV',s.w/2,y2+64,Q>=0?colors[2]:'#e4a9bd',14);
+  const Q=e.W-e.requiredMass;s.text('Q = '+(Q>=0?'+':'')+fmt(Q)+' MeV',s.w/2,y2+bar+46,Q>=0?colors[2]:'#e4a9bd',14);
 }
 // Pane geometry shared by drawing and the zoom chips, which sit just under the (square) momentum panes.
 function layoutFor(s,f){

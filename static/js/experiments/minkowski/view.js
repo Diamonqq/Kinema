@@ -31,18 +31,21 @@ export function eventReadouts(f){return namedEvents(f).flatMap(({name,event})=>{
   const a=coord(event,f.params.length),b=coord(boost(event,beta(f.params)),f.params.length);
   return [`${name}  S: (x, ct) = (${num(a[0])}, ${num(a[1])}) L`,`${name}  S′: (x′, ct′) = (${num(b[0])}, ${num(b[1])}) L`];
 });}
-function eventLetter(s,f,p,m,key,record,extra=[]){
+function eventLetter(s,f,p,m,key,record,extra=[],soft=[]){
   const e=key==='moving'?boost(record.event,beta(f.params)):record.event,[x,y]=coord(e,f.params.length);
   if(!inside(m,p,x,y,3))return;
   const px=m.x(x),py=m.y(y);s.ctx.font='12px system-ui';const width=s.ctx.measureText(record.name).width;
   const segments=f.geometry[key].worldlines.flatMap(l=>l.points.slice(1).map((b,i)=>{const a=l.points[i];return [m.x(a.x/f.params.length),m.y(C*a.t/f.params.length),m.x(b.x/f.params.length),m.y(C*b.t/f.params.length)];}));
   segments.push(...extra);
-  for(const [dx,dy] of [[12,-18],[-24,-18],[12,18],[-24,18],[22,0],[-30,0],[20,-32],[-30,32]]){
-    const box={left:px+dx-2,top:py+dy-8,width:width+4,height:16};
+  // Nearest clear spot beside the event: off the worldlines, the dashed axes and the cone lines too.
+  const spots=[];for(let dx=-40;dx<=40;dx+=4)for(let dy=-40;dy<=40;dy+=4){const d=Math.hypot(dx+width/2,dy);if(d>=11)spots.push([dx,dy,d]);}
+  spots.sort((u,v)=>u[2]-v[2]);
+  for(const lines of [[...segments,...soft],segments])for(const [dx,dy] of spots){
+    const box={left:px+dx-3,top:py+dy-9,width:width+6,height:18};
     if(box.left<p.left||box.top<p.top||box.left+box.width>p.left+p.width||box.top+box.height>p.top+p.height)continue;
     if(s.labels.some(l=>box.left<l.x+l.width&&box.left+box.width>l.x&&box.top<l.y+l.height&&box.top+box.height>l.y))continue;
-    if(segments.some(a=>clipLine(...a,box)))continue;
-    s.text(record.name,px+dx,py+dy,'#e8f2ff',12,'left');return;
+    if(lines.some(a=>clipLine(...a,box)))continue;
+    s.text(record.name,px+dx,py+dy,'#e8f2ff',12,'left');((s.diag||(s.diag={}))[key].letters||(s.diag[key].letters=[])).push(Object.assign(box,{relaxed:lines===segments&&soft.length>0}));return;
   }
 }
 // The green hyperbola is every event at interval L from the origin; it has the same shape in S and S′.
@@ -106,7 +109,7 @@ function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   if(!f.thumbnail)names=axisLabels(s,m,p,{x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',avoid:[...wl,...curve,...guides,...extra,...own]})||[];
   const interval=curve.length?intervalCaption(s,f,p,m,key,curve,[...wl,...guides],extra):null;
   (s.diag||(s.diag={}))[key]={names,interval,worldlines:wl,guides,extra,curve,own};
-  if(!f.thumbnail&&!f.graph)for(const record of namedEvents(f))eventLetter(s,f,p,m,key,record,curve);
+  if(!f.thumbnail&&!f.graph)for(const record of namedEvents(f))eventLetter(s,f,p,m,key,record,[...curve,...own],[...guides,...extra]);
   return m;
 }
 function spatial(s,f,p){
