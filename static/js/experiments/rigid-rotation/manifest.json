@@ -792,7 +792,8 @@
           "label": "ω₃",
           "color": "#a7a0df"
         }
-      ]
+      ],
+      "window": 12
     },
     {
       "id": "energy",
@@ -819,7 +820,8 @@
           "label": "W",
           "color": "#d6bd7f"
         }
-      ]
+      ],
+      "window": 12
     },
     {
       "id": "momentum",
@@ -846,7 +848,8 @@
           "label": "|L|",
           "color": "#8fd5b4"
         }
-      ]
+      ],
+      "window": 12
     },
     {
       "id": "angles",
@@ -858,7 +861,8 @@
           "label": "θ",
           "color": "#82b5ff"
         }
-      ]
+      ],
+      "window": 12
     },
     {
       "id": "precession",
@@ -870,7 +874,8 @@
           "label": "φ̇",
           "color": "#8fd5b4"
         }
-      ]
+      ],
+      "window": 12
     },
     {
       "id": "polhode",
@@ -885,18 +890,6 @@
         {
           "key": "w3",
           "label": "ω₃"
-        }
-      ]
-    },
-    {
-      "id": "norm",
-      "label": "Attitude normalization",
-      "unit": "",
-      "series": [
-        {
-          "key": "quaternionNorm",
-          "label": "|q|",
-          "color": "#8fd5b4"
         }
       ]
     }

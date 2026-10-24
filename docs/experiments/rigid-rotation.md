@@ -365,3 +365,40 @@ and Graphs and phone Breakdown captures were inspected. The thumbnail was
 inspected separately in `lead/sheets/rigid10-thumb.png`, since the lane's gallery
 capture precedes the kit's thumbnail loading. Receipt: `rigid-views/browser.json`;
 run log: `lead/rigid-run10.log`. This is isolated fixture verification.
+
+### Shared polish pass
+
+Viewing-frame choices use the kit buttons in Setup; their existing validated
+close-up IDs still work for the tutor. All mode-relevant zooms remain available
+in Breakdown and short scenes. Their anchors use the body's fixed initial
+projected geometry, with side offsets on desktop and separate nearby rows on
+phone; the energy geometry has a separate row. Button sizes come from the kit.
+The scene can grow in Breakdown and the transport uses the remaining flex space
+to stay at the pane bottom. Tip labels avoid chip rectangles as well as labels.
+
+The quaternion normalization observable and its tests remain in the headless
+model, but the diagnostic graph is removed from the view and manifest. Readouts
+use three significant figures, including trailing zeros. Euler substitutions
+now resolve to signed angular acceleration in rad/s². Time-series descriptors
+use an initial-state window estimate: two near-separatrix flips, or five
+linearized/precession periods, bounded to 0.2–60 s. This does not run a forecast;
+the kit retains fixed forecast-wide y ranges. Rigid rotation has no terminal
+event, so its timeline remains continuous. Browser checks cover clipping and
+overlap in every preset at both widths, natural and forced-280 close-ups,
+Breakdown and Graphs, plus transport pinning and retained zooms.
+
+Final polish evidence: Node **32/32** passed; the guarded browser pass in
+`lead/polish-rigid4.log` passed **345/345**, with 28 captures, 81 body-bound
+checks, 81 clipping/overlap checks and 27 equation-fit checks. No browser
+exceptions; tested source/kit/harness bytes stayed unchanged. The readout band
+reserves 96 px in short close-ups. Phone equations separate symbols from short
+signed results with units, and all checked equations fit without horizontal
+scrolling. Breakdown has a larger 520 px scene; secondary r/θ labels drop on
+phone. Zero torque appears in the readout. Gravity/precession chips avoid the
+vector region, and mg labels prefer an offset beside their tips. The energy
+view's tangent plane is a finite patch, retaining its physical center and
+shrinking only the patch to fit within 90% of its own panel. Analytic tests cover
+that projection bound. Final captures include desktop/phone scenes, every
+close-up, both free-body and heavy-top Breakdown and open Graphs. Receipt and
+captures: `rigid-views/browser.json` and `rigid-views/*.png`; lead sheets rg5/rg6.
+This is isolated rendered verification, not installation or owner approval.

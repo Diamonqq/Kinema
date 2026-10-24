@@ -5,8 +5,9 @@ const dir=new URL('../../static/js/experiments/rigid-rotation/',import.meta.url)
 const load=async name=>import('data:text/javascript;base64,'+Buffer.from(await readFile(new URL(name,dir),'utf8')).toString('base64'));
 const {model}=await load('model.js');
 const source=await readFile(new URL('view.js',dir),'utf8');
+const modelURL='data:text/javascript;base64,'+Buffer.from(await readFile(new URL('model.js',dir),'utf8')).toString('base64');
 // Pure equation/descriptor tests only. Actual three.js is checked by the browser fixture.
-const {view,available,sceneLayout,cameraExtentFactor}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(/^import .*;\r?\n/,'const THREE={};\n')).toString('base64'));
+const {view,available,sceneLayout,cameraExtentFactor,readoutNumber,graphWindow,finitePatchScale}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(/^import .*;\r?\n/,'const THREE={};\n').replace("'./model.js'",JSON.stringify(modelURL))).toString('base64'));
 const manifest=JSON.parse(await readFile(new URL('manifest.json',dir),'utf8'));
 const frame=values=>{const instance=model.create(values);return {instance,params:values,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:''};};
 test('manifest matches every model parameter and complete preset exactly (zero tolerance)',()=>{
@@ -25,7 +26,7 @@ test('Euler decomposition uses signed body torque and cyclic principal terms',()
  const heavy=frame(model.presets.find(p=>p.id==='slow').values);assert.ok(view.equations(heavy).some(e=>e.includes('mathbf r')&&e.includes('times')));
 });
 test('anchored chip rows remain separate from compact key at 320 and desktop (10 px gap minimum)',()=>{
- for(const width of [300,650])for(const p of model.presets){const f=frame(p.values),a=view.closeupAnchors({w:width,h:470},f);assert.ok(Object.values(a).every(p=>p.x>50&&p.x<width-50&&p.y<=470-70));}
+ for(const width of [300,650])for(const p of model.presets){const f=frame(p.values),a=view.closeupAnchors({w:width,h:470},f);assert.ok(!a.body&&!a.frames);assert.equal(Object.keys(a).length,available(f).length-2);assert.ok(Object.values(a).every(p=>p.x>50&&p.x<width-50&&p.y<=470-62));}
 });
 
 test('scene viewport stays above reserved rows at every height from 280 to 850 (1e-12 px)',()=>{
@@ -36,8 +37,8 @@ test('scene viewport stays above reserved rows at every height from 280 to 850 (
   assert.equal(layout.compact,height<420);
  }
 });
-test('280 px scenes keep one target-chip row and a full positive body viewport',()=>{
- for(const preset of model.presets){const f=frame(preset.values),anchors=view.closeupAnchors({w:300,h:280},f);assert.ok(Object.keys(anchors).length<=2);assert.ok(Object.values(anchors).every(a=>a.y===226));assert.equal(sceneLayout(300,280).area.h,164);}
+test('280 px scenes retain all zoom targets and a positive body viewport',()=>{
+ for(const preset of model.presets){const f=frame(preset.values),anchors=view.closeupAnchors({w:300,h:280},f);assert.equal(Object.keys(anchors).length,available(f).length-2);assert.equal(sceneLayout(300,280).area.h,125);}
 });
 test('compact desktop magnification preserves the full motion sphere; phone and closeups unchanged (1e-12)',()=>{
  for(const height of [280,340,419]){
@@ -46,7 +47,23 @@ test('compact desktop magnification preserves the full motion sphere; phone and 
   assert.equal(cameraExtentFactor(300,height),1);
   for(const {id} of view.closeups)assert.equal(cameraExtentFactor(569,height,id),1);
   const f=frame(model.presets[0].values),anchors=view.closeupAnchors({w:569,h:height},f);
-  assert.ok(Object.values(anchors).every(a=>a.y===height-70));
+  assert.ok(Object.values(anchors).every(a=>a.y>=0&&a.y<=height-62));
  }
  assert.equal(cameraExtentFactor(569,470),1);
+});
+test('learner graphs exclude diagnostics and window the physical motion (zero descriptor mismatch)',()=>{
+ assert.ok(!view.graphs.some(g=>g.id==='norm'));
+ for(const preset of model.presets){const window=graphWindow(preset.values);assert.ok(window>=.2&&window<=60);for(const g of view.graphDescriptors(preset.values))if(!g.kind)assert.equal(g.window,window);}
+ assert.ok(graphWindow(model.presets.find(p=>p.id==='flip').values)<15);
+ assert.equal(readoutNumber(.9696),'0.970');assert.equal(readoutNumber(-.9696),'\u22120.970');
+});
+test('narrow Euler results keep signed values and units on a short separate line',()=>{
+ for(const preset of model.presets){const f={...frame(preset.values),narrow:true},eq=view.equations(f);
+  for(const i of [1,3,5]){assert.ok(!eq[i].includes('frac'));assert.match(eq[i],/mathrm\{rad\/s\^2\}/);}
+  assert.ok(!eq.some(line=>line.includes('NaN')));
+ }
+});
+test('finite tangent patch stays within panel margin around its fixed center (1e-12 NDC)',()=>{
+ for(const x of [-.65,0,.65])for(const y of [-.65,0,.65]){const center={x,y},corners=[{x:x-1,y:y-1},{x:x+1,y:y-1},{x:x-1,y:y+1},{x:x+1,y:y+1}],scale=finitePatchScale(center,corners);assert.ok(scale>0);for(const c of corners){assert.ok(Math.abs(x+(c.x-x)*scale)<=.9+1e-12);assert.ok(Math.abs(y+(c.y-y)*scale)<=.9+1e-12);}}
+ for(const {id} of view.closeups)assert.ok(sceneLayout(300,280,id).area.y>=96);
 });
