@@ -55,7 +55,7 @@ function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset,place){
  const clear=(px,py)=>{
   if(py<10||py>s.h-15)return false;
   const rect={x:px-width/2-4,y:py-9,width:width+8,height:18};
-  if([...(s.labels||[]),...(s.vectorObstacles||[])].some(a=>rect.x<a.x+a.width&&rect.x+rect.width>a.x&&rect.y<a.y+a.height&&rect.y+rect.height>a.y))return false;
+  if([...(s.labels||[]),...(s.vectorObstacles||[])].some(a=>rect.x<a.x+a.width+5&&rect.x+rect.width>a.x-5&&rect.y<a.y+a.height+5&&rect.y+rect.height>a.y-5))return false;
   // A vertical downward force keeps its label beyond the tip or beside it, never on its shaft.
   if(dy<0&&Math.abs(dx)<1e-9&&py<ty+12&&Math.abs(px-x)<width/2+10)return false;
   if(segmentHitsRect(x,y,tx,ty,rect))return false;
@@ -79,11 +79,11 @@ function triangle(s,f,live=false){
  s.line(cx,cy,cx+length+10,cy,'#455164',1);s.circle(cx,cy,6,blue);
  s.ctx.setLineDash([3,5]);s.line(x2,cy,x2,y2,green,1);s.ctx.setLineDash([]);
  plan(s,[[cx,cy,vx,0,scale],[x2,cy,0,vy,scale],[cx,cy,vx,vy,scale]]);
- // Each label sits beside its own segment: under the horizontal leg, right of the vertical leg, off the hypotenuse's upper-left side.
- const a=Math.atan2(vy,vx),hx=(cx+x2)/2,hy=(cy+y2)/2;
+ // Each label sits beside its own segment: under the horizontal leg, right of the vertical leg, above the hypotenuse's tip.
+ const a=Math.atan2(vy,vx);
  vector(s,cx,cy,vx,0,live?'v cos φ':'v₀ cos θ',blue,scale,undefined,[(cx+x2)/2,cy+17]);
  vector(s,x2,cy,0,vy,live?'v sin φ':'v₀ sin θ',green,scale,undefined,[x2+10,(cy+y2)/2,'left']);
- vector(s,cx,cy,vx,vy,live?'v':'v₀',purple,scale,undefined,[hx-18*Math.sin(a),hy-18*Math.cos(a)]);s.ctx.beginPath();s.ctx.arc(cx,cy,26,Math.min(0,-a),Math.max(0,-a));s.ctx.strokeStyle=muted;s.ctx.stroke();
+ vector(s,cx,cy,vx,vy,live?'v':'v₀',purple,scale,undefined,[x2-6,y2-15]);s.ctx.beginPath();s.ctx.arc(cx,cy,26,Math.min(0,-a),Math.max(0,-a));s.ctx.strokeStyle=muted;s.ctx.stroke();
  label(s,live?'φ':'θ',cx+36*Math.cos(a/2),cy-36*Math.sin(a/2),muted,13);
  label(s,live?'Velocity components now':'Launch components',s.w/2,42,muted,12);
  label(s,`${num(vx)} m/s horizontal`,s.w/2,s.h-76,blue,12);label(s,`${num(vy)} m/s vertical`,s.w/2,s.h-53,green,12);
@@ -111,7 +111,7 @@ export const view={graphs,closeups,
   const b=data.path[data.path.length-1],bx=Math.max(m.x(b.x)-wB/2-4,m.x(0)+30+wA/2+wB/2+8);
   // Each chip sits within about 40 px of its target: below the launch point, under the ground line beside the landing point, above the apex.
   return {angle:{x:m.x(0)+30,y:m.y(f.params.height)+40},'air-force':{x:bx,y:ground+6},apex:{x:m.x(data.apex.x),y:Math.max(35,top-(wide?52:44))}};},
- key:f=>f.closeup==='air-force'?['Blue: u',...(drawn.has('F_D')?['Green: drag']:[]),'Amber: gravity',...(drawn.has('F_L')?['Violet: lift']:[])].join(' \u00b7 '):f.closeup?'Angles measured from horizontal':'Blue: projectile \u00b7 dashed: vacuum',
+ key:f=>f.closeup==='air-force'?['Blue: u',...(drawn.has('F_D')?['Green: drag']:[]),'Amber: gravity',...(drawn.has('F_L')?['Violet: lift']:[])].join(' \u00b7 '):f.closeup==='angle'?'Angles measured from horizontal':f.closeup?'':'Blue: projectile \u00b7 dashed: vacuum',
  draw(s,f){
   s.vectorObstacles=[];s.vectorChips=[];s.shafts=[];drawn=new Set();const data=preview(f.params);
   if(f.closeup){

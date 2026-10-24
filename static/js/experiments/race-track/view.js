@@ -23,8 +23,10 @@ function car(s,x,y,heading,scale,color=blue){
 }
 // Vectors keep their true proportion; one too short to read is neither labeled nor drawn (its value stays in the equations).
 const MIN_ARROW=14;
-function arrow(s,x,y,dx,dy,label,color){
- if(Math.hypot(dx,dy)<MIN_ARROW)return;const tx=x+dx,ty=y-dy;s.arrow(x,y,tx,ty,color,2);
+// Friction alone is drawn at its true, short length down to MIN_FRICTION so the cross-section agrees with the equations.
+const MIN_FRICTION=4;
+function arrow(s,x,y,dx,dy,label,color,min=MIN_ARROW){
+ if(Math.hypot(dx,dy)<min)return;const tx=x+dx,ty=y-dy;s.arrow(x,y,tx,ty,color,2);
  tipLabel(s,label,tx,ty,color);
 }
 // Keep every component rooted at contact; labels may move to the nearest
@@ -38,7 +40,7 @@ function tipLabel(s,label,tx,ty,color){
 }
 function projection(s,x,y,dx,dy,label,color){
  if(Math.hypot(dx,dy)<MIN_ARROW)return;
- s.ctx.setLineDash([4,4]);s.arrow(x,y,x+dx,y-dy,color,1.4);s.ctx.setLineDash([]);if(s.w>=440)tipLabel(s,label,x+dx,y-dy,color);
+ s.ctx.setLineDash([4,4]);s.arrow(x,y,x+dx,y-dy,color,1.4);s.ctx.setLineDash([]);tipLabel(s,label,x+dx,y-dy,color);
 }
 export function bankSnapshot(f){return curveForces({...f.params,speed:f.sample.speed,radius:f.params.radius,bank:f.params.bank});}
 let drawnForces=new Set(['N','mg','f']);
@@ -51,8 +53,8 @@ function bank(s,f,box,components){
  car(s,cx,cy-5,-theta,Math.min(w/28,10));
  arrow(s,cx,cy,force.normal*sn*k,force.normal*c*k,'N',blue);
  arrow(s,cx,cy,0,-f.params.mass*f.params.gravity*k,'mg',orange);
- arrow(s,cx,cy,force.lateral*c*k,-force.lateral*sn*k,'f',green);
- drawnForces=new Set(['N','mg']);if(Math.abs(force.lateral)*k>=MIN_ARROW)drawnForces.add('f');
+ arrow(s,cx,cy,force.lateral*c*k,-force.lateral*sn*k,'f',green,MIN_FRICTION);
+ drawnForces=new Set(['N','mg']);if(Math.abs(force.lateral)*k>=MIN_FRICTION)drawnForces.add('f');
  if(components&&f.params.bank>=1){
   // Orthogonal projections and completion guides form the actual vector
   // rectangle, all at the same force scale and the same contact origin.
@@ -81,7 +83,7 @@ function grip(s,f,box){
 export const view={graphs,closeups,
  graphDescriptors:p=>graphs.map(g=>({...g,window:Math.max(5,(4*p.halfStraight+2*Math.PI*p.radius)/Math.max(1,p.speed))})),
  mount(shell){shell.q('.exp-transport').style.background='#191e26';shell.equations.style.paddingBottom='64px';shell.scene.style.minHeight='440px';},
- closeupAnchors(s,f){if(f.closeup)return {};if(f.breakdown)return {corner:{x:s.w*.28,y:s.h-82},grip:{x:s.w*.73,y:s.h-86}};const p=f.params,pad=Math.max(4,p.radius*.08),m=world(s,[-p.halfStraight-p.radius-pad,p.halfStraight+p.radius+pad,-p.radius-pad,p.radius+pad],100,s.h-132);return {corner:{x:m.x(p.halfStraight),y:m.y(p.radius)-48},grip:{x:m.x(0),y:m.y(-p.radius)+52}};},
+ closeupAnchors(s,f){if(f.closeup)return {};if(f.breakdown){const narrow=s.w<440;return {corner:narrow?{x:80,y:184}:{x:s.w*.27-110,y:54+(s.h-184)*.53+52},grip:{x:s.w*.73,y:s.h-86}};}const p=f.params,pad=Math.max(4,p.radius*.08),m=world(s,[-p.halfStraight-p.radius-pad,p.halfStraight+p.radius+pad,-p.radius-pad,p.radius+pad],100,s.h-132);return {corner:{x:m.x(p.halfStraight),y:m.y(p.radius)-48},grip:{x:m.x(0),y:m.y(-p.radius)+52}};},
  key:f=>f.closeup==='grip'?(Math.abs(f.params.drive-bankSnapshot(f).longitudinal)>1?'Solid: tire force \u00b7 hollow: requested drive':'Solid: tire force \u00b7 radius: \u03bcN'):f.closeup||f.breakdown?'Blue N · amber mg'+(drawnForces.has('f')?' · green f':'')+' · right is inward':'Track centerline · tire grip sets the corner limit',
  draw(s,f){
   const p=f.params,q=f.sample,narrow=s.w<440;

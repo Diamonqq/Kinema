@@ -92,5 +92,14 @@ test('zoom substitutions and readout carry units, and each triangle label sits b
  view.draw(s,f('air-force'));assert.ok(labels.some(l=>/^v_x [\d.]+ m\/s · v_y [\d.]+ m\/s$/.test(l.text.replace('−','-'))),labels.map(l=>l.text).join('|'));
  labels.length=0;view.draw(s,f('angle'));
  const at=n=>labels.find(l=>l.text===n),cos=at('v₀ cos θ'),sin=at('v₀ sin θ'),hyp=at('v₀');
- assert.ok(cos&&sin&&hyp);assert.ok(sin.x>cos.x+40&&hyp.y<cos.y-40&&hyp.x<sin.x-40);
+ assert.ok(cos&&sin&&hyp);assert.ok(sin.x>cos.x+40&&hyp.y<sin.y-20&&Math.abs(hyp.x-sin.x)<30);
+});
+
+test('apex zoom has no angle caption, and the launch triangle labels v₀ at the hypotenuse tip',()=>{
+ const instance=model.create(),labels=[],ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})});
+ const f=c=>({params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:c,breakdown:false});
+ assert.equal(view.key(f('apex')),'');assert.match(view.key(f('angle')),/Angles measured/);
+ const tips=[],s={w:1000,h:600,ctx,labels,line(){},circle(){},arrow(x,y,tx,ty){tips.push([tx,ty]);},text(t,x,y){labels.push({text:t,x,y});}};
+ view.draw(s,f('angle'));const v0=labels.find(l=>l.text==='v₀'),tip=tips.at(-1);
+ assert.ok(Math.hypot(v0.x-tip[0],v0.y-tip[1])<25,JSON.stringify([v0,tip]));
 });

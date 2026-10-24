@@ -52,3 +52,17 @@ test('Breakdown draws and labels no arrow shorter than 14 px, and never stretche
  view.draw(s,{params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:true});
  assert.ok(arrows.every(l=>l>=14-1e-9),arrows.join());assert.equal(labels.includes('f'),false);
 });
+
+test('Breakdown draws friction at its true scale with a tip label and caption, and labels the projections at 320',()=>{
+ const params=Object.fromEntries(model.params.map(p=>[p.key,p.value])),instance=model.create(params),labels=[],arrows=[];
+ const ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})}),s={w:320,h:440,ctx,labels,line(){},circle(){},arrow(x,y,tx,ty){arrows.push(Math.hypot(tx-x,ty-y));},text(t){labels.push(t);}};
+ const f={params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:true};
+ view.draw(s,f);
+ const force=bankSnapshot(f),big=Math.max(force.normal,params.mass*params.gravity);
+ assert.ok(labels.includes('f'));assert.ok(/green f/.test(view.key(f)));
+ // N, mg and f share one force scale: lengths stay in the ratio of the forces.
+ const [n,mg]=arrows,fr=arrows.find((a,i)=>i>1&&Math.abs(a-Math.abs(force.lateral)/big*Math.max(n,mg))<1e-6);
+ assert.ok(fr!==undefined,arrows.join());
+ assert.ok(labels.includes('N sin θ')&&labels.includes('N cos θ'));
+ const a=view.closeupAnchors({w:320,h:440},f);assert.ok(a.corner.y<200&&a.corner.y>150);
+});
