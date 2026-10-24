@@ -1,5 +1,5 @@
 // View utilities owned by the oscillator lane. SI geometry stays in each core.
-import {num,texNum,withUnit} from '../kit/format.js';
+import {num,texNum,withUnit,niceTicks,tickLabel} from '../kit/format.js';
 import {easeCamera} from '../kit/stage.js';
 export {withUnit};
 import {spectrum} from '../anharmonic/analysis.js';
@@ -8,13 +8,13 @@ export const fmt=(x,n=3)=>num(x,n);
 export const tex=(x,n=3)=>texNum(x,n);
 export function label(s,text,x,y,color=C.ink,size=12,align='center'){
  const c=s.ctx,parts=String(text).split(/(_\{[^}]+\})/).filter(Boolean).map(t=>({text:t.startsWith('_{')?t.slice(2,-1):t,sub:t.startsWith('_{')}));
- const widths=parts.map(p=>{c.font=`${size*(p.sub?.72:1)}px system-ui,sans-serif`;return c.measureText(p.text).width;}),width=widths.reduce((a,b)=>a+b,0),left=align==='left'?x:align==='right'?x-width:x-width/2;
+ const widths=parts.map(p=>{c.font=`${size*(p.sub?.8:1)}px system-ui,sans-serif`;return c.measureText(p.text).width;}),width=widths.reduce((a,b)=>a+b,0),left=align==='left'?x:align==='right'?x-width:x-width/2;
  if(left<5||left+width>s.w-5||y<size||y>s.h-44)return false;
  const rect={x:left-3,y:y-size*.65,width:width+6,height:size*1.4};
  if([...(s.labels||[]),...(s.avoid||[])].some(b=>rect.x<b.x+b.width+2&&rect.x+rect.width>b.x-2&&rect.y<b.y+b.height+2&&rect.y+rect.height>b.y-2))return false;
  if(!parts.some(p=>p.sub)){s.text(text,x,y,color,size,align);return true;}
  c.fillStyle=color;c.textAlign='left';c.textBaseline='middle';let cursor=left;
- parts.forEach((p,i)=>{c.font=`${size*(p.sub?.72:1)}px system-ui,sans-serif`;c.fillText(p.text,cursor,y+(p.sub?size*.24:0));cursor+=widths[i];});
+ parts.forEach((p,i)=>{c.font=`${size*(p.sub?.8:1)}px system-ui,sans-serif`;c.fillText(p.text,cursor,y+(p.sub?size*.24:0));cursor+=widths[i];});
  s.labels.push({...rect,text:String(text)});return true;
 }
 export function tip(s,text,x,y,color){
@@ -37,18 +37,27 @@ export function fixedMap(s,bounds,{bottom=100,top=35,padding=30}={}){
  s.snap=false;const c=s.camera;return {x:x=>s.w/2+(x-c.cx)*c.scale,y:y=>s.h/2-(y-c.cy)*c.scale,scale:c.scale};
 }
 export function linePlot(s,{title,points=[],xkey='x',ykey='y',cursor,color=C.blue,xlabel='',ylabel='',scatter=false,yFloor}){
- s.resize();s.begin();const w=s.w,h=s.h,l=42,r=w-17,t=48,b=h-34;
- if(ylabel)label(s,ylabel,l,33,C.dim,10,'left');
+ s.resize();s.begin();const w=s.w,h=s.h,r=w-17,t=48,b=h-34;let l=42;
  const data=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
- s.line(l,t,l,b,C.grid,1);s.line(l,b,r,b,C.grid,1);
- if(!data.length){s.text('Play to collect samples',(l+r)/2,(t+b)/2,C.dim,11);return;}
+ if(!data.length){s.line(l,t,l,b,C.grid,1);s.line(l,b,r,b,C.grid,1);if(ylabel)label(s,ylabel,l,33,C.dim,10,'left');s.text('Play to collect samples',(l+r)/2,(t+b)/2,C.dim,11);return;}
  let xmin=Math.min(...data.map(p=>p[xkey])),xmax=Math.max(...data.map(p=>p[xkey])),ymin=Math.min(...data.map(p=>p[ykey])),ymax=Math.max(...data.map(p=>p[ykey]));
  if(xmax-xmin<1e-9){xmin-=.5;xmax+=.5;}if(yFloor!==undefined){ymin=yFloor;ymax=Math.max(ymax,yFloor+1e-9);}else if(ymax-ymin<1e-9){ymin-=.5;ymax+=.5;}
- const dy=(ymax-ymin)*.12;ymin=yFloor??ymin-dy;ymax+=dy;s.plotBounds={xmin,xmax,ymin,ymax,left:l,right:r,top:t,bottom:b};const xx=x=>l+(r-l)*(x-xmin)/(xmax-xmin),yy=y=>b-(b-t)*(y-ymin)/(ymax-ymin);
+ const dy=(ymax-ymin)*.12;ymin=yFloor??ymin-dy;ymax+=dy;
+ // Round ticks (zero included when in range); the left gutter widens to fit the widest tick text.
+ s.ctx.font='9px system-ui,sans-serif';
+ const yt=niceTicks(ymin,ymax,Math.max(2,Math.floor((b-t)/38))),ylabels=yt.ticks.map(v=>tickLabel(v,yt.step));
+ l=Math.max(42,Math.ceil(Math.max(0,...ylabels.map(x=>s.ctx.measureText(x).width)))+11);
+ const xt=niceTicks(xmin,xmax,Math.max(2,Math.floor((r-l)/64))),xlabels=xt.ticks.map(v=>tickLabel(v,xt.step));
+ s.plotBounds={xmin,xmax,ymin,ymax,left:l,right:r,top:t,bottom:b};const xx=x=>l+(r-l)*(x-xmin)/(xmax-xmin),yy=y=>b-(b-t)*(y-ymin)/(ymax-ymin);
+ if(ylabel)label(s,ylabel,l,33,C.dim,10,'left');
+ const grid='rgba(160,180,210,0.10)',zero='rgba(160,180,210,0.28)';
+ yt.ticks.forEach((v,i)=>{const y=yy(v);s.line(l,y,r,y,v===0?zero:grid,1);s.text(ylabels[i],l-5,y,C.dim,9,'right');});
+ xt.ticks.forEach((v,i)=>{const x=xx(v);s.line(x,t,x,b,v===0?zero:grid,1);s.text(xlabels[i],Math.max(l,Math.min(r,x)),b+12,C.dim,9,'center');});
+ s.line(l,t,l,b,C.grid,1);s.line(l,b,r,b,C.grid,1);
  const c=s.ctx;c.save();c.beginPath();c.rect(l,t,r-l,b-t);c.clip();
  if(scatter){for(const p of data)s.circle(xx(p[xkey]),yy(p[ykey]),2.6,color);}else{c.beginPath();let pen=false;for(const p of points){if(!Number.isFinite(p[xkey])||!Number.isFinite(p[ykey])){pen=false;continue;}if(pen)c.lineTo(xx(p[xkey]),yy(p[ykey]));else c.moveTo(xx(p[xkey]),yy(p[ykey]));pen=true;}c.strokeStyle=color;c.lineWidth=1.7;c.stroke();}
  if(cursor&&Number.isFinite(cursor[xkey])&&Number.isFinite(cursor[ykey]))s.circle(xx(cursor[xkey]),yy(cursor[ykey]),4,'#ffffff');c.restore();
- s.text(fmt(ymax),l-5,t,C.dim,9,'right');s.text(fmt(ymin),l-5,b,C.dim,9,'right');s.text(fmt(xmin),l,b+12,C.dim,9,'left');s.text(fmt(xmax),r,b+12,C.dim,9,'right');s.text(xlabel,(l+r)/2,h-7,C.dim,10);
+ s.text(xlabel,(l+r)/2,h-7,C.dim,10);
 }
 const spectra=new WeakMap(),periods=new WeakMap();
 export function drawAnalysis(stage,descriptor,frame,{position='x',velocity='v',periodPoint}={}){

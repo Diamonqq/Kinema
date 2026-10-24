@@ -1,5 +1,6 @@
 import {palette} from '../kit/stage.js';
 import {create} from './model.js';
+import {label} from '../motion-generator/view-tools.js';
 const envelopes=new WeakMap(),drag=new WeakMap(),sub=n=>String(n).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
 const fmt=x=>(Math.abs(x)<.0005?0:x).toFixed(3);
 const signed=x=>fmt(x).replace('-','−'),windows=new WeakMap();
@@ -13,7 +14,7 @@ export function springForces(geometry,index){
  ].filter(force=>geometry.springs[force.spring]).map(force=>({...force,name:'F'+sub(index+1)+','+sub(force.spring+1),tex:`F_{${index+1},${force.spring+1}}`}));
 }
 function forceTip(stage,force,x,y){
- const size=stage.w<400?10:11,color='#a8d4b8';stage.ctx.font=`${size}px system-ui,sans-serif`;
+ const size=stage.w<400?11:12,color='#a8d4b8';stage.ctx.font=`${size}px system-ui,sans-serif`;
  const full=force.name+' '+forceValue(force.value)+' N';
  const choices=stage.w<400?[force.name]:[full,force.name];
  for(const text of choices){
@@ -54,7 +55,7 @@ export const view={
  graphs,graphDescriptors(p){let window=windows.get(p);if(window===undefined){window=displacementWindow(p);windows.set(p,window);}return graphs.map(g=>['motion','modes'].includes(g.id)?{...g,window,series:Array.from({length:p.n},(_,i)=>({key:(g.id==='motion'?'x':'q')+(i+1),label:(g.id==='motion'?'x':'q')+sub(i+1),color:palette[i%palette.length]}))}:g);},
  closeupAnchors(s,f){const {map}=setup(s,f),massH=Math.max(13,Math.min(76,.48*map.scale))*.8;return {spring:{x:map.x(1.95),y:map.y(0)+massH*.9+54}};},
  closeups:[{id:'spring',label:'Zoom · middle spring'}],
- key:f=>f.closeup?'F₂,₂: spring 2 on m₂':f.breakdown?'Fᵢ,ⱼ: spring j on mass i':`${f.params.n} masses · drag a mass to change its release point`,
+ key:f=>f.closeup?'F₂,₂ is the force of spring 2 on m₂':f.breakdown?'':`${f.params.n} masses · drag a mass to change its release point`,
  draw(s,f){
   const {ctx,w,h}=s,{map,n,length,zoom,a,b}=setup(s,f),{x,y,scale}=map,cy=y(0),massW=Math.max(13,Math.min(76,.48*scale)),massH=massW*.8;
   s.line(x(-.05),cy+massH*.58,x(length+.05),cy+massH*.58,'#2c3744',1);
@@ -87,13 +88,14 @@ export const view={
    block(s,px,cy,massW,massH,color);
    // Stationary captions stay in the equilibrium column, never chase a body.
    s.text('m'+sub(i+1)+(scale*1.3>85?' · '+m.mass+' kg':''),ex,cy+massH*.9+17,color,n>4?10:12);
-   if(scale*1.3>85)s.text('x'+sub(i+1)+' '+signed(m.displacement)+' m',ex,cy+massH*.9+36,'#97a6bb',n>4?9:11);
+   if(scale*1.3>85)s.text('x'+sub(i+1)+' '+signed(m.displacement)+' m',ex,cy+massH*.9+36,'#97a6bb',n>4?10:11);
    if(f.breakdown){
     for(const force of springForces(f.geometry,i)){const fy=cy-massH*.8-(force.spring-i)*22,F=force.value;if(Math.abs(F)>.002){const tip=Math.max(9,Math.min(w-9,px+Math.sign(F)*Math.min(scale*.58,Math.abs(F)*14+12)));s.arrow(px,fy,tip,fy,'#a8d4b8',2);forceLabels.push({force,x:tip,y:fy});}}
    }
   });
   // Place after every apparatus label so later masses cannot collide with a tip.
-  for(const label of forceLabels)forceTip(s,label.force,label.x,label.y);
+  for(const item of forceLabels)forceTip(s,item.force,item.x,item.y);
+  if(f.breakdown)label(s,'F_{i,j} = force of spring j on mass i',w/2,h-50,'#93a5bd',13);
 
  },
  equations(f){const p=f.params,g=f.geometry;return g.masses.map((m,i)=>{

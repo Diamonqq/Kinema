@@ -78,7 +78,7 @@ test('force tip labels carry signed N values at desktop and simplify before narr
   const ctx=new Proxy({font:'11px system-ui',measureText(text){const size=Number.parseFloat(this.font),length=String(text).length*size*.58;return {width:length,actualBoundingBoxLeft:length/2,actualBoundingBoxRight:length/2,actualBoundingBoxAscent:size*.7,actualBoundingBoxDescent:size*.3}}},{get:(obj,key)=>obj[key]||(()=>{})});
   const stage=Object.assign(Object.create(VectorStage.prototype),{ctx,w:width,h:height,labels:[],snap:true});
   const instance=model.create({x1,x2:0,k2:40}),frame={instance,geometry:instance.geometry(),params:instance.params,sample:instance.sample(),t:0,breakdown:true,closeup:''};
-  view.draw(stage,frame);const forceLabels=stage.labels.filter(l=>/^F/.test(l.text));assert.equal(forceLabels.length,3);
+  view.draw(stage,frame);const forceLabels=stage.labels.filter(l=>/^F[₀-₉]/.test(l.text));assert.equal(forceLabels.length,3);
   if(width<400)assert.ok(forceLabels.every(l=>/^F[₀-₉]+,[₀-₉]+$/.test(l.text)));
   else {assert.ok(forceLabels.every(l=>/^F[₀-₉]+,[₀-₉]+ (?:−)?\d+\.\d{2} N$/.test(l.text)));assert.ok(forceLabels.some(l=>l.text.includes('−')));}
   for(const label of forceLabels){assert.ok(label.x>=0&&label.x+label.width<=width&&label.y>=0&&label.y+label.height<=stage.h);assert.ok(stage.labels.every(other=>other===label||!intersects(label,other)));}
