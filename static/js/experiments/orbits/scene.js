@@ -13,6 +13,7 @@ export function sceneHeight(shell,narrowHeight,closeup,cap=false,wideHeight=420,
  if(!shell?.scene)return;
  const height=closeup?closeupHeight:shell.stage.w<460?narrowHeight:wideHeight;
  if(cap){shell.scene.style.setProperty('flex-grow','0','important');shell.scene.style.setProperty('max-height',height+'px','important');}
+ else{shell.scene.style.removeProperty('flex-grow');shell.scene.style.removeProperty('max-height');}
  if(shell.scene.style.minHeight!==height+'px'){
   shell.scene.style.minHeight=height+'px';shell.scene.style.flexBasis=height+'px';shell.stage.resize();
  }

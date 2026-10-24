@@ -59,7 +59,7 @@ export function curveFor(params,lifecycle={}){
 }
 const panelCache=new WeakMap(),obstacleCache=new WeakMap(),chipCache=new WeakMap();
 function chipLayout(s,owner,rows,panes,targets,avoid,layout){
- const cached=chipCache.get(rows),key=JSON.stringify([s.w,layout.oy,targets]);if(cached?.key===key&&cached.panes===panes)return cached.result;
+ const cached=chipCache.get(rows),key=JSON.stringify([s.w,layout.height,targets]);if(cached?.key===key&&cached.panes===panes)return cached.result;
  const sizes=id=>{const b=owner?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
  const result=placeChips(targets,sizes,{width:s.w,top:layout.oy+8,bottom:layout.oy+layout.height-58,rects:forecastObstacles(panes,rows),segments:forecastSegments(panes,rows),avoid});
  chipCache.set(rows,{key,panes,result});return result;
@@ -73,10 +73,10 @@ export function impactCaption(panel,initial,b){
  const above=Math.min(top,map.y(initial[0].y))-Math.max(radius,Math.max(5,initial[1].radius*map.scale))-10;
  return {text,x:Math.max(rect.x+width/2+6,Math.min(rect.x+rect.w-width/2-6,bar.x+width/2-4)),y:Math.max(rect.y+12,above),width,bar};
 }
-// The frames are one fixed-size block (side by side on desktop, stacked when narrow) centered in the live stage, so the
-// scale never changes with the stage height and the chips keep the same offset from their targets as the block re-centers.
+// The frames fill the live stage (side by side on desktop, stacked when narrow), so they grow and shrink with the view; the
+// chips follow their targets.
 export function frameLayout(w,h=0){
- const narrow=w<460,height=narrow?560:520,oy=Math.max(0,Math.round(((h||height)-height)/2)),top=58+oy,bottom=oy+height-58,gap=44;
+ const narrow=w<460,height=Math.max(300,h||(narrow?560:520)),oy=0,top=58,bottom=height-58,gap=44;
  return {narrow,height,oy,top,bottom,gap,side:bottom-top,stack:(bottom-top-gap)/2};
 }
 // Each frame is framed around the encounter itself (where both bodies start and where they pass closest), with a fixed camera;
@@ -95,7 +95,7 @@ export function exitPoint(rows,panel,frame,j){
  return last||{x:map.x(rows.at(-1).geometry.frames[frame][j].x),y:map.y(rows.at(-1).geometry.frames[frame][j].y)};
 }
 export function comparisonPanels(s,rows){
- const layout=frameLayout(s.w,s.h),key=s.w+':'+layout.oy,cached=panelCache.get(rows);if(cached?.key===key)return cached.panes;
+ const layout=frameLayout(s.w,s.h),key=s.w+':'+layout.height,cached=panelCache.get(rows);if(cached?.key===key)return cached.panes;
  const {narrow,top,gap,side,stack}=layout,m=narrow?12:16,pw=(s.w-3*m)/2;
  const bounds=['lab','cm'].map(frame=>encounterBounds(rows,frame));
  const stacked=[{x:m,y:top,w:s.w-2*m,h:stack},{x:m,y:top+stack+gap,w:s.w-2*m,h:stack}],beside=[{x:m,y:top,w:pw,h:side},{x:2*m+pw,y:top,w:pw,h:side}];
@@ -271,7 +271,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
  key:f=>f.closeup==='momentum'?'Blue p₁ · amber p₂ · green total P':f.closeup==='potential'?'Blue Ueff · amber relative E · white r':
   f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?('Blue projectile \u00b7 amber target \u00b7 '+(f.contactForceDrawn?'green F':'blue u')):'Blue projectile · amber target · + CM',
  draw(s,f){
-  const owner=shells.get(s);if(owner){parameterShells.set(f.params,owner);sceneHeight(owner,560,!!f.closeup,true,520,f.closeup==='momentum'?500:360);}s.chipRects=[];s.pathObstacles=[];s.physicsSegments=[];s.labelObstacles=[];
+  const owner=shells.get(s);if(owner){parameterShells.set(f.params,owner);sceneHeight(owner,560,!!f.closeup,!!f.closeup,460,f.closeup==='momentum'?500:360);}s.chipRects=[];s.pathObstacles=[];s.physicsSegments=[];s.labelObstacles=[];
   if(s.h<200){const b=f.geometry.frames.lab,bounds=boundsFor([{geometry:f.geometry}],'lab'),map=camera(s,bounds,12,12);
    s.ctx.setLineDash([3,5]);s.line(map.x(b[0].x),map.y(b[0].y),map.x(b[1].x),map.y(b[0].y),C.muted);s.line(map.x(b[0].x),map.y(b[1].y),map.x(b[1].x),map.y(b[1].y),C.amber);s.ctx.setLineDash([]);
    b.forEach((q,i)=>s.circle(map.x(q.x),map.y(q.y),Math.max(3,q.radius*map.scale),i?C.amber:C.blue));return;
@@ -297,7 +297,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   if(Math.abs(f.params.b)>.001)avoid.push({x:impact.x-impact.width/2,y:impact.y-8,width:impact.width,height:16},{x:impact.bar.x-1,y:impact.bar.y,width:2,height:impact.bar.bottom-impact.bar.y});
   const chips=chipLayout(s,owner,data.rows,panes,{momentum:{x:lab.x(start.x),y:lab.y(start.y)},contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y)},
    potential:{x:cmMap.x(first_cm[1].x),y:cmMap.y(first_cm[1].y)},scattering:exitPoint(data.rows,panes[0],'lab',0),'cross-section':exitPoint(data.rows,panes[1],'cm',0)},avoid,layout);
-  s.chipTargets={momentum:{x:lab.x(start.x),y:lab.y(start.y)},contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y)},potential:{x:cmMap.x(first_cm[1].x),y:cmMap.y(first_cm[1].y)},scattering:exitPoint(data.rows,panes[0],'lab',0),'cross-section':exitPoint(data.rows,panes[1],'cm',0)};
+  s.chipAnchorNames=chips.anchors;s.chipTargets={momentum:{x:lab.x(start.x),y:lab.y(start.y)},contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y)},potential:{x:cmMap.x(first_cm[1].x),y:cmMap.y(first_cm[1].y)},scattering:exitPoint(data.rows,panes[0],'lab',0),'cross-section':exitPoint(data.rows,panes[1],'cm',0)};
   s.chipRects=Object.values(chips.boxes);s.targetAnchors=Object.fromEntries(Object.entries(chips.boxes).map(([id,b])=>[id,{x:b.x+b.width/2,y:b.y}]));
   for(const [i,frame] of ['lab','cm'].entries()){
    const {rect,map}=panes[i],b=g.frames[frame];

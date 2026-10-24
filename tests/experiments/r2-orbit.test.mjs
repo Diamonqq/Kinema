@@ -19,21 +19,17 @@ const layoutFor=(w,h,rows,params)=>{
  s.chipRects=Object.values(result.boxes);
  return {panes,targets,avoid,rects,segments,result,s};
 };
-test('collision frames re-center with the stage; scale is fixed and each chip keeps its offset from its target',()=>{
+test('collision frames fill the stage at every view height and each chip stays beside its own target',()=>{
  for(const id of ['glancing','exchange']){
   const params=model.presets.find(p=>p.id===id).values,data=forecastFor(params);
-  for(const [w,heights] of [[569,[850,600,520]],[306,[640,600,560]]]){
-   const [base,...rest]=heights.map(h=>layoutFor(w,h,data.rows,params));
-   for(const [n,other] of rest.entries()){
-    assert.equal(other.panes[0].map.scale,base.panes[0].map.scale);
-    const dy=other.panes[0].rect.y-base.panes[0].rect.y;
-    assert.deepEqual(other.panes.map(p=>p.rect.h),base.panes.map(p=>p.rect.h));
-    for(const [i,k] of Object.keys(other.targets).entries()){
-     assert.ok(Math.abs(other.targets[k].y-base.targets[k].y-dy)<1e-9,k+' target moves with the block');
-     assert.ok(Math.abs((other.s.chipRects[i].y-other.targets[k].y)-(base.s.chipRects[i].y-base.targets[k].y))<1e-9,k+' chip offset');
-     assert.ok(Math.abs(other.s.chipRects[i].x-base.s.chipRects[i].x)<1e-9,k+' chip x');
-    }
-    const last=other.panes.at(-1).rect,top=other.panes[0].rect.y,bottom=last.y+last.h;assert.ok(Math.abs(top-(heights[n+1]-bottom))<=1.5,'block centered');
+  for(const [w,heights] of [[569,[685,533,460]],[306,[640,560]]]){
+   let last=0;
+   for(const h of heights){
+    const L=layoutFor(w,h,data.rows,params),top=L.panes[0].rect.y,bottom=L.panes.at(-1).rect.y+L.panes.at(-1).rect.h;
+    assert.ok(top>=50&&bottom<=h-40,id+' '+w+' '+h+' panels inside the stage');
+    assert.ok(bottom>=h-62,id+' '+w+' '+h+' panels reach the bottom caption, no empty band: '+(h-bottom));
+    for(const [i,k] of Object.keys(L.targets).entries())assert.ok(gap(L.targets[k],L.s.chipRects[i])<=80,id+' '+w+' '+h+' '+k+' '+gap(L.targets[k],L.s.chipRects[i]));
+    if(last)assert.ok(L.panes[0].map.scale<=last+1e-9,'scale does not grow when the stage shrinks');last=L.panes[0].map.scale;
    }
   }
  }

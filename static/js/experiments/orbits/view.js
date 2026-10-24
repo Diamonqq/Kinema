@@ -60,6 +60,8 @@ export function orbitBounds(rows,params,frame){
 // Fixed chip obstacles include the entire orbit and every Breakdown arrow,
 // so seeking or playing cannot move the apparatus underneath a chip.
 const layoutCache=new WeakMap(),chipLayouts=new WeakMap();
+// One anchor rule per chip, the same in every view: beside the arrow tip, up-left of the CM, down-left of the primary.
+export const ORBIT_ANCHORS={periapsis:['ne','e','n','se','nw','w','s','sw'],barycentre:['nw','w','n','ne','sw','s','e','se'],area:['sw','w','s','se','nw','n','e','ne']},ORBIT_GAPS={periapsis:26,barycentre:22,area:22};
 export function breakdownSegments(f,map,w){
  const g=f.geometry,q=f.sample,a=g.bodies[0],b=g.bodies[1],r=g.relative,mag=q.r;
  const x=map.x(b.x),y=map.y(b.y),nx=r.x/mag,ny=r.y/mag,v=values(f);
@@ -154,7 +156,7 @@ export const view={graphs,closeups,
   f.closeup==='area'?'Relative orbit · equal time intervals':f.closeup==='periapsis'?'Blue v · amber radial · violet tangent · green gravity':
   f.closeup==='barycentre'?'Distances and motion share one physical scale':f.params.frame==='primary'&&f.sample.bodyCount===2?'× primary focus · blue companion · + CM':'Pale primary · blue companion · + CM',
  draw(s,f){
-  const shell=shells.get(s);if(shell){parameterShells.set(f.params,shell);sceneHeight(shell,500,!!f.closeup,true);}
+  const shell=shells.get(s);if(shell){parameterShells.set(f.params,shell);sceneHeight(shell,500,!!f.closeup,!!f.closeup);}
   s.chipRects=[];s.labelObstacles=[];s.physicsSegments=[];
   if(s.h<200){
    const q=f.sample,r=f.geometry.relative,e=q.eccentricity,a=q.semiMajorAxis,mu=G*(f.params.m1+f.params.m2),h=r.x*r.vy-r.y*r.vx,
@@ -185,11 +187,13 @@ export const view={graphs,closeups,
   if(f.closeup==='area'){
    const radius=Math.max(...rows.map(p=>Math.hypot(p.geometry.relative.x,p.geometry.relative.y)),rows[0].sample.apoapsis||0);bounds=[-radius*1.15,radius*1.15,-radius*1.15,radius*1.15];
   }
-  const map=camera(s,bounds,f.closeup?70:s.w<460?160:85,f.closeup?95:s.w<460?160:95);
+  const map=camera(s,bounds,f.closeup?70:s.w<460?120:85,f.closeup?95:s.w<460?150:95);
+  {let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;for(const row of rows)for(const q of [(row.geometry.frames[f.params.frame]||row.geometry.bodies)[1]]){x0=Math.min(x0,q.x);x1=Math.max(x1,q.x);y0=Math.min(y0,q.y);y1=Math.max(y1,q.y);}
+   s.apparatusBox={x:map.x(x0),y:map.y(y1),width:map.x(x1)-map.x(x0),height:map.y(y0)-map.y(y1)};}
   if(!f.closeup&&data.done){
    const layout=orbitChipLayout(rows,f.params,map,s.w),sizes=id=>{const b=shell?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
-   const placed=chipLayouts.get(layout)||chipLayouts.set(layout,placeChips(layout.targets,sizes,{width:s.w,top:8,bottom:s.h-100,rects:layout.rects,segments:layout.segments})).get(layout);
-   s.chipTargets=layout.targets;s.chipRects=Object.values(placed.boxes);s.targetAnchors=Object.fromEntries(Object.entries(placed.boxes).map(([id,b])=>[id,{x:b.x+b.width/2,y:b.y}]));s.pathObstacles=layout.rects;
+   const placed=chipLayouts.get(layout)||chipLayouts.set(layout,placeChips(layout.targets,sizes,{width:s.w,top:8,bottom:s.h-100,rects:layout.rects,segments:layout.segments,prefer:ORBIT_ANCHORS,gaps:ORBIT_GAPS})).get(layout);
+   s.chipTargets=layout.targets;s.chipAnchorNames=placed.anchors;s.chipRects=Object.values(placed.boxes);s.targetAnchors=Object.fromEntries(Object.entries(placed.boxes).map(([id,b])=>[id,{x:b.x+b.width/2,y:b.y}]));s.pathObstacles=layout.rects;
   }
   if(f.closeup==='barycentre'){
    title(s,'Both bodies orbit their center of mass');
