@@ -7,7 +7,7 @@ const formatURL=new URL('../../static/js/experiments/kit/format.js',import.meta.
 const modelURL='data:text/javascript;base64,'+Buffer.from(await readFile(new URL('model.js',dir),'utf8')).toString('base64');
 const text=await readFile(new URL('view.js',dir),'utf8');
 const source=text.replace("'/vendor/three/build/three.module.js'",JSON.stringify(threeURL)).replace("'./model.js'",JSON.stringify(modelURL)).replace("'../kit/format.js'",JSON.stringify(formatURL));
-const {convexHull,rectHitsConvex,pointDepth}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const {convexHull,rectHitsConvex,pointDepth,energyCurves}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const square=[{x:0,y:0},{x:10,y:0},{x:10,y:10},{x:0,y:10}];
 
 test('convexHull keeps the outline of scattered points',()=>{
@@ -42,4 +42,13 @@ test('Round 3 sources: silhouette labels, near-target chips, padded thumbnail an
  assert.match(text,/scale=\.7\*Math\.min/,'thumbnail keeps about 10% around the body');
  assert.match(text,/`\u03b8 = \$\{num\(f\.sample\.theta\)\} rad \u00b7 T = \$\{num\(f\.sample\.kinetic\)\} J`|`θ = \$\{num\(f\.sample\.theta\)\} rad · T = \$\{num\(f\.sample\.kinetic\)\} J`/);
  assert.match(text,/' · τ = 0 N m'|' · τ = 0 N m'/);
+});
+
+test('energyCurves precomputes finite polhode and herpolhode paths that stay on the energy ellipsoid',()=>{
+ const params={},curves=energyCurves(params);
+ assert.ok(curves.body.length>8&&curves.space.length===curves.body.length);
+ for(const p of [...curves.body,...curves.space])assert.ok(p.every(Number.isFinite));
+ const norm=a=>Math.hypot(...a),first=norm(curves.body[0]);
+ for(const p of curves.body)assert.ok(Math.abs(norm(p)-first)<first);
+ assert.equal(energyCurves(params),curves);
 });

@@ -106,6 +106,21 @@ export function finitePatchScale(center,corners){
  return Math.max(0,scale);
 }
 // Convex hull (monotone chain) of projected corner points, and tests against it for label boxes.
+// The whole polhode (tip of ω in the body frame) and the herpolhode (tip of ω in space) for a torque-free setup, from t = 0 until the
+// polhode closes (at most 20 s). Both lie on ΣIω² = 2T and on the plane ω·L = 2T, so they are drawn from the first frame.
+const curveCache={params:null,result:null};
+export function energyCurves(params){
+ if(curveCache.params===params)return curveCache.result;
+ const inst=model.create(params),body=[],space=[];let reach=0,closed=false,first=null,last=null,steps=0;
+ for(let i=0;i<=1000;i++){
+  const g=inst.geometry(),b=g.omegaBody;if(!first)first=b;
+  const d=Math.hypot(b[0]-first[0],b[1]-first[1],b[2]-first[2]);reach=Math.max(reach,d);
+  const stride=last?Math.hypot(b[0]-last[0],b[1]-last[1],b[2]-last[2]):0;
+  if(i>3&&reach>1e-6&&d<Math.max(.02*reach,1.2*stride)&&reach>3*stride){closed=true;body.push([...first]);space.push(space[0]);break;}
+  body.push([...b]);space.push([...g.omegaSpace]);last=b;steps=i;inst.step(.02);
+ }
+ const result={body,space,closed};curveCache.params=params;curveCache.result=result;return result;
+}
 export function convexHull(points){
  const p=points.slice().sort((a,b)=>a.x-b.x||a.y-b.y);if(p.length<3)return p;
  const cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x),lower=[],upper=[];
@@ -208,7 +223,7 @@ export const view={graphs,closeups,
    // A crowded cluster may take a longer leader rather than lose the label.
    if(first<0){leash+=24;tips.at(-1).depth=depth+24;squeeze=false;bounds=rect;first=search();if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}}
    // Keep the previous choice while it is valid; when it is not, move to the valid candidate nearest the old position.
-   if(first>=0&&entry.choice>=0&&entry.choice<count){if(valid(candidate(entry.choice)))first=entry.choice;else{const was=candidate(entry.choice);let best=1e9;for(const pad of [16,8,1]){for(let n=0;n<count;n++){const c=candidate(n),d=Math.hypot(c.x-was.x,c.y-was.y);if(d<best&&valid(c,pad)){best=d;first=n;}}if(best<1e9)break;}}}
+   if(first>=0&&entry.choice>=0&&entry.choice<count){if(valid(candidate(entry.choice))){if(leaderLength(candidate(entry.choice))<=Math.max(18,leaderLength(candidate(first))+14))first=entry.choice;}else{const was=candidate(entry.choice);let best=1e9;for(const pad of [16,8,1]){for(let n=0;n<count;n++){const c=candidate(n),d=Math.hypot(c.x-was.x,c.y-was.y);if(d<best&&valid(c,pad)){best=d;first=n;}}if(best<1e9)break;}}}
    if(first<0){entry.choice=-1;el.hidden=true;return;}
    entry.choice=first;position=candidate(first);
    tips.at(-1).box={x:position.x,y:position.y,width,height};
@@ -304,7 +319,7 @@ export const view={graphs,closeups,
     content.quaternion.copy(bodyFrame?q(g.quaternion).invert():new THREE.Quaternion());body.position.copy(v(g.centreOfMass));body.quaternion.copy(q(g.quaternion));body.visible=!energy;
     const extent=extentFor(f,zoom,width,height);cameraFor(r.w,r.h,extent);renderer.setViewport(r.x,height-r.y-r.h,r.w,r.h);renderer.setScissor(r.x,height-r.y-r.h,r.w,r.h);
     content.updateMatrixWorld(true);
-    const parts=[],projected=[],shapes=[];body.traverse(object=>{if(!object.geometry)return;if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();const box=object.geometry.boundingBox,pts=[];for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const point=scratch.set(x,y,z).applyMatrix4(object.matrixWorld).project(camera),pt={x:r.x+(point.x+1)*r.w/2,y:r.y+(1-point.y)*r.h/2};pts.push(pt);projected.push(pt);}parts.push({object,box});if(body.visible)shapes.push(convexHull(pts));});
+    const parts=[],projected=[],shapes=[];body.traverse(object=>{if(!object.geometry||object.isLine||object.isLineSegments)return;if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();const box=object.geometry.boundingBox,pts=[];for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const point=scratch.set(x,y,z).applyMatrix4(object.matrixWorld).project(camera),pt={x:r.x+(point.x+1)*r.w/2,y:r.y+(1-point.y)*r.h/2};pts.push(pt);projected.push(pt);}parts.push({object,box});if(body.visible)shapes.push(convexHull(pts));});
     currentShapes=shapes;hullBoxes.push({panel:index,polys:shapes});
     // Distance along a unit content-space direction from the origin to where it leaves the body (0 when it never meets it).
     const exitAlong=dir=>{if(!body.visible)return 0;const D=dir.clone().applyQuaternion(content.quaternion);let best=0;
@@ -322,7 +337,10 @@ export const view={graphs,closeups,
      content.quaternion.identity();const scale=bounds*.65/Math.max(...g.inertiaEllipsoidRadii,1);const point=(bodyFrame?g.omegaBody:g.omegaSpace).map(x=>x*scale);
      if(bodyFrame){const ell=retained.mesh('ellipsoid',()=>new THREE.Mesh(new THREE.SphereGeometry(1,36,24),new THREE.MeshBasicMaterial({color:C.omega,wireframe:true,transparent:true,opacity:.18})));ell.scale.set(...g.inertiaEllipsoidRadii.map(x=>x*scale));}
      else {const size=bounds*.9,plane=retained.mesh('tangent',()=>new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshBasicMaterial({color:C.L,side:THREE.DoubleSide,transparent:true,opacity:.12})));const L=v(g.angularMomentumSpace);plane.quaternion.setFromUnitVectors(v([0,0,1]),L.clone().normalize());plane.position.copy(L.clone().multiplyScalar(2*f.sample.kinetic/(L.lengthSq()||1)*scale));const center=plane.position.clone().project(camera),corners=[];for(const x of [-size/2,size/2])for(const y of [-size/2,size/2])corners.push(v([x,y,0]).applyQuaternion(plane.quaternion).add(plane.position).project(camera));plane.scale.setScalar(finitePatchScale(center,corners));}
-     const trace=bodyFrame?traceBody:traceSpace;if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),bodyFrame?C.omega:C.L);A(origin,point,norm(point),C.omega,'energy-angular-velocity');
+     const curves=energyCurves(f.params),trace=bodyFrame?curves.body:curves.space;shell.rotationEnergyCurves={body:curves.body.length,space:curves.space.length,closed:curves.closed,drawn:trace.length>1};if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),C.L);
+     // The ellipsoid is the drawing's body here: labels keep clear of its outline.
+     if(bodyFrame){content.updateMatrixWorld(true);const rad=g.inertiaEllipsoidRadii.map(x=>x*scale),pts=[];for(let i=0;i<=12;i++)for(let j=0;j<24;j++){const th=Math.PI*i/12,ph=2*Math.PI*j/24,pt=scratch.set(rad[0]*Math.sin(th)*Math.cos(ph),rad[1]*Math.sin(th)*Math.sin(ph),rad[2]*Math.cos(th)).applyMatrix4(content.matrixWorld).project(camera);pts.push({x:r.x+(pt.x+1)*r.w/2,y:r.y+(1-pt.y)*r.h/2});}shapes.push(convexHull(pts));}
+     A(origin,point,norm(point),C.omega,'energy-angular-velocity');
      textAt(bodyFrame?'ω body':'ω space',v(point),C.omega,r,placed);
     }else {
      const axisTips=[];for(let i=0;i<3&&showAxes;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));const len=Math.min(bounds*.8,Math.max(bounds*.46,exitAlong(axis)+bounds*.09));A(origin,axis.toArray(),len,C.axes[i],'axis-'+i,20);axisTips.push(axis.clone().multiplyScalar(len).applyQuaternion(content.quaternion));}
