@@ -38,10 +38,10 @@ function apparatus(s,f,{top,bottom,zoom=false}){
  s.zoomAnchor={x:xx(molecular?p.equilibrium:(left+0)/2),y:Math.max(35,Math.min(s.h-100,cy+48))};
  return {scale,cx,cy};
 }
-function potentialPlot(s,f){
- const [xmin,xmax]=wellBounds(f),a=35,b=s.w-26,top=40,bottom=Math.min(145,s.h*.37),U=f.instance.potential,E=f.sample.energy;
+function potentialPlot(s,f,off=0,plotH=0){
+ const [xmin,xmax]=wellBounds(f),a=35,b=s.w-26,top=40+off,bottom=plotH?top+plotH:Math.min(145,s.h*.37),U=f.instance.potential,E=f.sample.energy;
  const data=Array.from({length:161},(_,i)=>{const x=xmin+(xmax-xmin)*i/160;return {x,U:U(x)};}),min=Math.min(...data.map(p=>p.U),E),max=Math.min(Math.max(...data.map(p=>p.U),E),E+Math.max(1,Math.abs(E-min))*.8),range=Math.max(.1,max-min),xx=x=>a+(b-a)*(x-xmin)/(xmax-xmin),yy=u=>bottom-(bottom-top)*(u-min)/range;
- label(s,'U(x) / J',a,20,C.dim,11,'left');label(s,'E = '+fmt(E)+' J',b,20,C.ink,11,'right');
+ label(s,'U(x) / J',a,20+off,C.dim,11,'left');label(s,'E = '+fmt(E)+' J',b,20+off,C.ink,11,'right');
  s.line(a,top,a,bottom,C.grid,1);s.line(a,bottom,b,bottom,C.grid,1);
  const c=s.ctx;c.save();c.beginPath();c.rect(a,top,b-a,bottom-top);c.clip();c.beginPath();data.forEach((p,i)=>i?c.lineTo(xx(p.x),yy(p.U)):c.moveTo(xx(p.x),yy(p.U)));c.strokeStyle=C.gold;c.lineWidth=2;c.stroke();
  c.setLineDash([5,4]);s.line(a,yy(E),b,yy(E),C.ink,1.4);c.setLineDash([]);s.circle(xx(f.sample.x),yy(f.sample.potential),4,C.blue);c.restore();
@@ -53,9 +53,13 @@ export const view={graphs,closeups,
  key:f=>f.closeup?'Restoring force = negative potential slope':'Gold: U(x) \u00b7 dashed: E \u00b7 blue: position',
  closeupAnchors:s=>({force:s.zoomAnchor||{x:s.w/2,y:40}}),
  graphDescriptors(p){if(descriptorCache.has(p))return descriptorCache.get(p);let T=2*Math.PI/Math.sqrt(Math.max(.1,Math.abs(p.k))/p.mass);try{const i=model.create({...p,drive:0,damping:0}),period=i.periodForEnergy(i.sample().energy);if(Number.isFinite(period))T=period;}catch{}if(p.drive)T=2*Math.PI/p.driveOmega;const window=Math.min(60,Math.max(.2,5*T)),descriptors=graphs.map(g=>({...g,...(!g.kind?{window}:{})}));descriptorCache.set(p,descriptors);return descriptors;},
- draw(s,f){if(!f.thumbnail&&s.canvas?.parentElement){const style=s.canvas.parentElement.style,narrow=s.w<400;style.flex=narrow?'0 0 360px':'';style.minHeight=narrow?'360px':'';style.maxHeight=narrow?'360px':'';}if(f.thumbnail){const [lo,hi]=wellBounds(f),U=f.instance.potential,points=Array.from({length:61},(_,i)=>({x:lo+(hi-lo)*i/60,u:U(lo+(hi-lo)*i/60)})),floor=Math.min(...points.map(p=>p.u)),ceiling=Math.max(floor+.1,Math.min(...points.filter(p=>p.x===lo||p.x===hi).map(p=>p.u))),xx=x=>22+(s.w-44)*(x-lo)/(hi-lo),yy=u=>s.h-22-(s.h-42)*Math.min(1,(u-floor)/(ceiling-floor));s.ctx.beginPath();points.forEach((p,i)=>i?s.ctx.lineTo(xx(p.x),yy(p.u)):s.ctx.moveTo(xx(p.x),yy(p.u)));s.ctx.strokeStyle=C.gold;s.ctx.lineWidth=2.5;s.ctx.stroke();bead(s,xx(f.sample.x),yy(f.sample.potential),9);return;}if(f.closeup){apparatus(s,f,{top:65,bottom:s.h-120,zoom:true});label(s,f.params.potential.startsWith('walls')?'Two springs \u00b7 actual length and separation':f.params.potential==='morse'||f.params.potential==='lennard-jones'?'Attraction / repulsion along the bond':'One coordinate \u00b7 signed restoring force',s.w/2,44,C.ink,s.w<360?11:13);}
-  else {const end=potentialPlot(s,f);apparatus(s,f,{top:end+28,bottom:s.h-124});}
-  s.avoid=[];label(s,'x = '+withUnit(f.sample.x,'m')+'   v = '+withUnit(f.sample.v,'m/s'),s.w/2,s.h-55,C.blue,11);
+ draw(s,f){let readoutY=s.h-55;if(!f.thumbnail&&s.canvas?.parentElement){const style=s.canvas.parentElement.style,narrow=s.w<400;style.flex=narrow?'0 0 360px':'';style.minHeight=narrow?'360px':'';style.maxHeight=narrow?'360px':'';}if(f.thumbnail){const [lo,hi]=wellBounds(f),U=f.instance.potential,points=Array.from({length:61},(_,i)=>({x:lo+(hi-lo)*i/60,u:U(lo+(hi-lo)*i/60)})),floor=Math.min(...points.map(p=>p.u)),ceiling=Math.max(floor+.1,Math.min(...points.filter(p=>p.x===lo||p.x===hi).map(p=>p.u))),xx=x=>22+(s.w-44)*(x-lo)/(hi-lo),yy=u=>s.h-22-(s.h-42)*Math.min(1,(u-floor)/(ceiling-floor));s.ctx.beginPath();points.forEach((p,i)=>i?s.ctx.lineTo(xx(p.x),yy(p.u)):s.ctx.moveTo(xx(p.x),yy(p.u)));s.ctx.strokeStyle=C.gold;s.ctx.lineWidth=2.5;s.ctx.stroke();bead(s,xx(f.sample.x),yy(f.sample.potential),9);return;}if(f.closeup){apparatus(s,f,{top:65,bottom:s.h-120,zoom:true});label(s,f.params.potential.startsWith('walls')?'Two springs \u00b7 actual length and separation':f.params.potential==='morse'||f.params.potential==='lennard-jones'?'Attraction / repulsion along the bond':'One coordinate \u00b7 signed restoring force',s.w/2,44,C.ink,s.w<360?11:13);}
+  else {
+   // Tall scenes grow the U(x) plot and keep plot, spring, chip and readout together, centered as one group.
+   const H=s.h,walls=f.params.potential.startsWith('walls'),plotH=Math.max(Math.min(145,H*.37)-40,Math.min(250,(H-340)*.55+85)),room=H-124-(40+plotH+28),band=Math.max(40,Math.min(room,walls?230:130)),group=40+plotH+28+band+(H>420?70:0),off=H>420?Math.max(0,(H-50-group)/2):0;
+   const end=potentialPlot(s,f,off,H>420?plotH:0),top=end+28,bottom=H>420?top+band:H-124;apparatus(s,f,{top,bottom});readoutY=H>420?Math.min(H-55,bottom+36):H-55;
+  }
+  s.avoid=[];label(s,'x = '+withUnit(f.sample.x,'m')+'   v = '+withUnit(f.sample.v,'m/s'),s.w/2,readoutY,C.blue,11);
  },
  drawGraph(s,d,f){if(d.id==='phase'){linePlot(s,{title:'Phase space',points:f.samples,xkey:'x',ykey:'v',cursor:f.sample,xlabel:'x / m',ylabel:'v / (m/s)',color:C.blue});return;}drawAnalysis(s,d,f,{periodPoint(frame,i){const instance=model.create({...frame.params,drive:0,damping:0}),stable=instance.equilibria().filter(p=>p.stable).sort((a,b)=>Math.abs(a.x-frame.params.x0)-Math.abs(b.x-frame.params.x0)),floor=stable[0]?.energy??0,E=instance.sample().energy,high=Math.max(floor+.5,E*1.5),x=floor+.005+(high-floor)*i/31;return {x,y:instance.periodForEnergy(x)};}});},
  equations(f){const p=f.params,q=f.sample;let laws;

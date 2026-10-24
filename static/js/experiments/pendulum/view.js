@@ -31,7 +31,8 @@ export function forceLabels(s,arrows){
  const size=s.w<360?10:12;s.ctx.font=`${size}px system-ui,sans-serif`;
  for(const a of arrows){
   const dx=a.x-a.ax,dy=a.y-a.ay,n=Math.hypot(dx,dy);if(n<2)continue;
-  const offsets=[[dx/n*18,dy/n*18],[dx/n*18+(dy>0?-1:1)*Math.abs(dy)/n*28,dy/n*18-(dx>0?1:-1)*Math.abs(dx)/n*0],[0,18],[0,-18],[40,18],[-40,18],[45,-18],[-45,-18],[0,34],[0,-34],[60,34],[-60,34],[60,-34],[-60,-34]];
+  const px=-dy/n*17,py=dx/n*17,side=Math.sign(px)===-Math.sign(dx)||dx===0?1:-1,perp=a.text==='T'?[[px*side,py*side],[-px*side,-py*side],[px*side*1.7,py*side*1.7]]:[];
+  const offsets=[...perp,[dx/n*18,dy/n*18],[dx/n*18+(dy>0?-1:1)*Math.abs(dy)/n*28,dy/n*18-(dx>0?1:-1)*Math.abs(dx)/n*0],[0,18],[0,-18],[40,18],[-40,18],[45,-18],[-45,-18],[0,34],[0,-34],[60,34],[-60,34],[60,-34],[-60,-34]];
   for(const [ox0,oy] of offsets){const width=s.ctx.measureText(a.text).width,x=Math.max(width/2+9,Math.min(s.w-width/2-9,a.x+ox0)),ox=x-a.x,y=a.y+oy,rect={x:x-width/2-3,y:y-size*.65,width:width+6,height:size*1.3};
    if(arrows.some(b=>shaftHits(rect,[b.ax,b.ay],[b.x,b.y])))continue;
    if(label(s,a.text,x,y,a.c,size)){if(Math.hypot(ox,oy)>30)s.line(a.x,a.y,x,y-size*.5*Math.sign(oy||1),a.c+'80',1);break;}
