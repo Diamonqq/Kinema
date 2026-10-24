@@ -54,9 +54,10 @@ export function drawAnalysis(stage,descriptor,frame,{position='x',velocity='v',p
  const time=frame.t;
  if(descriptor.id==='period'){
   let state=periods.get(stage);if(!state||state.params!==frame.params){state={params:frame.params,index:0,points:[]};periods.set(stage,state);}
-  // One quadrature point per visible frame. Toggling the graph off stops work.
-  if(state.index<32&&periodPoint){try{const p=periodPoint(frame,state.index++);if(Number.isFinite(p.y))state.points.push(p);}catch{state.index++;}}
-  stage.periodComplete=state.index>=32;
+  // A few milliseconds of quadrature per drawn frame; pending asks the shell for another frame while paused.
+  const until=performance.now()+4;
+  while(state.index<32&&periodPoint){try{const p=periodPoint(frame,state.index++);if(Number.isFinite(p.y))state.points.push(p);}catch{state.index++;}if(performance.now()>until)break;}
+  stage.periodComplete=state.index>=32||!periodPoint;stage.pending=!stage.periodComplete;
   linePlot(stage,{title:'Conservative period',points:state.points,xlabel:velocity==='omega'?'maximum angle / rad':'energy / J',ylabel:'period / s',color:C.gold});return;
  }
  if(descriptor.id==='strobe'||descriptor.id==='return'){

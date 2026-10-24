@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {model as pendulum} from '../../static/js/experiments/pendulum/model.js';
 import {view as pendulumView,pendulumBounds,shaftHits} from '../../static/js/experiments/pendulum/view.js';
-import {fixedMap,linePlot} from '../../static/js/experiments/motion-generator/view-tools.js';
+import {fixedMap,linePlot,drawAnalysis} from '../../static/js/experiments/motion-generator/view-tools.js';
 function stage(w,h){
  const ctx=new Proxy({measureText:t=>({width:t.length*6}),createRadialGradient:()=>({addColorStop(){}})},{get:(o,k)=>k in o?o[k]:()=>{}});
  const s={w,h,ctx,snap:true,labels:[],avoid:[],line(){},circle(){},arrow(){},spring(){},text(text,x,y,color,size=12,align='center'){const width=ctx.measureText(text).width;this.labels.push({text,x:x-(align==='center'?width/2:align==='right'?width:0),y:y-size*.65,width,height:size*1.3});}};return s;
@@ -91,4 +91,14 @@ test('judge: coupled default releases one mass, excites two modes and transfers 
 test('judge: narrow anharmonic scene caps its content height and phase cards have one unit title',async()=>{
  for(const id of ['anharmonic','motion-generator','pendulum']){const {view}=await import('../../static/js/experiments/'+id+'/view.js');assert.equal(view.graphs.find(g=>g.id==='phase').unit,undefined);}
  const {model}=await import('../../static/js/experiments/anharmonic/model.js'),{view}=await import('../../static/js/experiments/anharmonic/view.js'),s=stage(306,685);s.canvas={parentElement:{style:{}}};view.draw(s,frame(model));assert.equal(s.canvas.parentElement.style.maxHeight,'360px');
+});
+
+test('period sweep finishes within a few drawn frames and flags pending until then',()=>{
+ const plotStage=()=>Object.assign(stage(570,300),{resize(){},begin(){}}),s=plotStage(),f=frame(pendulum),d={id:'period'};let calls=0,draws=0;
+ const periodPoint=(frame,i)=>{calls++;const x=.02+(Math.PI-.12)*i/31;return {x,y:pendulum.create({...frame.params,theta0:x,omega0:0}).period()};};
+ do{s.labels=[];drawAnalysis(s,d,f,{position:'theta',velocity:'omega',periodPoint});draws++;}while(s.pending&&draws<40);
+ assert.equal(s.periodComplete,true);assert.equal(s.pending,false);assert.equal(calls,32);assert.ok(draws<=4,'draws '+draws);
+ const slow=plotStage(),g=frame(pendulum,{length:2});let n=0;
+ drawAnalysis(slow,d,g,{position:'theta',velocity:'omega',periodPoint:(frame,i)=>{n++;const end=performance.now()+3;while(performance.now()<end);return {x:i,y:1};}});
+ assert.ok(n>=1&&n<32,'budgeted points '+n);assert.equal(slow.pending,true);
 });
