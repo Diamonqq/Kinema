@@ -20,7 +20,7 @@ export function blockHeight(s,{bottom=92,top=44,maxHeight=Infinity,square=false}
 const shells=new WeakMap();
 export function holdShell(shell){shells.set(shell.stage,shell);}
 export const graphsOpen=s=>!!shells.get(s)?.host.classList.contains('is-graphs-open')&&innerWidth>900;
-// cap: on a wide screen the scene also stops growing at cap so the block never floats in a tall empty stage.
+// cap (Breakdown only): on a wide screen the scene stops growing at cap so the equations sit just under the block; Scene keeps the full height with the block centered.
 export function fitScene(s,need,rest,cap=0){
   const shell=shells.get(s);if(!shell)return;
   const wide=innerWidth>900,st=shell.scene.style,max=cap&&wide?Math.ceil(Math.max(cap,need))+'px':'',h=(cap&&wide||graphsOpen(s)?Math.ceil(need):rest)+'px';

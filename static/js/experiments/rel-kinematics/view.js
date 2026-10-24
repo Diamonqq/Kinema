@@ -101,7 +101,7 @@ export const view={closeups,graphs,paramVisible,
   },
   closeupAnchors:(s,f)=>{const {ps,chipTop}=layoutFor(s,f),xs=s.w<470?[s.w*.26,s.w*.74]:ps.map(a=>a.left+a.width/2);return {balance:{x:xs[0],y:chipTop},budget:{x:xs[1],y:chipTop}};},
   draw(s,f){if(f.thumbnail||s.h<180){f={...f,thumbnail:true,breakdown:false};momentum(s,f,{left:28,top:28,width:s.w-48,height:s.h-58},'lab');return;}
-    const compact=s.w<470,{ps,chipTop,need,cap,paneBottom,paneHeight}=layoutFor(s,f);fitScene(s,need,550,cap);s.paneBottom=paneBottom;s.paneHeight=paneHeight;
+    const compact=s.w<470,{ps,chipTop,need,cap,paneBottom,paneHeight}=layoutFor(s,f);fitScene(s,need,550,f.breakdown?cap:0);s.paneBottom=paneBottom;s.paneHeight=paneHeight;
     if(f.closeup==='budget')drawBudget(s,f);else for(const [i,k] of ['lab','cm'].entries())momentum(s,f,ps[i],k,f.closeup==='balance');
     const {e}=data(f),caption=f.closeup==='budget'?`√s = ${fmt(e.W)} MeV · final rest energy ${fmt(e.requiredMass)} MeV`:`√s = ${fmt(e.W)} MeV · reaction at t = 0`;
     if(f.closeup!=='budget'&&s.w>260&&s.h>200)s.text(compact?`√s = ${fmt(e.W)} MeV`:caption,s.w/2,chipTop+46,'#bccde3',compact?11:12);

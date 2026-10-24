@@ -148,7 +148,7 @@ export const view={closeups,graphs,paramVisible,
   closeupAnchors:(s,f)=>{const l=layoutFor(s,f),xs=s.w<470||l.calc?[s.w*.27,s.w*.73]:l.ps.map(a=>a.left+a.width/2);return {event:{x:xs[0],y:l.chipTop},transform:{x:xs[1],y:l.chipTop}};},
   draw(s,f){
     if(f.thumbnail||s.w<200||s.h<180){f={...f,thumbnail:true,breakdown:false};drawDiagram(s,f,{left:28,top:28,width:s.w-45,height:s.h-58},'ground',{cone:true});return;}
-    const layout=layoutFor(s,f),{hasEvents,ps}=layout;fitScene(s,layout.need,620,layout.cap);s.paneBottom=layout.paneBottom;s.paneHeight=layout.paneHeight;
+    const layout=layoutFor(s,f),{hasEvents,ps}=layout;fitScene(s,layout.need,620,f.breakdown?layout.cap:0);s.paneBottom=layout.paneBottom;s.paneHeight=layout.paneHeight;
     if(['four-vector','tensor'].includes(f.params.scenario))calculator(s,f,{left:40,top:layout.calcTop,width:s.w-65,height:layout.calcHeight});
     else if(f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario))spatial(s,f,{left:40,top:85,width:s.w-65,height:s.h-190});
     else for(const [i,k] of ['ground','moving'].entries())drawDiagram(s,f,ps[i],k,{cone:true,calibration:f.breakdown,zoom:!!f.closeup});
