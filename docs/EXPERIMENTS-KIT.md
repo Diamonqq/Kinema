@@ -213,6 +213,12 @@ scrolls only the experiment shell enough to reveal the first enabled graph canva
 above the transport. It does not scroll the surrounding chat. The same behavior
 applies to ordinary and custom graph panels.
 
+The experiment shell is the scroll container for Breakdown, Graphs and long
+equation blocks. Inside the tutor artifact it also carries `.artifact-scene`, whose
+panel rule hides overflow; `experiments.css` re-enables scrolling on that element.
+Browser receipts must reach the last text line with the real mouse wheel. Setting
+`scrollTop` from script also works on a clipped element, so it proves nothing.
+
 ## Tutor action envelope
 
 Reply JSON is `{reply:"Short explanation",action:null}` or one action:
