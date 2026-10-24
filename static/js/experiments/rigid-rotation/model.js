@@ -12,10 +12,10 @@ const normalized = q => { const n=norm(q); return q.map(v=>v/n); };
 const number = (key,label,symbol,unit,min,max,step,value,group) => ({key,label,symbol,unit,min,max,step,value,group});
 const choice = (key,label,value,options) => ({key,label,symbol:'',unit:'',value,options:options.map(value=>({value,label:value})),group:'Body'});
 const params = [
-  choice('mode','Motion','free',['free','heavy-top','fixed-axis']),
-  choice('shape','Mass distribution','custom',['custom','box','plate','rod','symmetric-top']),
+  choice('mode','Motion','free',['free','heavy-top','tilt-torque','fixed-axis']),
+  choice('shape','Mass distribution','custom',['custom','box','corner-masses','plate','rod','symmetric-top']),
   choice('initial','Initial motion','components',['components','slow','fast']),
-  number('mass','Mass','m','kg',.05,20,.05,1,'Body'),
+  number('mass','Total mass','m','kg',.05,20,.05,1,'Body'),
   number('a','Width / diameter','a','m',.02,3,.01,1,'Body'),
   number('b','Depth','b','m',.002,3,.001,.6,'Body'),
   number('c','Height / length','c','m',.002,3,.001,.2,'Body'),
@@ -26,14 +26,16 @@ const params = [
   number('phase','Initial body phase','ψ₀','rad',-6.3,6.3,.001,0,'Initial conditions'),
   number('distance','Pivot to centre of mass','d','m',0,2,.01,.4,'Gravity'),
   number('g','Gravity','g','m/s²',0,30,.01,9.81,'Gravity'),
+  number('tiltTorque','Tilt torque coefficient','κ','N m',-100,100,.001,.5,'Tilt torque'),
   ...['x','y','z'].map(i=>number('torque'+i,'Space torque '+i,'τ_'+i,'N m',-10,10,.01,0,'External torque')),
 ];
 
-// Solid uniform bodies, not CUPS's eight corner masses. Rod is a slender cylinder
+// Rod is a slender cylinder
 // with finite radius a/2, along body z; plate is the exact thin-lamina limit.
 export function principalMoments(p) {
   const {mass:m,a,b,c}=p, r=a/2;
   if(p.shape==='box') return [m*(b*b+c*c)/12,m*(a*a+c*c)/12,m*(a*a+b*b)/12];
+  if(p.shape==='corner-masses') return [m*(b*b+c*c)/4,m*(a*a+c*c)/4,m*(a*a+b*b)/4];
   if(p.shape==='plate') return [m*b*b/12,m*a*a/12,m*(a*a+b*b)/12];
   if(p.shape==='rod'||p.shape==='symmetric-top') return [m*(3*r*r+c*c)/12,m*(3*r*r+c*c)/12,m*r*r/2];
   return [p.I1,p.I2,p.I3];
@@ -51,7 +53,7 @@ export function steadyPrecessionRates(I,omega3,m,g,d,theta) {
 }
 
 export const model = {
-  id:'rigid-rotation', title:'Rigid body rotation', version:'1.0.0', params,
+  id:'rigid-rotation', title:'Rigid body rotation', version:'1.1.0', params,
   presets:[
     {id:'flip',label:'Intermediate-axis flip',values:{mode:'free',shape:'box',mass:1,a:1.2,b:.6,c:.12,w1:.015,w2:4,w3:.008,tilt:.5},note:'The middle principal axis is unstable.'},
     {id:'minimum',label:'Smallest moment',values:{mode:'free',shape:'box',a:1.2,b:.6,c:.12,w1:4,w2:.015,w3:.008},note:'A small wobble stays bounded.'},
@@ -64,30 +66,40 @@ export const model = {
     {id:'fixed',label:'Constrained rotation',values:{mode:'fixed-axis',shape:'box',w1:2,w2:1,w3:3},note:'The support must supply ω × L.'},
     {id:'plate',label:'Thin plate',values:{mode:'free',shape:'plate',a:1,b:.6,w1:1,w2:.2,w3:3},note:'The perpendicular-axis relation is I₃ = I₁ + I₂.'},
     {id:'rod',label:'Long rod',values:{mode:'free',shape:'rod',a:.08,c:1.2,w1:.3,w2:0,w3:8},note:'Dimensions determine very different axial and transverse moments.'},
+    {id:'corner-body',label:'Eight corner masses',values:{mode:'free',shape:'corner-masses',mass:1,a:.4,b:.4,c:1,w1:1,w2:0,w3:6},note:'Move the same total mass to the corners and compare the inertia with a solid box.'},
+    {id:'cm-top',label:'Horizontal CM top',values:{mode:'tilt-torque',shape:'symmetric-top',initial:'slow',mass:1,a:.4,c:1,tilt:1.57,w3:30,tiltTorque:.5},note:'A nearly horizontal axis precesses under a tilt-dependent torque about the centre of mass.'},
+    {id:'asymmetric-top',label:'Unequal top moments',values:{mode:'tilt-torque',shape:'box',a:.6,b:.4,c:1,w1:.2,w2:0,w3:20,tiltTorque:.3},note:'Tilt-dependent torque also acts on a body with unequal transverse moments.'},
+    {id:'tilted-fixed',label:'Tilted long-body constraint',values:{mode:'fixed-axis',shape:'corner-masses',mass:1,a:.3,b:.3,c:.8,tilt:.52,w1:-2.981,w2:0,w3:5.207},note:'A long body tilted about 30 degrees rotates around a nearly vertical space axis; the support supplies torque.'},
   ].map(p=>({...p,values:{...Object.fromEntries(params.map(p=>[p.key,p.value])),...p.values}})),
   observables:[
     ...['w1','w2','w3','omega'].map(key=>({key,label:key,symbol:key,unit:'rad/s'})),
     ...['Lx','Ly','Lz','angularMomentum'].map(key=>({key,label:key,symbol:key,unit:'kg m²/s'})),
     ...['kinetic','potential','energy','work'].map(key=>({key,label:key,symbol:key,unit:'J'})),
     {key:'theta',label:'Tilt',symbol:'θ',unit:'rad'},
+    {key:'phi',label:'Axis azimuth',symbol:'φ',unit:'rad'},
+    {key:'psi',label:'Body phase',symbol:'ψ',unit:'rad'},
+    {key:'eulerRegular',label:'Euler angles are unique',symbol:'',unit:''},
     {key:'precessionRate',label:'Space precession rate',symbol:'φ̇',unit:'rad/s'},
     {key:'quaternionNorm',label:'Quaternion norm',symbol:'|q|',unit:''},
   ],
   create(values={}) {
+    if(!values||typeof values!=='object'||Array.isArray(values)) throw new RangeError('Parameters must be an object');
     for(const key of Object.keys(values)) if(!params.some(p=>p.key===key)) throw new RangeError('Unknown parameter: '+key);
-    const p=Object.fromEntries(params.map(d=>[d.key,values[d.key]??d.value]));
+    const p=Object.fromEntries(params.map(d=>[d.key,Object.hasOwn(values,d.key)?values[d.key]:d.value]));
     for(const d of params) if(d.options ? !d.options.some(o=>o.value===p[d.key]) : !Number.isFinite(p[d.key])||p[d.key]<d.min||p[d.key]>d.max) throw new RangeError('Invalid '+d.key);
     const Icm=principalMoments(p);
     if(Icm.some((v,i)=>v>Icm[(i+1)%3]+Icm[(i+2)%3]+1e-12)) throw new RangeError('Principal moments must satisfy the triangle inequalities');
     const I=Icm.map((v,i)=>v+(p.mode==='heavy-top'&&i<2?p.mass*p.distance**2:0));
-    if(p.mode==='heavy-top'&&Math.abs(I[0]-I[1])>1e-10) throw new RangeError('Heavy top requires equal transverse moments');
+    const symmetric=Math.abs(I[0]-I[1])<=1e-10;
     const external=[p.torquex,p.torquey,p.torquez];
     if(p.mode==='fixed-axis'&&norm(external)>0) throw new RangeError('Fixed-axis mode computes the required support torque; external torque must be zero');
-    if(p.initial!=='components'&&p.mode!=='heavy-top') throw new RangeError('Steady initial motion requires a heavy top');
+    const top=p.mode==='heavy-top'||p.mode==='tilt-torque';
+    if(p.initial!=='components'&&(!top||!symmetric)) throw new RangeError('Steady initial motion requires a symmetric top');
     const zRotation=angle=>[Math.cos(angle/2),0,0,Math.sin(angle/2)];
     const q0=normalized(mul(mul(zRotation(p.azimuth),[Math.cos(p.tilt/2),0,Math.sin(p.tilt/2),0]),zRotation(p.phase)));
     let w0=[p.w1,p.w2,p.w3];
-    const rates=p.mode==='heavy-top'?steadyPrecessionRates(I,p.w3,p.mass,p.g,p.distance,p.tilt):null;
+    const coefficient=p.mode==='heavy-top'?p.mass*p.g*p.distance:p.mode==='tilt-torque'?p.tiltTorque:0;
+    const rates=top&&symmetric?steadyPrecessionRates(I,p.w3,1,1,coefficient,p.tilt):null;
     if(p.initial!=='components') {
       const rate=rates?.[p.initial];
       if(!Number.isFinite(rate)||Math.sin(p.tilt)<1e-8) throw new RangeError('No finite nonvertical steady-precession solution');
@@ -99,8 +111,8 @@ export const model = {
       const w=s.slice(0,3), q=normalized(s.slice(3,7)), L=w.map((v,i)=>v*I[i]);
       const ws=rotate(q,w), Ls=rotate(q,L), axis=rotate(q,[0,0,1]);
       const r=axis.map(v=>p.distance*v), force=[0,0,-p.mass*p.g];
-      const gravity=p.mode==='heavy-top'?cross(r,force):[0,0,0];
-      const torque=p.mode==='fixed-axis'?cross(ws,Ls):external.map((v,i)=>v+gravity[i]);
+      const tiltTorque=[-coefficient*axis[1],coefficient*axis[0],0];
+      const torque=p.mode==='fixed-axis'?cross(ws,Ls):external.map((v,i)=>v+tiltTorque[i]);
       return {w,q,L,ws,Ls,axis,r,force,torque};
     };
     const derivative = s => {
@@ -128,16 +140,50 @@ export const model = {
       },
       sample(){
         const {w,q,Ls,axis,ws}=compute(state), kinetic=dot(w,w.map((v,i)=>v*I[i]))/2;
-        const potential=p.mode==='heavy-top'?p.mass*p.g*p.distance*axis[2]:0;
+        const potential=coefficient*axis[2];
         const da=cross(ws,axis), rho2=axis[0]**2+axis[1]**2;
-        return {t:time,w1:w[0],w2:w[1],w3:w[2],omega:norm(w),Lx:Ls[0],Ly:Ls[1],Lz:Ls[2],angularMomentum:norm(Ls),kinetic,potential,energy:kinetic+potential,work:state[7],theta:Math.acos(Math.max(-1,Math.min(1,axis[2]))),precessionRate:rho2>1e-16?(axis[0]*da[1]-axis[1]*da[0])/rho2:0,quaternionNorm:norm(q)};
+        const regular=rho2>1e-16, xAxis=rotate(q,[1,0,0]), yAxis=rotate(q,[0,1,0]);
+        const phi=regular?Math.atan2(axis[1],axis[0]):0;
+        // Z-Y-Z angles are not unique at either pole; choose a finite gauge and flag it.
+        const psi=regular?Math.atan2(yAxis[2],-xAxis[2]):Math.atan2(xAxis[1],axis[2]<0?-xAxis[0]:xAxis[0]);
+        return {t:time,w1:w[0],w2:w[1],w3:w[2],omega:norm(w),Lx:Ls[0],Ly:Ls[1],Lz:Ls[2],angularMomentum:norm(Ls),kinetic,potential,energy:kinetic+potential,work:state[7],theta:Math.acos(Math.max(-1,Math.min(1,axis[2]))),phi,psi,eulerRegular:regular?1:0,precessionRate:regular?(axis[0]*da[1]-axis[1]*da[0])/rho2:0,quaternionNorm:norm(q)};
       },
       invariants(){const s=api.sample();return {energy:s.energy,angularMomentum:[s.Lx,s.Ly,s.Lz],angularMomentumMagnitude:s.angularMomentum,verticalAngularMomentum:s.Lz,bodyAxialAngularMomentum:I[2]*s.w3,work:s.work,energyMinusWork:s.energy-s.work};},
       geometry(){
         const o=compute(state), s=api.sample();
-        return {quaternion:[...o.q],quaternionOrder:'wxyz',omegaBody:[...o.w],omegaSpace:[...o.ws],angularMomentumBody:[...o.L],angularMomentumSpace:[...o.Ls],torqueSpace:[...o.torque],torqueBody:rotate(conjugate(o.q),o.torque),principalMoments:[...I],centreMoments:[...Icm],principalAxes:[[1,0,0],[0,1,0],[0,0,1]],bodyAxisSpace:[...o.axis],origin:[0,0,0],centreOfMass:p.mode==='heavy-top'?[...o.r]:[0,0,0],gravityForce:p.mode==='heavy-top'?[...o.force]:[0,0,0],shape:p.shape,dimensions:{a:p.a,b:p.b,c:p.c},mode:p.mode,inertiaEllipsoidRadii:I.map(v=>Math.sqrt(2*s.kinetic/v)),polhodePoint:[...o.w],herpolhodePoint:[...o.ws],steadyPrecession:rates?{...rates}:null};
+        return {quaternion:[...o.q],quaternionOrder:'wxyz',omegaBody:[...o.w],omegaSpace:[...o.ws],angularMomentumBody:[...o.L],angularMomentumSpace:[...o.Ls],torqueSpace:[...o.torque],torqueBody:rotate(conjugate(o.q),o.torque),tiltTorqueCoefficient:coefficient,tiltTorqueSpace:[-coefficient*o.axis[1],coefficient*o.axis[0],0],principalMoments:[...I],centreMoments:[...Icm],principalAxes:[[1,0,0],[0,1,0],[0,0,1]],bodyAxisSpace:[...o.axis],origin:[0,0,0],centreOfMass:p.mode==='heavy-top'?[...o.r]:[0,0,0],gravityForce:p.mode==='heavy-top'?[...o.force]:[0,0,0],shape:p.shape,dimensions:{a:p.a,b:p.b,c:p.c},mode:p.mode,inertiaEllipsoidRadii:I.map(v=>Math.sqrt(2*s.kinetic/v)),polhodePoint:[...o.w],herpolhodePoint:[...o.ws],steadyPrecession:rates?{...rates}:null};
       },
     };
     return api.reset();
   },
 };
+
+// Optional integration helpers; the required model/instance contract is unchanged.
+// Candidate creation is transactional: the caller commits params AND instance only on ok.
+export function prepareUpdate(currentValues,patch) {
+  try {
+    if(!currentValues||typeof currentValues!=='object'||Array.isArray(currentValues)||!patch||typeof patch!=='object'||Array.isArray(patch)) throw new RangeError('Parameters must be an object');
+    const values={...currentValues,...patch},instance=model.create(values);
+    return {ok:true,values,instance};
+  } catch(error) {
+    if(!(error instanceof RangeError)) throw error;
+    return {ok:false,error:{name:'RangeError',code:'INVALID_ROTATION_SETUP',message:error.message}};
+  }
+}
+
+// No forecast work until next(); each yield permits a shell event-loop turn/cancel.
+// No timers, background tasks, global caches or unbounded history owned by the core.
+export function sampleBatches(values,{duration=60,interval=1/30,batchSize=8}={}) {
+  if(!Number.isFinite(duration)||duration<0||duration>60||!Number.isFinite(interval)||interval<.001||interval>1||!Number.isInteger(batchSize)||batchSize<1||batchSize>120) throw new RangeError('Invalid timeline bounds');
+  const probe=model.create(values);
+  return (function*(){
+    let batch=[probe.sample()];
+    if(batch.length===batchSize){yield batch;batch=[];}
+    for(let index=1;probe.t<duration;index++) {
+      const target=Math.min(duration,index*interval);
+      probe.step(target-probe.t);batch.push(probe.sample());
+      if(batch.length===batchSize){yield batch;batch=[];}
+    }
+    if(batch.length)yield batch;
+  })();
+}
