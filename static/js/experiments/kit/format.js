@@ -32,3 +32,9 @@ export function niceTicks(lo,hi,count=5){
  for(let k=Math.ceil(lo/step-1e-9);k*step<=hi+step*1e-9;k++)ticks.push(Math.abs(k)<1e-12?0:+(k*step).toPrecision(12));
  return {step,ticks};
 }
+// Tick text with only the digits the step needs: tickLabel(1.5, 0.5) → "1.5", tickLabel(-2, 2) → "−2".
+export function tickLabel(value,step){
+ if(Math.abs(value)<Math.abs(step||1)*1e-9)return '0';
+ const sig=Math.max(1,Math.floor(Math.log10(Math.abs(value)))-Math.floor(Math.log10(Math.abs(step||value)))+1);
+ return num(value,Math.min(sig,6));
+}

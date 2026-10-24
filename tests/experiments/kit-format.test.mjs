@@ -37,3 +37,12 @@ test('niceTicks picks round steps and includes zero in range', async () => {
   assert.ok(niceTicks(2, 2).ticks.length >= 1);
   assert.deepEqual(niceTicks(NaN, 1).ticks, []);
 });
+
+test('tickLabel shows only the digits the step needs', async () => {
+  const {tickLabel} = await import('../../static/js/experiments/kit/format.js');
+  assert.equal(tickLabel(1.5, 0.5), '1.5');
+  assert.equal(tickLabel(-2, 2), '−2');
+  assert.equal(tickLabel(0, 0.5), '0');
+  assert.equal(tickLabel(100, 50), '100');
+  assert.equal(tickLabel(2e-5, 2e-5), '2×10⁻⁵');
+});
