@@ -1,6 +1,6 @@
 import {C,boost,interval,gamma,addVelocity} from './model.js';
 import {num} from '../kit/format.js';
-import {colors,fmt,panels,blockHeight,holdShell,fitScene,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth} from './drawing.js';
+import {colors,fmt,panels,blockHeight,holdShell,fitScene,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth,axisLabels} from './drawing.js';
 const cache=new WeakMap();
 export const closeups=[{id:'event',label:'Zoom · events'},{id:'transform',label:'Zoom · transform'}];
 export const graphs=[
@@ -48,14 +48,15 @@ function eventLetter(s,f,p,m,key,record,extra=[]){
 function intervalCaption(s,f,p,m,key,curve,guides=[]){
   const text='invariant interval',width=richWidth(s,text,11),worldlines=f.geometry[key].worldlines.flatMap(l=>l.points.slice(1).map((b,i)=>{const a=l.points[i];return [m.x(a.x/f.params.length),m.y(C*a.t/f.params.length),m.x(b.x/f.params.length),m.y(C*b.t/f.params.length)];}));
   const axesBox=[[p.left,m.y(0),p.left+p.width,m.y(0)],[m.x(0),p.top,m.x(0),p.top+p.height]];
-  for(const index of [32,28,36,24,40,20,44,16,48,12,52,8,56,4,60,0,63]){
+  // Outer arm first: the ends of the curve are away from the worldlines that gather near the vertex.
+  for(const index of [3,60,6,57,9,54,12,51,15,48,18,45,21,42,24,39,27,36,30,33,32,28,34,26,38,20,44,14,50,8,56,2,61]){
     const a=curve[index];if(!a)continue;
-    for(const [dx,dy,align] of [[10,-8,'left'],[-10,-8,'right'],[10,16,'left'],[-10,16,'right'],[8,-24,'left'],[-8,-24,'right'],[8,32,'left'],[-8,32,'right']]){
-      const x=a[0]+dx,left=align==='left'?x:x-width,box={left:left-2,top:a[1]+dy-8,width:width+4,height:16};
+    for(const [dx,dy,align] of [[10,-8,'left'],[-10,-8,'right'],[10,16,'left'],[-10,16,'right'],[8,-24,'left'],[-8,-24,'right'],[8,32,'left'],[-8,32,'right'],[14,-2,'left'],[-14,-2,'right'],[20,-14,'left'],[-20,-14,'right'],[20,22,'left'],[-20,22,'right']]){
+      const x=a[0]+dx,left=align==='left'?x:x-width,box={left:left-3,top:a[1]+dy-9,width:width+6,height:18};
       if(box.left<p.left||box.top<p.top||box.left+box.width>p.left+p.width||box.top+box.height>p.top+p.height)continue;
       if(s.labels.some(l=>box.left<l.x+l.width&&box.left+box.width>l.x&&box.top<l.y+l.height&&box.top+box.height>l.y))continue;
       if([...curve,...worldlines,...axesBox,...guides].some(v=>clipLine(...v,box)))continue;
-      richText(s,text,x,a[1]+dy,colors[2],11,align);return;
+      richText(s,text,x,a[1]+dy,colors[2],11,align);return box;
     }
   }
 }
@@ -63,7 +64,7 @@ function eventBounds(f,key){const a=coord(selected(f,key),f.params.length),span=
 function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   const L=f.params.length,g=f.geometry[key],b=beta(f.params),base=s.w<470||f.graph||f.thumbnail?context(f).narrowBounds:context(f).bounds;
   const bounds=zoom?eventBounds(f,key):base,m=mapPanel(s,p,bounds,key),primed=key==='moving';
-  axes(s,m,p,{title:f.graph?'':primed?'S′ · moving frame':'S · ground frame',x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',labels:!f.thumbnail});
+  axes(s,m,p,{title:f.graph?'':primed?'S′ · moving frame':'S · ground frame',x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',labels:!f.thumbnail,names:false});
   // The other frame's axes are transformed basis vectors, not an ordinary rotation.
   const transform=primed?b:invert(b),ex=coord(boost({t:0,x:L},transform),L),et=coord(boost({t:L/C,x:0},transform),L);
   const range=Math.max(...bounds.map(Math.abs))*4+4;
@@ -92,7 +93,13 @@ function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   if(inside(m,p,...a,4)){s.ctx.strokeStyle='#e8f2ff';s.ctx.beginPath();s.ctx.arc(m.x(a[0]),m.y(a[1]),7,0,2*Math.PI);s.ctx.stroke();}}
   });
   const curve=calibration&&!zoom&&!f.thumbnail&&!f.graph?f.geometry.calibration[key].slice(1).map((b,i)=>{const a=f.geometry.calibration[key][i];return [m.x(a.x/L),m.y(C*a.t/L),m.x(b.x/L),m.y(C*b.t/L)];}):[];
-  if(curve.length)intervalCaption(s,f,p,m,key,curve,[ex,et].map(v=>[m.x(-range*v[0]),m.y(-range*v[1]),m.x(range*v[0]),m.y(range*v[1])]).concat([[-1,-1],[1,-1]].map(([a,c])=>[m.x(-range*a),m.y(-range*c),m.x(range*a),m.y(range*c)])));
+  const guides=[ex,et].map(v=>[m.x(-range*v[0]),m.y(-range*v[1]),m.x(range*v[0]),m.y(range*v[1])]).concat([[-1,-1],[1,-1]].map(([a,c])=>[m.x(-range*a),m.y(-range*c),m.x(range*a),m.y(range*c)])),
+    wl=g.worldlines.flatMap(l=>l.points.slice(1).map((q,i)=>{const u=coord(l.points[i],L),w=coord(q,L);return [m.x(u[0]),m.y(u[1]),m.x(w[0]),m.y(w[1])];}));
+  const own=[[p.left,m.y(0),p.left+p.width,m.y(0)],[m.x(0),p.top,m.x(0),p.top+p.height]];
+  let names=[];
+  if(!f.thumbnail)names=axisLabels(s,m,p,{x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',avoid:[...wl,...curve,...guides,...own]})||[];
+  const interval=curve.length?intervalCaption(s,f,p,m,key,curve,guides):null;
+  (s.diag||(s.diag={}))[key]={names,interval,worldlines:wl,guides,curve,own};
   if(!f.thumbnail&&!f.graph)for(const record of namedEvents(f))eventLetter(s,f,p,m,key,record,curve);
   return m;
 }
@@ -187,9 +194,9 @@ export const view={closeups,graphs,paramVisible,
     const p={left:40,top:38,width:s.w-60,height:s.h-75};
     if(d.id==='worldlines'){
       const key=f.params.frame==='moving'?'moving':'ground',lines=f.geometry[key].worldlines,l=lines.find(l=>l.kind==='light')||lines[0];
-      const points=l?.points.map(a=>[a.t,a.x/f.params.length])||[];let marker=null;
-      for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];if(f.t>=a[0]&&f.t<=b[0])marker=[f.t,a[1]+(b[1]-a[1])*(f.t-a[0])/(b[0]-a[0])];}
-      plot(s,{title:(l?.label||'Position')+' · '+(key==='ground'?'S':'S′'),xLabel:'coordinate time · s',yLabel:'x / L',points,marker});return;
+      const points=l?.points.map(a=>[C*a.t/f.params.length,a.x/f.params.length])||[];let marker=null;
+      for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];const ct=C*f.t/f.params.length;if(ct>=a[0]&&ct<=b[0])marker=[ct,a[1]+(b[1]-a[1])*(ct-a[0])/(b[0]-a[0])];}
+      plot(s,{title:(l?.label||'Position')+' · '+(key==='ground'?'S':'S′'),xLabel:'ct / L',yLabel:'x / L',points,marker});return;
     }
     if(d.id==='spatial'){spatial(s,f,p);return;}
     if(d.id==='four-vector'||d.id==='tensor'){calculator(s,f,p);return;}

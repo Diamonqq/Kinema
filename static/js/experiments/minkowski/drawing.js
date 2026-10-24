@@ -68,12 +68,30 @@ export function richText(s,text,x,y,color,size=11,align='left'){
   for(const a of parts){s.text(a.value,cursor+(a.sub?1:0),y+(a.sub?3:0),color,a.size,'left');cursor+=a.width;}
   return total;
 }
-export function axes(s,m,p,{x='x / L',y='ct / L',title='',color='#526176',labels=true}={}) {
+export function axes(s,m,p,{x='x / L',y='ct / L',title='',color='#526176',labels=true,names=true}={}) {
   line(s,m,p,[-1e8,0],[1e8,0],color);line(s,m,p,[0,-1e8],[0,1e8],color);
   if(!labels)return;
   if(title)s.text(title,p.left+p.width/2,p.top-16,'#cad8ea',12);
+  if(!names)return;
   richText(s,x,p.left+p.width,Math.max(p.top+14,Math.min(p.top+p.height-6,m.y(0)+14)),'#8aa0bb',11,'right');
   richText(s,y,p.left,p.top-4,'#8aa0bb',11,'left');
+}
+// Axis names go where no drawn line crosses them: avoid holds screen segments [x1,y1,x2,y2]; returns the boxes used.
+export function axisLabels(s,m,p,{x,y,avoid=[]}) {
+  const boxes=[],hits=b=>avoid.filter(v=>clipLine(...v,b)).length+3*s.labels.filter(l=>b.left<l.x+l.width&&b.left+b.width>l.x&&b.top<l.y+l.height&&b.top+b.height>l.y).length;
+  const place=(text,candidates)=>{
+    let best=null;
+    for(const [px,py,align] of candidates){
+      const w=richWidth(s,text,11),left=align==='right'?px-w:align==='center'?px-w/2:px,box={left:left-3,top:py-9,width:w+6,height:17};
+      if(box.left<2||box.left+box.width>s.w-2||box.top<2||box.top+box.height>s.h-2)continue;
+      const n=hits(box);if(!best||n<best.n)best={n,px,py,align,box};if(!n)break;
+    }
+    if(!best)return;richText(s,text,best.px,best.py,'#8aa0bb',11,best.align);boxes.push(best.box);
+  };
+  const y0=m.y(0),x0=m.x(0),right=p.left+p.width,below=Math.max(p.top+14,Math.min(p.top+p.height-6,y0+14)),above=Math.max(p.top+14,Math.min(p.top+p.height-6,y0-12));
+  place(x,[[right,below,'right'],[right,above,'right'],[right-60,below,'right'],[right-60,above,'right'],[right-120,below,'right'],[right-120,above,'right'],[p.left+4,below,'left'],[p.left+4,above,'left']]);
+  place(y,[[p.left,p.top-4,'left'],[x0+6,p.top+12,'left'],[x0-6,p.top+12,'right'],[p.left+4,p.top+14,'left'],[right-4,p.top+14,'right'],[x0+6,p.top+30,'left'],[x0-6,p.top+30,'right']]);
+  return boxes;
 }
 export function plot(s,{title,xLabel,yLabel,points=[],marker=null,bounds=null,bars=false,dots=false,equalScale=false,xLimits=null,yLimits=null}) {
   const layout=left=>{

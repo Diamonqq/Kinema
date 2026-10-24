@@ -1,4 +1,5 @@
 import {eventFor,sumMomentum,invariantMass,comptonEnergy,H_C,masses,plotVariables} from './model.js';
+import {texNum} from '../kit/format.js';
 import {colors,fmt,panels,blockHeight,holdShell,fitScene,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth} from '../minkowski/drawing.js';
 const caches=new WeakMap();
 export const closeups=[{id:'balance',label:'Zoom · momentum'},{id:'budget',label:'Zoom · energy'}];
@@ -24,7 +25,7 @@ function labelTip(s,p,text,x,y,color,segments=[],placements=null,dir=null){
 const unit=v=>{const n=Math.hypot(v[2]-v[0],v[3]-v[1])||1;return [(v[2]-v[0])/n,(v[3]-v[1])/n];};
 function momentum(s,f,p,key,headTail=false){
   if(s.w>=470&&!f.thumbnail){const size=Math.min(p.width,p.height);p={...p,height:size};}
-  const d=data(f),e=f.geometry[key],extent=d.extent,zoom=headTail?.92:1;
+  const d=data(f),e=f.geometry[key],star=key==='cm',extent=d.extent,zoom=headTail?.92:1;
   const bounds=s.w>=470&&!f.thumbnail?d.frameBounds[key==='lab'?0:1]:[-extent*zoom,extent*zoom,-extent*zoom,extent*zoom];
   const m=mapPanel(s,p,bounds,key),segments=[];
   axes(s,m,p,{title:key==='lab'?'Lab frame':'CM frame',x:'p_x \u00b7 MeV/c',y:'p_y',labels:!f.thumbnail});
@@ -39,7 +40,7 @@ function momentum(s,f,p,key,headTail=false){
     if(headTail){const total=sumMomentum(e.final);line(s,m,p,[0,0],[total.px,total.py],'#eef4ff',1,[2,4]);}
   });
   if(!f.thumbnail){
-    for(const {a,i,v} of outgoing)if(Math.hypot(a.px,a.py)>1e-9)labelTip(s,p,'p_'+(i+1),v[2],v[3],colors[i%6],segments,null,unit(v));
+    for(const {a,i,v} of outgoing)if(Math.hypot(a.px,a.py)>1e-9)labelTip(s,p,(star?'p*_':'p_')+(i+1),v[2],v[3],colors[i%6],segments,null,unit(v));
     if(s.w>=470&&(f.breakdown||headTail))for(const {v} of incoming)labelTip(s,p,'p in',v[2],v[3],'#a7b6cc',segments,null,unit(v));
   }
   if(f.breakdown&&!headTail&&e.final[0]){
@@ -49,13 +50,13 @@ function momentum(s,f,p,key,headTail=false){
       if(Math.abs((b[0]-u[0])*dy-(b[1]-u[1])*dx)/len>2||Math.abs((b[2]-u[0])*dy-(b[3]-u[1])*dx)/len>2)return false;
       const ts=[((b[0]-u[0])*dx+(b[1]-u[1])*dy)/len,((b[2]-u[0])*dx+(b[3]-u[1])*dy)/len];return Math.min(len,Math.max(...ts))-Math.max(0,Math.min(...ts))>3;
     });
-    for(const [name,u,v,placements] of [['p_{1x}',origin,elbow,[[-12,16],[-12,-13]]],['p_{1y}',elbow,tip,[[10,0],[-36,0]]]]){
+    for(const [name,u,v,placements] of [[star?'p*_{1x}':'p_{1x}',origin,elbow,[[-12,16],[-12,-13]]],[star?'p*_{1y}':'p_{1y}',elbow,tip,[[10,0],[-36,0]]]]){
       const length=Math.hypot(v[0]-u[0],v[1]-u[1]);if(length<(s.w<470?42:28)||overlap(u,v))continue;
       clipPanel(s,p,()=>{s.ctx.setLineDash([2,4]);s.line(...u,...v,color+'90',1);s.ctx.setLineDash([]);});
       labelTip(s,p,name,(u[0]+v[0])/2,(u[1]+v[1])/2,color,segments,placements);
     }
     const angle=Math.atan2(a.py,a.px),radius=Math.min(23,Math.hypot(tip[0]-origin[0],tip[1]-origin[1])*.3);
-    if(s.w>=470&&Math.abs(angle)>.4&&Math.abs(angle)<Math.PI-.3&&radius>8){clipPanel(s,p,()=>{s.ctx.strokeStyle=color;s.ctx.lineWidth=1;s.ctx.beginPath();s.ctx.arc(...origin,radius,0,-angle,angle>0);s.ctx.stroke();});labelTip(s,p,'\u03b8_1',origin[0]+(radius+22)*Math.cos(angle/2),origin[1]-(radius+22)*Math.sin(angle/2),color,segments);}
+    if(s.w>=470&&Math.abs(angle)>.4&&Math.abs(angle)<Math.PI-.3&&radius>8){clipPanel(s,p,()=>{s.ctx.strokeStyle=color;s.ctx.lineWidth=1;s.ctx.beginPath();s.ctx.arc(...origin,radius,0,-angle,angle>0);s.ctx.stroke();});labelTip(s,p,star?'\u03b8*_1':'\u03b8_1',origin[0]+(radius+22)*Math.cos(angle/2),origin[1]-(radius+22)*Math.sin(angle/2),color,segments);}
   }
 }
 export function paramVisible(spec,p){const k=spec.key,r=p.reaction,decay=['pion-decay','decay','muon'].includes(r);
@@ -88,6 +89,15 @@ function layoutFor(s,f){
   if(s.w>=470){const size=Math.min(ps[0].width,ps[0].height);bottom=ps[0].top+size;}else bottom=ps[1].top+ps[1].height;
   return {ps,need:blockHeight(s,opts),cap:(22+ps[0].height+opts.tail)/.72,paneBottom:bottom,paneHeight:ps[0].height,chipTop:bottom+6};
 }
+// Number as KaTeX shows it, read back, so a substituted line can be checked against what it displays.
+const shown=(x,sig)=>Number(texNum(x,sig).replace(/\\times10\^\{(-?\d+)\}/,'e$1'));
+// Component lines p_x = p cos θ and p_y = p sin θ. Momentum and angle get just enough figures that both products recompute to the shown results.
+export function componentLines(v,star=''){
+  const P=Math.hypot(v.px,v.py),A=Math.atan2(v.py,v.px)*180/Math.PI;let sp=7,sa=8;
+  search:for(let a=4;a<=7;a++)for(let b=3;b<=8;b++){const p=shown(P,a),t=shown(A,b)*Math.PI/180;if(shown(p*Math.cos(t),4)===shown(v.px,4)&&shown(p*Math.sin(t),4)===shown(v.py,4)){sp=a;sa=b;break search;}}
+  const p=texNum(P,sp),a=texNum(A,sa),unit='\\,\\mathrm{MeV}/c',sym=`p${star}_{1}`,ang=`\\theta${star}_{1}`;
+  return [`p${star}_{1x}=${sym}\\cos${ang}`,`p${star}_{1x}=${p}\\cos(${a}^\\circ)=${texNum(v.px,4)}${unit}`,`p${star}_{1y}=${sym}\\sin${ang}`,`p${star}_{1y}=${p}\\sin(${a}^\\circ)=${texNum(v.py,4)}${unit}`];
+}
 export const view={closeups,graphs,paramVisible,
   mount(shell){holdShell(shell);shell.scene.style.minHeight='550px';shell.scene.style.flexBasis='550px';},
   graphDescriptors:p=>graphs.filter(g=>g.id==='compton'?p.reaction==='compton':g.id==='threshold'?!['pion-decay','decay','muon'].includes(p.reaction):true).map(g=>['scatter','histogram'].includes(g.id)?{...g,unit:p.distribution==='isotropic'?'isotropic toy sample':'allowed locus'}:g),
@@ -108,9 +118,9 @@ export const view={closeups,graphs,paramVisible,
     s.camera={bounds:[-data(f).extent,data(f).extent,-data(f).extent,data(f).extent],zoom:f.closeup};s.snap=false;
   },
   equations(f){const {e,a,b,mass}=budget(f),sum=(v,k)=>`\\begin{gathered}E_{${k}}=${fmt(v.E)}\\,\\mathrm{MeV}\\\\(p_x,p_y)_{${k}}=(${fmt(v.px)},${fmt(v.py)})\\,\\mathrm{MeV}/c\\end{gathered}`;
-    const v=e[f.params.frame==='cm'?'cmFinal':'final'][0],momentum=v?Math.hypot(v.px,v.py,v.pz):0,angle=v?Math.atan2(v.py,v.px)*180/Math.PI:0;
+    const v=e[f.params.frame==='cm'?'cmFinal':'final'][0],star=f.params.frame==='cm'?'^{*}':'',components=v?componentLines(v,star):[];
     return ['\\sum P^\\mu_{in}=\\sum P^\\mu_{out}',sum(a,'in'),e.allowed?sum(b,'out'):'\\text{Outgoing state is forbidden}',
-      ...(v?['p_{1x}=p_1\\cos\\theta_1',`p_{1x}=${fmt(momentum)}\\cos(${fmt(angle,1)}^\\circ)=${fmt(v.px)}\\,\\mathrm{MeV}/c`,'p_{1y}=p_1\\sin\\theta_1',`p_{1y}=${fmt(v.py)}\\,\\mathrm{MeV}/c`]:[]),
+      ...components,
       'M^2=(\\sum E)^2-|\\sum\\mathbf p|^2',`M=${fmt(mass)}\\,\\mathrm{MeV}/c^2`,
       ...(['pion-decay','decay','muon'].includes(f.params.reaction)?[`Q=M-\\sum m_f=${fmt(e.W-e.requiredMass)}\\,\\mathrm{MeV}`]:['K_{th}=\\frac{(\\sum m_f)^2-(m_a+m_b)^2}{2m_b}',`K_{th}=${fmt(e.threshold)}\\,\\mathrm{MeV}`])];
   },
@@ -122,8 +132,8 @@ export const view={closeups,graphs,paramVisible,
   },
   drawGraph(s,d,f){const {e,sweep}=data(f),final=e[f.params.frame==='cm'?'cmFinal':'final'],a=final[0],scatter=f.geometry.scatter;
     let points=[],marker=null,title=d.label,xLabel='',yLabel='',bars=false,bounds=null;
-    if(d.id==='flight'){const ratio=a?.E?a.px/a.E:0;points=f.samples.map(p=>[p.t,p.t*ratio]);marker=[f.t,f.t*ratio];xLabel='coordinate time · s';yLabel='x_1 · light-seconds';}
-    if(d.id==='ellipse'){const upper=sweep.map(v=>[v.final[0]?.px||0,v.final[0]?.py||0]);points=upper.concat([...upper].reverse().map(([x,y])=>[x,-y]));marker=e.final[0]?[e.final[0].px,e.final[0].py]:null;xLabel='p_{1x} · MeV/c';yLabel='p_{1y} · MeV/c';}
+    if(d.id==='flight'){const ratio=a?.E?a.px/a.E:0;points=f.samples.map(p=>[p.t,p.t*ratio]);marker=[f.t,f.t*ratio];xLabel='coordinate time · s';yLabel='x_1 · light-s';}
+    if(d.id==='ellipse'){const upper=sweep.map(v=>[v.final[0]?.px||0,v.final[0]?.py||0]);points=upper.concat([...upper].reverse().map(([x,y])=>[x,-y]));marker=e.final[0]?[e.final[0].px,e.final[0].py]:null;const st=f.params.frame==='cm'?'*':'';xLabel=`p${st}_{1x} · MeV/c`;yLabel=`p${st}_{1y} · MeV/c`;}
     if(d.id==='energy-angle'){points=sweep.map((v,i)=>[i*2.5,v.final[0]?.E||0]);marker=[f.params.angle,e.final[0]?.E||0];xLabel=f.params.reaction==='compton'?'Lab photon angle · °':'CM polar angle · °';yLabel='E_1 · MeV';}
     if(d.id==='invariant'){points=f.samples.map(v=>[v.t,v.invariantMass]);marker=[f.t,e.W];xLabel='coordinate time · s';yLabel='M · MeV/c²';}
     if(d.id==='threshold'){const beam=e.initial[0],target=e.initial[1],ma=invariantMass(beam),mb=target?invariantMass(target):1,K=beam.E-ma,upper=Math.max(1,e.threshold*1.5,K*1.2);points=Array.from({length:81},(_,i)=>{const k=upper*i/80;return [k,Math.sqrt(ma*ma+mb*mb+2*mb*(ma+k))-e.requiredMass];});marker=[K,e.W-e.requiredMass];xLabel='beam kinetic energy · MeV';yLabel='Q · MeV';}
@@ -131,7 +141,7 @@ export const view={closeups,graphs,paramVisible,
     if(d.id==='scatter'){points=scatter.points.map(v=>[v.x,v.y]);const xv=plotVariables.find(v=>v.value===scatter.x.variable),yv=plotVariables.find(v=>v.value===scatter.y.variable);xLabel=`${symbol[scatter.x.variable]||''}${xv?.unit?' / '+xv.unit:''} · ${scatter.x.frame}`;yLabel=[symbol[scatter.y.variable],yv?.unit].filter(Boolean).join(' \u00b7 ');title='Allowed kinematics · '+(scatter.distribution==='isotropic'?'isotropic toy sample':'locus');bounds=[scatter.x.min,scatter.x.max,scatter.y.min,scatter.y.max];}
     if(d.id==='histogram'){const h=scatter.histogram;points=h.counts.map((v,i)=>[(h.edges[i]+h.edges[i+1])/2,v]);xLabel=[symbol[scatter.x.variable],plotVariables.find(v=>v.value===scatter.x.variable)?.unit].filter(Boolean).join(' / ');yLabel='sample count';title=scatter.distribution==='isotropic'?'Isotropic toy sample · no cross section':'Locus sample counts · not event rates';bars=true;bounds=[h.min,h.max,0,Math.max(1,...h.counts)*1.2];}
     // Symbols identify axes; units already supplied by this card's header stay there.
-    if(d.unit&& !['scatter','histogram'].includes(d.id)){
+    if(d.unit&& !['scatter','histogram','flight'].includes(d.id)){
       yLabel=yLabel.split(' \u00b7 ')[0];
       if(d.id!=='invariant')xLabel=xLabel.split(' \u00b7 ')[0];
     }
