@@ -3,6 +3,7 @@ export const C={blue:'#8ab9ff',pale:'#e1e5ed',green:'#b0d8ad',amber:'#e9bb88',pu
 const scientific=n=>Math.abs(n)>=1e5||Math.abs(n)>0&&Math.abs(n)<.001;
 export const fmt=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>'×10'+(sign==='-'?'⁻':'')+String(Number(power)).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d])):(Math.abs(n)<.0005?0:n).toFixed(2);
 export const tex=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>String.raw`\times10^{${sign==='-'?'-':''}${Number(power)}}`):fmt(n);
+export const sectionTick=n=>String(Number(n.toPrecision(2)));
 export function camera(s,bounds,top=100,bottom=58){
  const [a,b,c,d]=bounds,scale=Math.min((s.w-40)/Math.max(.01,b-a),(s.h-top-bottom)/Math.max(.01,d-c));
  const target={cx:(a+b)/2,cy:(c+d)/2,scale};
@@ -38,8 +39,8 @@ export function label(s,text,x,y,color=C.pale){
  return false;
 }
 export function vector(s,x,y,dx,dy,color,text){if(Math.hypot(dx,dy)<.05)return;s.arrow(x,y,x+dx,y+dy,color,2);if(text)label(s,text,x+dx+Math.sign(dx||1)*12,y+dy-10,color);}
-export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',scatter=false,zero=false,pointColor=()=>C.blue}={}){
- const compact=s.h<220,left=76,right=s.w-28,top=compact?32:90,bottom=s.h-(compact?32:68),values=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
+export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',scatter=false,zero=false,pointColor=()=>C.blue,tickFormat=fmt}={}){
+ const compact=s.h<220,left=76,right=s.w-28,top=compact?32:90,bottom=s.h-(compact?32:scatter?84:68),values=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
  if(!values.length){s.text('No completed points yet',s.w/2,s.h/2,C.muted,13);return;}
  let xmin=Math.min(...values.map(p=>p[xkey])),xmax=Math.max(...values.map(p=>p[xkey])),lo=Math.min(...values.map(p=>p[ykey])),hi=Math.max(...values.map(p=>p[ykey]));
  if(zero){lo=Math.min(0,lo);hi=Math.max(0,hi);}
@@ -54,8 +55,8 @@ export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',
  if(zero&&values.every(p=>p[ykey]>=0)&&!(energy<0))lo=0;
  const x=v=>left+(v-xmin)/xspan*(right-left),y=v=>bottom-(v-lo)/(hi-lo)*(bottom-top);
  s.line(left,top,left,bottom,C.grid);s.line(left,bottom,right,bottom,C.grid);
- s.text(fmt(xmin),left,bottom+17,C.muted,10);s.text(fmt(xmax),right,bottom+17,C.muted,10);
- s.text(fmt(hi),left-5,top,C.muted,10,'right');s.text(fmt(lo),left-5,bottom,C.muted,10,'right');
+ s.text(tickFormat(xmin),left,bottom+17,C.muted,10);s.text(tickFormat(xmax),right,bottom+17,C.muted,10);
+ s.text(tickFormat(hi),left-5,top,C.muted,10,'right');s.text(tickFormat(lo),left-5,bottom,C.muted,10,'right');
  if(scatter)values.forEach(p=>s.circle(x(p[xkey]),y(p[ykey]),2.5,pointColor(p)));else linePath(s,values.map(p=>({x:p[xkey],y:p[ykey]})),{x,y},C.blue,2);
  if(Number.isFinite(energy)){s.line(left,y(energy),right,y(energy),C.amber,1.5);s.text('E',right-5,y(energy)-10,C.amber,12);}
  if(cursor&&cursor.x>=xmin&&cursor.x<=xmax){s.line(x(cursor.x),top,x(cursor.x),bottom,C.pale,1);if(Number.isFinite(cursor.y)&&cursor.y>=lo&&cursor.y<=hi)s.circle(x(cursor.x),y(cursor.y),4,C.pale);}

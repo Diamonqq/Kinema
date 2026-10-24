@@ -94,7 +94,7 @@ export const view={graphs,closeups,closeupAnchors:s=>chipAnchors(s,closeups.map(
   if(k==='radius')return ['hard','soft'].includes(kind);if(k==='stiffness')return kind==='soft';
   if(k==='restitution')return kind==='hard'||kind==='coulomb'&&second==='hard';
   if(k==='strength'||k==='range')return !['hard','soft'].includes(kind);if(k==='diffuseness')return kind==='woods-saxon';if(k==='power')return kind==='power';return true;},
- drawGraph(s,d,f){s.text(d.label,s.w/2,13,C.pale,s.w<380?10:12);
+ drawGraph(s,d,f){
   if(d.id==='potential'){potential(s,f);return;}
   const curve=curveFor(f.params),cross=d.id==='cross-section';
   const points=cross?sectionPoints(f.params,curve.points).map(p=>({x:p.angle,y:p.sigma})):curve.points.filter(p=>p.complete).map(p=>({x:p.b,y:Math.abs(p.angle)}));

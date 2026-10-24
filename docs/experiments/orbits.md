@@ -202,8 +202,9 @@ uses the CM frame. Breakdown and the local r/v close-up distinguish inward
 gravity, radial velocity and signed tangential velocity. Equal-duration area
 sectors use actual integrated relative positions. Potential carries E and the
 current-radius cursor; N-body setups explicitly decline a fictitious radial
-potential. Poincare displays only actual upward crossings through the current
-transport time; the two-body scene explains which setup provides crossings.
+potential. Poincare displays actual upward crossings from its separate bounded long run,
+with crossings through the current transport time highlighted; the two-body
+scene explains which setup provides crossings.
 The radial phase graph uses an explicit radialSpeed observable.
 
 Verification receipts and captures: `round-156/orbit-views/`. Browser execution
@@ -244,3 +245,8 @@ bounded runs that stop before the target. Highlighting uses elapsed crossing
 time in both forward and reverse replay. Browser coverage accepts the honest
 time-capped result (at least 100 crossings), rather than raising the work limit
 just to force 320 in a changed setup.
+
+Final small polish removes in-canvas custom graph titles (the shell owns them),
+rounds section tick labels to two significant figures and reserves a separate
+tick row above the crossing-count caption. This follow-up has Node checks;
+the lead merged review is responsible for the final rendered check.

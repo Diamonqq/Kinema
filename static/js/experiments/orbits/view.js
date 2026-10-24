@@ -1,6 +1,6 @@
 import {model,G} from './model.js';
 import {startSection,crossingElapsed} from './section.js';
-import {C,fmt,tex,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label} from './scene.js';
+import {C,fmt,tex,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sectionTick} from './scene.js';
 export const graphs=[
  {id:'radius',label:'Separation',unit:'m',series:[{key:'r',label:'r',color:C.blue}]},
  {id:'energy',label:'Energy · K, U, E',unit:'J',kind:'custom',series:[{key:'energy',label:'E',color:C.amber},{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.green}]},
@@ -35,7 +35,7 @@ function drawSection(s,f,compact=false){
  if(state.error){s.text('Section stopped: '+state.error,s.w/2,s.h/2,C.muted,11);return;}
  // Wait for the bounded integration before drawing axes: their final bounds
  // stay fixed while playback moves the bright time selection through the cloud.
- plot(s,state.points,{xkey:'x',ykey:'vx',scatter:true,
+ plot(s,state.points,{xkey:'x',ykey:'vx',scatter:true,tickFormat:sectionTick,
   pointColor:p=>crossingElapsed(p)<=f.t?C.blue:C.blue+'45',
   label:count+' crossings · '+Math.round(state.time)+' s integrated'});
 }
@@ -87,7 +87,7 @@ export const view={graphs,closeups,
   if(['vx0','vy0'].includes(k))return binary&&p.launch==='custom';if(k==='targetRadius')return binary&&p.launch==='transfer';
   if(['burnStart','burnDuration','thrustBody','thrustFrame'].includes(k))return !!(p.thrustAlong||p.thrustNormal);
   if(k==='replicaSpread')return p.replicas>0;if(['boostX','boostY'].includes(k))return p.frame==='universe';return true;},
- drawGraph(s,d,f){s.text(d.label,s.w/2,13,C.pale,s.w<380?10:12);
+ drawGraph(s,d,f){
   if(d.id==='energy'){
    const rows=f.samples||[],values=rows.flatMap(p=>[p.energy,p.kinetic,p.potential]),lo=Math.min(0,...values),hi=Math.max(1,...values),span=hi-lo,left=76,right=s.w-28,top=32,bottom=s.h-32,end=rows.at(-1)?.t||1,
     map={x:t=>left+(right-left)*t/end,y:e=>bottom-(bottom-top)*(e-lo)/span};

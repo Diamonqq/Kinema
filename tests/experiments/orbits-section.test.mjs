@@ -1,7 +1,7 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import {sectionBatches,startSection,crossingElapsed} from '../../static/js/experiments/orbits/section.js';
-import {plot} from '../../static/js/experiments/orbits/scene.js';
+import {plot,sectionTick} from '../../static/js/experiments/orbits/scene.js';
 
 test('long Comet section reaches 320 genuine upward crossings within its bounded horizon (time order tolerance 1e-8 s)',()=>{
  let final,prior=0;
@@ -39,4 +39,12 @@ test('section point brightness follows time while final axes remain identical (0
 test('reverse crossing highlighting uses elapsed physical time, matching the positive scrubber (0 tolerance)',()=>{
  assert.equal(crossingElapsed({t:-100}),100);assert.equal(crossingElapsed({t:60}),60);
  assert.ok(crossingElapsed({t:-100})>60);assert.ok(crossingElapsed({t:-2})<=60);
+});
+
+test('section tick labels are rounded and occupy a separate row above the caption (at least 6 px)',()=>{
+ assert.equal(sectionTick(-303.46),'-300');assert.equal(sectionTick(-1.78),'-1.8');assert.equal(sectionTick(1.78),'1.8');
+ const labels=[],noop=()=>{},s={w:320,h:280,text:(text,x,y,color,size)=>labels.push({text,y,size}),line:noop,circle:noop};
+ plot(s,[{x:-303.46,y:-1.78},{x:51.14,y:1.78}],{scatter:true,tickFormat:sectionTick,label:'264 crossings'});
+ const tick=labels.find(l=>l.text==='-300'),caption=labels.find(l=>l.text==='264 crossings');
+ assert.ok(caption.y-caption.size/2-(tick.y+tick.size/2)>=6);
 });
