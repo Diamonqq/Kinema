@@ -60,7 +60,7 @@ test('energy budget groups the required bar value and signed Q within 40 px',()=
 test('Breakdown units, matching component names, conditional legends and single graph titles',()=>{
  for(const preset of model.presets){const f=frame(model,preset.values),e=eventFor(f.params),text=view.equations(f).join(' ');
   assert.ok(!text.includes('perp'));if(e.final.length){assert.match(text,/p_\{1y\}/);assert.match(text,/mathrm\{MeV\}\/c/);}
-  assert.equal(view.key(f).includes('green p3'),e.final.length===3 && e.W-e.requiredMass>=Math.max(1e-6,e.requiredMass*1e-4));
+  assert.equal(view.key(f).includes('green p\u2083'),e.final.length===3 && e.W-e.requiredMass>=Math.max(1e-6,e.requiredMass*1e-4));
   for(const d of view.graphDescriptors(f.params)){const s=fakeStage(300,170);view.drawGraph(s,d,f);assert.ok(!s.labels.some(l=>l.text===d.label));}
   f.breakdown=true;const s=fakeStage(300,550);view.draw(s,f);assert.ok(!s.labels.some(l=>l.text==='p in'||l.text.includes('\u03b8')));
  }
@@ -68,6 +68,6 @@ test('Breakdown units, matching component names, conditional legends and single 
 
 test('captions distinguish absent incoming arrows and coincident threshold products',()=>{
  const rest=frame(model,model.presets.find(p=>p.id==='pion-rest').values);assert.ok(!view.key(rest).includes('incoming'));
- const threshold=frame(model,model.presets.find(p=>p.id==='threshold').values);assert.match(view.key(threshold),/Products move together near threshold/);assert.ok(!view.key(threshold).includes('green p3'));
+ const threshold=frame(model,model.presets.find(p=>p.id==='threshold').values);assert.match(view.key(threshold),/Products move together near threshold/);assert.ok(!view.key(threshold).includes('green p\u2083'));
  for(const p of model.presets){const equations=view.equations(frame(model,p.values));assert.ok(!equations.some(x=>x.includes('Particle units')));assert.ok(equations.some(x=>x.includes('E_{in}')&&x.includes('mathrm{MeV}')));}
 });

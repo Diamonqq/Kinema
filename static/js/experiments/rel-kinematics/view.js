@@ -11,13 +11,13 @@ function data(f){let d=caches.get(f.params);if(!d){const e=eventFor(f.params),sw
   const frameBounds=boxes.map(a=>{const x=(a[0]+a[1])/2,y=(a[2]+a[3])/2;return [x-span/2,x+span/2,y-span/2,y+span/2];});
   d={e,sweep,frameBounds,extent:Math.max(.01,...qs.map(a=>Math.hypot(a.px,a.py)))*1.22};caches.set(f.params,d);}return d;}
 function labelTip(s,p,text,x,y,color,segments=[],placements=null){
-  const c=s.ctx;c.font='11px system-ui';const w=c.measureText(text).width;
+  const c=s.ctx;c.font='11px system-ui';const component=/^p[\u2081\u2082\u2083][xy]$/.test(text),base=component?text.slice(0,-1):text;const baseWidth=c.measureText(base).width,w=baseWidth+(component?c.measureText(text.at(-1)).width*.75+1:0);
   for(const [dx,dy] of placements||[[9,-12],[9,14],[-w-9,-12],[-w-9,14],[9,-28],[-w-9,28]]){
     const a={x:Math.max(p.left+3,Math.min(p.left+p.width-w-3,x+dx)),y:Math.max(p.top+9,Math.min(p.top+p.height-9,y+dy))};
     const box={x:a.x-3,y:a.y-8,width:w+6,height:16};
     if(s.labels.some(b=>box.x<b.x+b.width&&box.x+box.width>b.x&&box.y<b.y+b.height&&box.y+box.height>b.y))continue;
     if(segments.some(v=>clipLine(...v,{left:box.x,top:box.y,width:box.width,height:box.height})))continue;
-    s.text(text,a.x,a.y,color,11,'left');return;
+    s.text(base,a.x,a.y,color,11,'left');if(component)s.text(text.at(-1),a.x+baseWidth+1,a.y+3,color,8,'left');return;
   }
 }
 function momentum(s,f,p,key,headTail=false){
@@ -37,7 +37,7 @@ function momentum(s,f,p,key,headTail=false){
     if(headTail){const total=sumMomentum(e.final);line(s,m,p,[0,0],[total.px,total.py],'#eef4ff',1,[2,4]);}
   });
   if(!f.thumbnail&&(f.breakdown||headTail)){
-    for(const {i,v} of outgoing)labelTip(s,p,'p'+(i+1),v[2],v[3],colors[i%6],segments);
+    for(const {i,v} of outgoing)labelTip(s,p,'p'+['\u2081','\u2082','\u2083'][i],v[2],v[3],colors[i%6],segments);
     if(s.w>=470)for(const {v} of incoming)labelTip(s,p,'p in',v[2],v[3],'#a7b6cc',segments);
   }
   if(f.breakdown&&!headTail&&e.final[0]){
@@ -47,13 +47,13 @@ function momentum(s,f,p,key,headTail=false){
       if(Math.abs((b[0]-u[0])*dy-(b[1]-u[1])*dx)/len>2||Math.abs((b[2]-u[0])*dy-(b[3]-u[1])*dx)/len>2)return false;
       const ts=[((b[0]-u[0])*dx+(b[1]-u[1])*dy)/len,((b[2]-u[0])*dx+(b[3]-u[1])*dy)/len];return Math.min(len,Math.max(...ts))-Math.max(0,Math.min(...ts))>3;
     });
-    for(const [name,u,v,placements] of [['p1x',origin,elbow,[[-12,-13],[-12,16]]],['p1y',elbow,tip,[[10,0],[-36,0]]]]){
+    for(const [name,u,v,placements] of [['p\u2081x',origin,elbow,[[-12,-13],[-12,16]]],['p\u2081y',elbow,tip,[[10,0],[-36,0]]]]){
       const length=Math.hypot(v[0]-u[0],v[1]-u[1]);if(length<(s.w<470?42:28)||overlap(u,v))continue;
       clipPanel(s,p,()=>{s.ctx.setLineDash([2,4]);s.line(...u,...v,color+'90',1);s.ctx.setLineDash([]);});
       labelTip(s,p,name,(u[0]+v[0])/2,(u[1]+v[1])/2,color,segments,placements);
     }
     const angle=Math.atan2(a.py,a.px),radius=Math.min(23,Math.hypot(tip[0]-origin[0],tip[1]-origin[1])*.3);
-    if(s.w>=470&&Math.abs(angle)>.4&&Math.abs(angle)<Math.PI-.3&&radius>8){clipPanel(s,p,()=>{s.ctx.strokeStyle=color;s.ctx.lineWidth=1;s.ctx.beginPath();s.ctx.arc(...origin,radius,0,-angle,angle>0);s.ctx.stroke();});labelTip(s,p,'\u03b81',origin[0]+(radius+17)*Math.cos(angle/2),origin[1]-(radius+17)*Math.sin(angle/2),color,segments);}
+    if(s.w>=470&&Math.abs(angle)>.4&&Math.abs(angle)<Math.PI-.3&&radius>8){clipPanel(s,p,()=>{s.ctx.strokeStyle=color;s.ctx.lineWidth=1;s.ctx.beginPath();s.ctx.arc(...origin,radius,0,-angle,angle>0);s.ctx.stroke();});labelTip(s,p,'\u03b8\u2081',origin[0]+(radius+17)*Math.cos(angle/2),origin[1]-(radius+17)*Math.sin(angle/2),color,segments);}
   }
 }
 export function paramVisible(spec,p){const k=spec.key,r=p.reaction,decay=['pion-decay','decay','muon'].includes(r);
@@ -88,7 +88,7 @@ export const view={closeups,graphs,paramVisible,
     if(!e.allowed)return 'Dashed: incoming momenta \u00b7 below threshold';
     if(f.closeup==='budget')return 'Blue: available energy \u00b7 green: rest energy';
     if(e.final.length>1&&e.W-e.requiredMass<Math.max(1e-6,e.requiredMass*1e-4))return 'Products move together '+(e.W-e.requiredMass<1e-6?'at':'near')+' threshold'+(incoming?' \u00b7 dashed: incoming':'');
-    const names=e.final.map((a,i)=>Math.hypot(a.px,a.py)>1e-9?['Blue p1','warm p2','green p3'][i]:null).filter(Boolean);
+    const names=e.final.map((a,i)=>Math.hypot(a.px,a.py)>1e-9?['Blue p\u2081','warm p\u2082','green p\u2083'][i]:null).filter(Boolean);
     return (f.closeup==='balance'?'Head-to-tail sum \u00b7 ':'')+names.join(' \u00b7 ')+(incoming?' \u00b7 dashed: incoming':'');
   },
   closeupAnchors:s=>({balance:{x:s.w*.26,y:s.h-69},budget:{x:s.w*.74,y:s.h-69}}),
@@ -122,6 +122,11 @@ export const view={closeups,graphs,paramVisible,
     if(d.id==='compton'){const E=e.initial[0].E;points=Array.from({length:73},(_,i)=>[i*2.5,comptonEnergy(E,i*Math.PI/72)]);marker=[f.params.angle,e.photonEnergy];xLabel='Lab photon angle · °';yLabel='photon energy · MeV';}
     if(d.id==='scatter'){points=scatter.points.map(v=>[v.x,v.y]);const xv=plotVariables.find(v=>v.value===scatter.x.variable),yv=plotVariables.find(v=>v.value===scatter.y.variable);xLabel=`${symbol[scatter.x.variable]||''}${xv?.unit?' / '+xv.unit:''} · ${scatter.x.frame}`;yLabel=[symbol[scatter.y.variable],yv?.unit].filter(Boolean).join(' \u00b7 ');title='Allowed kinematics · '+(scatter.distribution==='isotropic'?'isotropic toy sample':'locus');bounds=[scatter.x.min,scatter.x.max,scatter.y.min,scatter.y.max];}
     if(d.id==='histogram'){const h=scatter.histogram;points=h.counts.map((v,i)=>[(h.edges[i]+h.edges[i+1])/2,v]);xLabel=[symbol[scatter.x.variable],plotVariables.find(v=>v.value===scatter.x.variable)?.unit].filter(Boolean).join(' / ');yLabel='sample count';title=scatter.distribution==='isotropic'?'Isotropic toy sample · no cross section':'Locus sample counts · not event rates';bars=true;bounds=[h.min,h.max,0,Math.max(1,...h.counts)*1.2];}
+    // Symbols identify axes; units already supplied by this card's header stay there.
+    if(d.unit&& !['scatter','histogram'].includes(d.id)){
+      yLabel=yLabel.split(' \u00b7 ')[0];
+      if(d.id!=='invariant')xLabel=xLabel.split(' \u00b7 ')[0];
+    }
     plot(s,{title,xLabel,yLabel,points,marker,bounds,bars,dots:d.id==='scatter',equalScale:d.id==='ellipse',xLimits:['compton','energy-angle'].includes(d.id)?[0,180]:d.id==='threshold'?[0,Infinity]:['scatter','histogram'].includes(d.id)?physicalLimits(scatter.x.variable):null,yLimits:d.id==='scatter'?physicalLimits(scatter.y.variable):null});
   },
 };
