@@ -1,10 +1,11 @@
 import * as THREE from '/vendor/three/build/three.module.js';
 import {model} from './model.js';
+import {num,texNum} from '../kit/format.js';
 
 // z is up in both the physics and the drawing. Vectors have independent SI scales.
 const C={omega:'#82b5ff',L:'#8fd5b4',torque:'#efa67f',axes:['#d99ba8','#d7c77e','#a7a0df'],body:'#6f92bd'};
-const n=x=>Math.abs(x)<1e-10?'0':String(Number(x.toPrecision(4))), norm=v=>Math.hypot(...v);
-export const readoutNumber=x=>Math.abs(x)<1e-10?'0':x.toPrecision(3).replace('-', '\u2212');
+const norm=v=>Math.hypot(...v);
+export const readoutNumber=num;
 const v=a=>new THREE.Vector3(...a), q=a=>new THREE.Quaternion(a[1],a[2],a[3],a[0]);
 export const closeups=[
  {id:'body',label:'Body frame'},{id:'frames',label:'Compare frames'},
@@ -36,17 +37,17 @@ export function graphWindow(params){
  return Math.max(.2,Math.min(60,seconds));
 }
 export function available(f){const p=f.params;return ['body','frames','inertia',...(p.mode==='free'?['axis','energy']:p.mode==='heavy-top'?['gravity','precession']:p.mode==='tilt-torque'?['tilt','precession']:['support'])];}
-function euler(f){const {principalMoments:I,omegaBody:w,torqueBody:t}=f.geometry;return I.map((a,i)=>{const j=(i+1)%3,k=(i+2)%3,alpha=(t[i]+(I[j]-I[k])*w[j]*w[k])/a;return [`I_${i+1}\\dot\\omega_${i+1}=\\tau_${i+1}+(I_${j+1}-I_${k+1})\\omega_${j+1}\\omega_${k+1}`,f.narrow?`\\dot\\omega_${i+1}=${readoutNumber(alpha)}\\,\\mathrm{rad/s^2}`:`\\dot\\omega_${i+1}=\\frac{${n(t[i])}+(${n(I[j])}-${n(I[k])})(${n(w[j])})(${n(w[k])})}{${n(a)}}=${n(alpha)}\\,\\mathrm{rad/s^2}`];}).flat();}
+function euler(f){const {principalMoments:I,omegaBody:w,torqueBody:t}=f.geometry;return I.map((a,i)=>{const j=(i+1)%3,k=(i+2)%3,alpha=(t[i]+(I[j]-I[k])*w[j]*w[k])/a;return [`I_${i+1}\\dot\\omega_${i+1}=\\tau_${i+1}+(I_${j+1}-I_${k+1})\\omega_${j+1}\\omega_${k+1}`,f.narrow?`\\dot\\omega_${i+1}=${texNum(alpha)}\\,\\mathrm{rad/s^2}`:`\\dot\\omega_${i+1}=\\frac{${texNum(t[i])}+(${texNum(I[j])}-${texNum(I[k])})(${texNum(w[j])})(${texNum(w[k])})}{${texNum(a)}}=${texNum(alpha)}\\,\\mathrm{rad/s^2}`];}).flat();}
 function rawCloseupEquations(f){const g=f.geometry,p=f.params,s=f.sample,I=g.principalMoments;
  switch(f.closeup){
- case 'body':case 'frames':return ['\\mathbf L_s=R(q)\\mathbf L_b,\\quad\\boldsymbol\\omega_s=R(q)\\boldsymbol\\omega_b',`L_1=I_1\\omega_1=(${n(I[0])})(${n(g.omegaBody[0])})=${n(g.angularMomentumBody[0])}\\,\\mathrm{kg\\,m^2/s}`];
- case 'axis':{const rate=Math.abs(g.omegaBody[1])*Math.sqrt(Math.max(0,(I[2]-I[1])*(I[1]-I[0])/(I[0]*I[2])));return ['\\lambda=|\\omega_2|\\sqrt{\\frac{(I_3-I_2)(I_2-I_1)}{I_1I_3}}',`\\lambda=${n(rate)}\\,\\mathrm{s}^{-1}\\quad\\text{(linear regime)}`];}
- case 'inertia':return [p.shape==='box'?'I_1=\\frac{m(b^2+c^2)}{12}':p.shape==='corner-masses'?'I_1=\\frac{m(b^2+c^2)}4':p.shape==='plate'?'I_3=I_1+I_2':p.shape==='custom'?'\\text{Entered principal moments about CM}':'I_3=\\tfrac12 m(a/2)^2',`(I_1,I_2,I_3)_{\\rm CM}=(${g.centreMoments.map(n).join(',')})\\,\\mathrm{kg\\,m^2}`];
- case 'gravity':return ['\\boldsymbol\\tau_g=\\mathbf r\\times(-mg\\hat{\\mathbf z})',...(f.narrow?['|\\tau_g|=mgd\\sin\\theta',`|\\tau_g|=${readoutNumber(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`]:[`|\\tau_g|=mgd\\sin\\theta=(${n(p.mass*p.g*p.distance)})\\sin(${n(s.theta)})=${n(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`]),'\\frac{d\\mathbf L}{dt}=\\boldsymbol\\tau_g+\\boldsymbol\\tau_{ext}'];
- case 'tilt':return ['\\boldsymbol\\tau=\\kappa\\hat{\\mathbf z}\\times\\hat{\\mathbf e}_3',`|\\tau|=|${n(p.tiltTorque)}|\\sin(${n(s.theta)})=${n(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`,`U=\\kappa\\cos\\theta=${n(p.tiltTorque*Math.cos(s.theta))}\\,\\mathrm J`];
- case 'precession':return ['I_1\\cos\\theta\\,\\Omega^2-I_3\\omega_3\\Omega+C=0',`C=${n(g.tiltTorqueCoefficient)}\\,\\mathrm{N\\,m},\\quad\\dot\\phi=${n(s.precessionRate)}\\,\\mathrm{rad/s}`,`\\theta=${n(s.theta)}\\,\\mathrm{rad}`];
- case 'energy':return ['\\sum_i I_i\\omega_i^2=2T=\\boldsymbol\\omega\\cdot\\mathbf L',`2T=${n(2*s.kinetic)}\\,\\mathrm J`,'\\text{Body polhode; space herpolhode on }\\boldsymbol\\omega\\cdot\\mathbf L=2T'];
- case 'support':return ['\\boldsymbol\\tau_{support}=\\boldsymbol\\omega\\times\\mathbf L',`\\boldsymbol\\tau\\cdot\\boldsymbol\\omega=${n(g.torqueSpace.reduce((a,t,i)=>a+t*g.omegaSpace[i],0))}\\,\\mathrm W`];
+ case 'body':case 'frames':return ['\\mathbf L_s=R(q)\\mathbf L_b,\\quad\\boldsymbol\\omega_s=R(q)\\boldsymbol\\omega_b',`L_1=I_1\\omega_1=(${texNum(I[0])})(${texNum(g.omegaBody[0])})=${texNum(g.angularMomentumBody[0])}\\,\\mathrm{kg\\,m^2/s}`];
+ case 'axis':{const rate=Math.abs(g.omegaBody[1])*Math.sqrt(Math.max(0,(I[2]-I[1])*(I[1]-I[0])/(I[0]*I[2])));return ['\\lambda=|\\omega_2|\\sqrt{\\frac{(I_3-I_2)(I_2-I_1)}{I_1I_3}}',`\\lambda=${texNum(rate)}\\,\\mathrm{s}^{-1}\\quad\\text{(linear regime)}`];}
+ case 'inertia':return [p.shape==='box'?'I_1=\\frac{m(b^2+c^2)}{12}':p.shape==='corner-masses'?'I_1=\\frac{m(b^2+c^2)}4':p.shape==='plate'?'I_3=I_1+I_2':p.shape==='custom'?'\\text{Entered principal moments about CM}':'I_3=\\tfrac12 m(a/2)^2',`(I_1,I_2,I_3)_{\\rm CM}=(${g.centreMoments.map(x=>texNum(x)).join(',')})\\,\\mathrm{kg\\,m^2}`];
+ case 'gravity':return ['\\boldsymbol\\tau_g=\\mathbf r\\times(-mg\\hat{\\mathbf z})',...(f.narrow?['|\\tau_g|=mgd\\sin\\theta',`|\\tau_g|=${texNum(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`]:[`|\\tau_g|=mgd\\sin\\theta=(${texNum(p.mass*p.g*p.distance)})\\sin(${texNum(s.theta)})=${texNum(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`]),'\\frac{d\\mathbf L}{dt}=\\boldsymbol\\tau_g+\\boldsymbol\\tau_{ext}'];
+ case 'tilt':return ['\\boldsymbol\\tau=\\kappa\\hat{\\mathbf z}\\times\\hat{\\mathbf e}_3',`|\\tau|=|${texNum(p.tiltTorque)}|\\sin(${texNum(s.theta)})=${texNum(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`,`U=\\kappa\\cos\\theta=${texNum(p.tiltTorque*Math.cos(s.theta))}\\,\\mathrm J`];
+ case 'precession':return ['I_1\\cos\\theta\\,\\Omega^2-I_3\\omega_3\\Omega+C=0',`C=${texNum(g.tiltTorqueCoefficient)}\\,\\mathrm{N\\,m},\\quad\\dot\\phi=${texNum(s.precessionRate)}\\,\\mathrm{rad/s}`,`\\theta=${texNum(s.theta)}\\,\\mathrm{rad}`];
+ case 'energy':return ['\\sum_i I_i\\omega_i^2=2T=\\boldsymbol\\omega\\cdot\\mathbf L',`2T=${texNum(2*s.kinetic)}\\,\\mathrm J`,'\\text{Body polhode; space herpolhode on }\\boldsymbol\\omega\\cdot\\mathbf L=2T'];
+ case 'support':return ['\\boldsymbol\\tau_{support}=\\boldsymbol\\omega\\times\\mathbf L',`\\boldsymbol\\tau\\cdot\\boldsymbol\\omega=${texNum(g.torqueSpace.reduce((a,t,i)=>a+t*g.omegaSpace[i],0))}\\,\\mathrm W`];
  default:return [];
  }
 }
@@ -54,11 +55,11 @@ export function closeupEquations(f){
  if(!f.narrow)return rawCloseupEquations(f);
  const g=f.geometry,p=f.params,s=f.sample;
  switch(f.closeup){
- case 'body':case 'frames':return ['\\mathbf L_s=R(q)\\mathbf L_b','\\boldsymbol\\omega_s=R(q)\\boldsymbol\\omega_b',`L_1=I_1\\omega_1=${readoutNumber(g.angularMomentumBody[0])}\\,\\mathrm{kg\\,m^2/s}`];
- case 'inertia':return [rawCloseupEquations(f)[0],...g.centreMoments.map((x,i)=>`I_{${i+1},\\rm CM}=${readoutNumber(x)}\\,\\mathrm{kg\\,m^2}`)];
- case 'tilt':return ['\\boldsymbol\\tau=\\kappa\\hat{\\mathbf z}\\times\\hat{\\mathbf e}_3','|\\tau|=|\\kappa|\\sin\\theta',`|\\tau|=${readoutNumber(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`,`U=\\kappa\\cos\\theta=${readoutNumber(p.tiltTorque*Math.cos(s.theta))}\\,\\mathrm J`];
- case 'precession':return [rawCloseupEquations(f)[0],`C=${readoutNumber(g.tiltTorqueCoefficient)}\\,\\mathrm{N\\,m}`,`\\dot\\phi=${readoutNumber(s.precessionRate)}\\,\\mathrm{rad/s}`,`\\theta=${readoutNumber(s.theta)}\\,\\mathrm{rad}`];
- case 'energy':return [rawCloseupEquations(f)[0],`2T=${readoutNumber(2*s.kinetic)}\\,\\mathrm J`,'\\text{Body: polhode}','\\text{Space: herpolhode}','\\boldsymbol\\omega\\cdot\\mathbf L=2T'];
+ case 'body':case 'frames':return ['\\mathbf L_s=R(q)\\mathbf L_b','\\boldsymbol\\omega_s=R(q)\\boldsymbol\\omega_b',`L_1=I_1\\omega_1=${texNum(g.angularMomentumBody[0])}\\,\\mathrm{kg\\,m^2/s}`];
+ case 'inertia':return [rawCloseupEquations(f)[0],...g.centreMoments.map((x,i)=>`I_{${i+1},\\rm CM}=${texNum(x)}\\,\\mathrm{kg\\,m^2}`)];
+ case 'tilt':return ['\\boldsymbol\\tau=\\kappa\\hat{\\mathbf z}\\times\\hat{\\mathbf e}_3','|\\tau|=|\\kappa|\\sin\\theta',`|\\tau|=${texNum(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`,`U=\\kappa\\cos\\theta=${texNum(p.tiltTorque*Math.cos(s.theta))}\\,\\mathrm J`];
+ case 'precession':return [rawCloseupEquations(f)[0],`C=${texNum(g.tiltTorqueCoefficient)}\\,\\mathrm{N\\,m}`,`\\dot\\phi=${texNum(s.precessionRate)}\\,\\mathrm{rad/s}`,`\\theta=${texNum(s.theta)}\\,\\mathrm{rad}`];
+ case 'energy':return [rawCloseupEquations(f)[0],`2T=${texNum(2*s.kinetic)}\\,\\mathrm J`,'\\text{Body: polhode}','\\text{Space: herpolhode}','\\boldsymbol\\omega\\cdot\\mathbf L=2T'];
  default:return rawCloseupEquations(f);
  }
 }
@@ -110,7 +111,7 @@ export const view={graphs,closeups,
  graphDescriptors(params){const window=graphWindow(params);return graphs.map(g=>g.kind?g:{...g,window});},
  key:f=>f.compact?'\u03c9 rad/s \u00b7 L kg m\u00b2/s \u00b7 \u03c4 N m':f.closeup==='energy'?'Velocity space · radius is angular speed':'ω rad/s · L kg m²/s · τ N m · arrows use separate fixed scales',
  closeupAnchors(s,f){return f.rotationAnchors||Object.fromEntries(visibleTargets(f).map((id,i)=>[id,{x:s.w*(i===0?.27:i===1?.73:.5),y:i<2?(s.h<420?42:67):s.h-62}]));},
- equations(f){const g=f.geometry;return [...euler(f),...(f.params.mode==='heavy-top'?closeupEquations({...f,closeup:'gravity'}):f.params.mode==='tilt-torque'?closeupEquations({...f,closeup:'tilt'}):f.params.mode==='fixed-axis'?closeupEquations({...f,closeup:'support'}):['\\frac{d\\mathbf L_s}{dt}=\\boldsymbol\\tau_s']),`T=\\tfrac12\\sum I_i\\omega_i^2=${n(f.sample.kinetic)}\\,\\mathrm J`];},
+ equations(f){const g=f.geometry;return [...euler(f),...(f.params.mode==='heavy-top'?closeupEquations({...f,closeup:'gravity'}):f.params.mode==='tilt-torque'?closeupEquations({...f,closeup:'tilt'}):f.params.mode==='fixed-axis'?closeupEquations({...f,closeup:'support'}):['\\frac{d\\mathbf L_s}{dt}=\\boldsymbol\\tau_s']),`T=\\tfrac12\\sum I_i\\omega_i^2=${texNum(f.sample.kinetic)}\\,\\mathrm J`];},
  closeupEquation:closeupEquations,
  // Honest projected gallery thumbnail; the full experiment always mounts three.js.
  draw(s,f){const {w,h}=s,body=f.geometry,points=[];for(const x of [-1,1])for(const y of [-1,1])for(const z of [-1,1]){const point=v([x*f.params.a/2,y*f.params.b/2,z*f.params.c/2]).applyQuaternion(q(body.quaternion));points.push([point.x+.35*point.y,-point.z-.25*point.y]);}const lo=[0,1].map(i=>Math.min(...points.map(p=>p[i]))),hi=[0,1].map(i=>Math.max(...points.map(p=>p[i]))),scale=.78*Math.min(w/(hi[0]-lo[0]||1),h/(hi[1]-lo[1]||1));const corners=points.map(p=>[w/2+scale*(p[0]-(lo[0]+hi[0])/2),h/2+scale*(p[1]-(lo[1]+hi[1])/2)]);for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if([1,2,4].includes(i^j))s.line(...corners[i],...corners[j],C.body,2);},
@@ -173,7 +174,7 @@ export const view={graphs,closeups,
    const p=f.params,g=f.geometry,isBody=['body','axis','inertia','energy'].includes(f.closeup),compare=f.closeup==='frames',energy=f.closeup==='energy';
    const layout=sceneLayout(width,height,f.closeup);f.compact=layout.compact;root.classList.toggle('rr-compact',layout.compact);const ids=visibleTargets(f,height);for(const b of shell.q('.exp-closeups').children){const hidden=!ids.includes(b.dataset.id);if(b.hidden!==hidden)b.hidden=hidden;}
    cachedText(caption,f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' ')));
-   let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a ${readoutNumber(p.a)} m · b ${readoutNumber(p.b)} m · c ${readoutNumber(p.c)} m`:`θ ${readoutNumber(f.sample.theta)} rad · T ${readoutNumber(f.sample.kinetic)} J`;
+   let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a ${num(p.a)} m · b ${num(p.b)} m · c ${num(p.c)} m`:`θ ${num(f.sample.theta)} rad · T ${num(f.sample.kinetic)} J`;
    if(norm(g.torqueSpace)<1e-10&&!energy)readoutText+=' · τ 0 N m';cachedText(readout,readoutText);
    leaderLengths=[];for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
    if(f.t-lastTrace>.025){traceBody.push([...g.omegaBody]);traceSpace.push([...g.omegaSpace]);if(traceBody.length>800){traceBody.shift();traceSpace.shift();}lastTrace=f.t;}

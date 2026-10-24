@@ -1,7 +1,8 @@
 import {VectorStage,palette} from './stage.js';
+import {num} from './format.js';
 // Zero stays on the axis; padding never invents a negative range for nonnegative data (or the reverse).
 export function valueRange(vals){let lo=0,hi=0;for(const value of vals){if(value<lo)lo=value;if(value>hi)hi=value;}if(hi===lo)hi=lo+1;const pad=(hi-lo)*.12;if(hi>0)hi+=pad;if(lo<0)lo-=pad;return [lo,hi];}
-export function axisLabel(v){const a=Math.abs(v);return a&&(a>=1e4||a<.01)?v.toExponential(1).replace('+',''):v.toFixed(a>=100?0:a>=10?1:2);}
+export const axisLabel=v=>num(v);
 export function graphTimeRange(descriptor,end,time){
  const window=descriptor.window;
  if(['phase','spectrum','custom'].includes(descriptor.kind)||!Number.isFinite(window)||window<=0||end<=window)return [0,end];
@@ -15,20 +16,21 @@ export function nearestSample(samples,time){const i=sampleBound(samples,time);if
 // boundary neighbours keep the clipped line continuous at the window edges.
 export function decimate(samples,key,start,end,columns){
  const first=Math.max(0,sampleBound(samples,start)-1),last=Math.min(samples.length,sampleBound(samples,end,true)+1),out=[];
- let bucket=-1,min,max,minIndex,maxIndex,firstPoint,lastPoint;
+ let bucket=-1,min,max,minIndex,maxIndex,firstPoint,lastPoint,segmentStart=0;
  const flush=()=>{if(minIndex===undefined)return;if(minIndex<=maxIndex){out.push(min);if(maxIndex!==minIndex)out.push(max);}else{out.push(max);out.push(min);}};
+ const finishSegment=()=>{flush();if(firstPoint&&out[segmentStart]!==firstPoint)out.splice(segmentStart,0,firstPoint);if(lastPoint&&out.at(-1)!==lastPoint)out.push(lastPoint);bucket=-1;minIndex=maxIndex=undefined;firstPoint=lastPoint=undefined;};
  for(let i=first;i<last;i++){
-  const point=samples[i],value=point[key];if(!Number.isFinite(value))continue;if(!firstPoint)firstPoint=point;lastPoint=point;
+  const point=samples[i],value=point[key];if(!Number.isFinite(value)){finishSegment();if(!out.length||Number.isFinite(out.at(-1)[key]))out.push(point);segmentStart=out.length;continue;}if(!firstPoint)firstPoint=point;lastPoint=point;
   const column=Math.max(0,Math.min(Math.max(1,columns)-1,Math.floor((point.t-start)/(end-start||1)*columns)));
   if(column!==bucket){flush();bucket=column;min=max=point;minIndex=maxIndex=i;}
   else {if(value<min[key]){min=point;minIndex=i;}if(value>max[key]){max=point;maxIndex=i;}}
  }
- flush();if(firstPoint&&out[0]!==firstPoint)out.unshift(firstPoint);if(lastPoint&&out.at(-1)!==lastPoint)out.push(lastPoint);return out;
+ finishSegment();return out;
 }
 export class CustomGraph {
  constructor(host,descriptor,draw){
   this.descriptor=descriptor;this.render=draw;host.classList.add('exp-custom-graph');
-  const title=document.createElement('header');title.className='exp-custom-title';title.textContent=descriptor.label+(descriptor.unit?' · '+descriptor.unit:'');host.append(title);
+  const title=document.createElement('div');title.className='exp-custom-title';title.textContent=descriptor.label+(descriptor.unit?' · '+descriptor.unit:'');host.append(title);
   this.canvas=document.createElement('canvas');this.canvas.setAttribute('aria-label',descriptor.label+' graph');this.canvas.setAttribute('role','img');host.append(this.canvas);this.stage=new VectorStage(this.canvas);
  }
  draw(samples,time,frame){this.stage.resize();this.stage.begin();if(this.render)this.render(this.stage,this.descriptor,frame);else this.stage.text('Graph unavailable',this.stage.w/2,this.stage.h/2);}
@@ -65,7 +67,7 @@ export class LinkedGraph {
    ctx.beginPath();samples.forEach((p,i)=>i?ctx.lineTo(xx(p[sx]),py(p[sy])):ctx.moveTo(xx(p[sx]),py(p[sy])));ctx.strokeStyle=palette[0];ctx.lineWidth=1.6;ctx.stroke();s.text(series.map(x=>x.label).join(' / '),(left+right)/2,bottom+15,'#9aaabe',10);return;
   }
   ctx.save();ctx.beginPath();ctx.rect(left,top,right-left,bottom-top);ctx.clip();
-  series.forEach((v,j)=>{ctx.beginPath();let first=true;for(const p of decimate(samples,v.key,start,end,Math.max(1,Math.floor(right-left)))){first?ctx.moveTo(tx(p.t),yy(p[v.key])):ctx.lineTo(tx(p.t),yy(p[v.key]));first=false;}ctx.strokeStyle=v.color||palette[j%palette.length];ctx.lineWidth=1.5;ctx.stroke();});
+  series.forEach((v,j)=>{ctx.beginPath();let first=true;for(const p of decimate(samples,v.key,start,end,Math.max(1,Math.floor(right-left)))){if(!Number.isFinite(p[v.key])){first=true;continue;}first?ctx.moveTo(tx(p.t),yy(p[v.key])):ctx.lineTo(tx(p.t),yy(p[v.key]));first=false;}ctx.strokeStyle=v.color||palette[j%palette.length];ctx.lineWidth=1.5;ctx.stroke();});
   ctx.restore();const seconds=t=>Number(t.toFixed(2))+' s';s.text(seconds(start),left,bottom+15,'#8190a4',10);s.text(seconds(end),right,bottom+15,'#8190a4',10,'right');
   let x=left;series.forEach((v,j)=>{s.circle(x+3,h-6,2,v.color||palette[j%palette.length]);s.text(v.label,x+10,h-6,'#acb9cc',10,'left');x+=Math.max(42,v.label.length*7+20)});
   };

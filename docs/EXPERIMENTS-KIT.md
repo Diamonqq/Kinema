@@ -271,3 +271,15 @@ outside source in `round-156/kit/`, never shipped or connected to live accounts.
 
 Physics is independently implemented from standard mechanics. CUPS help/source is
 capability research only; its code and prose are not copied.
+
+## Numeric labels and gaps
+
+Use `kit/format.js`: `num(value, sig=3)` for canvas/DOM text,
+`texNum(value, sig=3)` inside TeX, and `withUnit(value, unit)` for a text readout.
+They share significant figures, a typeset minus, and powers of ten for small or
+large values. TeX receives its own `\times10^{...}` notation.
+
+An ordinary time-series value of `NaN` (or any non-finite value) breaks the trace.
+Decimation retains a gap marker and both adjacent finite segment endpoints;
+the first finite sample after the gap begins a new line. Use this at angle wraps
+or missing observations rather than drawing a segment across the discontinuity.

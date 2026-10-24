@@ -65,9 +65,9 @@ test('graph ranges keep zero and never pad into the wrong sign', async () => {
   assert.equal(nhi, 0);
   assert.ok(nlo < -2);
   assert.deepEqual(valueRange([0, 0]), [0, 1.12]);
-  assert.equal(axisLabel(6.28e11), '6.3e11');
+  assert.equal(axisLabel(6.28e11), '6.28×10¹¹');
   assert.equal(axisLabel(2443.84), '2444');
-  assert.equal(axisLabel(-1.554), '-1.55');
+  assert.equal(axisLabel(-1.554), '−1.55');
 });
 
 test('time-series window clamps at both ends and excludes phase spectrum and custom',()=>{

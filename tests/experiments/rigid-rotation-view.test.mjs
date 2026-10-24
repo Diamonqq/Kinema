@@ -5,9 +5,10 @@ const dir=new URL('../../static/js/experiments/rigid-rotation/',import.meta.url)
 const load=async name=>import('data:text/javascript;base64,'+Buffer.from(await readFile(new URL(name,dir),'utf8')).toString('base64'));
 const {model}=await load('model.js');
 const source=await readFile(new URL('view.js',dir),'utf8');
+const formatURL=new URL('../../static/js/experiments/kit/format.js',import.meta.url).href;
 const modelURL='data:text/javascript;base64,'+Buffer.from(await readFile(new URL('model.js',dir),'utf8')).toString('base64');
 // Pure equation/descriptor tests only. Actual three.js is checked by the browser fixture.
-const {view,available,sceneLayout,cameraExtentFactor,readoutNumber,graphWindow,finitePatchScale,createRetainedLayer}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(/^import .*;\r?\n/,'const THREE={};\n').replace("'./model.js'",JSON.stringify(modelURL))).toString('base64'));
+const {view,available,sceneLayout,cameraExtentFactor,readoutNumber,graphWindow,finitePatchScale,createRetainedLayer}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(/^import .*;\r?\n/,'const THREE={};\n').replace("'./model.js'",JSON.stringify(modelURL)).replace("'../kit/format.js'",JSON.stringify(formatURL))).toString('base64'));
 const manifest=JSON.parse(await readFile(new URL('manifest.json',dir),'utf8'));
 const frame=values=>{const instance=model.create(values);return {instance,params:values,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:''};};
 test('manifest matches every model parameter and complete preset exactly (zero tolerance)',()=>{
@@ -84,4 +85,10 @@ test('tutor receives computed principal moments with SI units for every shape an
 
 test('only custom mass distributions expose editable principal moments (exact)',()=>{
  for(const shape of ['custom','box','corner-masses','plate','rod','symmetric-top'])for(const spec of model.params){assert.equal(view.paramVisible(spec,{shape}),!/^I[123]$/.test(spec.key)||shape==='custom');}
+});
+
+test('small rigid acceleration uses three significant figures and powers of ten',()=>{
+ assert.equal(readoutNumber(-.0001108),'\u22121.11\u00d710\u207b\u2074');
+ const f=frame(model.presets[0].values);f.geometry.principalMoments=[1,1,1];f.geometry.omegaBody=[0,0,0];f.geometry.torqueBody=[-.0001108,0,0];
+ for(const narrow of [false,true])assert.ok(view.equations({...f,narrow}).some(line=>line.includes('-1.11\\times10^{-4}')&&line.includes('rad/s^2')));
 });
