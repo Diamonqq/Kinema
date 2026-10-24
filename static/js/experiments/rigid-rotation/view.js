@@ -48,16 +48,24 @@ function makeBody(f){const p=f.params,g=f.geometry,b=new THREE.Group(),a=p.a,c=p
  b.position.copy(v(g.centreOfMass));b.quaternion.copy(q(g.quaternion));return b;
 }
 
+// Reserve real caption/chip rows first; the remaining viewport never grows past
+// the scene. Compact scenes retain the mode's target and inertia on one row.
+export function sceneLayout(width,height,closeup='') {
+ const compact=height<420,top=closeup?(compact?75:108):(compact?38:64);
+ const bottom=closeup?32:(compact?78:155);
+ return {compact,top,bottom,area:{x:0,y:top,w:width,h:Math.max(1,height-top-bottom)}};
+}
+function visibleTargets(f,height){const ids=available(f);return height<420?['inertia',ids.find(id=>!['body','frames','inertia'].includes(id))].filter(Boolean):ids;}
 export const view={graphs,closeups,
- key:f=>f.closeup==='energy'?'Velocity space · radius is angular speed':'ω rad/s · L kg m²/s · τ N m · independent fixed arrow scales',
- closeupAnchors(s,f){const ids=available(f);return Object.fromEntries(ids.map((id,i)=>[id,{x:s.w*(i%2?.73:.27),y:s.h-134+Math.floor(i/2)*30}]));},
+ key:f=>f.compact?'\u03c9 rad/s \u00b7 L kg m\u00b2/s \u00b7 \u03c4 N m':f.closeup==='energy'?'Velocity space · radius is angular speed':'ω rad/s · L kg m²/s · τ N m · independent fixed arrow scales',
+ closeupAnchors(s,f){const ids=visibleTargets(f,s.h);return Object.fromEntries(ids.map((id,i)=>[id,{x:s.w*(i%2?.73:.27),y:s.h-(s.h<420?54:134)+Math.floor(i/2)*30}]));},
  equations(f){const g=f.geometry;return [...euler(f),...(f.params.mode==='heavy-top'?closeupEquations({...f,closeup:'gravity'}):f.params.mode==='tilt-torque'?closeupEquations({...f,closeup:'tilt'}):f.params.mode==='fixed-axis'?closeupEquations({...f,closeup:'support'}):['\\frac{d\\mathbf L_s}{dt}=\\boldsymbol\\tau_s']),`T=\\tfrac12\\sum I_i\\omega_i^2=${n(f.sample.kinetic)}\\,\\mathrm J`];},
  closeupEquation:closeupEquations,
  // Honest projected gallery thumbnail; the full experiment always mounts three.js.
  draw(s,f){const {w,h}=s,cy=h*.46,scale=Math.min(w,h)*.52/Math.max(f.params.a,f.params.b,f.params.c,1),body=f.geometry;const corners=[];for(const x of [-1,1])for(const y of [-1,1])for(const z of [-1,1]){const point=v([x*f.params.a/2,y*f.params.b/2,z*f.params.c/2]).applyQuaternion(q(body.quaternion));corners.push([w/2+scale*(point.x+.35*point.y),cy-scale*(point.z+.25*point.y)]);}for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if([1,2,4].includes(i^j))s.line(...corners[i],...corners[j],C.body,2);s.text('A spinning body. A fixed angular momentum.',w/2,h-25,C.L,11);},
  mount(shell){
   const host=shell.scene,root=document.createElement('div');root.className='rr-view';root.innerHTML='<div class="rr-captions"><span class="rr-title"></span><span class="rr-readout"></span></div><svg class="rr-leaders" aria-hidden="true"></svg><div class="rr-vector-labels"></div><div class="rr-frame-captions"></div>';
-  const style=document.createElement('style');style.textContent=`.rr-experiment .exp-scene{min-height:470px;flex-basis:470px}.rr-experiment .exp-scene.is-closeup{min-height:450px}.rr-experiment.is-graphs-open .exp-scene{min-height:470px;flex:0 0 470px}.rr-view{position:absolute;inset:0;pointer-events:none}.rr-experiment.rr-breakdown .exp-scene{min-height:620px}.rr-experiment .exp-tools{background:#191e26;z-index:5}.rr-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.rr-view canvas{position:absolute;inset:0;width:100%;height:100%}.rr-captions{position:absolute;left:12px;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:12px;z-index:1}.rr-title{color:#d5e0ed}.rr-readout{color:#8d9db2;font-size:11px;font-variant-numeric:tabular-nums}.is-closeup .rr-captions{top:45px}.rr-vector-labels{position:absolute;inset:0;z-index:1}.rr-vector-labels span{position:absolute;font-size:12px;padding:2px 5px;background:#111923d9;border-radius:4px;white-space:nowrap}.rr-frame-captions{position:absolute;inset:0;display:flex;justify-content:space-around;color:#8d9db2;font-size:11px}.rr-experiment .exp-closeups,.rr-experiment .exp-key{z-index:2}.rr-experiment .exp-closeups button{font-size:10px;padding:4px 7px;min-height:26px;height:26px;max-height:26px;line-height:16px;box-sizing:border-box}.rr-experiment .exp-key{font-size:10px;line-height:1.4}.rr-experiment .exp-equation{min-width:0;overflow:auto}.rr-experiment .exp-equation .katex{font-size:1em}@media(max-width:500px){.rr-experiment .exp-scene{min-height:465px}.rr-experiment .exp-scene.is-closeup{min-height:510px}.rr-experiment .exp-key{left:14px;right:14px}.rr-captions{font-size:11px}.rr-readout{font-size:10px}}`;
+  const style=document.createElement('style');style.textContent=`.rr-experiment .exp-scene{min-height:470px;flex-basis:470px}.rr-experiment .exp-scene.is-closeup{min-height:450px}.rr-experiment.is-graphs-open .exp-scene{min-height:280px;flex:0 0 280px}.rr-view{position:absolute;inset:0;pointer-events:none}.rr-experiment.rr-breakdown .exp-scene{min-height:280px;flex:0 0 340px}.rr-compact .rr-readout{display:none}.rr-compact .rr-captions{font-size:11px}.rr-experiment .exp-note{padding-bottom:14px}.rr-experiment .exp-transport{background:#191e26;z-index:5}.rr-experiment .exp-tools{background:#191e26;z-index:5}.rr-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.rr-view canvas{position:absolute;inset:0;width:100%;height:100%}.rr-captions{position:absolute;left:12px;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:12px;z-index:1}.rr-title{color:#d5e0ed}.rr-readout{color:#8d9db2;font-size:11px;font-variant-numeric:tabular-nums}.is-closeup .rr-captions{top:45px}.rr-vector-labels{position:absolute;inset:0;z-index:1}.rr-vector-labels span{position:absolute;font-size:12px;padding:2px 5px;background:#111923d9;border-radius:4px;white-space:nowrap}.rr-frame-captions{position:absolute;inset:0;display:flex;justify-content:space-around;color:#8d9db2;font-size:11px}.rr-experiment .exp-closeups,.rr-experiment .exp-key{z-index:2}.rr-experiment .exp-closeups button{font-size:10px;padding:4px 7px;min-height:26px;height:26px;max-height:26px;line-height:16px;box-sizing:border-box}.rr-experiment .exp-key{font-size:10px;line-height:1.4}.rr-experiment .exp-equation{min-width:0;overflow:auto}.rr-experiment .exp-equation .katex{font-size:1em}@media(max-width:500px){.rr-experiment .exp-scene{min-height:465px}.rr-experiment .exp-scene.is-closeup{min-height:510px}.rr-experiment .exp-key{left:14px;right:14px}.rr-captions{font-size:11px}.rr-readout{font-size:10px}}`;
   shell.host.classList.add('rr-experiment');shell.host.append(style);host.append(root);
   const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);root.prepend(renderer.domElement);renderer.domElement.setAttribute('aria-label','3D rigid body, angular velocity, angular momentum and torque');
   const scene=new THREE.Scene(),content=new THREE.Group();scene.add(content);scene.add(new THREE.HemisphereLight(0xdcecff,0x192131,2.4));const light=new THREE.DirectionalLight(0xffffff,3);light.position.set(3,-4,6);scene.add(light);
@@ -69,21 +77,42 @@ export const view={graphs,closeups,
    // Fixed axes span the body bounding sphere, never follow individual corners.
    instance=probe;traceBody=[];traceSpace=[];lastTrace=-1;
   }
-  function cameraFor(width,height,extent){const aspect=width/Math.max(1,height);const halfHeight=extent/Math.min(1,aspect);camera.left=-halfHeight*aspect;camera.right=halfHeight*aspect;camera.top=halfHeight;camera.bottom=-halfHeight;camera.near=.01;camera.far=100;camera.updateProjectionMatrix();}
-  function textAt(text,point,color,rect,placed){const p=point.clone().project(camera),x=rect.x+(p.x+1)*rect.w/2,y=rect.y+(1-p.y)*rect.h/2;const el=document.createElement('span');el.textContent=text;el.style.color=color;labels.append(el);const width=el.offsetWidth,height=el.offsetHeight;let px=Math.max(rect.x+4,Math.min(rect.x+rect.w-width-4,x+5)),py=Math.max(rect.y+22,Math.min(rect.y+rect.h-height-4,y-12));const primary=['\u03c9','L','\u03c4','\u03c4 = 0'].includes(text);if(primary){const slot=text==='\u03c9'?0:text==='L'?1:2;px=rect.x+rect.w*(.2+slot*.3)-width/2;py=rect.y+rect.h-height-3;}for(let tries=0;tries<12&&placed.some(r=>px<r.x+r.width+3&&px+width+3>r.x&&py<r.y+r.height+3&&py+height+3>r.y);tries++)py+=height+3;if(primary&&text!=='\u03c4 = 0'){const guide=document.createElementNS('http://www.w3.org/2000/svg','path');guide.setAttribute('d',`M${x},${y} L${px+width/2},${py}`);guide.setAttribute('fill','none');guide.setAttribute('stroke',color);guide.setAttribute('stroke-opacity','.38');guide.setAttribute('stroke-width','1');leaders.append(guide);}if(py+height>rect.y+rect.h){el.remove();return;}el.style.left=px+'px';el.style.top=py+'px';placed.push({x:px,y:py,width,height,text});}
+  function cameraFor(width,height,extent){const aspect=width/Math.max(1,height);const halfHeight=extent/Math.min(1,aspect);camera.left=-halfHeight*aspect;camera.right=halfHeight*aspect;camera.top=halfHeight;camera.bottom=-halfHeight;camera.near=.01;camera.far=100;camera.updateProjectionMatrix();camera.updateMatrixWorld(true);}
+  const labelPositions=new Map();let leaderLengths=[];
+  function textAt(text,point,color,rect,placed){
+   const projected=point.clone().project(camera),x=rect.x+(projected.x+1)*rect.w/2,y=rect.y+(1-projected.y)*rect.h/2;
+   const el=document.createElement('span');el.textContent=text;el.style.color=color;labels.append(el);
+   const width=el.offsetWidth,height=el.offsetHeight,key=[shell.closeup,rect.x,rect.y,rect.w,rect.h,text].join(':');
+   const intersects=a=>placed.some(b=>a.x<b.x+b.width+4&&a.x+width+4>b.x&&a.y<b.y+b.height+4&&a.y+height+4>b.y);
+   const leaderLength=a=>Math.hypot(Math.max(a.x,Math.min(a.x+width,x))-x,Math.max(a.y,Math.min(a.y+height,y))-y);
+   const valid=a=>a.x>=rect.x+3&&a.y>=rect.y+18&&a.x+width<=rect.x+rect.w-3&&a.y+height<=rect.y+rect.h-3&&!intersects(a)&&leaderLength(a)<=40;
+   // Prefer a label just beside its real projected tip. Alternatives are bounded
+   // near that same tip, never a distant row that resembles another force vector.
+   const offsets=[[9,-height/2],[9,-height-6],[9,7],[-width-9,-height/2],[-width/2,-height-12],[-width/2,13],[20,-height-18],[-width-20,13],[-width/2,27]];
+   const target=offsets.map(([dx,dy])=>({x:x+dx,y:y+dy})).find(valid);
+   if(!target){el.remove();labelPositions.delete(key);return;}
+   const previous=labelPositions.get(key),smooth=previous?{x:previous.x+(target.x-previous.x)*.2,y:previous.y+(target.y-previous.y)*.2}:target;
+   const position=valid(smooth)?smooth:target;labelPositions.set(key,position);
+   el.style.left=position.x+'px';el.style.top=position.y+'px';placed.push({...position,width,height,text});
+   const length=leaderLength(position);leaderLengths.push(length);
+   if(length>7&&text!=='\u03c4 = 0'){
+    const tx=Math.max(position.x,Math.min(position.x+width,x)),ty=Math.max(position.y,Math.min(position.y+height,y));
+    const guide=document.createElementNS('http://www.w3.org/2000/svg','path');guide.setAttribute('d',`M${x},${y} L${tx},${ty}`);guide.setAttribute('fill','none');guide.setAttribute('stroke',color);guide.setAttribute('stroke-opacity','.5');guide.setAttribute('stroke-width','1');leaders.append(guide);
+   }
+  }
   function draw(f){
-   const width=host.clientWidth,height=host.clientHeight;if(!width||!height)return;renderer.setSize(width,height,false);shell.stage.w=width;shell.stage.h=height;host.classList.toggle('is-closeup',!!f.closeup);shell.host.classList.toggle('rr-breakdown',f.breakdown);
+   host.classList.toggle('is-closeup',!!f.closeup);shell.host.classList.toggle('rr-breakdown',f.breakdown);const width=host.clientWidth,height=host.clientHeight;if(!width||!height)return;renderer.setSize(width,height,false);shell.stage.w=width;shell.stage.h=height;
    if(instance!==f.instance){rebuild(f);}if(f.t<lastTime){traceBody=[];traceSpace=[];lastTrace=-1;}lastTime=f.t;
    const p=f.params,g=f.geometry,isBody=['body','axis','inertia','energy'].includes(f.closeup),compare=f.closeup==='frames',energy=f.closeup==='energy';
-   const ids=available(f);for(const b of shell.q('.exp-closeups').children)b.hidden=!ids.includes(b.dataset.id);
+   const layout=sceneLayout(width,height,f.closeup);f.compact=layout.compact;root.classList.toggle('rr-compact',layout.compact);const ids=visibleTargets(f,height);for(const b of shell.q('.exp-closeups').children)b.hidden=!ids.includes(b.dataset.id);
    caption.textContent=f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' '));
    readout.textContent=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a ${n(p.a)} m · b ${n(p.b)} m · c ${n(p.c)} m`:`θ ${n(f.sample.theta)} rad · T ${n(f.sample.kinetic)} J`;
-   frameCaptions.replaceChildren();labels.replaceChildren();leaders.replaceChildren();leaders.setAttribute('viewBox',`0 0 ${width} ${height}`);dispose(vectorLayer);
+   leaderLengths=[];frameCaptions.replaceChildren();labels.replaceChildren();leaders.replaceChildren();leaders.setAttribute('viewBox',`0 0 ${width} ${height}`);dispose(vectorLayer);
    if(f.t-lastTrace>.025){traceBody.push([...g.omegaBody]);traceSpace.push([...g.omegaSpace]);if(traceBody.length>800){traceBody.shift();traceSpace.shift();}lastTrace=f.t;}
    const target=f.closeup?1.18:1,dt=Math.min(.1,(performance.now()-(draw.last||performance.now()))/1000);draw.last=performance.now();zoom+= (target-zoom)*(1-Math.exp(-dt*10));if(shell.stage.snap){zoom=target;shell.stage.snap=false;}
-   const narrow=width<430,top=f.closeup?108:64,bottom=f.closeup?38:155,area={x:0,y:top,w:width,h:Math.max(180,height-top-bottom)};
+   const narrow=width<430,{top,area}=layout;
    const dual=compare||energy,vertical=dual&&narrow;const panels=dual?[{x:0,y:top,w:vertical?width:width/2,h:vertical?area.h/2:area.h},{x:vertical?0:width/2,y:vertical?top+area.h/2:top,w:vertical?width:width/2,h:vertical?area.h/2:area.h}]:[area];
-   const placed=[];renderer.setScissorTest(false);renderer.clear();renderer.setScissorTest(true);
+   const projectedBodies=[];const placed=[];renderer.setScissorTest(false);renderer.clear();renderer.setScissorTest(true);
    panels.forEach((r,index)=>{
     dispose(vectorLayer);const bodyFrame=energy?index===0:compare?index===1:isBody;
     content.quaternion.copy(bodyFrame?q(g.quaternion).invert():new THREE.Quaternion());body.position.copy(v(g.centreOfMass));body.quaternion.copy(q(g.quaternion));body.visible=!energy;
@@ -96,7 +125,7 @@ export const view={graphs,closeups,
      const trace=bodyFrame?traceBody:traceSpace;if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),bodyFrame?C.omega:C.L);arrow(vectorLayer,origin,point,norm(point),C.omega);
      textAt(bodyFrame?'ω body':'ω space',v(point),C.omega,r,placed);
     }else {
-     for(let i=0;i<3;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));arrow(vectorLayer,origin,axis.toArray(),bounds*.57,C.axes[i]);if(f.closeup==='axis')textAt('e'+['₁','₂','₃'][i],axis.multiplyScalar(bounds*.57).applyQuaternion(content.quaternion),C.axes[i],r,placed);}
+     for(let i=0;i<3;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));arrow(vectorLayer,origin,axis.toArray(),bounds*.57,C.axes[i]);if(f.closeup==='axis'&&(!narrow||i===1))textAt('e'+['₁','₂','₃'][i],axis.multiplyScalar(bounds*.57).applyQuaternion(content.quaternion),C.axes[i],r,placed);}
      const vectors=[['ω',g.omegaSpace,C.omega,scales.omega],['L',g.angularMomentumSpace,C.L,scales.L],['τ',g.torqueSpace,C.torque,scales.torque]];
      for(const [label,a,color,scale] of vectors){const length=Math.min(bounds*.93,norm(a)*scale);arrow(vectorLayer,origin,a,length,color);if(norm(a)>1e-10)textAt(label,v(a).normalize().multiplyScalar(length).applyQuaternion(content.quaternion),color,r,placed);}
      if(norm(g.torqueSpace)<1e-10)textAt('τ = 0',v([0,0,-bounds*.7]),C.torque,r,placed);
@@ -118,12 +147,17 @@ export const view={graphs,closeups,
      }
      if(bodyFrame){for(let i=0;i<3;i++){const a=[0,0,0];a[i]=bounds*.8;line(vectorLayer,[origin,a],'#536279',true);}}
     }
+    // Inspect actual rendered body geometry, including its corner marker. Keep
+    // the camera fixed to the full-motion sphere; these bounds are evidence only.
+    content.updateMatrixWorld(true);const projected=[];
+    body.traverse(object=>{if(!object.geometry)return;object.geometry.computeBoundingBox();const box=object.geometry.boundingBox;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const point=v([x,y,z]).applyMatrix4(object.matrixWorld).project(camera);projected.push({x:r.x+(point.x+1)*r.w/2,y:r.y+(1-point.y)*r.h/2});}});
+    projectedBodies.push({visible:body.visible,panel:{...r},x:Math.min(...projected.map(p=>p.x)),right:Math.max(...projected.map(p=>p.x)),y:Math.min(...projected.map(p=>p.y)),bottom:Math.max(...projected.map(p=>p.y))});
     renderer.render(scene,camera);
     if(dual){const label=document.createElement('span');label.textContent=energy?(index?'Space tangent plane':'Body inertia ellipsoid'):(index?'Body frame':'Space frame');label.style.cssText=`position:absolute;left:${r.x+8}px;top:${r.y+3}px;color:#9caec5;font-size:10px`;frameCaptions.append(label);}
    });renderer.setScissorTest(false);
    // Record actual visible DOM bounds for the same overlap checks as canvas stages.
    const hr=host.getBoundingClientRect();shell.stage.labels=[...root.querySelectorAll('span')].filter(el=>el.getClientRects().length&&el.textContent).map(el=>{const r=el.getBoundingClientRect();return {text:el.textContent,x:r.x-hr.x,y:r.y-hr.y,width:r.width,height:r.height};});
-   shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
+   shell.rotationLeaderLengths=[...leaderLengths];shell.rotationBodyBounds={scene:{width,height},compact:layout.compact,panels:projectedBodies};shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
   }
   return {draw,resize(){},destroy(){dispose(content);renderer.dispose();renderer.forceContextLoss();root.remove();style.remove();shell.host.classList.remove('rr-experiment');}};
  }

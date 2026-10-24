@@ -282,10 +282,12 @@ Current view choices and limits:
   Custom inertia is an open neutral glyph, never an invented uniform solid.
   The camera has fixed bounds from pivot distance plus body bounding radius;
   close-up zoom eases between authored fixed views. No Fit or orbit control.
-- Arrows render above the body. Their fixed caption slots connect to the actual
-  arrow tips through coloured leaders, including when ω and L are parallel.
-  Zero torque is explicitly labelled. Secondary axis labels appear only in the
-  middle-axis close-up. Actual DOM label rectangles feed stage.labels.
+- Arrows render above the body. Their labels track actual projected tips with
+  smoothing and collision avoidance; any short leader is at most 40 px. Labels
+  that cannot fit nearby are omitted rather than detached. Zero torque is
+  explicitly labelled. Secondary axis labels appear only in the middle-axis
+  close-up, and only its middle-axis label remains at phone width. Actual DOM
+  label rectangles feed stage.labels.
 - Graphs: body rates, energy/work, space L including its magnitude, tilt,
   precession rate, polhode projection and quaternion norm. Wrapped azimuth/body
   phase histories are deliberately omitted to avoid drawing false wrap spikes.
@@ -319,3 +321,30 @@ Breakdown and narrow Graphs captures were inspected by this author. The parent
 provided additional visual defect findings, which were corrected and rerun.
 `cleanup.json` confirms fixture PID 9492 exited and port 8845 is free. These are
 isolated rendered checks; they do not establish installation or owner approval.
+
+### Compact-scene correction
+
+The follow-up removes the phantom 180 px viewport minimum, which could extend
+past the real space above the caption/chip rows. `sceneLayout` subtracts those
+rows from the actual scene height before fitting the fixed camera envelope.
+Below 420 px, only inertia plus the active mode's target occupy one chip row;
+the secondary readout is hidden. Full-height scenes and close-ups retain their
+existing presentation. Breakdown and Graphs can now use the kit's short scene
+instead of requiring a large minimum height. Camera matrices update before
+projecting labels, and CSS state changes precede measuring the viewport.
+
+The renderer exposes actual projected mesh-bound corners for each panel through
+`rotationBodyBounds`; these do not steer the camera or cause it to chase motion.
+The harness compares these with the real scene and allocated viewport in every
+scene/Breakdown/Graphs/close-up state at both widths, and forces each state to
+280 px as a regression check. Captures start at the top of the artifact: scrolling
+to the equations or graphs must not masquerade as a camera-clipping defect.
+Two new layout regressions cover every 5 px height from 280 through 850 and the
+one-row compact targets. Node result: 28 passed, zero failed.
+
+The lead's first compact-scene run passed 170 checks, including 64 body-bound
+checks, but identified that distant caption leaders looked like additional
+vectors. The final label layout uses nearby tip anchors and bounded alternative
+positions, smoothing only when the interpolated position stays clear and within
+40 px of the tip. The browser overlap checks also enforce that bound. The
+transport has an opaque background so the final caption cannot peek beneath it.
