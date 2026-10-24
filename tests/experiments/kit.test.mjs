@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {prepareCandidate,timelineBatches} from '../../static/js/experiments/kit/state.js';
+import {prepareCandidate,timelineBatches,SeekController} from '../../static/js/experiments/kit/state.js';
 import {model} from '../../static/js/experiments/coupled-oscillators/model.js';
 
 test('candidate rejection preserves the actual live oscillator and params',()=>{
@@ -23,4 +23,33 @@ test('fixed camera envelope includes computed conservative, driven, damped and f
   const s=model.create(values),extent=s.motionExtent(60);
   for(let i=0;i<600;i++){s.step(.1);for(const m of s.geometry().masses)assert.ok(Math.abs(m.displacement)<=extent+1e-8);}
  }
+});
+
+test('numerical seek yields between bounded chunks and commits only at the requested time',async()=>{
+ const seeker=new SeekController(),calls=[];let turns=0,committed=null;
+ const slow={create(){let t=0;return {get t(){return t},step(dt){const until=performance.now()+1;while(performance.now()<until){}calls.push(dt);t+=dt}}}};
+ const promise=seeker.run(slow,{},.5,{yieldTurn:async()=>{turns++;await new Promise(resolve=>setTimeout(resolve,0));},onComplete:instance=>{committed=instance}});
+ assert.equal(calls.length,0);assert.equal(committed,null);assert.equal(seeker.pending,true);
+ let heartbeat=false;setTimeout(()=>{heartbeat=true},0);
+ const result=await promise;assert.equal(result.ok,true);assert.equal(heartbeat,true);assert.ok(turns>1);
+ assert.ok(calls.every(dt=>dt<=1/60+1e-12));assert.ok(Math.abs(committed.t-.5)<1e-12);assert.equal(seeker.pending,false);
+});
+
+test('newer seeks and explicit cancellation fence stale candidates',async()=>{
+ const seeker=new SeekController(),commits=[],waiters=[];
+ const stub={create(values){let t=0;return {tag:values.tag,get t(){return t},step(dt){t+=dt}}}};
+ const old=seeker.run(stub,{tag:'old'},1,{yieldTurn:()=>new Promise(resolve=>waiters.push(resolve)),onComplete:instance=>commits.push(instance.tag)});
+ const fresh=await seeker.run(stub,{tag:'new'},0,{onComplete:instance=>commits.push(instance.tag)});
+ waiters.shift()();assert.equal((await old).cancelled,true);assert.equal(fresh.ok,true);assert.deepEqual(commits,['new']);
+ const cancelled=seeker.run(stub,{tag:'cancelled'},1,{yieldTurn:()=>new Promise(resolve=>waiters.push(resolve)),onComplete:instance=>commits.push(instance.tag)});
+ seeker.cancel();waiters.shift()();assert.equal((await cancelled).cancelled,true);assert.deepEqual(commits,['new']);assert.equal(seeker.pending,false);
+});
+
+test('analytic coupled seek remains immediate and rejected candidates never commit',async()=>{
+ const seeker=new SeekController(),params=Object.fromEntries(model.params.map(p=>[p.key,p.value]));let committed=null;
+ const pending=seeker.run(model,params,7.36,{immediate:true,onComplete:instance=>committed=instance});
+ assert.equal(committed.t,7.36);assert.equal((await pending).ok,true);
+ let error=null;const before=committed;
+ assert.equal((await seeker.run(model,{...params,modeA:8},1,{onComplete:instance=>committed=instance,onError:e=>error=e})).ok,false);
+ assert.ok(error);assert.equal(committed,before);
 });

@@ -90,6 +90,60 @@ The adapter also accepts optional named module exports
 returning a lazy iterator of sample arrays. These may instead be properties of
 `model`. Every model works through the generic path without these helpers.
 
+## Custom graph panels (optional)
+
+Declare `kind:'custom'` on the graph descriptor in **both** `view.graphs` (or its
+dynamic descriptors) and the matching manifest `graphs` entry:
+
+```js
+graphs: [{id:'potential',label:'Potential well',kind:'custom'}],
+drawGraph(stage, descriptor, frame) {
+  const map=stage.world([-2,2,-1,3],16);
+  stage.line(map.x(-2),map.y(0),map.x(2),map.y(0));
+  stage.circle(map.x(frame.sample.x),map.y(1),4);
+  stage.text('position',stage.w-36,stage.h-9);
+}
+```
+
+The shell gives each custom panel its own canvas, ordinary graph chip, panel
+chrome and title. Every visible frame calls `view.drawGraph(stage,descriptor,frame)`
+with the **same frame object** used by the scene. `stage` is a normal VectorStage:
+`ctx,w,h`, HiDPI backing pixels, all helpers, `world()` and measured `labels`.
+The shell resizes and clears the custom canvas first. It draws **no time axis or
+cursor**; the view owns axes, labels, live markers and caching any precomputation.
+Toggling a custom graph off stops its draw callback. Existing time-series,
+phase-space and spectrum descriptors keep their ordinary linked rendering.
+
+## Scenario Setup fields (optional)
+
+```js
+paramVisible(spec, values) {
+  return spec.key!=='driveAmplitude'||values.scenario==='driven';
+}
+```
+
+The shell evaluates this boolean hook when Setup renders and after each accepted
+parameter change. False hides that field; a group with no visible fields is also
+hidden. Values are retained and become visible again when the scenario permits.
+Presets and validated tutor actions can still update hidden fields. This hook
+changes presentation only: manifest bounds, steps, options and server validation
+are unchanged. Without it, Setup preserves its current behavior.
+
+## Numerical seeking and narrow graphs
+
+`shell.seek(seconds)` returns a Promise. Numerical replay uses a private candidate
+and yields between batches (at most eight 1/60-second steps or roughly 6 ms per
+turn). The current scene stays intact until the newest seek finishes, then commits
+the candidate and saves its exact time. A newer seek, accepted parameter change,
+Reset, Play or destroy cancels stale replay through a generation ID. Failed replay
+keeps the existing scene and reports a quiet error. The analytic coupled-oscillator
+mode path remains immediate; its physics and scrubber behavior are unchanged.
+
+At narrow widths, opening Graphs gives the scene its 280 px readable minimum and
+scrolls only the experiment shell enough to reveal the first enabled graph canvas
+above the transport. It does not scroll the surrounding chat. The same behavior
+applies to ordinary and custom graph panels.
+
 ## Tutor action envelope
 
 Reply JSON is `{reply:"Short explanation",action:null}` or one action:

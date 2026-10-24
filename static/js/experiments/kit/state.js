@@ -19,3 +19,27 @@ export function* timelineBatches(model,values,{duration=60,interval=1/60,batchSi
  }
  if(batch.length)yield batch;
 }
+
+// Integrate into a private candidate. Only the newest completed seek can commit.
+export class SeekController {
+ constructor(){this.generation=0;this.pending=false;}
+ cancel(){this.generation++;this.pending=false;}
+ async run(model,values,target,{immediate=false,onComplete=()=>{},onError=()=>{},yieldTurn=()=>new Promise(resolve=>setTimeout(resolve,0))}={}){
+  const generation=++this.generation;this.pending=true;
+  const current=()=>generation===this.generation;
+  try{
+   if(!Number.isFinite(target)||target<0||target>60)throw RangeError('Choose a time from 0 to 60 seconds.');
+   const candidate=model.create({...values});
+   if(immediate)candidate.step(target);
+   else while(candidate.t<target-1e-12){
+    await yieldTurn();if(!current())return {cancelled:true};
+    const deadline=performance.now()+6;let steps=0;
+    do{const before=candidate.t,next=Math.min(target,before+1/60);candidate.step(next-before);if(!Number.isFinite(candidate.t)||candidate.t<=before)throw Error('This model could not advance to the requested time.');steps++;}
+    while(candidate.t<target-1e-12&&steps<8&&performance.now()<deadline);
+   }
+   if(!current())return {cancelled:true};
+   this.pending=false;onComplete(candidate);return {ok:true,instance:candidate};
+  }catch(error){if(!current())return {cancelled:true};this.pending=false;onError(error);return {ok:false,error};}
+  finally{if(current())this.pending=false;}
+ }
+}

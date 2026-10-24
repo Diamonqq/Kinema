@@ -1,4 +1,12 @@
 import {VectorStage,palette} from './stage.js';
+export class CustomGraph {
+ constructor(host,descriptor,draw){
+  this.descriptor=descriptor;this.render=draw;host.classList.add('exp-custom-graph');
+  const title=document.createElement('header');title.className='exp-custom-title';title.textContent=descriptor.label+(descriptor.unit?' · '+descriptor.unit:'');host.append(title);
+  this.canvas=document.createElement('canvas');this.canvas.setAttribute('aria-label',descriptor.label+' graph');this.canvas.setAttribute('role','img');host.append(this.canvas);this.stage=new VectorStage(this.canvas);
+ }
+ draw(samples,time,frame){this.stage.resize();this.stage.begin();if(this.render)this.render(this.stage,this.descriptor,frame);else this.stage.text('Graph unavailable',this.stage.w/2,this.stage.h/2);}
+}
 export class LinkedGraph {
  constructor(host,descriptor){this.descriptor=descriptor;this.canvas=document.createElement('canvas');this.canvas.setAttribute('aria-label',descriptor.label+' graph');this.canvas.setAttribute('role','img');host.append(this.canvas);this.stage=new VectorStage(this.canvas);}
  draw(samples,time){
