@@ -14,6 +14,10 @@ export const closeups=[
  {id:'precession',label:'Zoom · precession'},{id:'energy',label:'Zoom · energy geometry'},
  {id:'support',label:'Zoom · support'},
 ];
+// Every legend entry owns a visible curve. Without a potential energy E is the kinetic energy itself, and without an external torque W stays at zero, so those entries are named or dropped.
+const sentenceCase=text=>text?text[0].toUpperCase()+text.slice(1):text;
+export function energySeries(params){const heavy=params.mode==='heavy-top'?params.mass*params.g*params.distance:params.mode==='tilt-torque'?params.tiltTorque:0,hasU=Math.abs(heavy)>1e-12,hasW=params.mode!=='fixed-axis'&&Math.hypot(params.torquex||0,params.torquey||0,params.torquez||0)>1e-12;
+ return [...(hasU?[{key:'energy',label:'E',color:C.L},{key:'kinetic',label:'T',color:C.omega},{key:'potential',label:'U',color:C.torque}]:[{key:'kinetic',label:'E = T',color:C.omega}]),...(hasW?[{key:'work',label:'W',color:'#d6bd7f'}]:[])];}
 export const graphs=[
  {id:'omega',label:'Body angular velocity',unit:'rad/s',series:[{key:'w1',label:'ω₁',color:C.axes[0]},{key:'w2',label:'ω₂',color:C.axes[1]},{key:'w3',label:'ω₃',color:C.axes[2]}]},
  {id:'energy',label:'Energy and external work',unit:'J',series:[{key:'energy',label:'E',color:C.L},{key:'kinetic',label:'T',color:C.omega},{key:'potential',label:'U',color:C.torque},{key:'work',label:'W',color:'#d6bd7f'}]},
@@ -148,7 +152,7 @@ export function pointDepth(poly,x,y){
 function visibleTargets(f){return available(f).filter(id=>!['body','frames'].includes(id));}
 export const view={graphs,closeups,
   paramVisible(spec,values){return !/^I[123]$/.test(spec.key)||values.shape==='custom';},
- graphDescriptors(params){const window=graphWindow(params);return graphs.map(g=>g.kind?g:{...g,window});},
+ graphDescriptors(params){const window=graphWindow(params);return graphs.map(g=>g.kind?g:{...g,window,...(g.id==='energy'?{series:energySeries(params)}:{})});},
  key:f=>f.compact?'\u03c9 rad/s \u00b7 L kg m\u00b2/s \u00b7 \u03c4 N m'+dot(f):f.closeup==='energy'?'Velocity space · radius is angular speed':'ω rad/s · L kg m²/s · τ N m · arrows use separate fixed scales'+dot(f),
  closeupAnchors(s,f){return f.rotationAnchors||Object.fromEntries(visibleTargets(f).map((id,i)=>[id,{x:s.w*(i===0?.27:i===1?.73:.5),y:i<2?(s.h<420?42:67):s.h-62}]));},
  equations(f){const g=f.geometry;return [...euler(f),...(f.params.mode==='heavy-top'?closeupEquations({...f,closeup:'gravity'}):f.params.mode==='tilt-torque'?closeupEquations({...f,closeup:'tilt'}):f.params.mode==='fixed-axis'?closeupEquations({...f,closeup:'support'}):['\\frac{d\\mathbf L_s}{dt}=\\boldsymbol\\tau_s']),`T=\\tfrac12\\sum I_i\\omega_i^2=${texNum(f.sample.kinetic)}\\,\\mathrm J`];},
@@ -174,7 +178,7 @@ export const view={graphs,closeups,
  },
  mount(shell){
   const host=shell.scene,root=document.createElement('div');root.className='rr-view';root.innerHTML='<div class="rr-captions"><span class="rr-title"></span><span class="rr-readout"></span></div><svg class="rr-leaders" aria-hidden="true"></svg><div class="rr-vector-labels"></div><div class="rr-frame-captions"></div>';
-  const style=document.createElement('style');style.textContent=`.rr-experiment .exp-scene{min-height:470px;flex-basis:470px}.rr-experiment .exp-scene.is-closeup{min-height:450px}.rr-experiment.is-graphs-open .exp-scene{min-height:280px;flex:0 0 280px}.rr-experiment.rr-breakdown{overflow-y:auto;scrollbar-width:thin}.rr-view{position:absolute;inset:0;pointer-events:none}.rr-compact .rr-readout{font-size:10px}.rr-compact .rr-captions{font-size:11px}.rr-experiment .exp-note{padding-bottom:14px}.rr-experiment .exp-transport{background:#191e26;z-index:5;margin-top:auto}.rr-experiment .exp-tools{background:#191e26;z-index:5}.rr-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.rr-view canvas{position:absolute;inset:0;width:100%;height:100%}.rr-captions{position:absolute;left:12px;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:12px;z-index:1}.rr-title{color:#d5e0ed}.rr-readout{color:#8d9db2;font-size:11px;font-variant-numeric:tabular-nums}.is-closeup .rr-captions{top:45px}.rr-vector-labels{position:absolute;inset:0;z-index:1}.rr-vector-labels span{position:absolute;font-size:12px;padding:2px 5px;white-space:nowrap}.rr-frame-captions{position:absolute;inset:0;display:flex;justify-content:space-around;color:#8d9db2;font-size:11px}.rr-experiment .exp-closeups,.rr-experiment .exp-key{z-index:2}.rr-experiment .exp-key{font-size:10px;line-height:1.4}.rr-experiment .exp-equation{min-width:0;overflow:auto}.rr-experiment .exp-equation .katex{font-size:1em}@media(max-width:500px){.rr-experiment .exp-scene{min-height:465px}.rr-experiment .exp-scene.is-closeup{min-height:340px;flex-basis:340px}.rr-experiment .exp-key{left:14px;right:14px}.rr-captions{font-size:11px}.rr-readout{font-size:10px}}`;
+  const style=document.createElement('style');style.textContent=`.rr-experiment .exp-scene{min-height:470px;flex-basis:470px}.rr-experiment .exp-scene.is-closeup{min-height:450px}.rr-experiment.is-graphs-open .exp-scene{min-height:280px;flex:0 0 280px}.rr-experiment.rr-breakdown{overflow-y:auto;scrollbar-width:thin}.rr-view{position:absolute;inset:0;pointer-events:none}.rr-compact .rr-readout{font-size:10px}.rr-compact .rr-captions{font-size:11px}.rr-experiment .exp-note{padding-bottom:14px}.rr-experiment .exp-transport{background:#191e26;z-index:5;margin-top:auto}.rr-experiment .exp-tools{background:#191e26;z-index:5}.rr-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.rr-view canvas{position:absolute;inset:0;width:100%;height:100%}.rr-captions{position:absolute;left:12px;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:12px;z-index:1}.rr-title{color:#d5e0ed}.rr-readout{color:#8d9db2;font-size:11px;font-variant-numeric:tabular-nums}.is-closeup .rr-captions{top:45px}.rr-vector-labels{position:absolute;inset:0;z-index:1}.rr-vector-labels span{position:absolute;font-size:12px;padding:2px 5px;white-space:nowrap}.rr-frame-captions{position:absolute;inset:0;display:flex;justify-content:space-around;color:#8d9db2;font-size:11px}.rr-experiment .exp-closeups,.rr-experiment .exp-key{z-index:2}.rr-experiment .exp-key{font-size:10px;line-height:1.4}.rr-experiment .exp-equation{min-width:0;overflow:auto}.rr-experiment .exp-equation .katex{font-size:1em}@media(max-width:500px){.rr-experiment .is-closeup .rr-captions{top:53px}.rr-experiment .exp-scene{min-height:465px}.rr-experiment .exp-scene.is-closeup{min-height:340px;flex-basis:340px}.rr-experiment .exp-key{left:14px;right:14px}.rr-captions{font-size:11px}.rr-readout{font-size:10px}}`;
   shell.host.classList.add('rr-experiment');shell.host.append(style);host.append(root);
   const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);root.prepend(renderer.domElement);renderer.domElement.setAttribute('aria-label','3D rigid body, angular velocity, angular momentum and torque');
   const scene=new THREE.Scene(),content=new THREE.Group();scene.add(content);scene.add(new THREE.HemisphereLight(0xdcecff,0x192131,2.4));const light=new THREE.DirectionalLight(0xffffff,3);light.position.set(3,-4,6);scene.add(light);
@@ -196,7 +200,9 @@ export const view={graphs,closeups,
   // (angle then gap tier) relative to that direction; the previous choice is kept while
   // it stays valid, so a label never flips between frames and always follows its tip.
   const LABEL_TURNS=Array.from({length:32},(_,i)=>(i%2?1:-1)*Math.ceil(i/2)*11.25*Math.PI/180),LABEL_TIERS=[0,8,16,24,36,48,64,80],LABEL_LEASH=30,LABEL_SIDE={'ω':1,'L':-1,'τ':1,'e₁':1,'e₂':-1,'e₃':1};
-  function textAt(text,point,color,rect,placed){
+  // A torque arrow and the axis it lies along share one ray; their labels take opposite sides of it.
+  const LABEL_TURN_PREFERENCE={'τ':1,'e₂':-1};
+  function textAt(text,point,color,rect,placed,overlay=false){
    const projected=point.clone().project(camera),x=rect.x+(projected.x+1)*rect.w/2,y=rect.y+(1-projected.y)*rect.h/2;
    const centre=origin3.set(0,0,0).project(camera),ox=rect.x+(centre.x+1)*rect.w/2,oy=rect.y+(1-centre.y)*rect.h/2;
    const nodeKey=currentPanel+':'+text;let entry=labelNodes.get(nodeKey);
@@ -213,13 +219,14 @@ export const view={graphs,closeups,
    const hitsBody=(a,pad)=>currentShapes.some(poly=>rectHitsConvex({x:a.x,y:a.y,width,height},poly,pad));
    const leaderLength=a=>Math.hypot(Math.max(a.x,Math.min(a.x+width,x))-x,Math.max(a.y,Math.min(a.y+height,y))-y);
    // A panel edge may be crossed only as a last resort (stacked comparison panels in a short scene); the scene itself is never left.
-   let bounds=rect;const valid=(a,pad=1)=>a.x>=bounds.x+3&&a.y>=bounds.y+topMargin&&a.x+width<=bounds.x+bounds.w-3&&a.y+height<=bounds.y+bounds.h-3&&leaderLength(a)<=leash&&!intersects(a)&&!hitsArrow(a)&&!hitsBody(a,pad);
+   let bounds=rect;const valid=(a,pad=1)=>a.x>=bounds.x+3&&a.y>=bounds.y+topMargin&&a.x+width<=bounds.x+bounds.w-3&&a.y+height<=bounds.y+bounds.h-3&&leaderLength(a)<=leash&&!intersects(a)&&!hitsArrow(a)&&(overlay||!hitsBody(a,pad));
    let squeeze=false;
    const candidate=n=>{const tier=LABEL_TIERS[Math.floor(n/LABEL_TURNS.length)],turn=LABEL_TURNS[n%LABEL_TURNS.length]*side,c=Math.cos(turn),s=Math.sin(turn),ux=dx*c-dy*s,uy=dx*s+dy*c,reachOut=Math.abs(ux)*width/2+Math.abs(uy)*height/2+3+tier;const c0={x:x+ux*reachOut-width/2,y:y+uy*reachOut-height/2};return squeeze?{x:Math.max(bounds.x+3,Math.min(bounds.x+bounds.w-3-width,c0.x)),y:Math.max(bounds.y+topMargin,Math.min(bounds.y+bounds.h-3-height,c0.y))}:c0;};
    let first=-1,position=null;const count=LABEL_TURNS.length*LABEL_TIERS.length;
    // A new choice keeps 16 px from the silhouette so a turning body does not push it away again at once; a kept one may come within 1 px.
-   const search=()=>{for(const pad of [16,8,1])for(let n=0;n<count;n++)if(valid(candidate(n),pad))return n;return -1;};
-   const searchNear=()=>{const near=search();if(near<0||leaderLength(candidate(near))<=8)return near;let best=near,score=leaderLength(candidate(near));for(const [pad,cost] of [[8,3],[1,6]])for(let n=0;n<count;n++){const c=candidate(n),v=leaderLength(c)+cost;if(v<score&&valid(c,pad)){score=v;best=n;}}return best;};
+   const pref=LABEL_TURN_PREFERENCE[text]||0,turnOf=n=>LABEL_TURNS[n%LABEL_TURNS.length]*side,onSide=n=>!pref||turnOf(n)*pref>=0;
+   const search=()=>{for(const pad of [16,8,1]){if(pref)for(let n=0;n<count;n++)if(onSide(n)&&valid(candidate(n),pad))return n;for(let n=0;n<count;n++)if(valid(candidate(n),pad))return n;}return -1;};
+   const searchNear=()=>{const near=search();if(near<0||leaderLength(candidate(near))<=8)return near;let best=near,score=leaderLength(candidate(near));for(const [pad,cost] of [[8,3],[1,6]])for(let n=0;n<count;n++){const c=candidate(n),v=leaderLength(c)+cost;if(v<score&&(onSide(n)||!onSide(near))&&valid(c,pad)){score=v;best=n;}}return best;};
    first=entry.choice<0?searchNear():search();
    if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}
    // A crowded cluster may take a longer leader rather than lose the label.
@@ -233,7 +240,7 @@ export const view={graphs,closeups,
    const length=leaderLength(position);leaderLengths.push(length);
    if(length>7){
     const tx=Math.max(position.x,Math.min(position.x+width,x)),ty=Math.max(position.y,Math.min(position.y+height,y));
-    let record=leaderNodes.get(nodeKey);if(!record){const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('fill','none');el.setAttribute('stroke-opacity','.7');el.setAttribute('stroke-width','1');leaders.append(el);record={el};leaderNodes.set(nodeKey,record);retained.allocations.leaders++;}record.used=true;record.el.style.display='';cachedAttribute(record.el,'d',`M${x},${y} L${tx},${ty}`);cachedAttribute(record.el,'stroke',color);
+    let record=leaderNodes.get(nodeKey);if(!record){const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('fill','none');el.setAttribute('stroke-opacity','.7');el.setAttribute('stroke-width','1');leaders.append(el);record={el};leaderNodes.set(nodeKey,record);retained.allocations.leaders++;}record.used=true;record.el.style.display='';cachedAttribute(record.el,'d',`M${x},${y} L${tx},${ty}`+(depth>0?` M${x-2.5},${y} a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0`:''));cachedAttribute(record.el,'stroke',color);
    }
   }
   function chipSizes_(ids){return ids.map(id=>{const button=shell.q(`.exp-closeups [data-id="${id}"]`);let size=button&&chipSizes.get(button);if(!size||!size.w){size={w:button?.offsetWidth||0,h:button?.offsetHeight||0};if(button&&size.w)chipSizes.set(button,size);}return size.w?size:{w:130,h:32};});}
@@ -304,7 +311,7 @@ export const view={graphs,closeups,
    if(paramsIdentity!==f.params){rebuild(f);}else if(instance!==f.instance){instance=f.instance;const g=f.geometry;scales={omega:bounds*.6/Math.max(1,norm(g.omegaSpace)),L:bounds*.75/Math.max(.01,norm(g.angularMomentumSpace)),torque:bounds*.6/Math.max(.01,norm(g.torqueSpace))};traceBody=[];traceSpace=[];lastTrace=-1;}if(f.t<lastTime){traceBody=[];traceSpace=[];lastTrace=-1;}lastTime=f.t;
    const p=f.params,g=f.geometry,isBody=['body','axis','inertia','energy'].includes(f.closeup),compare=f.closeup==='frames',energy=f.closeup==='energy';
    const layout=sceneLayout(width,height,f.closeup);f.compact=layout.compact;root.classList.toggle('rr-compact',layout.compact);const ids=visibleTargets(f,height);for(const b of shell.q('.exp-closeups').children){const hidden=!ids.includes(b.dataset.id);if(b.hidden!==hidden)b.hidden=hidden;}
-   cachedText(caption,f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' ')));
+   cachedText(caption,f.closeup?sentenceCase(closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ','')):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' ')));
    let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a = ${num(p.a)} m · b = ${num(p.b)} m · c = ${num(p.c)} m`:`θ = ${num(f.sample.theta)} rad · T = ${num(f.sample.kinetic)} J`;
    if(norm(g.torqueSpace)<1e-10&&!energy)readoutText+=' · τ = 0 N m';cachedText(readout,readoutText);
    leaderLengths=[];tips=[];arrowBoxes=[];hullBoxes=[];if(labelSession!==f.closeup){for(const entry of labelNodes.values()){entry.choice=-1;entry.ready=false;}labelSession=f.closeup;}for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
@@ -356,8 +363,8 @@ export const view={graphs,closeups,
       if(f.breakdown||['gravity','precession'].includes(f.closeup)){
        const arm=g.centreOfMass,forceLength=bounds*.48;A(arm,g.gravityForce,forceLength,C.torque,'gravity');later(1,()=>textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed));if(!narrow)later(3,()=>textAt('r',v(arm).multiplyScalar(.25).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
        line(vectorLayer,[origin,[0,0,p.distance]],'#8a99ad',true);line(vectorLayer,[arm,[0,0,arm[2]]],'#d6bd82',true);
-       const az=Math.atan2(arm[1],arm[0]),arc=Array.from({length:33},(_,i)=>{const t=f.sample.theta*i/32;return [Math.cos(az)*Math.sin(t)*p.distance*.45,Math.sin(az)*Math.sin(t)*p.distance*.45,Math.cos(t)*p.distance*.45];});line(vectorLayer,arc,'#d6bd82');
-       if(!narrow)later(3,()=>textAt('θ',v(arc[8]).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
+       const az=Math.atan2(arm[1],arm[0]),arc=Array.from({length:33},(_,i)=>{const t=f.sample.theta*i/32;return [Math.cos(az)*Math.sin(t)*p.distance*.7,Math.sin(az)*Math.sin(t)*p.distance*.7,Math.cos(t)*p.distance*.7];});{const arcLine=line(vectorLayer,arc,'#d6bd82');arcLine.material.depthTest=false;arcLine.material.opacity=1;arcLine.renderOrder=24;}
+       if(!narrow)later(3,()=>textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#d6bd82',r,placed,true));
       }
      }
      if(f.closeup==='precession'){const radius=Math.sin(f.sample.theta)*bounds*.65,z=Math.cos(f.sample.theta)*bounds*.65;line(vectorLayer,Array.from({length:81},(_,i)=>[radius*Math.cos(i*Math.PI/40),radius*Math.sin(i*Math.PI/40),z]),'#6f8296',true);}
