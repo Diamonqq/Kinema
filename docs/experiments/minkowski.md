@@ -112,15 +112,15 @@ for twins and cap at reunion. Only show scenario-relevant observables to the tut
 and visible key. The generic simultaneityOffset uses the full ground separation L;
 for the rod's actual measurement events the separation is L/γ instead.
 
-## Views to build on the kit (not rendered in this pass)
+## Implemented views on the shared kit
 
 First view: two quiet linked x–ct plots, Ground and Moving, equal metric scales,
 three stable colors (body blue, light warm white, selected event pale cyan).
-Thin now line; no cones, tick labels, equations or full numeric tables initially.
+Thin now line and faint 45-degree light cones; equations and numeric tables stay hidden.
 Use a fixed viewport from all transformed scenario endpoints with 10% padding;
 Reset restores it. Add one tiny key and a selected-event caption band, never
-chasing labels. On 320 px show one plot with Ground/Moving tabs; keep both data
-sets linked to the same selected playback frame and timestamp. The normal
+chasing labels. At narrow widths the two panels stack; both stay linked to the
+same selected playback frame and timestamp. The normal
 artifact/chat composer and shared transport remain the only playback controls.
 
 An optional small spatial strip follows `geometry().objects` in the selected
@@ -128,11 +128,11 @@ frame. The transverse light clock needs its x–y strip: an x–ct projection al
 can conceal the photon's transverse travel. Do not infer photon speed from only
 the projected x slope. No 3D decoration is needed.
 
-Graphs (behind Graphs; IDs for the later renderer):
+Graphs (behind Graphs; implemented descriptor IDs):
 
 | ID | View | Equation / meaning |
 |---|---|---|
-| `worldlines` | Linked frame plots and now line | x'=γ(x−vt), ct'=γ(ct−βx) |
+| `worldlines` | Selected worldline position against coordinate time, live cursor | x'=γ(x−vt), ct'=γ(ct−βx) |
 | `clocks` | Coordinate and proper ages against the chosen time cursor | dτ=dt sqrt(1−u²/c²); twin age integrates each leg |
 | `light-cone` | Equal-scale null rays through the selected event | c²Δt²−Δx²−Δy²=0; cone is a projection for transverse motion |
 | `calibration` | Proper-distance/time calibration | (ct)²−x²=L²; core supplies the future timelike branch |
@@ -140,8 +140,12 @@ Graphs (behind Graphs; IDs for the later renderer):
 | `four-vector` | Component arrow in selected projection, ground/moving pair | A'=ΛA; A_μ A^μ is invariant |
 | `tensor` | Mapped hypercube or antisymmetric E/B-like arrows | T'=ΛTΛᵀ; mapped vertices expose projection geometry without DOS raster assets |
 
-Close-ups: scene chips must be obvious, stay fixed near their subject, and return
-to the full view using the kit's Back control.
+Two fixed scene chips, `event` (Zoom ? events) and `transform` (Zoom ? transform),
+open magnified views and return through the kit's Full scene control. `event`
+selects the following scenario-specific derivation; these rows name teaching
+content, not additional chip IDs. `transform` shows the same selected event in
+both frames, with live Lorentz equations. Object/flash/light-clock event views
+show the spatial xy projection; calculators show vector or tensor projections.
 
 | ID | Chip location | Equation and live quantities |
 |---|---|---|
@@ -192,5 +196,18 @@ workflow friction observations for coordinator indexing, not app defects.
 Full local originals resolved the web-reader truncation; the coverage evidence
 now comes from complete files rather than menu declarations alone.
 
-No view.js or manifest is authored in this physics-only pass; gallery discovery
-and desktop/320/expanded rendered checks belong to the assigned follow-up.
+`manifest.json`, `view.js` and `drawing.js` now implement the Relativity gallery
+entry, paired diagrams, spatial/calculator projections, contextual close-ups,
+Breakdown, and custom graphs. Setup reveals at most twelve relevant fields;
+advanced fields remain accessible to presets and validated tutor actions.
+The projection views do not claim to be a rendered 3D worldtube.
+
+The two view test files add descriptor consistency, fixed cameras, 45-degree
+screen slopes (1e-9 px), finite drawing coordinates at narrow/wide sizes, equal-scale momentum-circle rendering (1e-9 px), and
+scenario-scoped Setup checks to the 32 analytic core tests: 40 tests total.
+Rendered browser evidence lives in `round-156/rel-views/browser.json` and adjacent
+1280/320 PNG captures. It covers the actual gallery, transport, all presets,
+Setup changes, close-up return, expanded view, equations, every graph and the
+forbidden reaction state. These are hidden isolated-browser checks, not a real
+phone/account or original DOS executable comparison. The coordinator owns the
+independent visual judgment and final release integration.

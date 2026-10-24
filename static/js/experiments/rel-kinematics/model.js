@@ -146,6 +146,8 @@ function event(p,angle=p.angle*Math.PI/180) {
   return {initial,final,cmInitial,cmFinal,betaCM:b,W,threshold,allowed,photonEnergy,requiredMass};
 }
 const residual=(a,b)=>({energy:a.E-b.E,px:a.px-b.px,py:a.py-b.py,pz:a.pz-b.pz});
+// Bounded single-event evaluation for independently labeled graph axes.
+export const eventFor=values=>event(read(values));
 const clamp=v=>Math.max(-1,Math.min(1,v));
 export function plotQuantity(ev,variable,frame='lab',particle=1) {
   const final=frame==='cm'?ev.cmFinal:ev.final,initial=frame==='cm'?ev.cmInitial:ev.initial;

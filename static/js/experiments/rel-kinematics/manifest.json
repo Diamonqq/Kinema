@@ -1,0 +1,830 @@
+{
+  "id": "rel-kinematics",
+  "title": "Relativistic kinematics",
+  "group": "Relativity",
+  "description": "See energy and momentum agree in the lab and center-of-momentum frames.",
+  "params": [
+    {
+      "key": "reaction",
+      "label": "Reaction",
+      "unit": "",
+      "value": "pion-decay",
+      "options": [
+        {
+          "value": "pion-decay",
+          "label": "Neutral pion → two photons"
+        },
+        {
+          "value": "decay",
+          "label": "Two-body decay"
+        },
+        {
+          "value": "elastic",
+          "label": "Elastic collision"
+        },
+        {
+          "value": "collision",
+          "label": "Two-body reaction"
+        },
+        {
+          "value": "pp-pion",
+          "label": "Proton + proton → proton + proton + pion"
+        },
+        {
+          "value": "compton",
+          "label": "Compton scattering"
+        },
+        {
+          "value": "muon",
+          "label": "Muon → electron + two neutrinos"
+        },
+        {
+          "value": "pion-proton",
+          "label": "Pion + proton elastic scattering"
+        }
+      ]
+    },
+    {
+      "key": "frame",
+      "label": "Frame",
+      "unit": "",
+      "value": "lab",
+      "options": [
+        {
+          "value": "lab",
+          "label": "Lab"
+        },
+        {
+          "value": "cm",
+          "label": "Center of momentum"
+        }
+      ]
+    },
+    {
+      "key": "beta",
+      "label": "Parent speed",
+      "symbol": "v/c",
+      "unit": "",
+      "min": -0.95,
+      "max": 0.95,
+      "step": 0.01,
+      "value": 0.6,
+      "group": "Decay"
+    },
+    {
+      "key": "parentMass",
+      "label": "Parent mass",
+      "symbol": "M",
+      "unit": "MeV/c²",
+      "min": 0.01,
+      "max": 10000,
+      "step": 0.01,
+      "value": 10,
+      "group": "Custom decay"
+    },
+    {
+      "key": "mass1",
+      "label": "Beam / daughter 1 mass",
+      "symbol": "m_1",
+      "unit": "MeV/c²",
+      "min": 0,
+      "max": 5000,
+      "step": 0.01,
+      "value": 1,
+      "group": "Custom reaction"
+    },
+    {
+      "key": "mass2",
+      "label": "Target / daughter 2 mass",
+      "symbol": "m_2",
+      "unit": "MeV/c²",
+      "min": 0,
+      "max": 5000,
+      "step": 0.01,
+      "value": 1,
+      "group": "Custom reaction"
+    },
+    {
+      "key": "mass3",
+      "label": "Final particle 1 mass",
+      "symbol": "m_3",
+      "unit": "MeV/c²",
+      "min": 0,
+      "max": 5000,
+      "step": 0.01,
+      "value": 1,
+      "group": "Custom collision"
+    },
+    {
+      "key": "mass4",
+      "label": "Final particle 2 mass",
+      "symbol": "m_4",
+      "unit": "MeV/c²",
+      "min": 0,
+      "max": 5000,
+      "step": 0.01,
+      "value": 1,
+      "group": "Custom collision"
+    },
+    {
+      "key": "kinetic",
+      "label": "Beam kinetic energy / incident photon energy",
+      "symbol": "K",
+      "unit": "MeV",
+      "min": 0,
+      "max": 10000,
+      "step": 0.01,
+      "value": 400,
+      "group": "Beam"
+    },
+    {
+      "key": "inputMode",
+      "label": "Beam input",
+      "unit": "",
+      "value": "kinetic",
+      "options": [
+        {
+          "value": "kinetic",
+          "label": "Kinetic energy"
+        },
+        {
+          "value": "momentum",
+          "label": "Momentum"
+        }
+      ],
+      "group": "Beam"
+    },
+    {
+      "key": "beamMomentum",
+      "label": "Incoming / parent momentum",
+      "symbol": "p",
+      "unit": "MeV/c",
+      "min": 0,
+      "max": 100000,
+      "step": 0.01,
+      "value": 100,
+      "group": "Beam"
+    },
+    {
+      "key": "angle",
+      "label": "CM polar angle (Compton: lab photon angle)",
+      "symbol": "\\theta",
+      "unit": "°",
+      "min": 0,
+      "max": 180,
+      "step": 1,
+      "value": 60,
+      "group": "Angles"
+    },
+    {
+      "key": "pairFraction",
+      "label": "Three-body pair mass fraction",
+      "symbol": "f",
+      "unit": "",
+      "min": 0.01,
+      "max": 0.99,
+      "step": 0.01,
+      "value": 0.5,
+      "group": "Three-body kinematics"
+    },
+    {
+      "key": "secondaryAngle",
+      "label": "Pair rest-frame daughter angle",
+      "symbol": "\\phi",
+      "unit": "°",
+      "min": 0,
+      "max": 180,
+      "step": 1,
+      "value": 90,
+      "group": "Three-body kinematics"
+    },
+    {
+      "key": "distribution",
+      "label": "Angular sample",
+      "unit": "",
+      "value": "locus",
+      "options": [
+        {
+          "value": "locus",
+          "label": "Allowed locus"
+        },
+        {
+          "value": "isotropic",
+          "label": "Isotropic CM toy sample"
+        }
+      ],
+      "group": "Plots"
+    },
+    {
+      "key": "eventCount",
+      "label": "Sample size",
+      "unit": "events",
+      "min": 4,
+      "max": 2048,
+      "step": 1,
+      "value": 100,
+      "group": "Plots"
+    },
+    {
+      "key": "seed",
+      "label": "Sample seed",
+      "unit": "",
+      "min": 1,
+      "max": 4294967295,
+      "step": 1,
+      "value": 1,
+      "group": "Plots"
+    },
+    {
+      "key": "xVariable",
+      "label": "x variable",
+      "unit": "",
+      "value": "theta",
+      "options": [
+        {
+          "value": "energy",
+          "label": "Energy",
+          "unit": "MeV"
+        },
+        {
+          "value": "momentum",
+          "label": "Momentum",
+          "unit": "MeV/c"
+        },
+        {
+          "value": "beta",
+          "label": "Speed / c",
+          "unit": ""
+        },
+        {
+          "value": "theta",
+          "label": "Polar angle",
+          "unit": "°"
+        },
+        {
+          "value": "cosTheta",
+          "label": "Cosine of polar angle",
+          "unit": ""
+        },
+        {
+          "value": "pT",
+          "label": "Transverse momentum",
+          "unit": "MeV/c"
+        },
+        {
+          "value": "kinetic",
+          "label": "Kinetic energy",
+          "unit": "MeV"
+        },
+        {
+          "value": "openingAngle",
+          "label": "Daughter opening angle",
+          "unit": "°"
+        },
+        {
+          "value": "invariantMass",
+          "label": "Final invariant mass",
+          "unit": "MeV/c²"
+        },
+        {
+          "value": "transferSquared",
+          "label": "Four-momentum transfer squared",
+          "unit": "MeV²/c²"
+        },
+        {
+          "value": "momentumTransfer",
+          "label": "Three-momentum transfer",
+          "unit": "MeV/c"
+        }
+      ],
+      "group": "Plots"
+    },
+    {
+      "key": "xFrame",
+      "label": "x frame",
+      "unit": "",
+      "value": "cm",
+      "options": [
+        {
+          "value": "cm",
+          "label": "CM"
+        },
+        {
+          "value": "lab",
+          "label": "Lab"
+        }
+      ],
+      "group": "Plots"
+    },
+    {
+      "key": "xParticle",
+      "label": "x daughter",
+      "unit": "",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "value": 1,
+      "group": "Plots"
+    },
+    {
+      "key": "xMin",
+      "label": "x lower limit",
+      "unit": "selected variable",
+      "min": -10000000000,
+      "max": 10000000000,
+      "step": 0.01,
+      "value": 0,
+      "group": "Plots"
+    },
+    {
+      "key": "xMax",
+      "label": "x upper limit",
+      "unit": "selected variable",
+      "min": -10000000000,
+      "max": 10000000000,
+      "step": 0.01,
+      "value": 180,
+      "group": "Plots"
+    },
+    {
+      "key": "yVariable",
+      "label": "y variable",
+      "unit": "",
+      "value": "theta",
+      "options": [
+        {
+          "value": "energy",
+          "label": "Energy",
+          "unit": "MeV"
+        },
+        {
+          "value": "momentum",
+          "label": "Momentum",
+          "unit": "MeV/c"
+        },
+        {
+          "value": "beta",
+          "label": "Speed / c",
+          "unit": ""
+        },
+        {
+          "value": "theta",
+          "label": "Polar angle",
+          "unit": "°"
+        },
+        {
+          "value": "cosTheta",
+          "label": "Cosine of polar angle",
+          "unit": ""
+        },
+        {
+          "value": "pT",
+          "label": "Transverse momentum",
+          "unit": "MeV/c"
+        },
+        {
+          "value": "kinetic",
+          "label": "Kinetic energy",
+          "unit": "MeV"
+        },
+        {
+          "value": "openingAngle",
+          "label": "Daughter opening angle",
+          "unit": "°"
+        },
+        {
+          "value": "invariantMass",
+          "label": "Final invariant mass",
+          "unit": "MeV/c²"
+        },
+        {
+          "value": "transferSquared",
+          "label": "Four-momentum transfer squared",
+          "unit": "MeV²/c²"
+        },
+        {
+          "value": "momentumTransfer",
+          "label": "Three-momentum transfer",
+          "unit": "MeV/c"
+        }
+      ],
+      "group": "Plots"
+    },
+    {
+      "key": "yFrame",
+      "label": "y frame",
+      "unit": "",
+      "value": "lab",
+      "options": [
+        {
+          "value": "cm",
+          "label": "CM"
+        },
+        {
+          "value": "lab",
+          "label": "Lab"
+        }
+      ],
+      "group": "Plots"
+    },
+    {
+      "key": "yParticle",
+      "label": "y daughter",
+      "unit": "",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "value": 2,
+      "group": "Plots"
+    },
+    {
+      "key": "yMin",
+      "label": "y lower limit",
+      "unit": "selected variable",
+      "min": -10000000000,
+      "max": 10000000000,
+      "step": 0.01,
+      "value": 0,
+      "group": "Plots"
+    },
+    {
+      "key": "yMax",
+      "label": "y upper limit",
+      "unit": "selected variable",
+      "min": -10000000000,
+      "max": 10000000000,
+      "step": 0.01,
+      "value": 180,
+      "group": "Plots"
+    },
+    {
+      "key": "plotRange",
+      "label": "Plot range",
+      "unit": "",
+      "value": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Automatic"
+        },
+        {
+          "value": "manual",
+          "label": "Manual"
+        }
+      ],
+      "group": "Plots"
+    },
+    {
+      "key": "bins",
+      "label": "Histogram bins",
+      "unit": "bins",
+      "min": 2,
+      "max": 100,
+      "step": 1,
+      "value": 20,
+      "group": "Plots"
+    }
+  ],
+  "presets": [
+    {
+      "id": "pion-rest",
+      "label": "Pion at rest",
+      "values": {
+        "reaction": "pion-decay",
+        "frame": "lab",
+        "beta": 0,
+        "parentMass": 10,
+        "mass1": 1,
+        "mass2": 1,
+        "mass3": 1,
+        "mass4": 1,
+        "kinetic": 400,
+        "inputMode": "kinetic",
+        "beamMomentum": 100,
+        "angle": 60,
+        "pairFraction": 0.5,
+        "secondaryAngle": 90,
+        "distribution": "locus",
+        "eventCount": 100,
+        "seed": 1,
+        "xVariable": "theta",
+        "xFrame": "cm",
+        "xParticle": 1,
+        "xMin": 0,
+        "xMax": 180,
+        "yVariable": "theta",
+        "yFrame": "lab",
+        "yParticle": 2,
+        "yMin": 0,
+        "yMax": 180,
+        "plotRange": "auto",
+        "bins": 20
+      },
+      "note": "Each photon carries half the pion rest energy."
+    },
+    {
+      "id": "pion-flight",
+      "label": "Pion in flight",
+      "values": {
+        "reaction": "pion-decay",
+        "frame": "lab",
+        "beta": 0.8,
+        "parentMass": 10,
+        "mass1": 1,
+        "mass2": 1,
+        "mass3": 1,
+        "mass4": 1,
+        "kinetic": 400,
+        "inputMode": "kinetic",
+        "beamMomentum": 100,
+        "angle": 60,
+        "pairFraction": 0.5,
+        "secondaryAngle": 90,
+        "distribution": "locus",
+        "eventCount": 100,
+        "seed": 1,
+        "xVariable": "theta",
+        "xFrame": "cm",
+        "xParticle": 1,
+        "xMin": 0,
+        "xMax": 180,
+        "yVariable": "theta",
+        "yFrame": "lab",
+        "yParticle": 2,
+        "yMin": 0,
+        "yMax": 180,
+        "plotRange": "auto",
+        "bins": 20
+      },
+      "note": "Boosting changes photon energies, not the pair invariant mass."
+    },
+    {
+      "id": "equal-masses",
+      "label": "Equal masses",
+      "values": {
+        "reaction": "elastic",
+        "frame": "lab",
+        "beta": 0.6,
+        "parentMass": 10,
+        "mass1": 1,
+        "mass2": 1,
+        "mass3": 1,
+        "mass4": 1,
+        "kinetic": 4,
+        "inputMode": "kinetic",
+        "beamMomentum": 100,
+        "angle": 60,
+        "pairFraction": 0.5,
+        "secondaryAngle": 90,
+        "distribution": "locus",
+        "eventCount": 100,
+        "seed": 1,
+        "xVariable": "theta",
+        "xFrame": "cm",
+        "xParticle": 1,
+        "xMin": 0,
+        "xMax": 180,
+        "yVariable": "theta",
+        "yFrame": "lab",
+        "yParticle": 2,
+        "yMin": 0,
+        "yMax": 180,
+        "plotRange": "auto",
+        "bins": 20
+      },
+      "note": "The center of momentum is moving in the lab."
+    },
+    {
+      "id": "threshold",
+      "label": "Make a pion",
+      "values": {
+        "reaction": "pp-pion",
+        "frame": "lab",
+        "beta": 0.6,
+        "parentMass": 10,
+        "mass1": 1,
+        "mass2": 1,
+        "mass3": 1,
+        "mass4": 1,
+        "kinetic": 280,
+        "inputMode": "kinetic",
+        "beamMomentum": 100,
+        "angle": 60,
+        "pairFraction": 0.5,
+        "secondaryAngle": 90,
+        "distribution": "locus",
+        "eventCount": 100,
+        "seed": 1,
+        "xVariable": "theta",
+        "xFrame": "cm",
+        "xParticle": 1,
+        "xMin": 0,
+        "xMax": 180,
+        "yVariable": "theta",
+        "yFrame": "lab",
+        "yParticle": 2,
+        "yMin": 0,
+        "yMax": 180,
+        "plotRange": "auto",
+        "bins": 20
+      },
+      "note": "Some beam energy must remain as center-of-momentum motion."
+    },
+    {
+      "id": "compton",
+      "label": "Photon recoil",
+      "values": {
+        "reaction": "compton",
+        "frame": "lab",
+        "beta": 0.6,
+        "parentMass": 10,
+        "mass1": 1,
+        "mass2": 1,
+        "mass3": 1,
+        "mass4": 1,
+        "kinetic": 0.51,
+        "inputMode": "kinetic",
+        "beamMomentum": 100,
+        "angle": 90,
+        "pairFraction": 0.5,
+        "secondaryAngle": 90,
+        "distribution": "locus",
+        "eventCount": 100,
+        "seed": 1,
+        "xVariable": "theta",
+        "xFrame": "cm",
+        "xParticle": 1,
+        "xMin": 0,
+        "xMax": 180,
+        "yVariable": "theta",
+        "yFrame": "lab",
+        "yParticle": 2,
+        "yMin": 0,
+        "yMax": 180,
+        "plotRange": "auto",
+        "bins": 20
+      },
+      "note": "Photon energy decreases as the electron recoils."
+    },
+    {
+      "id": "muon-rest",
+      "label": "Muon at rest",
+      "values": {
+        "reaction": "muon",
+        "frame": "lab",
+        "beta": 0,
+        "parentMass": 10,
+        "mass1": 1,
+        "mass2": 1,
+        "mass3": 1,
+        "mass4": 1,
+        "kinetic": 400,
+        "inputMode": "kinetic",
+        "beamMomentum": 100,
+        "angle": 60,
+        "pairFraction": 0.5,
+        "secondaryAngle": 90,
+        "distribution": "locus",
+        "eventCount": 100,
+        "seed": 1,
+        "xVariable": "theta",
+        "xFrame": "cm",
+        "xParticle": 1,
+        "xMin": 0,
+        "xMax": 180,
+        "yVariable": "theta",
+        "yFrame": "lab",
+        "yParticle": 2,
+        "yMin": 0,
+        "yMax": 180,
+        "plotRange": "auto",
+        "bins": 20
+      },
+      "note": "Three daughters share energy; this is a selected kinematic event, not a decay-rate prediction."
+    },
+    {
+      "id": "muon-flight",
+      "label": "Muon in flight",
+      "values": {
+        "reaction": "muon",
+        "frame": "lab",
+        "beta": 0.8,
+        "parentMass": 10,
+        "mass1": 1,
+        "mass2": 1,
+        "mass3": 1,
+        "mass4": 1,
+        "kinetic": 400,
+        "inputMode": "kinetic",
+        "beamMomentum": 100,
+        "angle": 60,
+        "pairFraction": 0.5,
+        "secondaryAngle": 90,
+        "distribution": "locus",
+        "eventCount": 100,
+        "seed": 1,
+        "xVariable": "theta",
+        "xFrame": "cm",
+        "xParticle": 1,
+        "xMin": 0,
+        "xMax": 180,
+        "yVariable": "theta",
+        "yFrame": "lab",
+        "yParticle": 2,
+        "yMin": 0,
+        "yMax": 180,
+        "plotRange": "auto",
+        "bins": 20
+      },
+      "note": "One Lorentz boost carries all three daughter four-momenta to the lab."
+    },
+    {
+      "id": "pion-target",
+      "label": "Pion meets proton",
+      "values": {
+        "reaction": "pion-proton",
+        "frame": "lab",
+        "beta": 0.6,
+        "parentMass": 10,
+        "mass1": 1,
+        "mass2": 1,
+        "mass3": 1,
+        "mass4": 1,
+        "kinetic": 400,
+        "inputMode": "momentum",
+        "beamMomentum": 100,
+        "angle": 30,
+        "pairFraction": 0.5,
+        "secondaryAngle": 90,
+        "distribution": "locus",
+        "eventCount": 100,
+        "seed": 1,
+        "xVariable": "theta",
+        "xFrame": "cm",
+        "xParticle": 1,
+        "xMin": 0,
+        "xMax": 180,
+        "yVariable": "theta",
+        "yFrame": "lab",
+        "yParticle": 2,
+        "yMin": 0,
+        "yMax": 180,
+        "plotRange": "auto",
+        "bins": 20
+      },
+      "note": "A light beam particle hits a heavy target: compare the two outgoing lab angles."
+    }
+  ],
+  "closeups": [
+    {
+      "id": "balance",
+      "label": "Zoom · momentum"
+    },
+    {
+      "id": "budget",
+      "label": "Zoom · energy"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "flight",
+      "label": "Free flight",
+      "kind": "custom"
+    },
+    {
+      "id": "ellipse",
+      "label": "Momentum ellipse",
+      "kind": "custom"
+    },
+    {
+      "id": "energy-angle",
+      "label": "Energy vs angle",
+      "kind": "custom"
+    },
+    {
+      "id": "threshold",
+      "label": "Threshold",
+      "kind": "custom"
+    },
+    {
+      "id": "invariant",
+      "label": "Invariant mass",
+      "kind": "custom"
+    },
+    {
+      "id": "compton",
+      "label": "Compton shift",
+      "kind": "custom"
+    },
+    {
+      "id": "scatter",
+      "label": "Scatter plot",
+      "kind": "custom"
+    },
+    {
+      "id": "histogram",
+      "label": "Histogram",
+      "kind": "custom"
+    }
+  ]
+}

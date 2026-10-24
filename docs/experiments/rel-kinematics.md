@@ -163,21 +163,21 @@ Proton-pion production similarly factors π⁰+(pp); p+p→p+p+π⁰ is a three-
 reaction and gets the correct fixed-target threshold. Both remain planar selected
 events; orientation around the beam and event-weight sampling are follow-up scope.
 
-## Views to build on the kit (not rendered in this pass)
+## Implemented views on the shared kit
 
 First view: two linked momentum diagrams, Lab and CM, with stable color per
 daughter, subdued incoming arrow(s), and one compact caption showing sqrt(s).
 Both diagrams use the same momentum scale and a fixed bound over the full angular
 locus; Reset re-centers. Arrows start at the reaction vertex, avoiding spurious
 position trajectories. No table, histogram, derivation, cone or extra toolbar at
-entry. On 320 px use Lab/CM tabs and one readable diagram; frame changes preserve
-the chosen reaction/angle. The kit provides transport, Setup, Graphs, Breakdown.
+entry. At 320 px the Lab/CM panels stack, preserving the chosen reaction/angle. The kit provides transport, Setup, Graphs, Breakdown.
 An optional flight close-up uses physical v=c p/E; do not fake a slowing photon.
 
-Graphs (behind Graphs; IDs for the later renderer):
+Graphs (behind Graphs; implemented descriptor IDs):
 
 | ID | View | Equation / meaning |
 |---|---|---|
+| `flight` | Selected daughter position vs coordinate time, linked cursor | v_x/c=p_x/E; position is in light-seconds |
 | `ellipse` | Lab p_parallel vs p_transverse with CM circle inset | ((p_x−γβE*)/(γp*))²+(p_y/p*)²=1 for fixed two-body masses |
 | `energy-angle` | E_1 and E_2 vs CM cosθ (Compton: lab angle) | E_1=γ(E*_1+βp* cosθ*) |
 | `threshold` | Available CM energy vs beam K | sqrt(s)=sqrt(m_a²+m_b²+2m_b(m_a+K)); Q=sqrt(s)−Σm_f |
@@ -191,7 +191,12 @@ The optional implemented isotropic distribution samples uniform cosθ*, not unif
 θ*, and says it is a chosen angular model. The full Compton Klein–Nishina and muon
 weak-decay weights are absent and must not be implied by a smooth curve.
 
-Close-ups and Breakdown content:
+Two implemented scene chips are `balance` (Zoom ? momentum) and `budget`
+(Zoom ? energy). Balance magnifies the signed head-to-tail momentum sum; budget
+magnifies the available invariant energy and daughter rest-energy requirement.
+Breakdown adds signed component projections, the daughter polar angle, symbolic
+and substituted equations. The table below maps further teaching content to
+these two views and the Breakdown, rather than specifying seven extra chips.
 
 | ID / chip location | Equation and live quantities |
 |---|---|
@@ -230,6 +235,15 @@ Sandbox process spawning blocks ordinary `node --test` with EPERM;
 `node --test --experimental-test-isolation=none tests/experiments/minkowski.test.mjs tests/experiments/rel-kinematics.test.mjs`
 runs the actual checks in-process (Node 22).
 
-No manifest/view or app wiring is authored here. The follow-up owns rendered
-desktop/320/expanded checks, normal navigation and honest reaction error states.
-The coordinator should index the shared friction noted in minkowski.md once.
+`manifest.json` and `view.js` now implement gallery discovery, same-scale Lab/CM
+momentum diagrams, both close-ups, eight graphs and live conservation equations.
+Pure `eventFor(params)` supports cached angular sweeps without a playback seek.
+All model descriptors are retained; Setup exposes only scenario-relevant fields.
+Momentum diagrams describe reaction kinematics; they do not imply an interaction
+force, a decay lifetime, or cross-section-weighted event generation.
+
+The 40 core/view tests and isolated browser evidence are shared with the Minkowski
+lane. `round-156/rel-views/browser.json` records actual checks and adjacent PNGs
+show desktop, narrow, expanded and forbidden-state renders. See minkowski.md for
+verification scope and shared workflow friction. No installed app or real-device
+check was performed.
