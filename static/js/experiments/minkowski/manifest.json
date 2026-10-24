@@ -2274,15 +2274,16 @@
       "id": "clocks",
       "label": "Clock ages",
       "unit": "s",
+      "window": 12,
       "series": [
         {
           "key": "groundTime",
-          "label": "ground",
+          "label": "t",
           "color": "#8ab9ff"
         },
         {
           "key": "properTime",
-          "label": "proper",
+          "label": "τ",
           "color": "#e9bb88"
         }
       ]

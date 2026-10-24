@@ -274,7 +274,8 @@ export const model={
         const traveler=scene.lines.find(l=>l.id==='traveler');
         // groundTime/movingTime refer to the same ground-origin event; geometry
         // independently intersects every worldline with the chosen simultaneity slice.
-        return {t,gamma:g,groundTime,movingTime:g*groundTime,properTime:(p.frame==='ground'?t/g:t),vectorNorm,tensorContraction,
+        const ended=['moving-mirror','comoving-mirrors','light-clock','simultaneity','twins'].includes(p.scenario)&&t>=Math.max(...scene.events.map(e=>p.frame==='ground'?e.t:boost(e,b).t));
+        return {t,ended,gamma:g,groundTime,movingTime:g*groundTime,properTime:(p.frame==='ground'?t/g:t),vectorNorm,tensorContraction,
           contractedLength:p.length/g,simultaneityOffset:-g*p.beta*p.length/C,
           rocketVelocity:addVelocity(p.uBeta*C,p.beta*C),catchTime:scene.catchTime,roundTripTime:scene.returnTime,
           homeAge:ageTime,travelerAge:traveler?ageOnSlice(traveler,t,p.frame==='ground'?0:p.beta):ageTime/g};

@@ -789,42 +789,50 @@
     {
       "id": "flight",
       "label": "Free flight",
-      "kind": "custom"
+      "kind": "custom",
+      "unit": "s, light-s"
     },
     {
       "id": "ellipse",
       "label": "Momentum ellipse",
-      "kind": "custom"
+      "kind": "custom",
+      "unit": "MeV/c"
     },
     {
       "id": "energy-angle",
       "label": "Energy vs angle",
-      "kind": "custom"
+      "kind": "custom",
+      "unit": "°, MeV"
     },
     {
       "id": "threshold",
       "label": "Threshold",
-      "kind": "custom"
+      "kind": "custom",
+      "unit": "MeV"
     },
     {
       "id": "invariant",
       "label": "Invariant mass",
-      "kind": "custom"
+      "kind": "custom",
+      "unit": "MeV/c^2"
     },
     {
       "id": "compton",
       "label": "Compton shift",
-      "kind": "custom"
+      "kind": "custom",
+      "unit": "°, MeV"
     },
     {
       "id": "scatter",
       "label": "Scatter plot",
-      "kind": "custom"
+      "kind": "custom",
+      "unit": ""
     },
     {
       "id": "histogram",
       "label": "Histogram",
-      "kind": "custom"
+      "kind": "custom",
+      "unit": ""
     }
   ]
 }

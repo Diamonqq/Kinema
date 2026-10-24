@@ -1,29 +1,32 @@
 import {C,boost,interval,gamma,addVelocity} from './model.js';
-import {colors,fmt,panels,mapPanel,line,inside,axes,plot} from './drawing.js';
+import {colors,fmt,panels,mapPanel,line,inside,axes,plot,clipPanel} from './drawing.js';
 const cache=new WeakMap();
 export const closeups=[{id:'event',label:'Zoom · events'},{id:'transform',label:'Zoom · transform'}];
 export const graphs=[
-  {id:'worldlines',label:'Position vs time',kind:'custom'},{id:'clocks',label:'Clock ages',unit:'s',series:[{key:'groundTime',label:'ground',color:colors[0]},{key:'properTime',label:'proper',color:colors[1]}]},
+  {id:'worldlines',label:'Position vs time',kind:'custom'},{id:'clocks',label:'Clock ages',unit:'s',window:12,series:[{key:'groundTime',label:'t',color:colors[0]},{key:'properTime',label:'\u03c4',color:colors[1]}]},
   {id:'light-cone',label:'Light cone',kind:'custom'},{id:'calibration',label:'Calibration',kind:'custom'},
   {id:'spatial',label:'Spatial view',kind:'custom'},{id:'four-vector',label:'Four-vector',kind:'custom'},{id:'tensor',label:'Tensor',kind:'custom'},
 ];
 function beta(p){return ['objects','flashes','four-vector','tensor'].includes(p.scenario)?{x:p.beta,y:p.betaY,z:p.betaZ}:p.beta;}
 const invert=b=>typeof b==='number'?-b:{x:-b.x,y:-b.y,z:-b.z};
 const coord=(a,L)=>[a.x/L,C*a.t/L];
-export function boundsFor(g,L){
+export function boundsFor(g,L,desktop=true){
+  const events=['ground','moving'].flatMap(k=>g[k].events).map(a=>coord(a,L));
+  if(desktop&&events.length&&Math.max(...events.map(a=>a[1]))>0){const xs=events.map(a=>a[0]),ys=events.map(a=>a[1]),max=Math.max(...ys),dx=Math.max(.15,(Math.max(...xs)-Math.min(...xs))*.05);return [Math.min(...xs)-dx,Math.max(...xs)+dx,Math.min(-.25*max,...ys),max*1.05];}
   const points=['ground','moving'].flatMap(k=>[...g[k].events,...g[k].worldlines.flatMap(l=>l.points)]).map(a=>coord(a,L));
   if(!points.length)return [-2,2,-1,3];
   let x0=Math.min(-.3,...points.map(a=>a[0])),x1=Math.max(.3,...points.map(a=>a[0])),y0=Math.min(-.3,...points.map(a=>a[1])),y1=Math.max(.3,...points.map(a=>a[1]));
   const dx=(x1-x0)*.13,dy=(y1-y0)*.1;return [x0-dx,x1+dx,y0-dy,y1+dy];
 }
 function context(f){let c=cache.get(f.instance);if(!c){const g=f.geometry,L=f.params.length;
-  c={bounds:boundsFor(g,L),selected:g.ground.events.find(e=>e.id==='reflect'||e.id==='turn'||e.id==='right-strike')||g.ground.events.at(-1)||{t:0,x:0,y:0,z:0}};cache.set(f.instance,c);}return c;}
+  c={bounds:boundsFor(g,L),narrowBounds:boundsFor(g,L,false),selected:g.ground.events.find(e=>e.id==='reflect'||e.id==='turn'||e.id==='right-strike')||g.ground.events.at(-1)||{t:0,x:0,y:0,z:0}};cache.set(f.instance,c);}return c;}
 function selected(f,key){const c=context(f);return key==='moving'?boost(c.selected,beta(f.params)):c.selected;}
 function eventBounds(f,key){const a=coord(selected(f,key),f.params.length),span=Math.max(.4,Math.min(1.4,(context(f).bounds[3]-context(f).bounds[2])*.18));return [a[0]-span,a[0]+span,a[1]-span,a[1]+span];}
 function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
-  const L=f.params.length,g=f.geometry[key],b=beta(f.params),base=context(f).bounds;
+  const L=f.params.length,g=f.geometry[key],b=beta(f.params),base=s.w<470||f.graph||f.thumbnail?context(f).narrowBounds:context(f).bounds;
   const bounds=zoom?eventBounds(f,key):base,m=mapPanel(s,p,bounds,key),primed=key==='moving';
-  axes(s,m,p,{title:primed?'S′ · moving frame':'S · ground frame',x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',labels:!f.thumbnail});
+  axes(s,m,p,{title:f.graph?'':primed?'S′ · moving frame':'S · ground frame',x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',labels:!f.thumbnail});
+  clipPanel(s,p,()=>{
   // The other frame's axes are transformed basis vectors, not an ordinary rotation.
   const transform=primed?b:invert(b),ex=coord(boost({t:0,x:L},transform),L),et=coord(boost({t:L/C,x:0},transform),L);
   const range=Math.max(...bounds.map(Math.abs))*4+4;
@@ -49,14 +52,15 @@ function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   for(const e of g.events){const [x,y]=coord(e,L);if(inside(m,p,x,y,4))s.circle(m.x(x),m.y(y),e.id===context(f).selected.id?4:2.7,'#e8f2ff');}
   const a=coord(selected(f,key),L);
   if(inside(m,p,...a,4)){s.ctx.strokeStyle='#e8f2ff';s.ctx.beginPath();s.ctx.arc(m.x(a[0]),m.y(a[1]),7,0,2*Math.PI);s.ctx.stroke();}
-  // A fixed pane caption avoids labels chasing crossing rays/events.
+  });
   return m;
 }
 function spatial(s,f,p){
   const L=f.params.length,selectedFrame=f.params.frame,g=f.geometry[selectedFrame],points=g.worldlines.flatMap(l=>l.points),solids=f.geometry.solids;
   // Full worldline endpoints bound every authored spatial position; never follow motion.
   const xs=points.map(a=>a.x/L),ys=points.map(a=>a.y/L);const extent=Math.max(2,...xs.map(Math.abs),...ys.map(Math.abs));
-  const m=mapPanel(s,p,[-extent,extent,-extent,extent],'spatial');axes(s,m,p,{title:'Spatial slice · '+(selectedFrame==='ground'?'S':'S′'),x:'x / L',y:'y / L',labels:!f.thumbnail});
+  const m=mapPanel(s,p,[-extent,extent,-extent,extent],'spatial');axes(s,m,p,{title:f.graph?'':'Spatial slice · '+(selectedFrame==='ground'?'S':'S′'),x:'x / L',y:'y / L',labels:!f.thumbnail});
+  clipPanel(s,p,()=>{
   for(const [i,solid] of solids.entries()){
     const a=solid[selectedFrame];a.forEach((v,j)=>{if(a.length>1&&(j||a.length>2)){const prev=a[(j+a.length-1)%a.length];line(s,m,p,[prev.x/L,prev.y/L],[v.x/L,v.y/L],colors[i%6],2);}
       if(inside(m,p,v.x/L,v.y/L,4))s.circle(m.x(v.x/L),m.y(v.y/L),a.length===1?4:2,colors[i%6]);});
@@ -66,12 +70,15 @@ function spatial(s,f,p){
     for(const [i,l] of g.worldlines.entries()){for(let j=1;j<l.points.length;j++)line(s,m,p,[l.points[j-1].x/L,l.points[j-1].y/L],[l.points[j].x/L,l.points[j].y/L],l.kind==='light'?'#efd1ac60':colors[i%6]+'55',1);
       for(let j=1;j<l.points.length;j++){const a=l.points[j-1],b=l.points[j];if(f.t<a.t||f.t>b.t)continue;const u=(f.t-a.t)/(b.t-a.t),x=(a.x+u*(b.x-a.x))/L,y=(a.y+u*(b.y-a.y))/L;if(inside(m,p,x,y,4))s.circle(m.x(x),m.y(y),l.kind==='light'?4:6,l.kind==='light'?'#efd1ac':colors[i%6]);}}
   }
+  });
 }
 function calculator(s,f,p){
   const c=f.geometry.calculator,isTensor=f.params.scenario==='tensor',values=isTensor?c.tensor.cubeGround.concat(c.tensor.cubeMoving):[c.vector.ground,c.vector.moving];
-  const e=Math.max(1,...values.flat().map(Math.abs))*1.25,m=mapPanel(s,p,[-e,e,-e,e],'components');axes(s,m,p,{title:isTensor?'Tensor · x / ct projection':'Four-vector · x / ct projection',x:'x component',y:'ct component',labels:!f.thumbnail});
+  const e=Math.max(1,...values.flat().map(Math.abs))*1.25,m=mapPanel(s,p,[-e,e,-e,e],'components');axes(s,m,p,{title:f.graph?'':isTensor?'Tensor · x / ct projection':'Four-vector · x / ct projection',x:'x component',y:'ct component',labels:!f.thumbnail});
+  clipPanel(s,p,()=>{
   if(isTensor){for(const [k,arr] of [c.tensor.cubeGround,c.tensor.cubeMoving].entries())for(let i=0;i<16;i++)for(let bit=0;bit<4;bit++){const j=i^(1<<bit);if(j>i)line(s,m,p,[arr[i][1],arr[i][0]],[arr[j][1],arr[j][0]],colors[k]+'90',1);}}
   else [c.vector.ground,c.vector.moving].forEach((a,i)=>s.arrow(m.x(0),m.y(0),m.x(a[1]),m.y(a[0]),colors[i],2.5));
+  });
 }
 export function paramVisible(spec,p){const k=spec.key,sc=p.scenario;
   if(['scenario','frame','beta','length'].includes(k))return true;
@@ -88,9 +95,9 @@ export function paramVisible(spec,p){const k=spec.key,sc=p.scenario;
   return p.objectType==='flash'&&['emissionTime','offsetX'].includes(k);
 }
 export const view={closeups,graphs,paramVisible,
-  mount(shell){shell.scene.style.minHeight='440px';shell.scene.style.flexBasis='440px';},
-  graphDescriptors:p=>graphs.filter(g=>g.id==='four-vector'?p.scenario==='four-vector':g.id==='tensor'?p.scenario==='tensor':true),
-  key:f=>f.closeup==='transform'?'Blue: S · warm: S′ · interval stays invariant':'Bodies · warm light · dashed: other frame axes',
+  mount(shell){shell.scene.style.minHeight='550px';shell.scene.style.flexBasis='550px';},
+  graphDescriptors:p=>graphs.filter(g=>g.id==='four-vector'?p.scenario==='four-vector':g.id==='tensor'?p.scenario==='tensor':true).map(g=>g.id==='clocks'?{...g,window:10*gamma(p.beta)*p.length/C}:g),
+  key:f=>['four-vector','tensor'].includes(f.params.scenario)?'Blue: S \u00b7 warm: S\u2032':f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario)?'Spatial slice'+(f.geometry.wavefronts.some(a=>a.visible)||f.geometry.ground.worldlines.some(a=>a.kind==='light')?' \u00b7 warm: light':''):'Worldlines'+(f.geometry.ground.worldlines.some(a=>a.kind==='light')?' \u00b7 warm: light':'')+' \u00b7 dashed: other-frame axes',
   closeupAnchors:s=>({event:{x:s.w*.28,y:s.h-74},transform:{x:s.w*.73,y:s.h-74}}),
   draw(s,f){
     if(f.thumbnail||s.w<200||s.h<180){f={...f,thumbnail:true,breakdown:false};drawDiagram(s,f,{left:28,top:28,width:s.w-45,height:s.h-58},'ground',{cone:true});return;}
@@ -98,9 +105,8 @@ export const view={closeups,graphs,paramVisible,
     if(['four-vector','tensor'].includes(f.params.scenario))calculator(s,f,{left:40,top:f.closeup?85:55,width:s.w-65,height:s.h-(f.closeup?190:160)});
     else if(f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario))spatial(s,f,{left:40,top:85,width:s.w-65,height:s.h-190});
     else for(const [i,k] of ['ground','moving'].entries())drawDiagram(s,f,ps[i],k,{cone:true,calibration:f.breakdown,zoom:!!f.closeup});
-    const event=context(f).selected;
-    s.text(f.closeup==='transform'?`β = ${fmt(f.params.beta)}    γ = ${fmt(f.sample.gamma)}`:(event.label||'Selected origin event'),s.w/2,s.h-103,'#bfd0e7',s.w<470?10:12);
-    s.camera={bounds:[...context(f).bounds],zoom:f.closeup};s.snap=false;
+    if(f.closeup==='transform')s.text(`\u03b2 = ${fmt(f.params.beta)}    \u03b3 = ${fmt(f.sample.gamma)}`,s.w/2,s.h-103,'#bfd0e7',s.w<470?10:12);
+    s.camera={bounds:[...(s.w<470?context(f).narrowBounds:context(f).bounds)],zoom:f.closeup};s.snap=false;
   },
   equations(f){const a=context(f).selected,b=boost(a,beta(f.params)),L=f.params.length,g=f.sample.gamma;
     const threeD=typeof beta(f.params)==='object'&&(f.params.betaY||f.params.betaZ);
@@ -111,7 +117,7 @@ export const view={closeups,graphs,paramVisible,
       threeD?`\\begin{gathered}\\boldsymbol\\beta=(${fmt(f.params.beta)},${fmt(f.params.betaY)},${fmt(f.params.betaZ)})\\\\\\gamma=${fmt(g)}\\end{gathered}`:`\\beta=${fmt(f.params.beta)},\\quad\\gamma=${fmt(g)}`,
       `\\begin{gathered}x/L=${fmt(a.x/L)},\\quad ct/L=${fmt(C*a.t/L)}\\\\x'/L=${fmt(b.x/L)},\\quad ct'/L=${fmt(C*b.t/L)}\\end{gathered}`,
       '\\Delta s^2=c^2\\Delta t^2-\\Delta x^2-\\Delta y^2-\\Delta z^2',
-      `s^2/L^2=${fmt(interval(a)/L**2)}=${fmt(interval(b)/L**2)}\\quad(S,S')`,...calculator];
+      `\\begin{gathered}s^2/L^2=${fmt(interval(a)/L**2)}\\\\\\text{in both }S\\text{ and }S'\\end{gathered}`,...calculator];
   },
   closeupEquation(f){const p=f.params,L=p.length,T=L/C,b=p.beta,g=f.sample.gamma;
     if(f.closeup==='transform')return view.equations(f).slice(0,3);
@@ -129,6 +135,7 @@ export const view={closeups,graphs,paramVisible,
     }
   },
   drawGraph(s,d,f){
+    f={...f,graph:true};
     const p={left:40,top:38,width:s.w-60,height:s.h-75};
     if(d.id==='worldlines'){
       const key=f.params.frame==='moving'?'moving':'ground',lines=f.geometry[key].worldlines,l=lines.find(l=>l.kind==='light')||lines[0];

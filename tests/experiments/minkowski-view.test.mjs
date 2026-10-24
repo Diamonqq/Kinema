@@ -35,3 +35,16 @@ test('minkowski all presets, close-ups and graphs draw finite data at 320 and 12
 test('Minkowski gallery thumbnail contains apparatus without text at either canvas size',()=>{
  for(const [w,h] of [[280,155],[640,440]]){const f=frame(model),s=fakeStage(w,h);f.thumbnail=true;view.draw(s,f);assert.equal(s.labels.length,0);assert.ok(s.lines.length>0);}
 });
+
+test('Minkowski scene has no floating event caption and custom graphs have one shell title',()=>{
+ for(const preset of model.presets){const f=frame(model,preset.values,.5),s=fakeStage(300,550);view.draw(s,f);
+  assert.ok(!s.labels.some(l=>l.text==='Reflection'));
+  for(const d of view.graphDescriptors(f.params))if(d.kind==='custom'){const s=fakeStage(300,170);view.drawGraph(s,d,f);assert.ok(!s.labels.some(l=>l.text===d.label||l.text.includes('frame')||l.text.startsWith('Light')));}
+ }
+});
+
+test('desktop event bounds trim unused negative ct while preserving null-ray metric scales',()=>{
+ const f=frame(model),bounds=boundsFor(f.geometry,C),events=['ground','moving'].flatMap(k=>f.geometry[k].events),max=Math.max(...events.map(e=>e.t));
+ assert.ok(Math.abs(bounds[2]+max*.25)<1e-10);assert.ok(bounds[3]>=max);
+ const equations=view.equations(f);assert.ok(equations.some(x=>x.includes('in both ')));assert.ok(!equations.some(x=>x.includes('=0=0')));
+});

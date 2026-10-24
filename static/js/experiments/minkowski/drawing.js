@@ -1,8 +1,8 @@
 export const colors=['#8ab9ff','#e9bb88','#b0c9ad','#bcabef','#79cacc','#e4a9bd'];
-export const fmt=(v,d=3)=>!Number.isFinite(v)?'—':Math.abs(v)<1e-8?'0':Math.abs(v)>=10000||Math.abs(v)<.001?v.toExponential(2):Number(v.toFixed(d)).toString();
+export const fmt=(v,d=4)=>!Number.isFinite(v)?'\u2014':Math.abs(v)<1e-8?'0':Number(v.toPrecision(Math.max(2,Math.min(4,d)))).toString().replaceAll('-', '\u2212');
 const cameras=new WeakMap();
 export function panels(s,{bottom=92,top=44}={}) {
-  const stacked=s.w<470,gap=stacked?24:28,left=34,right=18;
+  const stacked=s.w<470,gap=stacked?40:28,left=34,right=18;
   const width=stacked?s.w-left-right:(s.w-left-right-gap)/2,height=stacked?(s.h-top-bottom-gap)/2:s.h-top-bottom;
   return [0,1].map(i=>({left:left+(stacked?0:i*(width+gap)),top:top+(stacked?i*(height+gap):0),width,height}));
 }
@@ -32,7 +32,7 @@ export function inside(m,p,x,y,pad=0){return m.x(x)>=p.left+pad&&m.x(x)<=p.left+
 export function axes(s,m,p,{x='x / L',y='ct / L',title='',color='#526176',labels=true}={}) {
   line(s,m,p,[-1e8,0],[1e8,0],color);line(s,m,p,[0,-1e8],[0,1e8],color);
   if(!labels)return;
-  s.text(title,p.left+p.width/2,p.top-16,'#cad8ea',12);
+  if(title)s.text(title,p.left+p.width/2,p.top-16,'#cad8ea',12);
   s.text(x,p.left+p.width,Math.max(p.top+14,Math.min(p.top+p.height-5,m.y(0)+14)),'#8296b0',10,'right');
   s.text(y,p.left,p.top-3,'#8296b0',10,'left');
 }
@@ -43,7 +43,7 @@ export function plot(s,{title,xLabel,yLabel,points=[],marker=null,bounds=null,ba
   const limit=(a,b,d)=>{if(!d)return [a,b];a=Math.max(a,d[0]);b=Math.min(b,d[1]);return b>a?[a,b]:[d[0],Number.isFinite(d[1])?d[1]:d[0]+1];};
   bounds=[...limit(bounds[0],bounds[1],xLimits),...limit(bounds[2],bounds[3],yLimits)];
   const [x0,x1,y0,y1]=bounds,m={x:v=>p.left+(v-x0)/(x1-x0)*p.width,y:v=>p.top+p.height-(v-y0)/(y1-y0)*p.height};
-  s.text(title,s.w/2,14,'#c7d6ea',11);s.text(yLabel,8,31,'#90a6c2',10,'left');
+  s.text(yLabel,8,31,'#90a6c2',10,'left');
   s.line(p.left,p.top,p.left,p.top+p.height,'#3b4a5e',1);s.line(p.left,p.top+p.height,p.left+p.width,p.top+p.height,'#3b4a5e',1);
   if(bars){const bw=p.width/Math.max(1,points.length)*.8;for(const [x,y] of points){s.ctx.fillStyle=colors[0]+'aa';s.ctx.fillRect(m.x(x)-bw/2,m.y(y),bw,m.y(0)-m.y(y));}}
   else if(dots){for(const [x,y] of points)if(inside(m,p,x,y,2))s.circle(m.x(x),m.y(y),1.8,colors[0]);}
@@ -54,3 +54,6 @@ export function plot(s,{title,xLabel,yLabel,points=[],marker=null,bounds=null,ba
   s.text(fmt(x0,2),p.left,p.top+p.height+13,'#8195af',9,'left');s.text(fmt(x1,2),p.left+p.width,p.top+p.height+13,'#8195af',9,'right');
   s.text(xLabel,s.w/2,s.h-7,'#90a6c2',10);s.text(fmt(y1,2),p.left-5,p.top+5,'#8195af',9,'right');
 }
+
+// Clip every stroke, marker and arrow to its own panel; titles live outside it.
+export function clipPanel(s,p,draw){const c=s.ctx;c.save();c.beginPath();c.rect(p.left,p.top,p.width,p.height);c.clip();try{return draw();}finally{c.restore();}}

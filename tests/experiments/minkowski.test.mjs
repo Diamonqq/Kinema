@@ -89,7 +89,7 @@ test('barn door simultaneity and finite first/last frames, all presets (1e-13 s)
   for(const preset of model.presets)for(const frame of ['ground','moving']) {
     const m=model.create({...preset.values,frame});
     for(const dt of [0,.01,1,100]) {
-      m.step(dt);assert.ok(Object.values(m.sample()).every(Number.isFinite));
+      m.step(dt);assert.ok(Object.entries(m.sample()).every(([k,v])=>k==='ended'?typeof v==='boolean':Number.isFinite(v)));
       assert.ok(JSON.stringify(m.geometry()).indexOf('null')<0,'no nonfinite geometry');
     }
     m.reset();assert.equal(m.t,0);
@@ -172,4 +172,12 @@ test('six independent original object types coexist with distinct motion and fla
   }
   assert.equal(after.wavefronts[0].visible,true);near(after.wavefronts[0].radius,.1*C,3e-6);
   for(const v of [{bodyCount:1.5},{bodyCount:7},{bodyCount:2,body2BetaX:.8,body2BetaY:.8}])assert.throws(()=>model.create(v),RangeError);
+});
+
+test('finite light journeys and twin reunion end in the chosen coordinate frame (1e-10 s)',()=>{
+ for(const scenario of ['moving-mirror','comoving-mirrors','light-clock','simultaneity','twins'])for(const frame of ['ground','moving']){
+  const m=model.create({scenario,frame}),g=m.geometry(),end=Math.max(...g[frame].events.map(e=>e.t));
+  m.step(Math.max(0,end-1e-6));assert.equal(m.sample().ended,false);m.step(2e-6);assert.equal(m.sample().ended,true);m.reset();assert.equal(m.sample().ended,false);
+ }
+ assert.equal(model.create({scenario:'velocity-addition'}).sample().ended,false);
 });

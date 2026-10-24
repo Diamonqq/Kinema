@@ -253,3 +253,28 @@ keep zero and avoid padding past physical angle/speed/cosine domains. Incoming
 momentum uses clearly visible dashed arrows even for forbidden reactions, without
 inventing outgoing particles. The energy-budget bars and signed Q form one compact
 group. Four additional view checks bring the lane to 44 passing tests.
+
+Shared-convention pass: custom graphs use the shell title once; axes retain units
+and names, with canvas minus signs typeset and numbers limited to four significant
+figures. Panels clip strokes/markers to their drawing rectangles and reserve a
+clear title band. Stacked scene panels retain at least 150 px in close-ups.
+Relativity component labels sit by their own segment midpoints, avoid vector
+strokes as well as other text, and disappear when coincident or too short. Narrow
+views omit incoming-vector labels and the secondary angle label. Captions derive
+from the actual outgoing particles rather than a fixed three-particle legend.
+Finite Minkowski light journeys and twin reunions expose sample.ended in the
+chosen coordinate frame; continuous uniform-motion scenarios remain open-ended.
+Clock graphs request a five-period window. The lane has 47 passing Node tests;
+rendered receipts remain in round-156/rel-views. Use the Kinema virtualenv for the
+isolated fixture: the Panel virtualenv does not contain the app's fsrs dependency.
+
+Desktop framing follow-up: Minkowski bounds use the actual events, with a small
+negative-ct margin, while narrow bounds remain unchanged. Momentum frames use a
+common scale derived from the current event and center their own occupied bounds;
+the larger occupied span fills 70% of the smaller panel dimension. Desktop axes
+use square plot boxes. Uniform angle changes are Setup changes, so these bounds
+remain fixed during playback. Captions omit nonexistent incoming arrows and name
+coincident/near-coincident threshold products together. The 280 MeV preset is
+slightly above the exact threshold, so its caption says "near threshold".
+Energy and momentum equations carry their units directly; normalized interval
+wording says "in both S and S-prime". The lane now has 49 passing Node tests.
