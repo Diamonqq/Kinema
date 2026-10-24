@@ -47,7 +47,7 @@ export function segmentHitsRect(x0,y0,x1,y1,r){
 const MIN_ARROW=14;let drawn=new Set();
 // Registers every shaft of a diagram first so no label lands on another vector.
 function plan(s,list){s.shafts=list.filter(([,,dx,dy,k=1])=>Math.hypot(dx,dy)*k>=MIN_ARROW).map(([x,y,dx,dy,k=1])=>({x0:x,y0:y,x1:x+dx*k,y1:y-dy*k}));}
-function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset){
+function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset,place){
  if(Math.hypot(dx,dy)*scale<MIN_ARROW)return;drawn.add(term);
  const tx=x+dx*scale,ty=y-dy*scale;s.arrow(x,y,tx,ty,color,2);
  const c=s.ctx;c.font='12px system-ui,sans-serif';const width=labelWidth(c,term);
@@ -69,8 +69,8 @@ function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset){
   const px=Math.max(width/2+7,Math.min(s.w-width/2-7,baseX+ox)),py=baseY+oy;
   if(clear(px,py)){selected={px,py};break;}
  }
- const {px,py}=selected||{px:Math.max(width/2+7,Math.min(s.w-width/2-7,baseX)),py:Math.max(10,Math.min(s.h-15,baseY))};
- if(Math.hypot(px-tx,py-ty)>27)s.line(tx,ty,px,py,color+'80',.8);label(s,term,px,py,color,12);
+ const {px,py}=place?{px:place[0],py:place[1]}:selected||{px:Math.max(width/2+7,Math.min(s.w-width/2-7,baseX)),py:Math.max(10,Math.min(s.h-15,baseY))};
+ if(!place&&Math.hypot(px-tx,py-ty)>27)s.line(tx,ty,px,py,color+'80',.8);label(s,term,px,py,color,12,place?.[2]);
 }
 function triangle(s,f,live=false){
  const p=f.params,q=f.sample,top=55,bottom=s.h-62,cx=s.w*.3,cy=(top+bottom)/2+15;
@@ -79,10 +79,11 @@ function triangle(s,f,live=false){
  s.line(cx,cy,cx+length+10,cy,'#455164',1);s.circle(cx,cy,6,blue);
  s.ctx.setLineDash([3,5]);s.line(x2,cy,x2,y2,green,1);s.ctx.setLineDash([]);
  plan(s,[[cx,cy,vx,0,scale],[x2,cy,0,vy,scale],[cx,cy,vx,vy,scale]]);
- vector(s,cx,cy,vx,0,live?'v cos φ':'v₀ cos θ',blue,scale);
- vector(s,x2,cy,0,vy,live?'v sin φ':'v₀ sin θ',green,scale);
- vector(s,cx,cy,vx,vy,live?'v':'v₀',purple,scale);
- const a=Math.atan2(vy,vx);s.ctx.beginPath();s.ctx.arc(cx,cy,26,Math.min(0,-a),Math.max(0,-a));s.ctx.strokeStyle=muted;s.ctx.stroke();
+ // Each label sits beside its own segment: under the horizontal leg, right of the vertical leg, off the hypotenuse's upper-left side.
+ const a=Math.atan2(vy,vx),hx=(cx+x2)/2,hy=(cy+y2)/2;
+ vector(s,cx,cy,vx,0,live?'v cos φ':'v₀ cos θ',blue,scale,undefined,[(cx+x2)/2,cy+17]);
+ vector(s,x2,cy,0,vy,live?'v sin φ':'v₀ sin θ',green,scale,undefined,[x2+10,(cy+y2)/2,'left']);
+ vector(s,cx,cy,vx,vy,live?'v':'v₀',purple,scale,undefined,[hx-18*Math.sin(a),hy-18*Math.cos(a)]);s.ctx.beginPath();s.ctx.arc(cx,cy,26,Math.min(0,-a),Math.max(0,-a));s.ctx.strokeStyle=muted;s.ctx.stroke();
  label(s,live?'φ':'θ',cx+36*Math.cos(a/2),cy-36*Math.sin(a/2),muted,13);
  label(s,live?'Velocity components now':'Launch components',s.w/2,42,muted,12);
  label(s,`${num(vx)} m/s horizontal`,s.w/2,s.h-76,blue,12);label(s,`${num(vy)} m/s vertical`,s.w/2,s.h-53,green,12);
@@ -101,7 +102,7 @@ function forceBall(s,f){
  const vy=cy,vx=cx,u={x:q.vx-f.params.wind,y:q.vy},uScale=Math.min(s.w*.19,55)/Math.max(1,Math.hypot(u.x,u.y));
  vector(s,vx,vy,u.x,u.y,'u',blue,uScale);
  label(s,'Air-relative velocity u = v − wind',s.w/2,s.h-80,muted,11);
- label(s,`v_x ${num(q.vx)} · v_y ${num(q.vy)} m/s`,s.w/2,s.h-57,blue,12);
+ label(s,`v_x ${num(q.vx)} m/s · v_y ${num(q.vy)} m/s`,s.w/2,s.h-57,blue,12);
  label(s,'Drag opposes u; gravity points down',s.w/2,s.h-35,muted,s.w<340?10:12);
 }
 export const view={graphs,closeups,

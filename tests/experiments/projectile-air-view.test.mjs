@@ -82,3 +82,15 @@ test('Breakdown substitutions carry units and chip anchors do not depend on Brea
  const mk=()=>({w:1000,h:500,ctx,labels:[],line(){},circle(){},arrow(){},text(){}});
  assert.deepEqual(view.closeupAnchors(mk(),f(false)),view.closeupAnchors(mk(),f(true)));
 });
+
+test('zoom substitutions and readout carry units, and each triangle label sits beside its own segment',()=>{
+ const instance=model.create(),labels=[],ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})});
+ const f=c=>({params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:c,breakdown:false});
+ const eq=view.closeupEquation(f('angle'));
+ assert.ok(eq.filter(e=>/(cos|sin)\(/.test(e)).every(e=>e.includes(String.raw`(40.0\,\mathrm{m/s})`)&&e.endsWith(String.raw`\,\mathrm{m/s}`)));
+ const s={w:1000,h:600,ctx,labels,line(){},circle(){},arrow(){},text(t,x,y){labels.push({text:t,x,y});}};
+ view.draw(s,f('air-force'));assert.ok(labels.some(l=>/^v_x [\d.]+ m\/s · v_y [\d.]+ m\/s$/.test(l.text.replace('−','-'))),labels.map(l=>l.text).join('|'));
+ labels.length=0;view.draw(s,f('angle'));
+ const at=n=>labels.find(l=>l.text===n),cos=at('v₀ cos θ'),sin=at('v₀ sin θ'),hyp=at('v₀');
+ assert.ok(cos&&sin&&hyp);assert.ok(sin.x>cos.x+40&&hyp.y<cos.y-40&&hyp.x<sin.x-40);
+});
