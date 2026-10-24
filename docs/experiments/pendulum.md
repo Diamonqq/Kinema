@@ -26,7 +26,7 @@ code or prose is incorporated. Coverage means physics/data, not completed views.
 | ANHARM energy-selected starts and well/direction choice | Yes via initial theta/omega and energy readout; rotation examples cover both signs. Energy-click UI awaits the kit. |
 | Energy/period dependence on angle, energy, g/L | Improved: exactPeriod(amplitude,L,g), period() for libration, rotationPeriod() separately above barrier. |
 | Phase portrait and linked position/time graphs | Yes (data): unwrapped theta/omega plus shared sample time; rendering pending. |
-| Driven Poincare maps with up to 32 drive phases, transient removal and movies | Improved (data): phaseCount, exact-event sections() grouped by phase and timestamps for caller filtering/animation. |
+| Driven Poincaré maps with up to 32 drive phases, transient removal and movies | Improved (data): phaseCount, exact-event sections() grouped by phase and timestamps for caller filtering/animation. |
 | Compare retained phase maps / mark section points on phase plot | Yes (data): independent instances and timestamped section points; plots pending. |
 | One-drive-period velocity return map and phase movie | Yes (data): returnMap(phase), tested adjacency and timestamps. |
 | Fourier analysis using angular velocity for full rotations | Improved: frequencyAnalysis defaults to omega, with complex/amplitude/phase output and four windows; shared analysis tests. |
@@ -117,7 +117,7 @@ only on phase plots. Mark the barrier and label libration versus rotation period
 
 ## Kit renderer (wave-one implementation)
 
-The quiet apparatus uses the actual rod length and angle, fixed full-circle world
+The quiet apparatus uses the actual rod length and angle, fixed energy-envelope world
 bounds, an angle arc and one compact angle/velocity readout. Gravity close-up
 magnifies the decomposition. Breakdown draws theta at the pivot and at the bob,
 weight vertically downward, the radial projection mg cos(theta) along the outward
@@ -126,7 +126,7 @@ is not string tension. Signed torque and substitutions render in KaTeX; linear
 and cubic comparison models name their approximate torque separately.
 
 Graph chips show angle, phase space with unit-labelled axes, energy, nearby-start
-separation, conservative period vs amplitude, an exact-event phase-zero Poincare
+separation, conservative period vs amplitude, an exact-event phase-zero Poincaré
 section, one-period velocity return map and angular-velocity spectrum. The
 period curve computes one point per visible animation frame. Spectra use the
 available history only through the scene's current time, a sine-squared window
@@ -134,7 +134,7 @@ and explicit frequency in Hz. Empty histories say to collect samples; they do
 not invent a spectrum. Phase movies/selection, complex-spectrum controls and
 nonlinear response-sweep controls remain future UI work over the available APIs.
 
-## Delivered view verification
+## Previous view verification
 
 The owned Node suite passed 62/62. The parent ran the isolated hidden-Edge
 harness on the final source: 335/335 browser checks, no browser exceptions,
@@ -146,26 +146,38 @@ were inspected; no installed-build or real-device claim is made.
 Evidence: round-156/osc-views/{browser.json,node.tap,verification.json,cleanup.json}.
 
 
-## Gallery and force-label polish
+## Shared polish conventions (current)
 
-Gallery rendering honors `frame.thumbnail`: apparatus only, with no readouts,
-caption text, force labels or embedded plots. The normal experiment retains its
-linked graphs and governing equations. The pendulum force view now frames the
-fixed conservative energy envelope in the main scene and force views when available; driven, rotating and
-approximate-law cases retain full-circle bounds. This enlarges a small swing
-without tracking the bob or clipping a later swing. Force-tip labels avoid all
-three arrow shafts as well as existing labels, the bob and the chip/caption row.
+The Zoom chip is beside a fixed physical target, with a reserved text band.
+Graph descriptors use a five-period time window (bounded by the 60-second
+experiment), selected from the current force/potential/drive parameters. Custom
+graphs leave titles to the shell. Legends use physics symbols, Poincaré is
+accented, canvas minus signs are typeset, and the cubic restoring coefficient is
+beta in both models. Node regressions cover descriptors, inactive terms,
+energy wording, fixed target anchors and every preset/view's text bounds.
 
-Regression checks include zero text in all three thumbnails, visible shaft-free
-pendulum force terms at desktop/narrow sizes, the fixed envelope over 60 seconds
-for every pendulum preset, and useful magnification in a 340-pixel-high scene.
-Workflow friction: hiding the Graphs element directly leaves the shell's narrow
-layout class active. The browser harness now uses `setGraphsOpen(false)`, the
-same state-changing path as the user's Graphs button.
+Breakdown uses a larger rod, with the chip by its pivot or fixed rest position. The redundant
+along-rod caption is removed. Nearly coincident gravity components are hidden;
+tip labels avoid force shafts and have no leader lines that could strike another
+caption. Full-circle bounds remain for rotation, driven and approximate laws.
+Workflow friction: text rectangles alone missed a caption struck by a rod or
+leader. The harness now checks force shafts too, and rendered review remains
+necessary for apparatus and label geometry.
 
-The rendered force-label assertion imports the geometry helper from `/js/`,
-Kinema's static-root route. Using the filesystem prefix `/static/js/` caused a
-404 in the first polish harness run, corrected without changing runtime code.
+Force arrows are drawn over the bob with a dark contrast stroke, using 80 px
+for weight in Breakdown and at least 90 px in the gravity close-up. The default
+tangential arrow extends at least 8 px outside the bob. The bob-side angle is
+omitted at 320 and placed farther into the open wedge at desktop size. Equation
+blocks omit inactive torques and end with numerical net torque in N m.
+Workflow friction: shaft/text clearance alone did not detect a short force arrow
+hidden inside its own bob. A visible-extent regression now checks that too.
 
-Both oscillator spectra start amplitude at zero. Custom graphs reserve a
-separate caption row above the data, so axis names never sit on a peak.
+## Shared polish verification
+
+Owned Node tests: 70 passed, 0 failed. The guarded isolated browser run passed
+337 checks with 114 captures, no browser errors or label overlaps, and unchanged
+source bytes before/after. Desktop 1280 and narrow 320 states were inspected.
+Evidence: round-156/osc-views/{node.tap,browser.json,verification.json},
+round-156/lead/polish-osc3.log; captures in round-156/osc-views/*.png.
+Fixture PID 22924 exited and port 8842 is free (cleanup.json); disposable data
+is preserved. Installed-app and real-device behavior were not checked.

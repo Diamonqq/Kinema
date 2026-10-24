@@ -7,7 +7,7 @@ const params=[
   p('z0','Initial z','z_0','m',-20,20,.1,0,'Initial conditions'),p('vz0','Initial z velocity','v_{z0}','m/s',-20,20,.1,0,'Initial conditions'),
   {key:'method',label:'Integration method',unit:'',symbol:'method',value:'auto',options:[{value:'auto',label:'Automatic'},{value:'euler',label:'Euler (teaching)'},{value:'rk2',label:'Midpoint RK2 (teaching)'},{value:'rk4',label:'RK4'}]},p('timeStep','Internal time step','h','s',.0001,.1,.0001,.001,'Numerics'),
   p('gravity','Gravity','g','m/s²',0,20,.01,0,'Forces'),p('linearDrag','Linear drag','b','kg/s',0,10,.05,0,'Forces'),p('quadraticDrag','Quadratic drag','c','kg/m',0,5,.05,0,'Forces'),
-  p('spring','Spring stiffness','k','N/m',-100,100,.1,1,'Forces'),p('cubic','Cubic restoring','α','N/m³',-10,10,.1,0,'Forces'),p('constantRestoring','Constant restoring force','s','N',-10,10,.1,0,'Forces'),
+  p('spring','Spring stiffness','k','N/m',-100,100,.1,1,'Forces'),p('cubic','Cubic restoring','\u03b2','N/m³',-10,10,.1,0,'Forces'),p('constantRestoring','Constant restoring force','s','N',-10,10,.1,0,'Forces'),
   p('inverseSquare','Attraction strength','μ','m³/s²',0,20,.1,0,'Forces'),p('softening','Attraction core radius','ε','m',.01,2,.01,.1,'Forces'),
   p('magnetic','Magnetic rotation coefficient','qB','kg/s',-10,10,.1,0,'Forces'),p('forceX','Constant x force','F_x','N',-20,20,.1,0,'Forces'),p('forceY','Constant y force','F_y','N',-20,20,.1,0,'Forces'),
   p('forceZ','Constant z force','F_z','N',-20,20,.1,0,'Forces'),p('ramp','Force ramp in x','a','N/s',-5,5,.1,0,'Drive'),p('drive','Drive force in x','F_d','N',0,20,.1,0,'Drive'),p('driveOmega','Drive frequency','Ω','rad/s',.05,20,.05,1,'Drive'),

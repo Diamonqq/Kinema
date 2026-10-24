@@ -29,8 +29,8 @@ Coverage statuses below describe headless physics/data; graph rendering is pendi
 | Displacement/time and velocity/time plots; linked phase portrait | Yes (data): shared t/x/v observables; renderer pending. |
 | Energy diagram selection / linked familiar x(t) and phase-space demonstration | Yes (data): energyState and timestamped samples; interaction/rendering pending. |
 | Multiple saved maps / two-map comparison | Yes (data): independent instances plus serializable section points; comparison drawing pending. |
-| Poincare maps at up to 32 drive phases | Improved: exact event times, phaseCount and sections() frames; tested phase timestamps. |
-| Poincare phase movies, transient trimming and marked phase-plot samples | Yes (data): phase-indexed frames and timestamps; caller filters transients and animates. |
+| Poincaré maps at up to 32 drive phases | Improved: exact event times, phaseCount and sections() frames; tested phase timestamps. |
+| Poincaré phase movies, transient trimming and marked phase-plot samples | Yes (data): phase-indexed frames and timestamps; caller filters transients and animates. |
 | Velocity return v_n versus v_(n-1), phase movies | Yes (data): returnMap(phase); tested adjacent-cycle pairs. |
 | Conservative period versus energy; up to multiple coefficient curves | Improved: periodCurve / periodTable (up to 8 parameter sets and 64 energies); independent quadrature/analytic checks. |
 | Period dependence on wall spacing, stiffness, cubic/asymmetric coefficients | Yes: parameterSets vary these coefficients; equilibria choose an allowed well rather than blindly using an inaccessible x0. |
@@ -166,7 +166,7 @@ misrepresenting it as exact spring geometry. Breakdown includes driving, ordinar
 damping and the separately named active Van der Pol reservoir.
 
 Graph chips expose displacement, unit-labelled phase space, energy, work/reservoir
-transfer, conservative period vs energy, exact-event phase-zero Poincare points,
+transfer, conservative period vs energy, exact-event phase-zero Poincaré points,
 velocity return and displacement spectrum. Period quadrature is incremental,
 one energy per visible frame. Time-dependent graphs share the shell cursor;
 strobe and spectral data stop at current scene time. The molecular repulsive
@@ -177,7 +177,7 @@ does not yet expose resonance/parameter-scan controls, phase movies, arbitrary
 strobe phase selection, complex-spectrum controls or table exports. They remain
 explicit UI limits, not missing core physics or claimed rendered features.
 
-## Delivered view verification
+## Previous view verification
 
 The owned Node suite passed 62/62. The parent ran the isolated hidden-Edge
 harness on the final source: 335/335 browser checks, no browser exceptions,
@@ -189,22 +189,32 @@ were inspected; no installed-build or real-device claim is made.
 Evidence: round-156/osc-views/{browser.json,node.tap,verification.json,cleanup.json}.
 
 
-## Gallery and force-label polish
+## Shared polish conventions (current)
 
-Gallery rendering honors `frame.thumbnail`: apparatus only, with no readouts,
-caption text, force labels or embedded plots. The normal experiment retains its
-linked graphs and governing equations. The pendulum force view now frames the
-fixed conservative energy envelope in the main scene and force views when available; driven, rotating and
-approximate-law cases retain full-circle bounds. This enlarges a small swing
-without tracking the bob or clipping a later swing. Force-tip labels avoid all
-three arrow shafts as well as existing labels, the bob and the chip/caption row.
+The Zoom chip is beside a fixed physical target, with a reserved text band.
+Graph descriptors use a five-period time window (bounded by the 60-second
+experiment), selected from the current force/potential/drive parameters. Custom
+graphs leave titles to the shell. Legends use physics symbols, Poincaré is
+accented, canvas minus signs are typeset, and the cubic restoring coefficient is
+beta in both models. Node regressions cover descriptors, inactive terms,
+energy wording, fixed target anchors and every preset/view's text bounds.
 
-Regression checks include zero text in all three thumbnails, visible shaft-free
-pendulum force terms at desktop/narrow sizes, the fixed envelope over 60 seconds
-for every pendulum preset, and useful magnification in a 340-pixel-high scene.
-Workflow friction: hiding the Graphs element directly leaves the shell's narrow
-layout class active. The browser harness now uses `setGraphsOpen(false)`, the
-same state-changing path as the user's Graphs button.
+The distinct gallery thumbnail is a bare potential well with a blue bead,
+without axes, text or controls. The normal scene pairs the well with the spring
+motion; its key names the gold U curve, dashed E line and blue position marker.
+The energy line and its number share the same light ink color.
 
-Both oscillator spectra start amplitude at zero. Custom graphs reserve a
-separate caption row above the data, so axis names never sit on a peak.
+The polynomial restoring force includes substituted coefficients and position,
+ending in its value in N. Only active damping, drive and reservoir forces are
+included in the net-force equation. The readout clears its own reserved band
+before rendering, so collision prevention never hides the intended value.
+
+## Shared polish verification
+
+Owned Node tests: 70 passed, 0 failed. The guarded isolated browser run passed
+337 checks with 114 captures, no browser errors or label overlaps, and unchanged
+source bytes before/after. Desktop 1280 and narrow 320 states were inspected.
+Evidence: round-156/osc-views/{node.tap,browser.json,verification.json},
+round-156/lead/polish-osc3.log; captures in round-156/osc-views/*.png.
+Fixture PID 22924 exited and port 8842 is free (cleanup.json); disposable data
+is preserved. Installed-app and real-device behavior were not checked.

@@ -409,10 +409,11 @@
       "series": [
         {
           "key": "theta",
-          "label": "theta",
+          "label": "θ",
           "color": "#8ab9ff"
         }
-      ]
+      ],
+      "window": 10.087046675062599
     },
     {
       "id": "phase",
@@ -422,11 +423,11 @@
       "series": [
         {
           "key": "theta",
-          "label": "theta"
+          "label": "θ"
         },
         {
           "key": "omega",
-          "label": "omega"
+          "label": "ω"
         }
       ]
     },
@@ -450,7 +451,8 @@
           "label": "U",
           "color": "#e9bb88"
         }
-      ]
+      ],
+      "window": 10.087046675062599
     },
     {
       "id": "sensitivity",
@@ -462,7 +464,8 @@
           "label": "separation",
           "color": "#bcabef"
         }
-      ]
+      ],
+      "window": 10.087046675062599
     },
     {
       "id": "period",
@@ -471,7 +474,7 @@
     },
     {
       "id": "strobe",
-      "label": "Poincare section",
+      "label": "Poincaré section",
       "kind": "custom"
     },
     {

@@ -1,8 +1,8 @@
 // View utilities owned by the oscillator lane. SI geometry stays in each core.
 import {spectrum} from '../anharmonic/analysis.js';
 export const C={blue:'#8ab9ff',gold:'#e9bb88',green:'#b0c9ad',violet:'#bcabef',dim:'#71839b',ink:'#cbd8e9',grid:'#344355'};
-export const fmt=(x,n=2)=>!Number.isFinite(x)?'unbound':Math.abs(x)<.5*10**-n?(0).toFixed(n):Math.abs(x)>9999?x.toExponential(1):x.toFixed(n);
-export const tex=x=>fmt(x,3);
+export const fmt=(x,n=2)=>{if(!Number.isFinite(x))return 'unbound';const a=Math.abs(x);if(a<.5*10**-n)return (0).toFixed(n);const str=a>=1000||a<.005?x.toExponential(2):x.toFixed(Math.min(n,a>=100?0:a>=10?1:n));return str.replace(/-/g,'−');};
+export const tex=x=>fmt(x,3).replace(/\u2212/g,'-');
 export function label(s,text,x,y,color=C.ink,size=12,align='center'){
  const c=s.ctx;c.font=`${size}px system-ui,sans-serif`;const width=c.measureText(text).width;
  const left=align==='left'?x:align==='right'?x-width:x-width/2;
@@ -32,7 +32,7 @@ export function fixedMap(s,bounds,{bottom=100,top=35,padding=30}={}){
 }
 export function linePlot(s,{title,points=[],xkey='x',ykey='y',cursor,color=C.blue,xlabel='',ylabel='',scatter=false,yFloor}){
  s.resize();s.begin();const w=s.w,h=s.h,l=42,r=w-17,t=48,b=h-34;
- label(s,title,l,14,C.ink,11,'left');if(ylabel)label(s,ylabel,l,33,C.dim,10,'left');
+ if(ylabel)label(s,ylabel,l,33,C.dim,10,'left');
  const data=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
  s.line(l,t,l,b,C.grid,1);s.line(l,b,r,b,C.grid,1);
  if(!data.length){s.text('Play to collect samples',(l+r)/2,(t+b)/2,C.dim,11);return;}
@@ -56,7 +56,7 @@ export function drawAnalysis(stage,descriptor,frame,{position='x',velocity='v',p
  }
  if(descriptor.id==='strobe'||descriptor.id==='return'){
   const points=descriptor.id==='strobe'?frame.instance.section():frame.instance.returnMap();
-  linePlot(stage,{title:descriptor.id==='strobe'?'Once per drive cycle':'One-cycle velocity return',points,xkey:descriptor.id==='strobe'?position:'previous',ykey:descriptor.id==='strobe'?velocity:'current',xlabel:descriptor.id==='strobe'?position:'previous '+velocity,ylabel:descriptor.id==='strobe'?velocity:'next '+velocity,scatter:true,color:C.violet,cursor:points.at(-1)});return;
+  linePlot(stage,{title:descriptor.id==='strobe'?'Once per drive cycle':'One-cycle velocity return',points,xkey:descriptor.id==='strobe'?position:'previous',ykey:descriptor.id==='strobe'?velocity:'current',xlabel:descriptor.id==='strobe'?(position==='theta'?'\u03b8 / rad':position+' / m'):'previous '+(velocity==='omega'?'\u03c9':velocity),ylabel:descriptor.id==='strobe'?(velocity==='omega'?'\u03c9 / (rad/s)':'v / (m/s)'):'next '+(velocity==='omega'?'\u03c9':velocity),scatter:true,color:C.violet,cursor:points.at(-1)});return;
  }
  const samples=frame.samples,data=samples.filter(p=>p.t<=time+1e-8).slice(-1024),cache=spectra.get(stage),signature=data.length+':'+Math.floor(time*2);
  let points=cache?.signature===signature&&cache.first===samples[0]?cache.points:[];

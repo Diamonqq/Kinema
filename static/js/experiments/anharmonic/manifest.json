@@ -84,7 +84,7 @@
     {
       "key": "cubic",
       "label": "Cubic potential coefficient",
-      "symbol": "a",
+      "symbol": "α",
       "unit": "N/m²",
       "min": -10,
       "max": 10,
@@ -700,7 +700,8 @@
           "label": "x",
           "color": "#8ab9ff"
         }
-      ]
+      ],
+      "window": 23.840110145517308
     },
     {
       "id": "phase",
@@ -738,7 +739,8 @@
           "label": "U",
           "color": "#e9bb88"
         }
-      ]
+      ],
+      "window": 23.840110145517308
     },
     {
       "id": "balance",
@@ -755,7 +757,8 @@
           "label": "Q",
           "color": "#e9bb88"
         }
-      ]
+      ],
+      "window": 23.840110145517308
     },
     {
       "id": "period",
@@ -764,7 +767,7 @@
     },
     {
       "id": "strobe",
-      "label": "Poincare section",
+      "label": "Poincaré section",
       "kind": "custom"
     },
     {

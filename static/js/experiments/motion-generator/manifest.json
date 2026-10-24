@@ -185,7 +185,7 @@
     {
       "key": "cubic",
       "label": "Cubic restoring",
-      "symbol": "α",
+      "symbol": "β",
       "unit": "N/m³",
       "min": -10,
       "max": 10,
@@ -777,7 +777,8 @@
           "label": "z",
           "color": "#bcabef"
         }
-      ]
+      ],
+      "window": 31.41592653589793
     },
     {
       "id": "velocity",
@@ -799,7 +800,8 @@
           "label": "vz",
           "color": "#bcabef"
         }
-      ]
+      ],
+      "window": 31.41592653589793
     },
     {
       "id": "phase",
@@ -853,7 +855,8 @@
           "label": "U",
           "color": "#e9bb88"
         }
-      ]
+      ],
+      "window": 31.41592653589793
     },
     {
       "id": "balance",
@@ -870,7 +873,8 @@
           "label": "Q",
           "color": "#e9bb88"
         }
-      ]
+      ],
+      "window": 31.41592653589793
     }
   ]
 }

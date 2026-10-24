@@ -7,10 +7,11 @@ const graphs=[
  {id:'energy',label:'Energy',unit:'J',series:[{key:'energy',label:'E',color:C.green},{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.gold}]},
  {id:'balance',label:'Work & heat',unit:'J',series:[{key:'work',label:'W',color:C.violet},{key:'heat',label:'Q',color:C.gold}]},
 ];
+graphs.forEach(g=>{if(!g.kind)g.window=10*Math.PI;});
 const closeups=[{id:'force',label:'Zoom \u00b7 force law'}];
 const zooms=new WeakMap();
 export function forceLaw(p){
- const terms=[];if(p.spring)terms.push('-kx');if(p.cubic)terms.push('-\u03b1x\u00b3');if(p.constantRestoring)terms.push('-s sgn(x)');if(p.gravity&&p.dimensions==='1d')terms.push('-mg');if(p.linearDrag||p.quadraticDrag)terms.push('-(b+c|v|)vx');if(p.inverseSquare)terms.push('-m\u03bcx/(r\u00b2+\u03b5\u00b2)^1.5');if(p.magnetic&&p.dimensions!=='1d')terms.push('+qB vy');if(p.forceX)terms.push('+Fx');if(p.ramp)terms.push('+at');if(p.drive)terms.push('+Fd cos(\u03a9t)');return 'Fx = '+(terms.join(' ').replace(/^\+/,'')||'0');
+ const terms=[];if(p.spring)terms.push('-kx');if(p.cubic)terms.push('-\u03b2x\u00b3');if(p.constantRestoring)terms.push('-s sgn(x)');if(p.gravity&&p.dimensions==='1d')terms.push('-mg');if(p.linearDrag||p.quadraticDrag)terms.push('-(b+c|v|)vx');if(p.inverseSquare)terms.push('-m\u03bcx/(r\u00b2+\u03b5\u00b2)^1.5');if(p.magnetic&&p.dimensions!=='1d')terms.push('+qB vy');if(p.forceX)terms.push('+Fx');if(p.ramp)terms.push('+at');if(p.drive)terms.push('+Fd cos(\u03a9t)');return 'Fx = '+(terms.join(' ').replace(/^\+/,'').replace(/-/g,'\u2212')||'0');
 }
 export function motionBounds(p,T=60){
  const n=p.dimensions==='3d'?3:p.dimensions==='2d'?2:1;
@@ -38,18 +39,19 @@ export function motionBounds(p,T=60){
 function project(p,q){return p.dimensions==='1d'&&p.gravity?[0,q[0]]:[q[0]+(p.dimensions==='3d'?.45*q[2]:0),q[1]+(p.dimensions==='3d'?.25*q[2]:0)];}
 export function forceEquations(f){
  const p=f.params,q=f.sample,forces=f.geometry.forces,lines=[];
- if(p.spring||p.cubic)lines.push(String.raw`F_{s,x}=-kx-\alpha x^3`,String.raw`=-(${p.spring})(${tex(q.x)})-(${p.cubic})(${tex(q.x)})^3`,String.raw`=${tex(forces.spring[0])}\,\mathrm N`);
+ if(p.spring||p.cubic){const symbolic=[],numeric=[];if(p.spring){symbolic.push('-kx');numeric.push(String.raw`-(${p.spring})(${tex(q.x)})`);}if(p.cubic){symbolic.push(String.raw`-\beta x^3`);numeric.push(String.raw`-(${p.cubic})(${tex(q.x)})^3`);}lines.push('F_{s,x}='+symbolic.join(''),'='+numeric.join(''),String.raw`=${tex(forces.spring[0])}\,\mathrm N`);}
  if(p.constantRestoring)lines.push(String.raw`F_{c,x}=-s\operatorname{sgn}x=${tex(forces.constantRestoring[0])}\,\mathrm N`);
  if(p.gravity)lines.push(String.raw`F_{g,${p.dimensions==='1d'?'x':'y'}}=-mg`,String.raw`=-(${p.mass})(${p.gravity})=${tex(-p.mass*p.gravity)}\,\mathrm N`);
- if(p.linearDrag||p.quadraticDrag)lines.push(String.raw`F_{d,x}=-(b+c|v|)v_x`,String.raw`=-(${p.linearDrag}+${p.quadraticDrag}(${tex(q.speed)}))(${tex(q.vx)})`,String.raw`=${tex(forces.drag[0])}\,\mathrm N`);
+ if(p.linearDrag||p.quadraticDrag){const symbolic=[...(p.linearDrag?['b']:[]),...(p.quadraticDrag?['c|v|']:[])].join('+'),numeric=[...(p.linearDrag?[String(p.linearDrag)]:[]),...(p.quadraticDrag?[`${p.quadraticDrag}(${tex(q.speed)})`]:[])].join('+');lines.push(`F_{d,x}=-(${symbolic})v_x`,`=-(${numeric})(${tex(q.vx)})`,String.raw`=${tex(forces.drag[0])}\,\mathrm N`);}
  if(p.inverseSquare)lines.push(String.raw`r_\epsilon=\sqrt{r^2+\epsilon^2}`,String.raw`F_{a,x}=-m\mu x/r_\epsilon^3`,String.raw`=${tex(forces.attraction[0])}\,\mathrm N`);
  if(p.magnetic&&p.dimensions!=='1d')lines.push(String.raw`F_{B,x}=qBv_y=${tex(forces.magnetic[0])}\,\mathrm N`,String.raw`F_{B,y}=-qBv_x=${tex(forces.magnetic[1])}\,\mathrm N`);
- if(p.forceX||p.forceY||p.forceZ||p.drive||p.ramp)lines.push(String.raw`F_{{\rm applied},x}=F_x+at+F_d\cos\Omega t`,String.raw`=${tex(forces.applied[0])}\,\mathrm N`);
+ if(p.forceX||p.ramp||p.drive){const terms=[...(p.forceX?['F_x']:[]),...(p.ramp?['at']:[]),...(p.drive?[String.raw`F_d\cos\Omega t`]:[])];lines.push('F_{{\rm applied},x}='+terms.join('+'),String.raw`=${tex(forces.applied[0])}\,\mathrm N`);}
  return lines;
 }
 export const view={graphs,closeups,
- key:f=>f.closeup?'Signed force components \u00b7 arrows share one scale':forceLaw(f.params),
- closeupAnchors:s=>({force:{x:s.w/2,y:s.h-74}}),
+ key:f=>f.breakdown?'':f.closeup?'Signed force components \u00b7 arrows share one scale':forceLaw(f.params),
+ closeupAnchors:s=>({force:s.zoomAnchor||{x:s.w/2,y:40}}),
+ graphDescriptors(p){const w=Math.sqrt(Math.max(0,p.spring+3*p.cubic*p.x0*p.x0)/p.mass),window=Math.min(60,Math.max(.2,10*Math.PI/(p.drive?p.driveOmega:w||1))),n=p.dimensions==='1d'?1:p.dimensions==='2d'?2:3;return graphs.filter(g=>g.id!=='balance'||p.drive||p.ramp||p.forceX||p.forceY||p.forceZ||p.linearDrag||p.quadraticDrag).map(g=>({...g,...(!g.kind?{window}:{}),...(g.id==='motion'||g.id==='velocity'?{series:g.series.slice(0,n)}:{})}));},
  draw(s,f){
   const p=f.params,g=f.geometry,zoom=!!f.closeup;
   if(f.thumbnail){
@@ -61,8 +63,8 @@ export const view={graphs,closeups,
   const mix=(zooms.get(s)||0)+((zoom?1:0)-(zooms.get(s)||0))*.22;zooms.set(s,mix);s.avoid=[];
   if(zoom||f.breakdown){
    const forces=Object.entries(g.forces).filter(([,v])=>Math.hypot(...v)>1e-9),max=Math.max(1,...forces.map(([,v])=>Math.hypot(...v))),m=fixedMap(s,[-1.2,1.2,-.8,.8],{top:58,bottom:132,padding:40}),cx=m.x(0),cy=m.y(0),extent=Math.min(s.w*.26,(s.h-155)*.30),radius=17+11*mix;
-   s.avoid=[{x:cx-radius-5,y:cy-radius-5,width:2*radius+10,height:2*radius+10}];
-   label(s,'Forces on the particle',s.w/2,45,C.ink,13);
+   s.zoomAnchor={x:cx,y:Math.max(32,cy-65)};s.avoid=[{x:s.zoomAnchor.x-90,y:s.zoomAnchor.y-18,width:180,height:36},{x:cx-radius-5,y:cy-radius-5,width:2*radius+10,height:2*radius+10}];
+
    forces.forEach(([name,v],i)=>{const q=project(p,v),tipX=cx+q[0]/max*extent,tipY=cy-q[1]/max*extent,color=[C.blue,C.gold,C.green,C.violet][i%4];s.arrow(cx,cy,tipX,tipY,color,2.5);tip(s,name+' '+fmt(p.dimensions==='1d'?v[0]:Math.hypot(...v))+' N',tipX,tipY,color);});
    bead(s,cx,cy,radius);s.avoid=[];
    if(!forces.length)label(s,'F = 0',s.w/2,cy-40,C.dim,12);
@@ -71,6 +73,7 @@ export const view={graphs,closeups,
   const bounds=motionBounds(p),spring=p.dimensions==='1d'&&!p.gravity&&p.spring,wall=spring?bounds[0]-(bounds[1]-bounds[0])*.22:0;
   if(spring)bounds[0]=wall-(bounds[1]-wall)*.05;
   const m=fixedMap(s,bounds,{bottom:108,top:45,padding:28}),[qx,qy]=project(p,g.position),px=m.x(qx),py=m.y(qy),o=project(p,[0,0,0]);
+  const rest=project(p,[p.spring?p.forceX/p.spring:p.x0,p.y0,p.z0]);s.zoomAnchor={x:spring?(m.x(wall)+m.x(rest[0]))/2:m.x(rest[0]),y:Math.max(32,m.y(rest[1])-50)};s.avoid=[{x:s.zoomAnchor.x-85,y:s.zoomAnchor.y-18,width:170,height:36}];
   s.ctx.setLineDash([3,5]);s.line(m.x(o[0]),m.y(o[1])-34,m.x(o[0]),m.y(o[1])+35,C.grid,1);s.ctx.setLineDash([]);
   if(p.dimensions==='1d'&&!p.gravity){s.line(22,m.y(0)+16,s.w-22,m.y(0)+16,C.grid,1);if(spring){s.line(m.x(wall),m.y(0)-20,m.x(wall),m.y(0)+16,C.dim,3);for(let i=-18;i<15;i+=8)s.line(m.x(wall)-7,m.y(0)+i+6,m.x(wall),m.y(0)+i,C.grid,1);s.spring(m.x(wall),m.y(0),px-9,py,C.dim,6);}label(s,'x = 0',m.x(0),m.y(0)+45,C.dim,10);}
   const history=f.samples.filter(v=>v.t<=f.t+1e-8).slice(-360);if(history.length>1){s.ctx.beginPath();for(const [i,v] of history.entries()){const q=project(p,[v.x,v.y,v.z]);i?s.ctx.lineTo(m.x(q[0]),m.y(q[1])):s.ctx.moveTo(m.x(q[0]),m.y(q[1]));}s.ctx.strokeStyle='#8ab9ff55';s.ctx.lineWidth=1.8;s.ctx.stroke();}
@@ -78,6 +81,6 @@ export const view={graphs,closeups,
   label(s,'x '+fmt(f.sample.x)+' m   vx '+fmt(f.sample.vx)+' m/s',s.w/2,s.h-108,C.blue,11);
  },
  drawGraph(s,d,f){const y=d.id==='trajectory'?'y':'vx';linePlot(s,{title:d.label,points:f.samples,xkey:'x',ykey:y,cursor:f.sample,xlabel:'x / m',ylabel:y+(y==='y'?' / m':' / (m/s)'),color:C.blue});},
- equations(f){const p=f.params,a=f.geometry.acceleration,forces=f.geometry.forces;return [...forceEquations(f),String.raw`m\ddot{\mathbf r}=\sum\mathbf F`,...['x','y','z'].slice(0,f.geometry.dimensions).map((axis,i)=>String.raw`F_${axis}= ${tex(Object.values(forces).reduce((sum,v)=>sum+v[i],0))}\,\mathrm{N}=(${p.mass})(${tex(a[i])})`),String.raw`E-W+Q=${tex(f.sample.energy-f.sample.work+f.sample.heat)}\,\mathrm J`];},
+ equations(f){const p=f.params,a=f.geometry.acceleration,forces=f.geometry.forces;return [...forceEquations(f),String.raw`m\ddot{\mathbf r}=\sum\mathbf F`,...['x','y','z'].slice(0,f.geometry.dimensions).map((axis,i)=>String.raw`ma_${axis}=(${p.mass})(${tex(a[i])})=${tex(Object.values(forces).reduce((sum,v)=>sum+v[i],0))}\,\mathrm{N}`),String.raw`E=K+U=${tex(f.sample.energy)}\,\mathrm J`,...(Math.abs(f.sample.work)>1e-8?[String.raw`W_{\rm drive}=${tex(f.sample.work)}\,\mathrm J`]:[]),...(Math.abs(f.sample.heat)>1e-8?[String.raw`Q_{\rm lost}=${tex(f.sample.heat)}\,\mathrm J`]:[])];},
  closeupEquation(f){return forceEquations(f);},
 };

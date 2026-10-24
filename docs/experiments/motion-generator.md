@@ -44,7 +44,7 @@ excluded. Coverage below means headless physics/data; renderer work is pending.
 State is `[x,vx,y,vy,z,vz,driveWork,heat]`; positive y points upward. In 1D gravity
 acts along negative x and y/vy/z/vz remain zero. All forces are in newtons:
 
-`m r_ddot = -k r - alpha (x^3,y^3,z^3) - s(sign x,sign y,sign z)
+`m r_ddot = -k r - beta (x^3,y^3,z^3) - s(sign x,sign y,sign z)
             - mg e_up - (b+c|v|)v - m mu r/(r^2+epsilon^2)^(3/2)
             + qB(vy,-vx,0) + (Fx+a t+Fd cos(Omega t),Fy,Fz)`.
 
@@ -140,7 +140,7 @@ the inverted canvas-y offset, now checked numerically at both screen sizes.
 The worker sandbox blocks Edge child creation; the parent executes the same
 checked-in-lane harness, which restricts network requests to 127.0.0.1.
 
-## Delivered view verification
+## Previous view verification
 
 The owned Node suite passed 62/62. The parent ran the isolated hidden-Edge
 harness on the final source: 335/335 browser checks, no browser exceptions,
@@ -152,22 +152,30 @@ were inspected; no installed-build or real-device claim is made.
 Evidence: round-156/osc-views/{browser.json,node.tap,verification.json,cleanup.json}.
 
 
-## Gallery and force-label polish
+## Shared polish conventions (current)
 
-Gallery rendering honors `frame.thumbnail`: apparatus only, with no readouts,
-caption text, force labels or embedded plots. The normal experiment retains its
-linked graphs and governing equations. The pendulum force view now frames the
-fixed conservative energy envelope in the main scene and force views when available; driven, rotating and
-approximate-law cases retain full-circle bounds. This enlarges a small swing
-without tracking the bob or clipping a later swing. Force-tip labels avoid all
-three arrow shafts as well as existing labels, the bob and the chip/caption row.
+The Zoom chip is beside a fixed physical target, with a reserved text band.
+Graph descriptors use a five-period time window (bounded by the 60-second
+experiment), selected from the current force/potential/drive parameters. Custom
+graphs leave titles to the shell. Legends use physics symbols, Poincaré is
+accented, canvas minus signs are typeset, and the cubic restoring coefficient is
+beta in both models. Node regressions cover descriptors, inactive terms,
+energy wording, fixed target anchors and every preset/view's text bounds.
 
-Regression checks include zero text in all three thumbnails, visible shaft-free
-pendulum force terms at desktop/narrow sizes, the fixed envelope over 60 seconds
-for every pendulum preset, and useful magnification in a 340-pixel-high scene.
-Workflow friction: hiding the Graphs element directly leaves the shell's narrow
-layout class active. The browser harness now uses `setGraphsOpen(false)`, the
-same state-changing path as the user's Graphs button.
+One-dimensional graphs contain x and vx only. Zero force coefficients are
+omitted from equations. E = K + U names mechanical energy; drive work and lost
+heat appear only when nonzero. The gallery keeps the spring-and-mass apparatus.
 
-Both oscillator spectra start amplitude at zero. Custom graphs reserve a
-separate caption row above the data, so axis names never sit on a peak.
+Breakdown suppresses the repeated force-law key. Net force is written as
+ma_x = (m)(a_x) = a numerical value in N. Work & heat is offered only when the
+setup includes an applied force, driving or dissipative mechanism.
+
+## Shared polish verification
+
+Owned Node tests: 70 passed, 0 failed. The guarded isolated browser run passed
+337 checks with 114 captures, no browser errors or label overlaps, and unchanged
+source bytes before/after. Desktop 1280 and narrow 320 states were inspected.
+Evidence: round-156/osc-views/{node.tap,browser.json,verification.json},
+round-156/lead/polish-osc3.log; captures in round-156/osc-views/*.png.
+Fixture PID 22924 exited and port 8842 is free (cleanup.json); disposable data
+is preserved. Installed-app and real-device behavior were not checked.
