@@ -105,6 +105,30 @@ export function finitePatchScale(center,corners){
  let scale=1;for(const corner of corners)for(const axis of ['x','y']){const delta=corner[axis]-center[axis];if(delta>0)scale=Math.min(scale,(.9-center[axis])/delta);else if(delta<0)scale=Math.min(scale,(-.9-center[axis])/delta);}
  return Math.max(0,scale);
 }
+// Convex hull (monotone chain) of projected corner points, and tests against it for label boxes.
+export function convexHull(points){
+ const p=points.slice().sort((a,b)=>a.x-b.x||a.y-b.y);if(p.length<3)return p;
+ const cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x),lower=[],upper=[];
+ for(const pt of p){while(lower.length>=2&&cross(lower.at(-2),lower.at(-1),pt)<=0)lower.pop();lower.push(pt);}
+ for(let i=p.length-1;i>=0;i--){const pt=p[i];while(upper.length>=2&&cross(upper.at(-2),upper.at(-1),pt)<=0)upper.pop();upper.push(pt);}
+ lower.pop();upper.pop();return lower.concat(upper);
+}
+function outward(poly){let area=0;for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];area+=a.x*b.y-b.x*a.y;}return area>=0?1:-1;}
+// True when the rectangle (grown by pad) overlaps the convex polygon.
+export function rectHitsConvex(rect,poly,pad=0){
+ if(poly.length<3)return false;
+ const x0=rect.x-pad,y0=rect.y-pad,x1=rect.x+rect.width+pad,y1=rect.y+rect.height+pad;
+ if(x1<=Math.min(...poly.map(p=>p.x))||x0>=Math.max(...poly.map(p=>p.x))||y1<=Math.min(...poly.map(p=>p.y))||y0>=Math.max(...poly.map(p=>p.y)))return false;
+ const sign=outward(poly),corners=[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
+ for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],nx=(b.y-a.y)*sign,ny=(a.x-b.x)*sign;if(corners.every(([x,y])=>nx*(x-a.x)+ny*(y-a.y)>=0))return false;}
+ return true;
+}
+// Distance from a point to the polygon edge when the point is inside it, else 0.
+export function pointDepth(poly,x,y){
+ if(poly.length<3)return 0;const sign=outward(poly);let depth=1e9;
+ for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],nx=(b.y-a.y)*sign,ny=(a.x-b.x)*sign,n=Math.hypot(nx,ny)||1,d=(nx*(x-a.x)+ny*(y-a.y))/n;if(d>0)return 0;depth=Math.min(depth,-d);}
+ return depth;
+}
 function visibleTargets(f){return available(f).filter(id=>!['body','frames'].includes(id));}
 export const view={graphs,closeups,
   paramVisible(spec,values){return !/^I[123]$/.test(spec.key)||values.shape==='custom';},
@@ -120,7 +144,7 @@ export const view={graphs,closeups,
   const project=a=>{const pt=v(a).applyQuaternion(rot);return [pt.x+.35*pt.y,-pt.z-.25*pt.y];};
   const half=[p.a/2,p.shape==='rod'||p.shape==='symmetric-top'?p.a/2:p.b/2,p.c/2],corners=[];
   for(const x of [-1,1])for(const y of [-1,1])for(const z of [-1,1])corners.push(project([x*half[0],y*half[1],z*half[2]]));
-  const lo=[0,1].map(i=>Math.min(...corners.map(c=>c[i]))),hi=[0,1].map(i=>Math.max(...corners.map(c=>c[i]))),scale=.78*Math.min(w/(hi[0]-lo[0]||1),h/(hi[1]-lo[1]||1));
+  const lo=[0,1].map(i=>Math.min(...corners.map(c=>c[i]))),hi=[0,1].map(i=>Math.max(...corners.map(c=>c[i]))),scale=.7*Math.min(w/(hi[0]-lo[0]||1),h/(hi[1]-lo[1]||1));
   const place=c=>[w/2+scale*(c[0]-(lo[0]+hi[0])/2),h/2+scale*(c[1]-(lo[1]+hi[1])/2)];
   const base=[1,3,5].map(i=>parseInt(C.body.slice(i,i+2),16)),faces=[];
   for(const axis of [0,1,2])for(const sign of [-1,1]){
@@ -138,7 +162,7 @@ export const view={graphs,closeups,
   shell.host.classList.add('rr-experiment');shell.host.append(style);host.append(root);
   const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);root.prepend(renderer.domElement);renderer.domElement.setAttribute('aria-label','3D rigid body, angular velocity, angular momentum and torque');
   const scene=new THREE.Scene(),content=new THREE.Group();scene.add(content);scene.add(new THREE.HemisphereLight(0xdcecff,0x192131,2.4));const light=new THREE.DirectionalLight(0xffffff,3);light.position.set(3,-4,6);scene.add(light);
-  const camera=new THREE.OrthographicCamera();camera.up.set(0,0,1);camera.position.set(3.6,-5.4,3.2);camera.lookAt(0,0,0);
+  const camera=new THREE.OrthographicCamera();camera.up.set(0,0,1);camera.position.set(3.6,-5.4,3.2);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);const camRight=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0),camUp=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,1),scratch=new THREE.Vector3();
   let instance=null,referenceGeometry=null,body=null,geometryLayer=new THREE.Group(),vectorLayer=new THREE.Group(),bounds=1,zoom=1,lastTime=0,traceBody=[],traceSpace=[],lastTrace=-1,scales={};content.add(geometryLayer,vectorLayer);const retained=createRetainedLayer(vectorLayer);vectorLayer.userData.retained=retained;shell.rotationAllocations=retained.allocations;let paramsIdentity=null,renderWidth=0,renderHeight=0,previousRender=null,idleFrames=0;const chipSizes=new WeakMap();shell.rotationRenderStats={draws:0,skipped:0};
   const leaders=root.querySelector('.rr-leaders'),labels=root.querySelector('.rr-vector-labels'),caption=root.querySelector('.rr-title'),readout=root.querySelector('.rr-readout'),frameCaptions=root.querySelector('.rr-frame-captions');
   function rebuild(f){retained.clear();paramsIdentity=f.params;dispose(geometryLayer);body=makeBody(f);geometryLayer.add(body);const p=f.params,g=f.geometry;bounds=Math.max(.6,Math.hypot(p.a,p.shape==='rod'||p.shape==='symmetric-top'?p.a:p.b,p.c)/2+(p.mode==='heavy-top'?p.distance:0))*1.6;
@@ -148,14 +172,14 @@ export const view={graphs,closeups,
    instance=probe;traceBody=[];traceSpace=[];lastTrace=-1;
   }
   function cameraFor(width,height,extent){const aspect=width/Math.max(1,height);const halfHeight=extent/Math.min(1,aspect);camera.left=-halfHeight*aspect;camera.right=halfHeight*aspect;camera.top=halfHeight;camera.bottom=-halfHeight;camera.near=.01;camera.far=100;camera.updateProjectionMatrix();camera.updateMatrixWorld(true);}
-  const origin3=new THREE.Vector3(),labelNodes=new Map(),leaderNodes=new Map(),panelLabels=[];let currentPanel=0,currentObstacles=[],arrowBoxes=[],topMargin=3,area3={x:0,y:0,w:0,h:0},leaderLengths=[],tips=[];
+  const origin3=new THREE.Vector3(),labelNodes=new Map(),leaderNodes=new Map(),panelLabels=[];let currentPanel=0,currentObstacles=[],currentShapes=[],hullBoxes=[],arrowBoxes=[],topMargin=3,area3={x:0,y:0,w:0,h:0},leaderLengths=[],tips=[];
   function cachedText(el,text){if(el.textContent!==text)el.textContent=text;}
   function cachedAttribute(el,name,value){if(el.getAttribute(name)!==value)el.setAttribute(name,value);}
 
   // A label stays on the line of its arrow just beyond the tip. Candidates are fixed
   // (angle then gap tier) relative to that direction; the previous choice is kept while
   // it stays valid, so a label never flips between frames and always follows its tip.
-  const LABEL_TURNS=Array.from({length:32},(_,i)=>(i%2?1:-1)*Math.ceil(i/2)*11.25*Math.PI/180),LABEL_TIERS=[0,8,16,24],LABEL_LEASH=30,LABEL_SIDE={'ω':1,'L':-1,'τ':1,'e₁':1,'e₂':-1,'e₃':1};
+  const LABEL_TURNS=Array.from({length:32},(_,i)=>(i%2?1:-1)*Math.ceil(i/2)*11.25*Math.PI/180),LABEL_TIERS=[0,8,16,24,36,48,64,80],LABEL_LEASH=30,LABEL_SIDE={'ω':1,'L':-1,'τ':1,'e₁':1,'e₂':-1,'e₃':1};
   function textAt(text,point,color,rect,placed){
    const projected=point.clone().project(camera),x=rect.x+(projected.x+1)*rect.w/2,y=rect.y+(1-projected.y)*rect.h/2;
    const centre=origin3.set(0,0,0).project(camera),ox=rect.x+(centre.x+1)*rect.w/2,oy=rect.y+(1-centre.y)*rect.h/2;
@@ -168,16 +192,23 @@ export const view={graphs,closeups,
    // Clear of every recorded shaft and head (plus a pixel or two); the label's own tip keeps its 3 px gap.
    const hitsArrow=a=>{for(const o of currentObstacles){const dx=o.x1-o.x0,dy=o.y1-o.y0,len=Math.hypot(dx,dy),n=Math.max(1,Math.ceil(len/1.5));for(let i=0;i<=n;i++){const t=i/n,px=o.x0+dx*t,py=o.y0+dy*t,back=len*(1-t),clear=Math.max(1.5,back<o.hl?o.hr*back/Math.max(1e-6,o.hl):0)+2;if(Math.hypot(Math.max(a.x-px,0,px-a.x-width),Math.max(a.y-py,0,py-a.y-height))<clear-.01)return true;}}return false;};
    const side=LABEL_SIDE[text]??1;
+   // A label also stays outside the projected body. A tip that lies inside the silhouette extends the leash by its depth.
+   const depth=currentShapes.reduce((m,poly)=>Math.max(m,pointDepth(poly,x,y)),0);let leash=LABEL_LEASH+depth;tips.at(-1).depth=depth;
+   const hitsBody=(a,pad)=>currentShapes.some(poly=>rectHitsConvex({x:a.x,y:a.y,width,height},poly,pad));
    const leaderLength=a=>Math.hypot(Math.max(a.x,Math.min(a.x+width,x))-x,Math.max(a.y,Math.min(a.y+height,y))-y);
    // A panel edge may be crossed only as a last resort (stacked comparison panels in a short scene); the scene itself is never left.
-   let bounds=rect;const valid=a=>a.x>=bounds.x+3&&a.y>=bounds.y+topMargin&&a.x+width<=bounds.x+bounds.w-3&&a.y+height<=bounds.y+bounds.h-3&&!intersects(a)&&!hitsArrow(a)&&leaderLength(a)<=LABEL_LEASH;
+   let bounds=rect;const valid=(a,pad=1)=>a.x>=bounds.x+3&&a.y>=bounds.y+topMargin&&a.x+width<=bounds.x+bounds.w-3&&a.y+height<=bounds.y+bounds.h-3&&leaderLength(a)<=leash&&!intersects(a)&&!hitsArrow(a)&&!hitsBody(a,pad);
    let squeeze=false;
    const candidate=n=>{const tier=LABEL_TIERS[Math.floor(n/LABEL_TURNS.length)],turn=LABEL_TURNS[n%LABEL_TURNS.length]*side,c=Math.cos(turn),s=Math.sin(turn),ux=dx*c-dy*s,uy=dx*s+dy*c,reachOut=Math.abs(ux)*width/2+Math.abs(uy)*height/2+3+tier;const c0={x:x+ux*reachOut-width/2,y:y+uy*reachOut-height/2};return squeeze?{x:Math.max(bounds.x+3,Math.min(bounds.x+bounds.w-3-width,c0.x)),y:Math.max(bounds.y+topMargin,Math.min(bounds.y+bounds.h-3-height,c0.y))}:c0;};
    let first=-1,position=null;const count=LABEL_TURNS.length*LABEL_TIERS.length;
-   for(let n=0;n<count;n++)if(valid(candidate(n))){first=n;break;}
-   if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};for(let n=0;n<count;n++)if(valid(candidate(n))){first=n;break;}}
+   // A new choice keeps 16 px from the silhouette so a turning body does not push it away again at once; a kept one may come within 1 px.
+   const search=()=>{for(const pad of [16,8,1])for(let n=0;n<count;n++)if(valid(candidate(n),pad))return n;return -1;};
+   first=search();
+   if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}
+   // A crowded cluster may take a longer leader rather than lose the label.
+   if(first<0){leash+=24;tips.at(-1).depth=depth+24;squeeze=false;bounds=rect;first=search();if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}}
    // Keep the previous choice while it is valid; when it is not, move to the valid candidate nearest the old position.
-   if(first>=0&&entry.choice>=0){if(valid(candidate(entry.choice)))first=entry.choice;else{const was=candidate(entry.choice);let best=1e9;for(let n=0;n<count;n++){const c=candidate(n),d=Math.hypot(c.x-was.x,c.y-was.y);if(d<best&&valid(c)){best=d;first=n;}}}}
+   if(first>=0&&entry.choice>=0&&entry.choice<count){if(valid(candidate(entry.choice)))first=entry.choice;else{const was=candidate(entry.choice);let best=1e9;for(const pad of [16,8,1]){for(let n=0;n<count;n++){const c=candidate(n),d=Math.hypot(c.x-was.x,c.y-was.y);if(d<best&&valid(c,pad)){best=d;first=n;}}if(best<1e9)break;}}}
    if(first<0){entry.choice=-1;el.hidden=true;return;}
    entry.choice=first;position=candidate(first);
    tips.at(-1).box={x:position.x,y:position.y,width,height};
@@ -189,28 +220,57 @@ export const view={graphs,closeups,
    }
   }
   function chipSizes_(ids){return ids.map(id=>{const button=shell.q(`.exp-closeups [data-id="${id}"]`);let size=button&&chipSizes.get(button);if(!size||!size.w){size={w:button?.offsetWidth||0,h:button?.offsetHeight||0};if(button&&size.w)chipSizes.set(button,size);}return size.w?size:{w:130,h:32};});}
-  // Chips wrap into centred rows; Scene, Breakdown and Graphs all use this one arrangement.
+  // Rows below the apparatus, centred and wrapping: the fallback when no chip can sit beside its target (phone widths).
   function chipRows(ids,width){const sizes=chipSizes_(ids),rows=[[]],gap=8;let used=0;sizes.forEach((z,i)=>{if(rows.at(-1).length&&used+gap+z.w>width-16){rows.push([]);used=0;}used+=(rows.at(-1).length?gap:0)+z.w;rows.at(-1).push(i);});return {sizes,rows,rowH:36,gap};}
-  const reachOf=f=>{const p=f.params;return Math.max(norm(f.geometry.centreOfMass)+Math.hypot(p.a,p.shape==='rod'||p.shape==='symmetric-top'?p.a:p.b,p.c)/2,.78*bounds);};
-  // The camera extent never depends on Breakdown. It only grows when the chip rows below the
-  // apparatus would not fit, so Scene and Breakdown at one size show the apparatus at one scale.
-  function extentFor(f,zm,width,height){const p=f.params,pad=(factor)=>factor<1&&p.shape==='corner-masses'?.11*Math.min(p.a,p.b,p.c):0;
-   if(f.closeup){const factor=cameraExtentFactor(width,height,f.closeup);return bounds/zm*factor+pad(factor);}
-   // Pixels per world unit come from a reference height (the smaller of this scene and the 470/465 px minimum), so a taller
-   // Scene and a minimum-height Breakdown show the apparatus at one scale; extra height only adds centred room.
-   const refH=Math.min(height,width<=500?465:470),factor=cameraExtentFactor(width,refH,''),extent=bounds/zm*factor+pad(factor),ref=sceneLayout(width,refH,'').area,aspect=Math.min(1,ref.w/Math.max(1,ref.h)),
-    {rows,rowH}=chipRows(visibleTargets(f),width),ppu=(ref.h/2)/(extent/aspect),cy=ref.y+ref.h/2,allow=Math.max(40,refH-68-(rows.length-1)*rowH-4-cy-10),want=reachOf(f)*ppu,
-    ppuRef=want>allow?ppu*allow/want:ppu,area=sceneLayout(width,height,'').area;
-   return (area.h/2)*Math.min(1,area.w/Math.max(1,area.h))/ppuRef;}
-  // Chips sit in rows just below the apparatus keep-out circle (motion sphere or longest arrow and its label):
-  // a constant offset from the apparatus, so they move only when it does.
+  const sphereOf=f=>{const p=f.params;return norm(f.geometry.centreOfMass)+Math.hypot(p.a,p.shape==='rod'||p.shape==='symmetric-top'?p.a:p.b,p.c)/2;};
+  const reachOf=f=>Math.max(sphereOf(f),.78*bounds);
+  // Home points (space frame, t = 0) each chip sits beside; null means beside the body.
+  function chipTargets(f){const g0=referenceGeometry,unit=a=>norm(a)>1e-10?v(a).normalize():null,arrow=(a,k)=>{const d=unit(a);return d&&d.multiplyScalar(Math.min(bounds*.93,norm(a)*k));};
+   return {inertia:null,axis:v(g0.principalAxes[1]).applyQuaternion(q(g0.quaternion)).normalize().multiplyScalar(bounds*.6),energy:arrow(g0.omegaSpace,scales.omega),precession:arrow(g0.angularMomentumSpace,scales.L),gravity:v(g0.centreOfMass).add(v([0,0,-bounds*.48])),tilt:v([0,0,bounds*.7]),support:arrow(g0.torqueSpace,scales.torque)};}
+  // Chips sit on the keep-out circle (the motion sphere, which the body never leaves) at the angle of their target's home
+  // point, pushed out far enough to leave the tip's label room, and nudged by the smallest angle that fits. Offsets are
+  // relative to the apparatus centre, so they are the same in Scene and Breakdown. Returns ok=false when they do not fit.
+  function placeNear(f,ids,width,ppu,ref){
+   const sizes=chipSizes_(ids),targets=chipTargets(f),R=sphereOf(f)*ppu+6,cyRef=ref.area.y+ref.area.h/2,minX=8-width/2,maxX=width/2-8,minY=ref.area.y-cyRef,maxY=ref.height-44-cyRef;
+   const screen=d=>d&&{x:d.dot(camRight)*ppu,y:-d.dot(camUp)*ppu},g0=referenceGeometry;
+   const homes=[['precession',g0.angularMomentumSpace,scales.L],['energy',g0.omegaSpace,scales.omega],['support',g0.torqueSpace,scales.torque]].filter(([,a])=>norm(a)>1e-10).map(([id,a,k])=>({id,...screen(v(a).normalize().multiplyScalar(Math.min(bounds*.93,norm(a)*k)))}));
+   const gap=(r,pt)=>Math.hypot(Math.max(r.x-pt.x,0,pt.x-r.x-r.w),Math.max(r.y-pt.y,0,pt.y-r.y-r.h));
+   const slots=[135,45,90,160,20],order=ids.map((id,i)=>i).sort((i,j)=>(targets[ids[i]]?0:1)-(targets[ids[j]]?0:1)||(targets[ids[i]]?screen(targets[ids[i]]).y-screen(targets[ids[j]]).y:0)||i-j),placed=[],out={};let slot=0,ok=true;
+   for(const i of order){const id=ids[i],{w,h}=sizes[i],target=screen(targets[id]),base=target?Math.atan2(target.y,target.x):slots[slot++%slots.length]*Math.PI/180,radius=Math.max(R,target?Math.hypot(target.x,target.y)+26:0);let best=null;
+    const fits=r=>!(r.x<minX||r.x+w>maxX||r.y<minY||r.y+h>maxY||placed.some(b=>r.x<b.x+b.w+6&&r.x+w+6>b.x&&r.y<b.y+b.h+6&&r.y+h+6>b.y)||homes.some(t=>t.id!==id&&gap(r,t)<24&&!(target&&Math.hypot(t.x-target.x,t.y-target.y)<6)));
+    // A drawn target: the free spot with the smallest gap to it (beside it on any of its four sides), outside the body circle.
+    if(target){let top=1e9;for(const d of [20,26,32,38,44,12,6])for(let o=-72;o<=72;o+=8){
+      for(const r of [{x:target.x+d,y:target.y+o-h/2},{x:target.x-d-w,y:target.y+o-h/2},{x:target.x+o*2-w/2,y:target.y-d-h},{x:target.x+o*2-w/2,y:target.y+d}]){r.w=w;r.h=h;
+       const score=gap(r,target)+(d<20?24:0)+.02*Math.abs(Math.atan2(r.y+h/2-target.y,r.x+w/2-target.x)-base);
+       if(score<top&&gap(r,{x:0,y:0})>=R&&fits(r)){top=score;best=r;}}}}
+    for(let k=0;k<37&&!best;k++){const ang=base+(k%2?1:-1)*Math.ceil(k/2)*10*Math.PI/180,ux=Math.cos(ang),uy=Math.sin(ang),sup=Math.abs(ux)*w/2+Math.abs(uy)*h/2,cx=ux*(radius+sup+3),cy=uy*(radius+sup+3),r={x:cx-w/2,y:cy-h/2,w,h};
+     if(fits(r))best=r;}
+    if(!best){ok=false;break;}
+    placed.push(best);out[id]={x:best.x+w/2,y:best.y,w,h,target};}
+   return {ok,out,R,sizes};}
+  const sceneCache={};
+  // One scale for Scene and Breakdown: pixels per world unit come from a reference height (the smaller of this scene and the
+  // 470/465 px minimum), so a taller Scene and a minimum-height Breakdown show the apparatus at one scale.
+  function sceneScale(f,width,height){
+   const ids=visibleTargets(f),refH=Math.min(height,width<=500?465:470),sizes=chipSizes_(ids).map(z=>z.w+'x'+z.h).join(),p=f.params,
+    c=sceneCache;if(c.params===f.params&&c.width===width&&c.refH===refH&&c.sizes===sizes&&c.ids===ids.join())return c.result;
+   const factor=cameraExtentFactor(width,refH,''),pad=factor<1&&p.shape==='corner-masses'?.11*Math.min(p.a,p.b,p.c):0,extent=bounds*factor+pad,ref=sceneLayout(width,refH,'').area,aspect=Math.min(1,ref.w/Math.max(1,ref.h)),ppu0=(ref.h/2)/(extent/aspect);
+   let result,near=placeNear(f,ids,width,ppu0,{area:ref,height:refH});
+   if(near.ok)result={ppu:ppu0,near};
+   else {const {rows,rowH}=chipRows(ids,width),cy=ref.y+ref.h/2,allow=Math.max(40,refH-68-(rows.length-1)*rowH-4-cy-10),want=reachOf(f)*ppu0;result={ppu:want>allow?ppu0*allow/want:ppu0,near:null};}
+   Object.assign(c,{params:f.params,width,refH,sizes,ids:ids.join(),result});return result;}
+  function extentFor(f,zm,width,height){const p=f.params;
+   if(f.closeup){const factor=cameraExtentFactor(width,height,f.closeup),pad=factor<1&&p.shape==='corner-masses'?.11*Math.min(p.a,p.b,p.c):0;return bounds/zm*factor+pad;}
+   const {ppu}=sceneScale(f,width,height),area=sceneLayout(width,height,'').area;
+   return (area.h/2)*Math.min(1,area.w/Math.max(1,area.h))/ppu/zm;}
   function chipLayout(f,ids,width,height,area){
-   const {sizes,rows,rowH,gap}=chipRows(ids,width),dual=f.closeup==='frames'||f.closeup==='energy';
-   const ext=extentFor(f,f.closeup?1.18:1,width,height),ppu=(area.h/2)/(ext/Math.min(1,area.w/Math.max(1,area.h)));
-   const keep=reachOf(f)*ppu+10,cx=area.x+area.w/2,cy=area.y+area.h/2,anchors={};
+   const cx=area.x+area.w/2,cy=area.y+area.h/2,dual=f.closeup==='frames'||f.closeup==='energy';
+   if(!f.closeup){const {ppu,near}=sceneScale(f,width,height);
+    if(near){const anchors={},targets={},sizes=chipSizes_(ids);ids.forEach(id=>{const o=near.out[id];anchors[id]={x:cx+o.x,y:cy+o.y};targets[id]=o.target?{x:cx+o.target.x,y:cy+o.target.y}:null;});return {anchors,sizes,keep:{x:cx,y:cy,r:near.R},targets};}}
+   const {sizes,rows,rowH,gap}=chipRows(ids,width),ext=extentFor(f,f.closeup?1.18:1,width,height),ppu=(area.h/2)/(ext/Math.min(1,area.w/Math.max(1,area.h))),keep=reachOf(f)*ppu+10,anchors={};
    const y0=Math.max(area.y,Math.min(height-64-(rows.length-1)*rowH,dual?area.y+area.h:cy+keep+4));
    rows.forEach((row,r)=>{const total=row.reduce((t,i)=>t+sizes[i].w,0)+gap*(row.length-1);let x=(width-total)/2;for(const i of row){anchors[ids[i]]={x:x+sizes[i].w/2,y:y0+r*rowH};x+=sizes[i].w+gap;}});
-   return {anchors,sizes,keep:{x:cx,y:cy,r:keep}};
+   return {anchors,sizes,keep:{x:cx,y:cy,r:keep},targets:{}};
   }
   function draw(f){
    // Keep camera-frame choices in Setup. Preserve the kit's validated close-up
@@ -228,21 +288,30 @@ export const view={graphs,closeups,
    const p=f.params,g=f.geometry,isBody=['body','axis','inertia','energy'].includes(f.closeup),compare=f.closeup==='frames',energy=f.closeup==='energy';
    const layout=sceneLayout(width,height,f.closeup);f.compact=layout.compact;root.classList.toggle('rr-compact',layout.compact);const ids=visibleTargets(f,height);for(const b of shell.q('.exp-closeups').children){const hidden=!ids.includes(b.dataset.id);if(b.hidden!==hidden)b.hidden=hidden;}
    cachedText(caption,f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' ')));
-   let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a ${num(p.a)} m · b ${num(p.b)} m · c ${num(p.c)} m`:`θ ${num(f.sample.theta)} rad · T ${num(f.sample.kinetic)} J`;
-   if(norm(g.torqueSpace)<1e-10&&!energy)readoutText+=' · τ 0 N m';cachedText(readout,readoutText);
-   leaderLengths=[];tips=[];arrowBoxes=[];for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
+   let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a = ${num(p.a)} m · b = ${num(p.b)} m · c = ${num(p.c)} m`:`θ = ${num(f.sample.theta)} rad · T = ${num(f.sample.kinetic)} J`;
+   if(norm(g.torqueSpace)<1e-10&&!energy)readoutText+=' · τ = 0 N m';cachedText(readout,readoutText);
+   leaderLengths=[];tips=[];arrowBoxes=[];hullBoxes=[];for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
    if(f.t-lastTrace>.025){traceBody.push([...g.omegaBody]);traceSpace.push([...g.omegaSpace]);if(traceBody.length>800){traceBody.shift();traceSpace.shift();}lastTrace=f.t;}
    const target=f.closeup?1.18:1,dt=Math.min(.1,(performance.now()-(draw.last||performance.now()))/1000);draw.last=performance.now();zoom+= (target-zoom)*(1-Math.exp(-dt*10));if(shell.stage.snap){zoom=target;shell.stage.snap=false;}
    const narrow=width<430,{top,area}=layout,showAxes=!layout.compact||f.closeup==='axis';
    const dual=compare||energy,vertical=dual&&narrow;const panels=dual?[{x:0,y:top,w:vertical?width:width/2,h:vertical?area.h/2:area.h},{x:vertical?0:width/2,y:vertical?top+area.h/2:top,w:vertical?width:width/2,h:vertical?area.h/2:area.h}]:[area];
    const projectedBodies=[];const placed=[];
-   {const chips=chipLayout(f,ids,width,height,area);f.rotationAnchors=chips.anchors;shell.rotationAnchors=chips.anchors;shell.rotationKeepOut=chips.keep;
+   {const chips=chipLayout(f,ids,width,height,area);f.rotationAnchors=chips.anchors;shell.rotationAnchors=chips.anchors;shell.rotationKeepOut=chips.keep;shell.rotationChipTargets=chips.targets;
     for(const button of shell.q('.exp-closeups').children){const a=chips.anchors[button.dataset.id];if(!a||button.hidden)continue;const {w,h}=chips.sizes[ids.indexOf(button.dataset.id)],x=Math.max(w/2+8,Math.min(width-w/2-8,a.x));placed.push({x:x-w/2,y:Math.min(height-40,a.y),width:w,height:h});}}
    renderer.setScissorTest(false);renderer.clear();renderer.setScissorTest(true);
    panels.forEach((r,index)=>{
     retained.begin();currentPanel=index;topMargin=3;area3=area;if(dual)placed.push({x:r.x+8,y:r.y+3,width:96,height:14});const bodyFrame=energy?index===0:compare?index===1:isBody;
     content.quaternion.copy(bodyFrame?q(g.quaternion).invert():new THREE.Quaternion());body.position.copy(v(g.centreOfMass));body.quaternion.copy(q(g.quaternion));body.visible=!energy;
     const extent=extentFor(f,zoom,width,height);cameraFor(r.w,r.h,extent);renderer.setViewport(r.x,height-r.y-r.h,r.w,r.h);renderer.setScissor(r.x,height-r.y-r.h,r.w,r.h);
+    content.updateMatrixWorld(true);
+    const parts=[],projected=[],shapes=[];body.traverse(object=>{if(!object.geometry)return;if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();const box=object.geometry.boundingBox,pts=[];for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const point=scratch.set(x,y,z).applyMatrix4(object.matrixWorld).project(camera),pt={x:r.x+(point.x+1)*r.w/2,y:r.y+(1-point.y)*r.h/2};pts.push(pt);projected.push(pt);}parts.push({object,box});if(body.visible)shapes.push(convexHull(pts));});
+    currentShapes=shapes;hullBoxes.push({panel:index,polys:shapes});
+    // Distance along a unit content-space direction from the origin to where it leaves the body (0 when it never meets it).
+    const exitAlong=dir=>{if(!body.visible)return 0;const D=dir.clone().applyQuaternion(content.quaternion);let best=0;
+     for(const {object,box} of parts){const inv=object.matrixWorld.clone().invert(),o=new THREE.Vector3().applyMatrix4(inv),d=D.clone().transformDirection(inv);let t0=-1e9,t1=1e9;
+      for(const k of ['x','y','z']){if(Math.abs(d[k])<1e-9){if(o[k]<box.min[k]||o[k]>box.max[k]){t0=1e9;break;}}else{let lo=(box.min[k]-o[k])/d[k],hi=(box.max[k]-o[k])/d[k];if(lo>hi)[lo,hi]=[hi,lo];t0=Math.max(t0,lo);t1=Math.min(t1,hi);}}
+      if(t0<=t1&&t1>0)best=Math.max(best,t1);}
+     return best;};
     const queue=[],later=(pri,fn)=>queue.push({pri,fn}),obstacles=[],pxPerUnit=(r.h/2)/camera.top;currentObstacles=obstacles;
     // Every arrow is recorded in pixels (shaft and head) so labels keep clear of all of them; longer arrows draw first, shorter ones on top.
     const A=(o,vec,len,color,role,order)=>{const ar=arrow(vectorLayer,o,vec,len,color,role);if(!ar)return ar;const rank=order??30+Math.round(40*(1-Math.min(1,len/bounds)));ar.traverse(x=>{x.renderOrder=rank;});
@@ -256,7 +325,7 @@ export const view={graphs,closeups,
      const trace=bodyFrame?traceBody:traceSpace;if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),bodyFrame?C.omega:C.L);A(origin,point,norm(point),C.omega,'energy-angular-velocity');
      textAt(bodyFrame?'ω body':'ω space',v(point),C.omega,r,placed);
     }else {
-     const axisTips=[];for(let i=0;i<3&&showAxes;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));A(origin,axis.toArray(),bounds*.46,C.axes[i],'axis-'+i,20);axisTips.push(axis.multiplyScalar(bounds*.46).applyQuaternion(content.quaternion));}
+     const axisTips=[];for(let i=0;i<3&&showAxes;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));const len=Math.min(bounds*.8,Math.max(bounds*.46,exitAlong(axis)+bounds*.09));A(origin,axis.toArray(),len,C.axes[i],'axis-'+i,20);axisTips.push(axis.clone().multiplyScalar(len).applyQuaternion(content.quaternion));}
      const vectors=[['ω',g.omegaSpace,C.omega,scales.omega],['L',g.angularMomentumSpace,C.L,scales.L],['τ',g.torqueSpace,C.torque,scales.torque]];
      for(const [label,a,color,scale] of vectors){const length=Math.min(bounds*.93,norm(a)*scale);A(origin,a,length,color,label);if(norm(a)>1e-10)later(0,()=>textAt(label,v(a).normalize().multiplyScalar(length).applyQuaternion(content.quaternion),color,r,placed));}
      axisTips.forEach((tip,i)=>later(2,()=>textAt('e'+['₁','₂','₃'][i],tip,C.axes[i],r,placed)));
@@ -284,8 +353,7 @@ export const view={graphs,closeups,
     }
     // Inspect actual rendered body geometry, including its corner marker. Keep
     // the camera fixed to the full-motion sphere; these bounds are evidence only.
-    content.updateMatrixWorld(true);const projected=[];
-    body.traverse(object=>{if(!object.geometry)return;if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();const box=object.geometry.boundingBox;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const point=v([x,y,z]).applyMatrix4(object.matrixWorld).project(camera);projected.push({x:r.x+(point.x+1)*r.w/2,y:r.y+(1-point.y)*r.h/2});}});
+    // Evidence of the rendered body bounds (corner points computed above).
     projectedBodies.push({visible:body.visible,panel:{...r},x:Math.min(...projected.map(p=>p.x)),right:Math.max(...projected.map(p=>p.x)),y:Math.min(...projected.map(p=>p.y)),bottom:Math.max(...projected.map(p=>p.y))});
     renderer.render(scene,camera);
     if(dual){let label=panelLabels[index];if(!label){label=document.createElement('span');panelLabels[index]=label;frameCaptions.append(label);retained.allocations.labels++;}label.hidden=false;cachedText(label,energy?(index?'Space tangent plane':'Body inertia ellipsoid'):(index?'Body frame':'Space frame'));const css=`position:absolute;left:${r.x+8}px;top:${r.y+3}px;color:#9caec5;font-size:10px`;if(label.style.cssText!==css)label.style.cssText=css;}
@@ -296,7 +364,7 @@ export const view={graphs,closeups,
    for(const entry of leaderNodes.values())if(!entry.used)entry.el.style.display='none';
    const hr=host.getBoundingClientRect();shell.stage.labels=[caption,readout,...panelLabels].filter(el=>!el.hidden&&el.textContent).map(el=>{const r=el.getBoundingClientRect();return {text:el.textContent,x:r.x-hr.x,y:r.y-hr.y,width:r.width,height:r.height};});
    for(const entry of labelNodes.values())if(entry.used&&!entry.el.hidden)shell.stage.labels.push(entry.bounds);
-   shell.rotationLeaderLengths=[...leaderLengths];shell.rotationTips=tips.map(t=>({...t}));shell.rotationArrows=arrowBoxes.map(o=>({...o}));shell.rotationBodyBounds={scene:{width,height},compact:layout.compact,panels:projectedBodies};shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
+   shell.rotationLeaderLengths=[...leaderLengths];shell.rotationTips=tips.map(t=>({...t}));shell.rotationArrows=arrowBoxes.map(o=>({...o}));shell.rotationBodyHulls=hullBoxes;shell.rotationBodyBounds={scene:{width,height},compact:layout.compact,panels:projectedBodies};shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
   }
   return {draw,resize(){},destroy(){dispose(content);renderer.dispose();renderer.forceContextLoss();root.remove();style.remove();shell.host.classList.remove('rr-experiment');}};
  }
