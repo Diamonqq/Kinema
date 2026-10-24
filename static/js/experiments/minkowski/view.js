@@ -1,7 +1,8 @@
 import {C,boost,interval,gamma,addVelocity} from './model.js';
-import {num} from '../kit/format.js';
-import {colors,fmt,panels,blockHeight,holdShell,fitScene,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth,axisLabels} from './drawing.js';
+import {num,texNum} from '../kit/format.js';
+import {colors,panels,blockHeight,holdShell,fitScene,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth,axisLabels} from './drawing.js';
 const cache=new WeakMap();
+const tex=v=>texNum(v,3);
 export const closeups=[{id:'event',label:'Zoom · events'},{id:'transform',label:'Zoom · transform'}];
 export const graphs=[
   {id:'worldlines',label:'Position vs time',kind:'custom'},{id:'clocks',label:'Clock ages',unit:'s',window:12,series:[{key:'groundTime',label:'t',color:colors[0]},{key:'properTime',label:'\u03c4',color:colors[1]}]},
@@ -45,19 +46,21 @@ function eventLetter(s,f,p,m,key,record,extra=[]){
   }
 }
 // The green hyperbola is every event at interval L from the origin; it has the same shape in S and S′.
-function intervalCaption(s,f,p,m,key,curve,guides=[]){
-  const text='invariant interval',width=richWidth(s,text,11),worldlines=f.geometry[key].worldlines.flatMap(l=>l.points.slice(1).map((b,i)=>{const a=l.points[i];return [m.x(a.x/f.params.length),m.y(C*a.t/f.params.length),m.x(b.x/f.params.length),m.y(C*b.t/f.params.length)];}));
-  const axesBox=[[p.left,m.y(0),p.left+p.width,m.y(0)],[m.x(0),p.top,m.x(0),p.top+p.height]];
-  // Outer arm first: the ends of the curve are away from the worldlines that gather near the vertex.
-  for(const index of [3,60,6,57,9,54,12,51,15,48,18,45,21,42,24,39,27,36,30,33,32,28,34,26,38,20,44,14,50,8,56,2,61]){
-    const a=curve[index];if(!a)continue;
-    for(const [dx,dy,align] of [[10,-8,'left'],[-10,-8,'right'],[10,16,'left'],[-10,16,'right'],[8,-24,'left'],[-8,-24,'right'],[8,32,'left'],[-8,32,'right'],[14,-2,'left'],[-14,-2,'right'],[20,-14,'left'],[-20,-14,'right'],[20,22,'left'],[-20,22,'right']]){
-      const x=a[0]+dx,left=align==='left'?x:x-width,box={left:left-3,top:a[1]+dy-9,width:width+6,height:18};
-      if(box.left<p.left||box.top<p.top||box.left+box.width>p.left+p.width||box.top+box.height>p.top+p.height)continue;
-      if(s.labels.some(l=>box.left<l.x+l.width&&box.left+box.width>l.x&&box.top<l.y+l.height&&box.top+box.height>l.y))continue;
-      if([...curve,...worldlines,...axesBox,...guides].some(v=>clipLine(...v,box)))continue;
-      richText(s,text,x,a[1]+dy,colors[2],11,align);return box;
-    }
+function intervalCaption(s,f,p,m,key,curve,avoid=[],soft=[]){
+  const text='invariant interval',width=richWidth(s,text,11),w=width+6,h=18,pad=3;
+  const hard=[...curve,...avoid,[p.left,m.y(0),p.left+p.width,m.y(0)],[m.x(0),p.top,m.x(0),p.top+p.height]];
+  // Beside the curve, nearest clear spot first; the outer arms win because the worldlines gather near the vertex.
+  const spots=[];
+  for(let i=0;i<=curve.length;i+=2){const a=i<curve.length?[curve[i][0],curve[i][1]]:[curve[curve.length-1][2],curve[curve.length-1][3]];
+    for(let dx=-170;dx<=170;dx+=6)for(let dy=-90;dy<=90;dy+=6){const d=Math.hypot(dx,dy);if(d<12)continue;spots.push({x:a[0]+dx,y:a[1]+dy,d:d+(Math.abs(i-curve.length/2)<curve.length*.2?14:0)});}}
+  spots.sort((u,v)=>u.d-v.d);
+  // Event and cone lines are avoided too; only when a crowded scene leaves no gap are they allowed to pass behind the caption.
+  for(const lines of [[...hard,...soft],hard])for(const c of spots){
+    const box={left:c.x-w/2,top:c.y-h/2,width:w,height:h},hit={left:box.left-pad,top:box.top-pad,width:w+2*pad,height:h+2*pad};
+    if(box.left<p.left||box.top<p.top||box.left+w>p.left+p.width||box.top+h>p.top+p.height)continue;
+    if(s.labels.some(l=>hit.left<l.x+l.width&&hit.left+hit.width>l.x&&hit.top<l.y+l.height&&hit.top+hit.height>l.y))continue;
+    if(lines.some(v=>clipLine(...v,hit)))continue;
+    richText(s,text,box.left+3,c.y,colors[2],11,'left');return Object.assign(box,{relaxed:lines===hard&&soft.length>0});
   }
 }
 function eventBounds(f,key){const a=coord(selected(f,key),f.params.length),span=Math.max(.4,Math.min(1.4,(context(f).bounds[3]-context(f).bounds[2])*.18));return [a[0]-span,a[0]+span,a[1]-span,a[1]+span];}
@@ -96,10 +99,13 @@ function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   const guides=[ex,et].map(v=>[m.x(-range*v[0]),m.y(-range*v[1]),m.x(range*v[0]),m.y(range*v[1])]).concat([[-1,-1],[1,-1]].map(([a,c])=>[m.x(-range*a),m.y(-range*c),m.x(range*a),m.y(range*c)])),
     wl=g.worldlines.flatMap(l=>l.points.slice(1).map((q,i)=>{const u=coord(l.points[i],L),w=coord(q,L);return [m.x(u[0]),m.y(u[1]),m.x(w[0]),m.y(w[1])];}));
   const own=[[p.left,m.y(0),p.left+p.width,m.y(0)],[m.x(0),p.top,m.x(0),p.top+p.height]];
+  const nowL=g.now.map(a=>coord(a,L)),origins=f.params.scenario==='flashes'||f.params.scenario==='objects'&&g.events.length?g.events.map(e=>coord(e,L)):[zoom?coord(selected(f,key),L):[0,0]];
+  const extra=[[m.x(nowL[0][0]),m.y(nowL[0][1]),m.x(nowL[1][0]),m.y(nowL[1][1])],...g.events.map(e=>{const y=m.y(coord(e,L)[1]);return [p.left,y,p.left+p.width,y];}),
+    ...(cone?origins.flatMap(a=>[-1,1].map(sg=>[m.x(a[0]-range),m.y(a[1]-sg*range),m.x(a[0]+range),m.y(a[1]+sg*range)])):[])];
   let names=[];
-  if(!f.thumbnail)names=axisLabels(s,m,p,{x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',avoid:[...wl,...curve,...guides,...own]})||[];
-  const interval=curve.length?intervalCaption(s,f,p,m,key,curve,guides):null;
-  (s.diag||(s.diag={}))[key]={names,interval,worldlines:wl,guides,curve,own};
+  if(!f.thumbnail)names=axisLabels(s,m,p,{x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',avoid:[...wl,...curve,...guides,...extra,...own]})||[];
+  const interval=curve.length?intervalCaption(s,f,p,m,key,curve,[...wl,...guides],extra):null;
+  (s.diag||(s.diag={}))[key]={names,interval,worldlines:wl,guides,extra,curve,own};
   if(!f.thumbnail&&!f.graph)for(const record of namedEvents(f))eventLetter(s,f,p,m,key,record,curve);
   return m;
 }
@@ -160,33 +166,33 @@ export const view={closeups,graphs,paramVisible,
     else if(f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario))spatial(s,f,{left:40,top:85,width:s.w-65,height:s.h-190});
     else for(const [i,k] of ['ground','moving'].entries())drawDiagram(s,f,ps[i],k,{cone:true,calibration:f.breakdown,zoom:!!f.closeup});
     if(hasEvents)eventReadouts(f).forEach((text,i)=>s.text(text,s.w/2,layout.chipTop+46+i*18,'#b8cce4',s.w<470?10:11));
-    if(f.closeup==='transform')s.text(`\u03b2 = ${fmt(f.params.beta)}    \u03b3 = ${fmt(f.sample.gamma)}`,s.w/2,layout.chipTop+46+4*18+14,'#bfd0e7',s.w<470?10:12);
+    if(f.closeup==='transform')s.text(`\u03b2 = ${num(f.params.beta,3)}    \u03b3 = ${num(f.sample.gamma,3)}`,s.w/2,layout.chipTop+46+4*18+14,'#bfd0e7',s.w<470?10:12);
     s.camera={bounds:[...(s.w<470?context(f).narrowBounds:context(f).bounds)],zoom:f.closeup};s.snap=false;
   },
   equations(f){const a=context(f).selected,b=boost(a,beta(f.params)),L=f.params.length,g=f.sample.gamma;
     const threeD=typeof beta(f.params)==='object'&&(f.params.betaY||f.params.betaZ);
     const formula=threeD?['ct\'=\\gamma(ct-\\boldsymbol\\beta\\cdot\\mathbf r)',
       '\\begin{gathered}\\mathbf r\'=\\mathbf r+A\\boldsymbol\\beta\\\\A=(\\gamma-1)\\frac{\\boldsymbol\\beta\\cdot\\mathbf r}{\\beta^2}-\\gamma ct\\end{gathered}']:['\\begin{gathered}x\'=\\gamma(x-\\beta ct)\\\\ct\'=\\gamma(ct-\\beta x)\\end{gathered}'];
-    const calculator=f.params.scenario==='four-vector'?[`A_\\mu A^\\mu=${fmt(f.sample.vectorNorm)}`]:f.params.scenario==='tensor'?[`T_{\\mu\\nu}T^{\\mu\\nu}=${fmt(f.sample.tensorContraction)}`]:[];
+    const calculator=f.params.scenario==='four-vector'?[`A_\\mu A^\\mu=${tex(f.sample.vectorNorm)}`]:f.params.scenario==='tensor'?[`T_{\\mu\\nu}T^{\\mu\\nu}=${tex(f.sample.tensorContraction)}`]:[];
     return [...formula,
-      threeD?`\\begin{gathered}\\boldsymbol\\beta=(${fmt(f.params.beta)},${fmt(f.params.betaY)},${fmt(f.params.betaZ)})\\\\\\gamma=${fmt(g)}\\end{gathered}`:`\\beta=${fmt(f.params.beta)},\\quad\\gamma=${fmt(g)}`,
-      `\\begin{gathered}x/L=${fmt(a.x/L)},\\quad ct/L=${fmt(C*a.t/L)}\\\\x'/L=${fmt(b.x/L)},\\quad ct'/L=${fmt(C*b.t/L)}\\end{gathered}`,
+      threeD?`\\begin{gathered}\\boldsymbol\\beta=(${tex(f.params.beta)},${tex(f.params.betaY)},${tex(f.params.betaZ)})\\\\\\gamma=${tex(g)}\\end{gathered}`:`\\beta=${tex(f.params.beta)},\\quad\\gamma=${tex(g)}`,
+      `\\begin{gathered}x/L=${tex(a.x/L)},\\quad ct/L=${tex(C*a.t/L)}\\\\x'/L=${tex(b.x/L)},\\quad ct'/L=${tex(C*b.t/L)}\\end{gathered}`,
       '\\Delta s^2=c^2\\Delta t^2-\\Delta x^2-\\Delta y^2-\\Delta z^2',
-      `\\begin{gathered}s^2/L^2=${fmt(interval(a)/L**2)}\\\\\\text{in both }S\\text{ and }S'\\end{gathered}`,...calculator];
+      `\\begin{gathered}s^2/L^2=${tex(interval(a)/L**2)}\\\\\\text{in both }S\\text{ and }S'\\end{gathered}`,...calculator];
   },
   closeupEquation(f){const p=f.params,L=p.length,T=L/C,b=p.beta,g=f.sample.gamma;
     if(f.closeup==='transform')return view.equations(f).slice(0,3);
     switch(p.scenario){
-      case 'moving-mirror':case 'comoving-mirrors':return ['ct=L+vt',`t_{hit}=\\frac{L}{c-v}=\\frac{${fmt(T)}}{1-(${fmt(b)})}=${fmt(f.sample.catchTime)}\\,\\mathrm{s}`,p.scenario==='moving-mirror'?'t_{round}=2L/(c-v)':'t_{round}=L/(c-v)+L/(c+v)',`t_{round}=${fmt(f.sample.roundTripTime)}\\,\\mathrm{s}`];
-      case 'light-clock':return ['(c\\Delta t/2)^2=L^2+(v\\Delta t/2)^2',`\\Delta t=\\gamma\\,2L/c=${fmt(g)}(2)(${fmt(T)})=${fmt(2*g*T)}\\,\\mathrm{s}`];
-      case 'twins':return ['\\tau=\\int\\sqrt{1-u^2/c^2}\\,dt',`\\tau_{home}=${fmt(f.sample.homeAge)}\\,\\mathrm{s}`,`\\tau_{travel}=${fmt(f.sample.travelerAge)}\\,\\mathrm{s}`];
-      case 'velocity-addition':return ['u=\\frac{u\'+v}{1+u\'v/c^2}',`u/c=\\frac{${fmt(p.uBeta)}+(${fmt(b)})}{1+(${fmt(p.uBeta)})(${fmt(b)})}=${fmt(addVelocity(p.uBeta*C,b*C)/C)}`];
-      case 'objects':{if(p.objectType==='flash')return ['|\\mathbf r-\\mathbf r_e|=c(t-t_e)',`R/c=${fmt((f.geometry.wavefronts[0]?.radius||0)/C)}\\,\\mathrm{s}`];const restGamma=gamma(Math.hypot(p.objectBetaX,p.objectBetaY,p.objectBetaZ)),gu=p.frame==='moving'?boost({t:restGamma,x:restGamma*C*p.objectBetaX,y:restGamma*C*p.objectBetaY,z:restGamma*C*p.objectBetaZ},beta(p)).t:restGamma,vertices=f.geometry.solids[0]?.[p.frame]||[],xs=vertices.map(a=>a.x);return ['\\Delta r_{parallel}=\\Delta r_{0,parallel}/\\gamma_u',`\\gamma_u=${fmt(gu)}`,`\\Delta x=${fmt((xs.length?(Math.max(...xs)-Math.min(...xs))/C:0))}\\,\\mathrm{light\\ seconds}`,'\\Delta t=0\\quad\\text{in the measuring frame}'];}
-      case 'length-contraction':case 'pole-barn':return ['L=L_0/\\gamma',`L=${fmt(T)}/${fmt(g)}=${fmt(T/g)}\\,\\mathrm{light\\ seconds}`,'\\Delta t=0\\quad\\text{in the measuring frame}'];
-      case 'flashes':return ['|\\mathbf r-\\mathbf r_e|=c(t-t_e)',`t=${fmt(f.t)}\\,\\mathrm{s}`,'c^2\\Delta t^2-|\\Delta\\mathbf r|^2=0'];
-      case 'four-vector':return ['A\'=\\Lambda A',`A_\\mu A^\\mu=${fmt(f.sample.vectorNorm)}`];
-      case 'tensor':return ['T\'=\\Lambda T\\Lambda^T',`T_{\\mu\\nu}T^{\\mu\\nu}=${fmt(f.sample.tensorContraction)}`];
-      default:return ['\\Delta t\'=\\gamma(\\Delta t-\\beta\\Delta x/c)',`\\Delta t'=-(${fmt(g)})(${fmt(b)})(${fmt(T)})=${fmt(f.sample.simultaneityOffset)}\\,\\mathrm{s}`];
+      case 'moving-mirror':case 'comoving-mirrors':return ['ct=L+vt',`t_{hit}=\\frac{L}{c-v}=\\frac{${tex(T)}}{1-(${tex(b)})}=${tex(f.sample.catchTime)}\\,\\mathrm{s}`,p.scenario==='moving-mirror'?'t_{round}=2L/(c-v)':'t_{round}=L/(c-v)+L/(c+v)',`t_{round}=${tex(f.sample.roundTripTime)}\\,\\mathrm{s}`];
+      case 'light-clock':return ['(c\\Delta t/2)^2=L^2+(v\\Delta t/2)^2',`\\Delta t=\\gamma\\,2L/c=${tex(g)}(2)(${tex(T)})=${tex(2*g*T)}\\,\\mathrm{s}`];
+      case 'twins':return ['\\tau=\\int\\sqrt{1-u^2/c^2}\\,dt',`\\tau_{home}=${tex(f.sample.homeAge)}\\,\\mathrm{s}`,`\\tau_{travel}=${tex(f.sample.travelerAge)}\\,\\mathrm{s}`];
+      case 'velocity-addition':return ['u=\\frac{u\'+v}{1+u\'v/c^2}',`u/c=\\frac{${tex(p.uBeta)}+(${tex(b)})}{1+(${tex(p.uBeta)})(${tex(b)})}=${tex(addVelocity(p.uBeta*C,b*C)/C)}`];
+      case 'objects':{if(p.objectType==='flash')return ['|\\mathbf r-\\mathbf r_e|=c(t-t_e)',`R/c=${tex((f.geometry.wavefronts[0]?.radius||0)/C)}\\,\\mathrm{s}`];const restGamma=gamma(Math.hypot(p.objectBetaX,p.objectBetaY,p.objectBetaZ)),gu=p.frame==='moving'?boost({t:restGamma,x:restGamma*C*p.objectBetaX,y:restGamma*C*p.objectBetaY,z:restGamma*C*p.objectBetaZ},beta(p)).t:restGamma,vertices=f.geometry.solids[0]?.[p.frame]||[],xs=vertices.map(a=>a.x);return ['\\Delta r_{parallel}=\\Delta r_{0,parallel}/\\gamma_u',`\\gamma_u=${tex(gu)}`,`\\Delta x=${tex((xs.length?(Math.max(...xs)-Math.min(...xs))/C:0))}\\,\\mathrm{light\\ seconds}`,'\\Delta t=0\\quad\\text{in the measuring frame}'];}
+      case 'length-contraction':case 'pole-barn':return ['L=L_0/\\gamma',`L=${tex(T)}/${tex(g)}=${tex(T/g)}\\,\\mathrm{light\\ seconds}`,'\\Delta t=0\\quad\\text{in the measuring frame}'];
+      case 'flashes':return ['|\\mathbf r-\\mathbf r_e|=c(t-t_e)',`t=${tex(f.t)}\\,\\mathrm{s}`,'c^2\\Delta t^2-|\\Delta\\mathbf r|^2=0'];
+      case 'four-vector':return ['A\'=\\Lambda A',`A_\\mu A^\\mu=${tex(f.sample.vectorNorm)}`];
+      case 'tensor':return ['T\'=\\Lambda T\\Lambda^T',`T_{\\mu\\nu}T^{\\mu\\nu}=${tex(f.sample.tensorContraction)}`];
+      default:return ['\\Delta t\'=\\gamma(\\Delta t-\\beta\\Delta x/c)',`\\Delta t'=-(${tex(g)})(${tex(b)})(${tex(T)})=${tex(f.sample.simultaneityOffset)}\\,\\mathrm{s}`];
     }
   },
   drawGraph(s,d,f){
@@ -201,6 +207,6 @@ export const view={closeups,graphs,paramVisible,
     if(d.id==='spatial'){spatial(s,f,p);return;}
     if(d.id==='four-vector'||d.id==='tensor'){calculator(s,f,p);return;}
     const key=f.params.frame==='moving'?'moving':'ground';drawDiagram(s,f,p,key,{cone:true,calibration:d.id==='calibration'});
-    s.text(`cursor t = ${fmt(f.t)} s`,s.w/2,s.h-7,'#9eb0c9',10);
+    s.text(`cursor t = ${num(f.t,3)} s`,s.w/2,s.h-7,'#9eb0c9',10);
   },
 };

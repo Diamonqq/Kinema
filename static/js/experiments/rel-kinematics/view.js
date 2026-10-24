@@ -22,6 +22,20 @@ function labelTip(s,p,text,x,y,color,segments=[],placements=null,dir=null){
     richText(s,text,a.x,a.y,color,11,'left');return;
   }
 }
+// The angle symbol sits inside its wedge, between the axis and the vector, on the side the arc is drawn.
+function angleLabel(s,p,text,origin,angle,radius,color,segments){
+  const w=richWidth(s,text,11),side=angle>0?-1:1,pad=2,axis=[p.left,origin[1],p.left+p.width,origin[1]];
+  const spots=[];
+  for(let r=radius+10;r<=radius+70;r+=6)spots.push([origin[0]+r*Math.cos(angle/2),origin[1]-r*Math.sin(angle/2)]);
+  for(let r=radius+8;r<=radius+70;r+=6)spots.push([origin[0]+r,origin[1]+side*11]);
+  for(const [x,y] of spots){
+    const box={left:x-pad,top:y-8-pad,width:w+2*pad,height:16+2*pad};
+    if(box.left<p.left||box.left+box.width>p.left+p.width||box.top<p.top||box.top+box.height>p.top+p.height)continue;
+    if(s.labels.some(l=>box.left<l.x+l.width&&box.left+box.width>l.x&&box.top<l.y+l.height&&box.top+box.height>l.y))continue;
+    if([...segments,axis].some(v=>clipLine(...v,box)))continue;
+    richText(s,text,x,y,color,11,'left');return;
+  }
+}
 const unit=v=>{const n=Math.hypot(v[2]-v[0],v[3]-v[1])||1;return [(v[2]-v[0])/n,(v[3]-v[1])/n];};
 function momentum(s,f,p,key,headTail=false){
   if(s.w>=470&&!f.thumbnail){const size=Math.min(p.width,p.height);p={...p,height:size};}
@@ -41,7 +55,7 @@ function momentum(s,f,p,key,headTail=false){
   });
   if(!f.thumbnail){
     for(const {a,i,v} of outgoing)if(Math.hypot(a.px,a.py)>1e-9)labelTip(s,p,(star?'p*_':'p_')+(i+1),v[2],v[3],colors[i%6],segments,null,unit(v));
-    if(s.w>=470&&(f.breakdown||headTail))for(const {v} of incoming)labelTip(s,p,'p in',v[2],v[3],'#a7b6cc',segments,null,unit(v));
+    if(s.w>=470&&(f.breakdown||headTail))for(const {v} of incoming){const d=unit(v);labelTip(s,p,'p in',v[2],v[3],'#a7b6cc',segments,Math.abs(d[1])<.2?[[8,-13],[8,13],[-richWidth(s,'p in',11)-8,-13]]:null,Math.abs(d[1])<.2?null:d);}
   }
   if(f.breakdown&&!headTail&&e.final[0]){
     const a=e.final[0],color=colors[0],origin=[m.x(0),m.y(0)],tip=[m.x(a.px),m.y(a.py)],elbow=[tip[0],origin[1]];
@@ -56,7 +70,7 @@ function momentum(s,f,p,key,headTail=false){
       labelTip(s,p,name,(u[0]+v[0])/2,(u[1]+v[1])/2,color,segments,placements);
     }
     const angle=Math.atan2(a.py,a.px),radius=Math.min(23,Math.hypot(tip[0]-origin[0],tip[1]-origin[1])*.3);
-    if(s.w>=470&&Math.abs(angle)>.4&&Math.abs(angle)<Math.PI-.3&&radius>8){clipPanel(s,p,()=>{s.ctx.strokeStyle=color;s.ctx.lineWidth=1;s.ctx.beginPath();s.ctx.arc(...origin,radius,0,-angle,angle>0);s.ctx.stroke();});labelTip(s,p,star?'\u03b8*_1':'\u03b8_1',origin[0]+(radius+22)*Math.cos(angle/2),origin[1]-(radius+22)*Math.sin(angle/2),color,segments);}
+    if(s.w>=470&&Math.abs(angle)>.4&&Math.abs(angle)<Math.PI-.3&&radius>8){clipPanel(s,p,()=>{s.ctx.strokeStyle=color;s.ctx.lineWidth=1;s.ctx.beginPath();s.ctx.arc(...origin,radius,0,-angle,angle>0);s.ctx.stroke();});angleLabel(s,p,star?'\u03b8*_1':'\u03b8_1',origin,angle,radius,color,segments);}
   }
 }
 export function paramVisible(spec,p){const k=spec.key,r=p.reaction,decay=['pion-decay','decay','muon'].includes(r);
