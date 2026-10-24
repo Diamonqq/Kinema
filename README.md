@@ -7,6 +7,7 @@
 
 <p align="center">
   <a href="#get-started">Get started</a> ·
+  <a href="#experiments">Experiments</a> ·
   <a href="docs/PUBLIC-SETUP.md">Setup guide</a> ·
   <a href="docs/AGENT-SETUP.md">Install on another computer</a> ·
   <a href="#what-this-preview-includes">Preview status</a> ·
@@ -23,6 +24,41 @@ Play a prepared simulation, move closer to the object, and reveal forces or
 components when you need them. Keep the picture simple until it's time for more.
 
 <img src="docs/images/visuals.png" alt="Kinema's incline simulation showing weight components, normal force, friction and the equation along the slope" width="100%">
+
+## Experiments
+
+Eleven interactive physics labs, inspired by the 1990s
+[CUPS](https://github.com/palazzol/cups) simulations (Consortium for Upper-Level
+Physics Software) and rebuilt from scratch for the browser. Each one opens beside
+a normal chat. Ask for a change in plain words, such as "make the second spring
+stiffer", and the experiment follows. Every applied change is shown in the reply.
+
+<img src="docs/images/experiments.png" alt="Kinema's coupled-oscillators experiment open beside a chat, with the Breakdown showing the spring forces and the equation of motion" width="100%">
+
+| Mechanics | |
+| --- | --- |
+| Coupled oscillators | Normal modes, beats, damping and driven resonance |
+| Motion generator | Choose a force law; follow the trajectory and the work it does |
+| Projectile in air | Drag, wind and spin compared with a vacuum flight |
+| Pendulum | From a gentle swing to driven chaos, with phase space and Poincaré sections |
+| Race track | Friction and banking on a flat or banked corner |
+| Gravitational orbits | Kepler orbits, equal areas and the effective potential |
+| Anharmonic oscillator | How the shape of a potential well shapes the motion |
+| Two-body collisions | Hard spheres, springs and inverse-square scattering, in the lab and center-of-mass frames |
+| Rigid body rotation | Torque-free tumbling, the intermediate-axis flip and a precessing top |
+
+| Relativity | |
+| --- | --- |
+| Minkowski diagrams | The same events, light rays and clocks drawn in two frames |
+| Relativistic kinematics | Energy and momentum in the lab and center-of-momentum frames |
+
+- **Real equations, in proportion.** Symplectic integrators for conservative
+  motion, RK4 for damped and driven systems, quaternions for rotation and exact
+  Lorentz transforms. Automated tests check them against analytic results.
+- **Zoom in on the physics.** Click a spring, pivot or periapsis to see the
+  governing term with live values.
+- **Breakdown on request.** Force and trig decompositions with the equation as it changes.
+- **Linked graphs.** Graphs share one time cursor with the scene; scrub back to any moment.
 
 ## Keep the useful things beside you
 
@@ -132,6 +168,7 @@ is especially useful.
 ## Credits and licensing
 
 Built by [Conner](https://github.com/Diamonqq).
+Experiments are inspired by [CUPS](https://github.com/palazzol/cups); no CUPS code or text is used.
 Provider marks retain their original licenses; see
 [third-party notices](THIRD-PARTY-NOTICES.md).
 No project-wide open-source license has been selected yet.

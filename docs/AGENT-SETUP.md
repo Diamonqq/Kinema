@@ -10,7 +10,7 @@ Give your setup agent this instruction:
 
 ## For the setup agent
 
-The release audited for this guide is **v1.49.0**. Use its tag or source ZIP;
+The release audited for this guide is **v1.50.0**. Use its tag or source ZIP;
 do not assume an unreleased `main` commit is a tested release.
 Windows with Python **3.12.5** was checked in a fresh environment. Python 3.11+
 is supported by the source, but other Python/platform combinations were not
@@ -19,14 +19,15 @@ checked on real devices.
 1. Check for an existing installation and data first. Keep its data folder.
    Choose an ordinary user-owned install directory, not a system directory.
 2. Install Python and Git if needed using their official distributions. Clone
-   with `git clone --branch v1.49.0 https://github.com/Diamonqq/Kinema.git`, or
+   with `git clone --branch v1.50.0 https://github.com/Diamonqq/Kinema.git`, or
    extract the release's public ZIP. This creates a version-pinned checkout.
 3. Follow the environment and launch commands in [Setup](PUBLIC-SETUP.md).
    Do not enable PowerShell scripts; call `.venv\Scripts\python.exe` directly.
 4. Use a free localhost port. If 8790 is busy, use `--port 8791`; do not stop
    an unrelated service. Keep the launched terminal running while studying.
 5. Verify the welcome loads, **Explore without AI** opens Chapters, a prepared
-   formula renders, and a Library visual plays and resets. These features need
+   formula renders, a Library visual plays and resets, and an
+   Experiments lab (for example Pendulum) plays and resets. These features need
    no AI sign-in and work without a CDN connection once Python is installed.
 6. Install only the AI helper the person chooses in Settings. Codex and Kimi's
    npm installation needs Node.js; Claude's Windows installation uses winget.
