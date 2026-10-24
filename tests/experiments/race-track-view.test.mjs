@@ -30,3 +30,10 @@ test('thumbnail flag suppresses race captions independent of canvas height',()=>
  const f={params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:false};
  view.draw(s,{...f,thumbnail:true});assert.equal(texts,0);s.h=155;view.draw(s,{...f,thumbnail:false});assert.equal(texts,1);
 });
+
+
+test('tiny signed force substitutions use shared TeX formatting without e notation',()=>{
+ const params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),bank:20};params.speed=Math.sqrt(params.radius*params.gravity*Math.tan(params.bank*Math.PI/180))+1e-7;
+ const instance=model.create(params),f={params,instance,sample:instance.sample(),geometry:instance.geometry()};
+ assert.ok(view.equations(f).some(e=>e.includes('\\times10^{')));assert.ok(view.equations(f).every(e=>!/[0-9]e[+-][0-9]/.test(e)));
+});

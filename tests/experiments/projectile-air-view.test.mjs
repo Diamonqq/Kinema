@@ -22,11 +22,11 @@ test('projectile thumbnail draws apparatus without readouts or captions',()=>{
  view.draw(s,{params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:false,thumbnail:true});assert.equal(texts,0);assert.ok(s.camera.scale>0);
 });
 
-test('320 px flight framing uses at least 80% of the 300 px stage width (1e-9 px tolerance)',()=>{
- for(const preset of model.presets){
-  const data=preview(preset.values),stage={w:300,h:440,snap:true};
-  const map=mapWorld(stage,data.bounds),xs=data.ghost.map(q=>map.x(q.x));
-  assert.ok(Math.max(...xs)-Math.min(...xs)>=.8*stage.w-1e-9,preset.id);
+test('narrow framing reserves drag and velocity tip margins (1e-9 px tolerance)',()=>{
+ for(const preset of model.presets)for(const w of [300,370]){
+  const data=preview(preset.values),map=mapWorld({w,h:440,snap:true},data.bounds);
+  assert.ok(map.x(0)>=64-1e-9,preset.id);
+  assert.ok(Math.max(...data.path.map(q=>map.x(q.x)))<=w-48+1e-9,preset.id);
  }
 });
 
@@ -37,4 +37,27 @@ test('leader clipping detects crossing and grazing chips, and permits clear rout
  assert.equal(segmentHitsRect(30,30,90,90,chip),true);
  assert.equal(segmentHitsRect(0,10,90,10,chip),false);
  assert.equal(segmentHitsRect(10,0,10,90,chip),false);
+});
+
+
+test('lowered canvas subscripts retain a single full collision rectangle',async()=>{
+ const {label}=await import('../../static/js/experiments/projectile-air/labels.js'),drawn=[];
+ const ctx={font:'',measureText(t){return {width:t.length*Number(this.font.match(/[0-9.]+/)[0])*.5};},save(){},restore(){},fillText(text,x,y){drawn.push({text,x,y,font:this.font});}};
+ const stage={ctx,labels:[],text(){assert.fail('Subscript must use composite drawing');}};
+ label(stage,'v_x',40,20,'blue',12);
+ assert.deepEqual(drawn.map(d=>d.text),['v','x']);assert.ok(drawn[1].y>drawn[0].y);assert.ok(parseFloat(drawn[1].font)<parseFloat(drawn[0].font));
+ assert.equal(stage.labels.length,1);assert.equal(stage.labels[0].text,'v_x');assert.ok(stage.labels[0].y+stage.labels[0].height>drawn[1].y);
+});
+
+test('all flight arrows and component labels stay inside 1280/390/320 viewports (1e-7 px tolerance)',async()=>{
+ const {VectorStage}=await import('../../static/js/experiments/kit/stage.js');globalThis.devicePixelRatio=1;
+ for(const preset of model.presets)for(const width of [566,370,300])for(const t of [0,.05,.5,1.5,preview(preset.values).path.at(-1).t*.75]){
+  const ctx=new Proxy({font:'12px system-ui',textAlign:'center',measureText(t){const size=parseFloat(this.font),width=t.length*size*.55;return {width,actualBoundingBoxLeft:this.textAlign==='right'?width:this.textAlign==='left'?0:width/2,actualBoundingBoxRight:this.textAlign==='right'?0:this.textAlign==='left'?width:width/2,actualBoundingBoxAscent:size*.75,actualBoundingBoxDescent:size*.25};}},{get:(o,k)=>k in o?o[k]:(()=>{})});
+  const stage=new VectorStage({width,height:440,getBoundingClientRect:()=>({width,height:440}),getContext:()=>ctx}),instance=model.create(preset.values),arrows=[];
+  const arrow=stage.arrow.bind(stage);stage.arrow=(x,y,tx,ty,...rest)=>{arrows.push([x,y,tx,ty]);arrow(x,y,tx,ty,...rest);};
+  instance.step(t);stage.begin();view.draw(stage,{params:instance.params||preset.values,instance,sample:instance.sample(),geometry:instance.geometry(),t,closeup:'',breakdown:true});
+  for(const a of arrows)assert.ok(a.every((v,j)=>v>=-1e-7&&v<=(j%2?440:width)+1e-7),`${preset.id} ${width} ${t}: arrow ${a}`);
+  for(const r of stage.labels)assert.ok(r.x>=-1e-7&&r.y>=-1e-7&&r.x+r.width<=width+1e-7&&r.y+r.height<=440+1e-7,`${preset.id} ${width} ${t}: ${r.text}`);
+  if(instance.sample().speed>1e-3){assert.ok(stage.labels.some(r=>r.text==='v_x'));if(Math.abs(instance.sample().vy)>1e-3)assert.ok(stage.labels.some(r=>r.text==='v_y'));}
+ }
 });

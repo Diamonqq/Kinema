@@ -395,12 +395,12 @@
       "series": [
         {
           "key": "vx",
-          "label": "vx",
+          "label": "Horizontal",
           "color": "#8ab9ff"
         },
         {
           "key": "vy",
-          "label": "vy",
+          "label": "Vertical",
           "color": "#b0c9ad"
         }
       ]

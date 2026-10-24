@@ -1,7 +1,8 @@
 import {curveForces,speedLimits,trackPoint} from './model.js';
+import {num,texNum} from '../kit/format.js';
 const blue='#8ab9ff',green='#b0c9ad',orange='#e9bb88',purple='#bcabef',muted='#8c9cb2',rad=Math.PI/180;
-const fmt=n=>Number(n.toPrecision(3)).toString().replace('-', '\u2212');
-const forceValue=n=>String.raw`${Number((Math.abs(n)>=1000?n/1000:n).toPrecision(3))}\,\mathrm{${Math.abs(n)>=1000?'kN':'N'}}`;
+
+const forceValue=n=>String.raw`${texNum(Math.abs(n)>=1000?n/1000:n)}\,\mathrm{${Math.abs(n)>=1000?'kN':'N'}}`;
 export const closeups=[{id:'corner',label:'Zoom · bank forces'},{id:'grip',label:'Zoom · tire grip'}];
 export const graphs=[
  {id:'speed',label:'Speed · next corner limits',unit:'m/s',series:[{key:'speed',label:'v',color:blue},{key:'cornerMaxSpeed',label:'max',color:orange},{key:'cornerMinSpeed',label:'min',color:purple}]},
@@ -98,7 +99,7 @@ export const view={graphs,closeups,
   c.strokeStyle='#28394e';c.lineWidth=Math.max(2,Math.min(9,4*m.scale));c.stroke();c.strokeStyle='#60748e';c.lineWidth=1;c.setLineDash([3,5]);c.stroke();c.setLineDash([]);
   s.line(m.x(0),m.y(-R)-6,m.x(0),m.y(-R)+6,'#b1c3db',2);
   const point=f.geometry.position;car(s,m.x(point.x),m.y(point.y),f.geometry.heading,m.scale,q.lostGrip?'#e4a9bd':blue);s.circle(m.x(point.x),m.y(point.y),5,blue+'25');
-  if(!thumb)s.text(q.lostGrip?'Grip exceeded · change setup':`${fmt(q.speed)} m/s · lap ${q.laps+1}`,s.w/2,29,q.lostGrip?'#e4a9bd':muted,narrow?11:13);
+  if(!thumb)s.text(q.lostGrip?'Grip exceeded · change setup':`${num(q.speed)} m/s · lap ${q.laps+1}`,s.w/2,29,q.lostGrip?'#e4a9bd':muted,narrow?11:13);
  },
  equations(f){const p=f.params,a=bankSnapshot(f);return [
   String.raw`N\sin\theta+f\cos\theta=\frac{mv^2}{r}`,
@@ -111,6 +112,6 @@ export const view={graphs,closeups,
  ];},
  closeupEquation(f){const p=f.params,a=bankSnapshot(f),limit=speedLimits(p);
   if(f.closeup==='grip')return [String.raw`f_\parallel^2+f_\perp^2\le(\mu N)^2`,String.raw`f_\perp=${forceValue(a.lateral)}`,String.raw`f_\parallel=${forceValue(a.longitudinal)}`,String.raw`\mu N=${forceValue(a.capacity)}`];
-  return [String.raw`N=m(g\cos\theta+\tfrac{v^2}{r}\sin\theta)`,String.raw`N=${forceValue(a.normal)}`,String.raw`f=m(\tfrac{v^2}{r}\cos\theta-g\sin\theta)`,String.raw`f=${forceValue(a.lateral)}`,String.raw`v_{\max}=${Number(limit.maxSpeed.toPrecision(3))}\,\mathrm{m/s}`];
+  return [String.raw`N=m(g\cos\theta+\tfrac{v^2}{r}\sin\theta)`,String.raw`N=${forceValue(a.normal)}`,String.raw`f=m(\tfrac{v^2}{r}\cos\theta-g\sin\theta)`,String.raw`f=${forceValue(a.lateral)}`,String.raw`v_{\max}=${texNum(limit.maxSpeed)}\,\mathrm{m/s}`];
  },
 };
