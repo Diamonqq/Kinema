@@ -6,6 +6,14 @@ import {spectrum} from '../anharmonic/analysis.js';
 export const C={blue:'#8ab9ff',gold:'#e9bb88',green:'#b0c9ad',violet:'#bcabef',dim:'#71839b',ink:'#cbd8e9',grid:'#344355'};
 export const fmt=(x,n=3)=>num(x,n);
 export const tex=(x,n=3)=>texNum(x,n);
+// A number with its unit for a substituted equation: texU(9.81,'m/s^2') -> 9.81\,\mathrm{m/s^2}.
+export const texU=(x,unit,n=3)=>texNum(x,n)+(unit?String.raw`\,\mathrm{${unit}}`:'');
+// Box of a zoom chip as the shell places it: centered on x (kept inside the canvas), top edge at y; padded by 3 px.
+export function chipBox(s,text,anchor){
+ const narrow=s.w<=440;s.ctx.font=(narrow?10:11)+'px system-ui,sans-serif';
+ const width=s.ctx.measureText(text).width+(narrow?18:24)+10,height=(narrow?24:32),x=Math.max(width/2+4,Math.min(s.w-width/2-4,anchor.x));
+ return {x:x-width/2,y:anchor.y-3,width,height:height+6,chipHeight:height};
+}
 export function label(s,text,x,y,color=C.ink,size=12,align='center'){
  const c=s.ctx,parts=String(text).split(/(_\{[^}]+\})/).filter(Boolean).map(t=>({text:t.startsWith('_{')?t.slice(2,-1):t,sub:t.startsWith('_{')}));
  const widths=parts.map(p=>{c.font=`${size*(p.sub?.8:1)}px system-ui,sans-serif`;return c.measureText(p.text).width;}),width=widths.reduce((a,b)=>a+b,0),left=align==='left'?x:align==='right'?x-width:x-width/2;

@@ -1,4 +1,4 @@
-import {C,fmt,tex,withUnit,label,tip,bead,fixedMap,linePlot} from './view-tools.js';
+import {C,fmt,tex,texU,withUnit,label,tip,bead,fixedMap,linePlot} from './view-tools.js';
 const graphs=[
  {id:'motion',label:'Position',unit:'m',series:[{key:'x',label:'x',color:C.blue},{key:'y',label:'y',color:C.gold},{key:'z',label:'z',color:C.violet}]},
  {id:'velocity',label:'Velocity',unit:'m/s',series:[{key:'vx',label:'vx',color:C.blue},{key:'vy',label:'vy',color:C.gold},{key:'vz',label:'vz',color:C.violet}]},
@@ -48,10 +48,10 @@ export function motionBounds(p,T=60){
 function project(p,q){return p.dimensions==='1d'&&p.gravity?[0,q[0]]:[q[0]+(p.dimensions==='3d'?.45*q[2]:0),q[1]+(p.dimensions==='3d'?.25*q[2]:0)];}
 export function forceEquations(f){
  const p=f.params,q=f.sample,forces=f.geometry.forces,lines=[];
- if(p.spring||p.cubic){const symbolic=[],numeric=[];if(p.spring){symbolic.push('-kx');numeric.push(String.raw`-(${tex(p.spring)})(${tex(q.x)})`);}if(p.cubic){symbolic.push(String.raw`-\beta x^3`);numeric.push(String.raw`-(${tex(p.cubic)})(${tex(q.x)})^3`);}lines.push('F_{s,x}='+symbolic.join(''),'='+numeric.join('')+String.raw`\,\mathrm N`,String.raw`=${tex(forces.spring[0])}\,\mathrm N`);}
+ if(p.spring||p.cubic){const symbolic=[],numeric=[];if(p.spring){symbolic.push('-kx');numeric.push(String.raw`-(${texU(p.spring,'N/m')})(${texU(q.x,'m')})`);}if(p.cubic){symbolic.push(String.raw`-\beta x^3`);numeric.push(String.raw`-(${texU(p.cubic,'N/m^3')})(${texU(q.x,'m')})^3`);}lines.push('F_{s,x}='+symbolic.join(''),'='+numeric[0],...numeric.slice(1),String.raw`=${tex(forces.spring[0])}\,\mathrm N`);}
  if(p.constantRestoring)lines.push(String.raw`F_{c,x}=-s\operatorname{sgn}x=${tex(forces.constantRestoring[0])}\,\mathrm N`);
- if(p.gravity)lines.push(String.raw`(mg)_{${p.dimensions==='1d'?'x':'y'}}=-mg`,String.raw`=-(${tex(p.mass)})(${tex(p.gravity)})=${tex(-p.mass*p.gravity)}\,\mathrm N`);
- if(p.linearDrag||p.quadraticDrag){const symbolic=[...(p.linearDrag?['b']:[]),...(p.quadraticDrag?['c|v|']:[])].join('+'),numeric=[...(p.linearDrag?[String(p.linearDrag)]:[]),...(p.quadraticDrag?[`${tex(p.quadraticDrag)}(${tex(q.speed)})`]:[])].join('+');lines.push(`F_{D,x}=-(${symbolic})v_x`,`=-(${numeric})(${tex(q.vx)})`+String.raw`\,\mathrm N`,String.raw`=${tex(forces.drag[0])}\,\mathrm N`);}
+ if(p.gravity)lines.push(String.raw`(mg)_{${p.dimensions==='1d'?'x':'y'}}=-mg`,String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})`,String.raw`=${tex(-p.mass*p.gravity)}\,\mathrm N`);
+ if(p.linearDrag||p.quadraticDrag){const symbolic=[...(p.linearDrag?['b']:[]),...(p.quadraticDrag?['c|v|']:[])].join('+'),numeric=[...(p.linearDrag?[texU(p.linearDrag,'kg/s')]:[]),...(p.quadraticDrag?[`${texU(p.quadraticDrag,'kg/m')}(${texU(q.speed,'m/s')})`]:[])].join('+');lines.push(`F_{D,x}=-(${symbolic})v_x`,`=-(${numeric})`,`(${texU(q.vx,'m/s')})`,String.raw`=${tex(forces.drag[0])}\,\mathrm N`);}
  if(p.inverseSquare)lines.push(String.raw`r_\epsilon=\sqrt{r^2+\epsilon^2}`,String.raw`F_{g,x}=-m\mu x/r_\epsilon^3`,String.raw`=${tex(forces.attraction[0])}\,\mathrm N`);
  if(p.magnetic&&p.dimensions!=='1d')lines.push(String.raw`F_{B,x}=qBv_y=${tex(forces.magnetic[0])}\,\mathrm N`,String.raw`F_{B,y}=-qBv_x=${tex(forces.magnetic[1])}\,\mathrm N`);
  if(p.forceX||p.ramp||p.drive){const terms=[...(p.forceX?['F_x']:[]),...(p.ramp?['at']:[]),...(p.drive?[String.raw`F_d\cos\Omega t`]:[])];lines.push('F_{{app},x}='+terms.join('+'),String.raw`=${tex(forces.applied[0])}\,\mathrm N`);}

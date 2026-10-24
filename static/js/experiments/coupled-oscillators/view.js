@@ -1,6 +1,6 @@
 import {palette} from '../kit/stage.js';
 import {create} from './model.js';
-import {label} from '../motion-generator/view-tools.js';
+import {label,tex,texU} from '../motion-generator/view-tools.js';
 const envelopes=new WeakMap(),drag=new WeakMap(),sub=n=>String(n).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
 const fmt=x=>(Math.abs(x)<.0005?0:x).toFixed(3);
 const signed=x=>fmt(x).replace('-','−'),windows=new WeakMap();
@@ -104,7 +104,7 @@ export const view={
   const definitions=forces.map(force=>force.tex+'='+(force.spring===i?(i?`-k_{${i+1}}(x_{${j}}-${left})`:'-k_1x_1'):(i+1<p.n?`k_{${i+2}}(${right}-x_{${j}})`:`-k_{${i+2}}x_{${j}}`))+`=${forceValue(force.value).replace('−','-')}\\,\\mathrm{N}`);
   return `\\begin{gathered}m_{${j}}\\ddot x_{${j}}=${sum}${extra}\\\\${definitions.join('\\\\')}\\\\(${m.mass}\\,\\mathrm{kg})\\ddot x_{${j}}=${g.forces[i].toFixed(2)}\\,\\mathrm{N}\\end{gathered}`;
  });},
- closeupEquation(f){const a=f.geometry.masses[0],b=f.geometry.masses[1],delta=b.displacement-a.displacement,F=-f.params.k2*delta;return ['F_{2,2}=-k_2(x_2-x_1)',`=-${f.params.k2}(${fmt(delta)})=${fmt(F)}\\,\\mathrm{N}`];},
+ closeupEquation(f){const a=f.geometry.masses[0],b=f.geometry.masses[1],delta=b.displacement-a.displacement,F=-f.params.k2*delta;return ['F_{2,2}=-k_2(x_2-x_1)',`=-(${texU(f.params.k2,'N/m')})(${texU(delta,'m')})`,`=${tex(F)}\\,\\mathrm{N}`];},
  pointer(s,f,p){
   if(f.closeup)return false;const {map}=setup(s,f),cy=map.y(0),mw=Math.min(76,.48*map.scale);
   if(p.type==='down'){const i=f.geometry.masses.findIndex(m=>Math.abs(p.x-map.x(m.x))<mw*.7&&Math.abs(p.y-cy)<mw*.7);if(i<0)return false;drag.set(s,{i,start:p.x,x:f.geometry.masses[i].displacement});const initial={modeA:0,modeB:0};f.geometry.masses.forEach((m,j)=>{initial['x'+(j+1)]=Math.round(Math.max(-.3,Math.min(.3,m.displacement))*100)/100;initial['v'+(j+1)]=0});f.setParams(initial);return true;}

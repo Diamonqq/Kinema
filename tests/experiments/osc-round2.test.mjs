@@ -46,3 +46,28 @@ test('linePlot: round ticks with zero, not padded extremes', () => {
   assert.ok(numeric.length >= 5);
   for (const t of numeric) assert.ok(t.replace('−', '').replace('.', '').length <= 3, t);
 });
+
+// Round 3: every substituted number in a force or torque equation carries its unit.
+async function labFrame(id, values) {
+  const {model: m} = await import('../../static/js/experiments/' + id + '/model.js'), {view} = await import('../../static/js/experiments/' + id + '/view.js');
+  const params = Object.fromEntries(m.params.map(p => [p.key, values?.[p.key] ?? p.value])), instance = m.create(params);
+  return {view, frame: {params, instance, t: 0, sample: instance.sample(), geometry: instance.geometry?.(), samples: [], breakdown: false, closeup: ''}};
+}
+const bareProduct = /\)\s*\(\s*-?[0-9.]+\s*\)/;
+
+test('substituted equations show units in every factor', async () => {
+  const pend = await labFrame('pendulum');
+  const pl = pend.view.equations(pend.frame).join('\n');
+  assert.ok(pl.includes(String.raw`-(1.00\,\mathrm{kg})(9.81\,\mathrm{m/s^2})\sin(1.00\,\mathrm{rad})`));
+  assert.ok(pl.includes(String.raw`-(1.00\,\mathrm{kg})(9.81\,\mathrm{m/s^2})(1.00\,\mathrm{m})`)&&pl.includes(String.raw`\sin(1.00\,\mathrm{rad})`));
+  assert.ok(pl.includes(String.raw`\cos(1.00\,\mathrm{rad})`));
+  const mg = await labFrame('motion-generator', {spring: 1, x0: 1});
+  const ml = mg.view.equations(mg.frame).join('\n');
+  assert.ok(ml.includes(String.raw`-(1.00\,\mathrm{N/m})(1.00\,\mathrm{m})`));
+  const an = await labFrame('anharmonic', {k: 1, quartic: 1, x0: 1});
+  const al = an.view.equations(an.frame).join('\n');
+  assert.ok(al.includes(String.raw`=-(1.00\,\mathrm{N/m})(1.00\,\mathrm{m})`)&&al.includes(String.raw`-(1.00\,\mathrm{N/m^3})(1.00\,\mathrm{m})^3`));
+  for (const text of [pl, ml, al]) assert.ok(!bareProduct.test(text), text);
+  const co = await labFrame('coupled-oscillators');
+  assert.ok(co.view.closeupEquation(co.frame).join('\n').includes(String.raw`\mathrm{N/m}`));
+});
