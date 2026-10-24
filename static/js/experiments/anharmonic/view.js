@@ -47,7 +47,7 @@ function potentialPlot(s,f){
 export const view={graphs,closeups,
  key:f=>f.closeup?'Restoring force = negative potential slope':'Blue: position \u00b7 gold: potential \u00b7 green: energy',
  closeupAnchors:s=>({force:{x:s.w/2,y:s.h-74}}),
- draw(s,f){if(f.closeup){apparatus(s,f,{top:65,bottom:s.h-120,zoom:true});label(s,f.params.potential.startsWith('walls')?'Two springs \u00b7 actual length and separation':f.params.potential==='morse'||f.params.potential==='lennard-jones'?'Attraction / repulsion along the bond':'One coordinate \u00b7 signed restoring force',s.w/2,44,C.ink,s.w<360?11:13);}
+ draw(s,f){if(f.thumbnail){apparatus(s,{...f,breakdown:false},{top:22,bottom:s.h-22});return;}if(f.closeup){apparatus(s,f,{top:65,bottom:s.h-120,zoom:true});label(s,f.params.potential.startsWith('walls')?'Two springs \u00b7 actual length and separation':f.params.potential==='morse'||f.params.potential==='lennard-jones'?'Attraction / repulsion along the bond':'One coordinate \u00b7 signed restoring force',s.w/2,44,C.ink,s.w<360?11:13);}
   else {const end=potentialPlot(s,f);apparatus(s,f,{top:end+28,bottom:s.h-124});}
   label(s,'x '+fmt(f.sample.x)+' m   v '+fmt(f.sample.v)+' m/s',s.w/2,s.h-105,C.blue,11);
  },

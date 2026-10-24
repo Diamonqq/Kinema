@@ -179,11 +179,32 @@ explicit UI limits, not missing core physics or claimed rendered features.
 
 ## Delivered view verification
 
-The owned Node suite passed 56/56. The parent ran the isolated hidden-Edge
-harness on the final source: 327/327 browser checks, no browser exceptions,
+The owned Node suite passed 62/62. The parent ran the isolated hidden-Edge
+harness on the final source: 335/335 browser checks, no browser exceptions,
 110 captures at 1280 and 320 pixels, browser context closed. This covered gallery
 entry, every preset, a setup edit, play/pause, numerical seek completion, fixed
 camera/reset, every close-up and return, Breakdown equations/overlap checks,
 every graph, and narrow fitting. Updated scene/close-up/Breakdown/graph captures
 were inspected; no installed-build or real-device claim is made.
 Evidence: round-156/osc-views/{browser.json,node.tap,verification.json,cleanup.json}.
+
+
+## Gallery and force-label polish
+
+Gallery rendering honors `frame.thumbnail`: apparatus only, with no readouts,
+caption text, force labels or embedded plots. The normal experiment retains its
+linked graphs and governing equations. The pendulum force view now frames the
+fixed conservative energy envelope in the main scene and force views when available; driven, rotating and
+approximate-law cases retain full-circle bounds. This enlarges a small swing
+without tracking the bob or clipping a later swing. Force-tip labels avoid all
+three arrow shafts as well as existing labels, the bob and the chip/caption row.
+
+Regression checks include zero text in all three thumbnails, visible shaft-free
+pendulum force terms at desktop/narrow sizes, the fixed envelope over 60 seconds
+for every pendulum preset, and useful magnification in a 340-pixel-high scene.
+Workflow friction: hiding the Graphs element directly leaves the shell's narrow
+layout class active. The browser harness now uses `setGraphsOpen(false)`, the
+same state-changing path as the user's Graphs button.
+
+Both oscillator spectra start amplitude at zero. Custom graphs reserve a
+separate caption row above the data, so axis names never sit on a peak.

@@ -52,6 +52,12 @@ export const view={graphs,closeups,
  closeupAnchors:s=>({force:{x:s.w/2,y:s.h-74}}),
  draw(s,f){
   const p=f.params,g=f.geometry,zoom=!!f.closeup;
+  if(f.thumbnail){
+   const bounds=motionBounds(p),wall=bounds[0]-(bounds[1]-bounds[0])*.22;bounds[0]=wall-.1;
+   const m=fixedMap(s,bounds,{top:18,bottom:18,padding:18}),[x,y]=project(p,g.position),px=m.x(x),py=m.y(y);
+   s.line(m.x(wall),py-18,m.x(wall),py+16,C.dim,3);s.line(m.x(wall),py+16,s.w-18,py+16,C.grid,1);
+   s.spring(m.x(wall),py,px-9,py,C.dim,6);bead(s,px,py,10);return;
+  }
   const mix=(zooms.get(s)||0)+((zoom?1:0)-(zooms.get(s)||0))*.22;zooms.set(s,mix);s.avoid=[];
   if(zoom||f.breakdown){
    const forces=Object.entries(g.forces).filter(([,v])=>Math.hypot(...v)>1e-9),max=Math.max(1,...forces.map(([,v])=>Math.hypot(...v))),m=fixedMap(s,[-1.2,1.2,-.8,.8],{top:58,bottom:132,padding:40}),cx=m.x(0),cy=m.y(0),extent=Math.min(s.w*.26,(s.h-155)*.30),radius=17+11*mix;
