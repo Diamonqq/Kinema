@@ -93,7 +93,9 @@ export function forecast(model,params,options={}){
 }
 
 export function chipAnchors(s,ids){const cols=s.w<460?2:3,rows=Math.ceil(ids.length/cols);return Object.fromEntries(ids.map((id,i)=>[id,{x:s.w*((i%cols)+.5)/cols,y:12+Math.floor(i/cols)*30}]));}
-export function title(s,text){s.text(text,s.w/2,48,C.pale,s.w<380?12:14);}
+export function title(s,text){s.text(text,s.w/2,s.w<460?52:48,C.pale,s.w<380?12:14);}
+// Same legend as the kit's graphs: a dot and a label per series along the bottom edge.
+export function graphLegend(s,series){let x=76;for(const v of series){s.circle(x+3,s.h-6,2.5,v.color);s.text(v.label,x+10,s.h-6,'#acb9cc',11,'left');x+=Math.max(46,v.label.length*7.5+22);}}
 export function label(s,text,x,y,color=C.pale){
  const c=s.ctx;c.font='12px system-ui';const width=c.measureText(text).width,yy=Math.max(38,Math.min(s.h-40,y));
  x=Math.max(width/2+8,Math.min(s.w-width/2-8,x));

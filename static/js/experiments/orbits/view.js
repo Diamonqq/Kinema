@@ -1,7 +1,7 @@
 import {num as fmt,texNum as tex} from '../kit/format.js';
 import {model,G} from './model.js';
 import {startSection,crossingElapsed} from './section.js';
-import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,axes,label,sceneHeight} from './scene.js';
+import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,axes,label,sceneHeight,graphLegend} from './scene.js';
 import {placeChips} from '../collisions/chips.js';
 export const ENERGY_UNIT=1e12,FORCE_UNIT=1e11;
 // Scaled masses give huge forces; show them with an SI prefix (66.7 GN, not 6.67×10¹⁰ N).
@@ -170,6 +170,7 @@ export const view={graphs,closeups,
    axes(s,{left,right,top,bottom,xmin:start,xmax:end,lo,hi,x:map.x,y:map.y,xunit:' s'});
    for(const v of d.series)linePath(s,rows.map(p=>({x:p.t,y:p[v.key]/ENERGY_UNIT})),map,v.color,1.5);
    if(f.t<=end)s.line(map.x(f.t),top,map.x(f.t),bottom,C.pale,1);
+   graphLegend(s,['kinetic','potential','energy'].map(k=>d.series.find(v=>v.key===k)));
    return;
   }
   if(d.id==='poincare'){drawSection(s,f,true);return;}

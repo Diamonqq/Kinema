@@ -1,8 +1,20 @@
 import {num as fmt,texNum as tex} from '../kit/format.js';
 import {runBatches} from '../orbits/work.js';
 import {model,interactionAt,scatteringCurve,differentialCrossSection} from './model.js';
-import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sceneHeight,segmentHitsRect} from '../orbits/scene.js';
+import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sceneHeight,segmentHitsRect,motionBatches} from '../orbits/scene.js';
 import {placeChips} from './chips.js';
+// The Energy legend lists only curves you can see: a curve that is identically zero is dropped (named in the entry that remains),
+// and K is merged with E + Q when the two coincide for the whole run.
+const energyCache=new WeakMap();
+export function energySeries(p){
+ if(energyCache.has(p))return energyCache.get(p);
+ const base=graphs.find(g=>g.id==='energy').series;let rows=[];for(const b of motionBatches(model,p,{duration:durationFor(p)}))rows=b.rows;
+ const scale=Math.max(1e-12,...rows.flatMap(r=>[Math.abs(r.sample.kinetic),Math.abs(r.sample.accountedEnergy)])),tol=1e-6*scale,zero=k=>rows.every(r=>Math.abs(r.sample[k])<=tol),
+  zeroU=zero('potential'),zeroQ=zero('dissipated'),same=rows.every(r=>Math.abs(r.sample.kinetic-r.sample.accountedEnergy)<=tol);
+ let series=base.filter(v=>!(v.key==='potential'&&zeroU)&&!(v.key==='dissipated'&&zeroQ)&&!(same&&v.key==='kinetic')).map(v=>v.key==='accountedEnergy'&&same?{...v,label:'K = E + Q'}:{...v});
+ const notes=[zeroU&&'U = 0',zeroQ&&'Q = 0'].filter(Boolean);if(notes.length)series=series.map((v,i)=>i?v:{...v,label:v.label+' ('+notes.join(', ')+')'});
+ energyCache.set(p,series);return series;
+}
 export const graphs=[
  {id:'motion',label:'Separation',unit:'m',series:[{key:'separation',label:'r',color:C.blue}]},
  {id:'energy',label:'Energy',unit:'J',series:[{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.green},{key:'dissipated',label:'Q',color:C.purple},{key:'accountedEnergy',label:'E + Q',color:C.amber}]},
@@ -264,13 +276,13 @@ function encounter(s,f,data){
  s.discs=[{x:px,y:py,r:disc}];
  const ux=sign*Math.cos(theta),uy=-sign*Math.sin(theta);
  vector(s,px+ux*(disc+5),py+uy*(disc+5),ux*Math.min(ray,42),uy*Math.min(ray,42),C.blue,'u');
- if(Math.abs(theta)>.015){s.ctx.beginPath();s.ctx.arc(px,py,23,start,start-theta,theta>0);s.ctx.strokeStyle=C.purple;s.ctx.stroke();const lr=Math.max(34,disc+14);label(s,'θ',px+sign*lr*Math.cos(theta/2),py-sign*lr*Math.sin(theta/2),C.purple);}
+ if(Math.abs(theta)>.015){s.ctx.beginPath();const ar=Math.max(23,disc+8);s.ctx.arc(px,py,ar,start,start-theta,theta>0);s.ctx.strokeStyle=C.purple;s.ctx.stroke();const lr=ar+9;label(s,'θ',px+sign*lr*Math.cos(theta/2),py-sign*lr*Math.sin(theta/2),C.purple);}
  const spring=f.params.interaction==='soft'||f.params.secondInteraction==='soft';
  s.text(spring?'Spring contact \u00b7 discs show compression':visible?'Live \u00b7 t = '+fmt(f.t)+' s':(nearest.impact?'Contact preview \u00b7 ':'Closest approach \u00b7 ')+fmt(nearest.t)+' s',s.w/2,s.h-43,C.muted,12);
 }
 export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
  mount(shell){shells.set(shell.stage,shell);shell.model=timelineModel;transportWindow(shell);},
- graphDescriptors:p=>graphs.map(g=>({...g,window:durationFor(p)})),
+ graphDescriptors:p=>graphs.map(g=>({...g,window:durationFor(p),...(g.id==='energy'?{series:energySeries(p)}:{})})),
  paramVisible(d,p){const k=d.key,kind=p.interaction,second=p.secondInteraction;
   if(k==='secondInteraction')return kind==='coulomb';if(k.startsWith('second')){
    if(kind!=='coulomb'||second==='none')return false;if(k==='secondStrength')return ['yukawa','woods-saxon'].includes(second);
