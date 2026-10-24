@@ -1,11 +1,14 @@
 import {palette} from '../kit/stage.js';
 import {create} from './model.js';
 import {label,tex,texU} from '../motion-generator/view-tools.js';
-import {num} from '../kit/format.js';
+import {num,texNum,withUnit} from '../kit/format.js';
 const envelopes=new WeakMap(),drag=new WeakMap(),sub=n=>String(n).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
 const fmt=x=>(Math.abs(x)<.0005?0:x).toFixed(3);
-const signed=x=>fmt(x).replace('-','−'),windows=new WeakMap();
-const forceValue=value=>(Math.abs(value)<.005?0:value).toFixed(2).replace('-','−');
+const signed=x=>num(Math.abs(x)<.0005?0:x,3),windows=new WeakMap();
+const forceValue=value=>num(Math.abs(value)<.005?0:value,3);
+// One linear force scale for the whole view: the largest force any spring can reach (stretch up to the motion envelope) spans maxPx.
+export const forceScale=(f,extent,maxPx,only)=>{const ks=f.geometry.springs.map((k,j)=>({k,j})).filter(s=>s.k&&(only===undefined||s.j===only)),top=Math.max(1e-9,...ks.map(s=>s.k*(s.j===0||s.j===f.params.n?1:2)*extent));return maxPx/top;};
+export const MIN_ARROW=4;
 // Zigzag spring whose coil count follows its length, so a short spring at thumbnail size stays open instead of filling in.
 export function coilCount(length,amplitude){return Math.max(4,Math.min(24,2*Math.round(length/(amplitude*1.7))));}
 function coil(s,x0,y,x1,color,amplitude){const n=coilCount(Math.abs(x1-x0)*.8,amplitude),c=s.ctx,dx=x1-x0;c.strokeStyle=color;c.lineWidth=2;c.beginPath();c.moveTo(x0,y);for(let i=0;i<=n;i++){const a=i===0||i===n?0:(i%2?amplitude:-amplitude);c.lineTo(x0+dx*(.1+.8*i/n),y+a);}c.lineTo(x1,y);c.stroke();}
@@ -51,7 +54,7 @@ function setup(stage,f){
  const zoom=f.closeup==='spring',a=f.geometry.masses[0],b=f.geometry.masses[1];
  const bounds=zoom?[.85,3.05,-.67,.67]:[-extent,length+extent,-1.15,1.15];
  const map=stage.world(bounds,zoom?24:Math.min(36,stage.w*.08));
- return {map,n,length,zoom,a,b};
+ return {map,n,length,zoom,a,b,extent};
 }
 function block(s,x,y,width,height,color){const c=s.ctx;c.fillStyle=color+'19';c.strokeStyle=color;c.lineWidth=1.8;c.beginPath();c.roundRect(x-width/2,y-height/2,width,height,Math.min(9,width*.16));c.fill();c.stroke();s.line(x-width*.32,y-height*.33,x+width*.32,y-height*.33,color+'70',1);}
 function wall(s,x,y,h){s.line(x,y-h,x,y+h,'#738294',3);for(let dy=-h;dy<h;dy+=10)s.line(x-8,y+dy+7,x,y+dy,'#44505f',1);}
@@ -61,7 +64,7 @@ export const view={
  closeups:[{id:'spring',label:'Zoom · middle spring'}],
  key:f=>f.closeup?'F₂,₂ is the force of spring 2 on m₂':f.breakdown?'':`${f.params.n} masses · drag a mass to change its release point`,
  draw(s,f){
-  const {ctx,w,h}=s,{map,n,length,zoom,a,b}=setup(s,f),{x,y,scale}=map,cy=y(0),massW=Math.max(13,Math.min(76,.48*scale)),massH=massW*.8;
+  const {ctx,w,h}=s,{map,n,length,zoom,a,b,extent}=setup(s,f),{x,y,scale}=map,cy=y(0),massW=Math.max(13,Math.min(76,.48*scale)),massH=massW*.8;
   s.line(x(-.05),cy+massH*.58,x(length+.05),cy+massH*.58,'#2c3744',1);
   if(zoom){
    // Actual geometry enlarged, centered in the pane. Each caption sits beside its own block; the force label sits at its arrow tip.
@@ -72,8 +75,8 @@ export const view={
    block(s,x(a.x),cz,mw,mh,palette[0]);block(s,x(b.x),cz,mw,mh,palette[1]);
    s.zoomParts={blocks:[{x:x(a.x)-mw/2,y:cz-mh/2,width:mw,height:mh},{x:x(b.x)-mw/2,y:cz-mh/2,width:mw,height:mh}]};
    label(s,'m₁',x(a.x),cz+mh/2+17,palette[0],fs);label(s,'m₂',x(b.x),cz+mh/2+17,palette[1],fs);
-   const force=-f.params.k2*(b.displacement-a.displacement),anchor=x(b.x),fy=cz-mh/2-26,dir=Math.sign(force),end=Math.max(14,Math.min(w-14,anchor+dir*Math.min(w*.18,25+Math.abs(force)*18)));
-   if(Math.abs(force)>.002){s.arrow(anchor,fy,end,fy,'#b8d6a5',2.5);s.zoomParts.tip={x:end,y:fy};const text='F₂,₂ = '+num(force,3)+' N';ctx.font=fs+'px system-ui,sans-serif';const half=ctx.measureText(text).width/2;label(s,text,Math.max(half+8,Math.min(w-half-8,end)),fy-16,'#b8d6a5',fs);}
+   const force=-f.params.k2*(b.displacement-a.displacement),anchor=x(b.x),fy=cz-mh/2-26,dir=Math.sign(force),len=Math.abs(force)*forceScale(f,extent,Math.min(w*.2,scale*.58),1),end=Math.max(14,Math.min(w-14,anchor+dir*len));
+   if(len>=MIN_ARROW){s.arrow(anchor,fy,end,fy,'#b8d6a5',2.5);s.zoomParts.tip={x:end,y:fy};const text='F₂,₂ = '+num(force,3)+' N';ctx.font=fs+'px system-ui,sans-serif';const half=ctx.measureText(text).width/2;label(s,text,Math.max(half+8,Math.min(w-half-8,end)),fy-16,'#b8d6a5',fs);}
    return;
   }
   if(f.geometry.springs[0])wall(s,x(0),cy,massH*.9);
@@ -83,18 +86,18 @@ export const view={
    const start=j?x(f.geometry.masses[j-1].x)+massW/2:x(0),end=j<n?x(f.geometry.masses[j].x)-massW/2:x(length);
    coil(s,start,cy,end,j===1?'#a0b3cc':'#718297',Math.max(4,Math.min(9,scale*.07)));
    const eq=1.3*(j+.5),labelY=Math.max(44,cy-(f.breakdown?115:massH*.5+41)),k=f.params['k'+(j+1)];
-   if(scale*1.3>115)s.text('k'+sub(j+1)+' = '+k+' N/m',x(eq),labelY,'#93a5bd',12);
-   else {s.text('k'+sub(j+1),x(eq),labelY,'#93a5bd',n>4?10:11);if(n<=4)s.text(k+' N/m',x(eq),labelY+15,'#93a5bd',10);}
+   if(scale*1.3>115)s.text('k'+sub(j+1)+' = '+withUnit(k,'N/m'),x(eq),labelY,'#93a5bd',12);
+   else {s.text('k'+sub(j+1),x(eq),labelY,'#93a5bd',n>4?10:11);if(n<=4){ctx.font='10px system-ui,sans-serif';const full=withUnit(k,'N/m');if(ctx.measureText(full).width<=scale*1.3-18)s.text(full,x(eq),labelY+15,'#93a5bd',10);else{s.text(num(k,3),x(eq),labelY+14,'#93a5bd',10);s.text('N/m',x(eq),labelY+26,'#93a5bd',9);}}}
   }
   const forceLabels=[];f.geometry.masses.forEach((m,i)=>{
    const px=x(m.x),ex=x(m.equilibrium),color=palette[i%palette.length];
    ctx.setLineDash([3,5]);s.line(ex,cy-massH*.8,ex,cy+massH*1.1,'#37485d',1);ctx.setLineDash([]);
    block(s,px,cy,massW,massH,color);
    // Stationary captions stay in the equilibrium column, never chase a body.
-   s.text('m'+sub(i+1)+(scale*1.3>85?' · '+m.mass+' kg':''),ex,cy+massH*.9+17,color,n>4?10:12);
+   s.text('m'+sub(i+1)+(scale*1.3>85?' · '+withUnit(m.mass,'kg'):''),ex,cy+massH*.9+17,color,n>4?10:12);
    if(scale*1.3>85)s.text('x'+sub(i+1)+' '+signed(m.displacement)+' m',ex,cy+massH*.9+36,'#97a6bb',n>4?10:11);
    if(f.breakdown){
-    for(const force of springForces(f.geometry,i)){const fy=cy-massH*.8-(force.spring-i)*22,F=force.value;if(Math.abs(F)>.002){const tip=Math.max(9,Math.min(w-9,px+Math.sign(F)*Math.min(scale*.58,Math.abs(F)*14+12)));s.arrow(px,fy,tip,fy,'#a8d4b8',2);forceLabels.push({force,x:tip,y:fy});}}
+    for(const force of springForces(f.geometry,i)){const fy=cy-massH*.8-(force.spring-i)*22,F=force.value;const len=Math.abs(F)*forceScale(f,extent,scale*.58);if(len>=MIN_ARROW){const tip=Math.max(9,Math.min(w-9,px+Math.sign(F)*len));s.arrow(px,fy,tip,fy,'#a8d4b8',2);forceLabels.push({force,x:tip,y:fy});}}
    }
   });
   // Place after every apparatus label so later masses cannot collide with a tip.
@@ -105,8 +108,8 @@ export const view={
  equations(f){const p=f.params,g=f.geometry;return g.masses.map((m,i)=>{
   const j=i+1,left=i?`x_{${j-1}}`:'0',right=i+1<p.n?`x_{${j+1}}`:'0';
   const forces=springForces(g,i),sum=forces.map(force=>force.tex).join('+')||'0',extra=(p.gamma?`-\\gamma m_{${j}}\\dot x_{${j}}`:'')+(i===0&&p.force?'+F_0\\cos(\\Omega t)':'');
-  const definitions=forces.map(force=>force.tex+'='+(force.spring===i?(i?`-k_{${i+1}}(x_{${j}}-${left})`:'-k_1x_1'):(i+1<p.n?`k_{${i+2}}(${right}-x_{${j}})`:`-k_{${i+2}}x_{${j}}`))+`=${forceValue(force.value).replace('−','-')}\\,\\mathrm{N}`);
-  return `\\begin{gathered}m_{${j}}\\ddot x_{${j}}=${sum}${extra}\\\\${definitions.join('\\\\')}\\\\(${m.mass}\\,\\mathrm{kg})\\ddot x_{${j}}=${g.forces[i].toFixed(2)}\\,\\mathrm{N}\\end{gathered}`;
+  const definitions=forces.map(force=>force.tex+'='+(force.spring===i?(i?`-k_{${i+1}}(x_{${j}}-${left})`:'-k_1x_1'):(i+1<p.n?`k_{${i+2}}(${right}-x_{${j}})`:`-k_{${i+2}}x_{${j}}`))+`=${texU(Math.abs(force.value)<.005?0:force.value,'N')}`);
+  return `\\begin{gathered}m_{${j}}\\ddot x_{${j}}=${sum}${extra}\\\\${definitions.join('\\\\')}\\\\(${texU(m.mass,'kg')})\\ddot x_{${j}}=${texU(g.forces[i],'N')}\\end{gathered}`;
  });},
  closeupEquation(f){const a=f.geometry.masses[0],b=f.geometry.masses[1],delta=b.displacement-a.displacement,F=-f.params.k2*delta;return ['F_{2,2}=-k_2(x_2-x_1)',`=-(${texU(f.params.k2,'N/m')})(${texU(delta,'m')})`,`=${tex(F)}\\,\\mathrm{N}`];},
  pointer(s,f,p){

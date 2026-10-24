@@ -58,7 +58,7 @@ export function forceEquations(f){
  return lines;
 }
 export const view={graphs,closeups,
- key:f=>f.closeup?'Signed force components \u00b7 arrows share one scale':'',
+ key:f=>f.closeup?(f.params.dimensions==='1d'?'Signed force \u00b7 arrows share one scale':'Arrow direction and magnitude, components below \u00b7 arrows share one scale'):'',
  closeupAnchors:s=>({force:s.zoomAnchor||{x:s.w/2,y:40}}),
  graphDescriptors(p){const w=Math.sqrt(Math.max(0,p.spring+3*p.cubic*p.x0*p.x0)/p.mass),window=Math.min(60,Math.max(.2,10*Math.PI/(p.drive?p.driveOmega:w||1))),n=p.dimensions==='1d'?1:p.dimensions==='2d'?2:3;return graphs.filter(g=>g.id!=='balance'||p.drive||p.ramp||p.forceX||p.forceY||p.forceZ||p.linearDrag||p.quadraticDrag).map(g=>({...g,...(!g.kind?{window}:{}),...(g.id==='motion'||g.id==='velocity'?{series:g.series.slice(0,n)}:{})}));},
  draw(s,f){
@@ -77,7 +77,7 @@ export const view={graphs,closeups,
    forces.forEach(([name,v],i)=>{const q=project(p,v),tipX=cx+q[0]/max*extent,tipY=cy-q[1]/max*extent,color=[C.blue,C.gold,C.green,C.violet][i%4];s.arrow(cx,cy,tipX,tipY,color,2.5);tip(s,forceSymbols[name]+' = '+withUnit(p.dimensions==='1d'?v[0]:Math.hypot(...v),'N'),tipX,tipY,color);});
    bead(s,cx,cy,radius);s.avoid=[];
    if(!forces.length)label(s,'F = 0',s.w/2,cy-40,C.dim,12);
-   label(s,p.dimensions==='1d'?'Arrows show signed force':'Arrow direction + magnitude; components below',s.w/2,s.h-105,C.dim,s.w<360?10:11);return;
+   return;
   }
   const bounds=motionBounds(p),spring=p.dimensions==='1d'&&!p.gravity&&p.spring,wall=spring?bounds[0]-(bounds[1]-bounds[0])*.22:0;
   if(spring)bounds[0]=wall-(bounds[1]-wall)*.05;

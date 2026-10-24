@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {texNum} from '../../static/js/experiments/kit/format.js';
 import {model,normalModes,defaults} from '../../static/js/experiments/coupled-oscillators/model.js';
 const near=(got,want,tol=1e-9)=>assert.ok(Math.abs(got-want)<=tol,`${got} != ${want} (±${tol})`);
 const advance=(s,t,dt=.01)=>{for(let left=t;left>1e-10;left-=dt)s.step(Math.min(left,dt));};
@@ -52,7 +53,7 @@ test('Breakdown ends with live net force in N including damping and driving',asy
  const {view}=await import('../../static/js/experiments/coupled-oscillators/view.js');
  for(const p of [{...defaults},{...defaults,gamma:.3,force:.4,ends:'free'}]){
   const s=model.create(p);s.step(.6);const geometry=s.geometry(),lines=view.equations({params:s.params,geometry,t:s.t,sample:s.sample()});
-  lines.forEach((line,i)=>{assert.ok(line.includes('='+geometry.forces[i].toFixed(2)+'\\,\\mathrm{N}'));assert.ok(line.includes('m_{'+(i+1)+'}\\ddot'));});
+  lines.forEach((line,i)=>{assert.ok(line.includes('='+texNum(geometry.forces[i],3)+'\\,\\mathrm{N}'));assert.ok(line.includes('m_{'+(i+1)+'}\\ddot'));});
  }
 });
 
@@ -64,7 +65,7 @@ test('spring-force names identify receiving mass and spring and match the equati
  const frame={instance:s,params:s.params,geometry,t:s.t,sample:s.sample(),breakdown:true};
  const equations=view.equations(frame);
  for(let i=0;i<2;i++)for(const force of springForces(geometry,i)){
-  assert.ok(equations[i].includes(force.tex+'='));assert.ok(equations[i].includes('='+force.value.toFixed(2)+'\\,\\mathrm{N}'));
+  assert.ok(equations[i].includes(force.tex+'='));assert.ok(equations[i].includes('='+texNum(force.value,3)+'\\,\\mathrm{N}'));
  }
  assert.ok(view.closeupEquation(frame)[0].startsWith('F_{2,2}='));
  const free=model.create({ends:'free',x1:.13,x2:0});assert.equal(springForces(free.geometry(),0).length,1);assert.equal(springForces(free.geometry(),1).length,1);
@@ -78,7 +79,7 @@ test('force tip labels carry signed N values at desktop and simplify before narr
   const ctx=new Proxy({font:'11px system-ui',measureText(text){const size=Number.parseFloat(this.font),length=String(text).length*size*.58;return {width:length,actualBoundingBoxLeft:length/2,actualBoundingBoxRight:length/2,actualBoundingBoxAscent:size*.7,actualBoundingBoxDescent:size*.3}}},{get:(obj,key)=>obj[key]||(()=>{})});
   const stage=Object.assign(Object.create(VectorStage.prototype),{ctx,w:width,h:height,labels:[],snap:true});
   const instance=model.create({x1,x2:0,k2:40}),frame={instance,geometry:instance.geometry(),params:instance.params,sample:instance.sample(),t:0,breakdown:true,closeup:''};
-  view.draw(stage,frame);const forceLabels=stage.labels.filter(l=>/^F[₀-₉]/.test(l.text));assert.equal(forceLabels.length,3);
+  view.draw(stage,frame);const forceLabels=stage.labels.filter(l=>/^F[₀-₉]/.test(l.text));assert.ok(forceLabels.length>=1&&forceLabels.length<=3);assert.ok(forceLabels.some(l=>l.text.startsWith('F₁,₂')||l.text.startsWith('F₂,₂')));
   if(width<400)assert.ok(forceLabels.every(l=>/^F[₀-₉]+,[₀-₉]+$/.test(l.text)));
   else {assert.ok(forceLabels.every(l=>/^F[₀-₉]+,[₀-₉]+ (?:−)?\d+\.\d{2} N$/.test(l.text)));assert.ok(forceLabels.some(l=>l.text.includes('−')));}
   for(const label of forceLabels){assert.ok(label.x>=0&&label.x+label.width<=width&&label.y>=0&&label.y+label.height<=stage.h);assert.ok(stage.labels.every(other=>other===label||!intersects(label,other)));}
@@ -100,4 +101,22 @@ test('drawn mass center remains the drag target after layout changes',async()=>{
   assert.equal(view.pointer(stage,frame(),{...point,type:'up'}),true);
   assert.ok(instance.params.x1<before);
  }
+});
+
+test('every spring-force arrow shares one linear scale and short ones are dropped',async()=>{
+ const {view,forceScale,MIN_ARROW,springForces}=await import('../../static/js/experiments/coupled-oscillators/view.js');
+ const {VectorStage}=await import('../../static/js/experiments/kit/stage.js');
+ const instance=model.create({x1:.2,x2:0}),geometry=instance.geometry(),frame={instance,geometry,params:instance.params,sample:instance.sample(),t:0,breakdown:true,closeup:''};
+ const scale=forceScale(frame,.3,100);near(forceScale(frame,.3,200),2*scale,1e-12);
+ const arrows=[];
+ for(const width of [1000,320]){
+  const ctx=new Proxy({font:'11px system-ui',measureText(text){return {width:String(text).length*6}}},{get:(obj,key)=>obj[key]||(()=>{})});
+  const stage=Object.assign(Object.create(VectorStage.prototype),{ctx,w:width,h:520,labels:[],snap:true,arrow(x0,y,x1){arrows.push({width,length:Math.abs(x1-x0)});}});
+  view.draw(stage,frame);
+ }
+ const wide=arrows.filter(a=>a.width===1000),narrow=arrows.filter(a=>a.width===320);
+ assert.ok(wide.every(a=>a.length>=MIN_ARROW)&&narrow.every(a=>a.length>=MIN_ARROW));
+ const forces=[0,1].flatMap(i=>springForces(geometry,i)).map(f=>Math.abs(f.value)).filter(v=>v>1e-9);
+ assert.ok(wide.length<=forces.length);
+ if(wide.length>=2){const sorted=[...wide].sort((p,q)=>q.length-p.length),ranked=[...forces].sort((p,q)=>q-p);near(sorted[0].length/sorted[1].length,ranked[0]/ranked[1],.05*ranked[0]/ranked[1]);}
 });
