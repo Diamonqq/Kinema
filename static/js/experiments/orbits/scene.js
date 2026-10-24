@@ -64,8 +64,9 @@ export function targetChips(s,targets,rowIds,shell,obstacles=noObstacles,{height
  }
  const layout={signature,params:shell?.params,obstacles,anchors,boxes,targetBoxes};chipLayouts.set(s,layout);return draw(layout);
 }
-export function camera(s,bounds,top=100,bottom=58){
- const [a,b,c,d]=bounds,scale=Math.min((s.w-40)/Math.max(.01,b-a),(s.h-top-bottom)/Math.max(.01,d-c));
+// fill (optional): the bounds fill this share of the stage width and of the band between top and bottom, centered in both.
+export function camera(s,bounds,top=100,bottom=58,fill=0){
+ const [a,b,c,d]=bounds,scale=fill?Math.min(s.w*fill/Math.max(.01,b-a),(s.h-top-bottom)*fill/Math.max(.01,d-c)):Math.min((s.w-40)/Math.max(.01,b-a),(s.h-top-bottom)/Math.max(.01,d-c));
  const target={cx:(a+b)/2,cy:(c+d)/2,scale};
  if(!s.camera||s.snap)s.camera=target;else if(easeCamera(s.camera,target))s.animating=true;
  s.snap=false;const q=s.camera,cy=top+(s.h-top-bottom)/2;
@@ -111,7 +112,9 @@ export function axes(s,{left,right,top,bottom,xmin,xmax,lo,hi,x,y,xunit=''}){
  s.line(left,top,left,bottom,C.grid);s.line(left,bottom,right,bottom,C.grid);
  return {xticks:xt.ticks,yticks:yt.ticks};
 }
-export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',scatter=false,zero=false,pointColor=()=>C.blue}={}){
+// label is the x title under the axis; ytitle (name · unit) sits at the top-left like the other lab graphs; xmin widens the range;
+// walls are labeled vertical lines [{x,text}].
+export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',ytitle='',xmin:xfloor,walls=[],scatter=false,zero=false,pointColor=()=>C.blue}={}){
  const compact=s.h<220,left=76,right=s.w-28,top=compact?32:90,bottom=s.h-(compact?32:scatter?84:68),values=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
  if(!values.length){s.text('No completed points yet',s.w/2,s.h/2,C.muted,13);return;}
  let xmin=Math.min(...values.map(p=>p[xkey])),xmax=Math.max(...values.map(p=>p[xkey])),lo=Math.min(...values.map(p=>p[ykey])),hi=Math.max(...values.map(p=>p[ykey]));
@@ -123,6 +126,7 @@ export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',
   if(xmax-xmin<minX){const centre=(xmin+xmax)/2;xmin=centre-minX/2;xmax=centre+minX/2;}
   if(hi-lo<minY){const centre=(lo+hi)/2;lo=centre-minY/2;hi=centre+minY/2;}
  }
+ if(Number.isFinite(xfloor))xmin=Math.min(xmin,xfloor);
  const span=Math.max(1e-9,hi-lo),xspan=Math.max(.01,xmax-xmin);lo-=span*.12;hi+=span*.12;
  if(zero&&values.every(p=>p[ykey]>=0)&&!(energy<0))lo=0;
  const x=v=>left+(v-xmin)/xspan*(right-left),y=v=>bottom-(v-lo)/(hi-lo)*(bottom-top);
@@ -130,6 +134,7 @@ export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',
  if(scatter)values.forEach(p=>s.circle(x(p[xkey]),y(p[ykey]),2.5,pointColor(p)));else linePath(s,values.map(p=>({x:p[xkey],y:p[ykey]})),{x,y},C.blue,2);
  if(Number.isFinite(energy)){s.line(left,y(energy),right,y(energy),C.amber,1.5);s.text('E',right-5,y(energy)-10,C.amber,12);}
  if(cursor&&cursor.x>=xmin&&cursor.x<=xmax){s.line(x(cursor.x),top,x(cursor.x),bottom,C.pale,1);if(Number.isFinite(cursor.y)&&cursor.y>=lo&&cursor.y<=hi)s.circle(x(cursor.x),y(cursor.y),4,C.pale);}
- if(!compact)s.text(caption,s.w/2,s.h-40,C.muted,12);
+ for(const w of walls){if(w.x<xmin||w.x>xmax)continue;s.ctx.setLineDash([4,4]);s.line(x(w.x),top,x(w.x),bottom,C.pale,1);s.ctx.setLineDash([]);s.text(w.text,x(w.x)+6,top+10,C.pale,11,'left');}
+ if(!compact){if(ytitle)s.text(ytitle,left,top-12,'#c5cfdb',12,'left');s.text(caption,s.w/2,s.h-40,C.muted,12);}
  return {xmin,xmax,lo,hi};
 }

@@ -52,17 +52,17 @@ test('each zoom chip sits beside its own target (about 40 px) with no leader, of
   }
  }
 });
-test('frames are drawn around the encounter: both bodies at the start and at closest approach sit well inside, centered',()=>{
+test('frames are drawn around the whole encounter: start, closest approach and the outgoing paths for as long as the approach took sit well inside, centered',()=>{
  for(const id of ['glancing','exchange','inelastic']){
   const params=model.presets.find(p=>p.id===id).values,data=forecastFor(params),near=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b);
   for(const w of [569,306]){
    const panes=comparisonPanels({w,h:w<460?560:520},data.rows);
    for(const [i,frame] of ['lab','cm'].entries()){
-    const {rect,map}=panes[i],pts=[...data.rows[0].geometry.frames[frame],...near.geometry.frames[frame]].map(q=>({x:map.x(q.x),y:map.y(q.y)}));
+    const {rect,map}=panes[i],pts=[...data.rows[0].geometry.frames[frame],...data.rows.filter(r=>r.t<=2*near.t+1e-9).flatMap(r=>r.geometry.frames[frame])].map(q=>({x:map.x(q.x),y:map.y(q.y)}));
     const x0=Math.min(...pts.map(p=>p.x)),x1=Math.max(...pts.map(p=>p.x)),y0=Math.min(...pts.map(p=>p.y)),y1=Math.max(...pts.map(p=>p.y));
     assert.ok(x0>=rect.x+8&&x1<=rect.x+rect.w-8&&y0>=rect.y+8&&y1<=rect.y+rect.h-8,id+' '+w+' '+frame+' inside');
     assert.ok(Math.abs((x0+x1)/2-(rect.x+rect.w/2))<=rect.w*.1&&Math.abs((y0+y1)/2-(rect.y+rect.h/2))<=rect.h*.1,id+' '+w+' '+frame+' centered');
-    assert.ok(x1-x0>=rect.w*.3,id+' '+w+' '+frame+' large share: '+(x1-x0)/rect.w);
+    assert.ok(Math.max((x1-x0)/rect.w,(y1-y0)/rect.h)>=.35,id+' '+w+' '+frame+' large share: '+(x1-x0)/rect.w+' '+(y1-y0)/rect.h);
    }
   }
  }

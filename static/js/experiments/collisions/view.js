@@ -51,17 +51,21 @@ export function curveFor(params,lifecycle={}){
  let state=curves.get(params);if(state&&!state.cancelled&&state.signal===lifecycle.signal)return state;
  state?.cancel?.();const grid=scatteringGrid(params);
  state={points:[],done:false,total:grid.length};curves.set(params,state);
- function* batches(){let points=[];for(let i=0;i<grid.length;i++){
+ function* batches(){let points=[],t0=performance.now();for(let i=0;i<grid.length;i++){
   points=[...points,...scatteringCurve(params,[grid[i]],{duration:60,dt:.2})];
-  yield {points,done:i===grid.length-1};
+  // Several points per slice: the sweep finishes quickly yet never holds the page for long.
+  if(i===grid.length-1||performance.now()-t0>12){yield {points,done:i===grid.length-1};t0=performance.now();}
  }}
  return runBatches(batches(),state,lifecycle);
 }
 const panelCache=new WeakMap(),obstacleCache=new WeakMap(),chipCache=new WeakMap();
+// One anchor rule per chip, the same in every view: away from the paths (which leave to the right), a body's radius clear of its target.
+export const COLLISION_ANCHORS={momentum:['s','sw','w','n','nw'],contact:['sw','s','nw','n','w'],potential:['e','se','ne','s','n'],scattering:['ne','n','nw','e','w'],'cross-section':['ne','n','nw','e','w']};
 function chipLayout(s,owner,rows,panes,targets,avoid,layout){
  const cached=chipCache.get(rows),key=JSON.stringify([s.w,layout.height,targets]);if(cached?.key===key&&cached.panes===panes)return cached.result;
  const sizes=id=>{const b=owner?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
- const result=placeChips(targets,sizes,{width:s.w,top:layout.oy+8,bottom:layout.oy+layout.height-58,rects:forecastObstacles(panes,rows),segments:forecastSegments(panes,rows),avoid});
+ const body=Math.round(Math.max(5,(rows[0].geometry.frames.lab[0].radius||0)*panes[0].map.scale)+10),gaps={momentum:body,contact:body,potential:body,scattering:14,'cross-section':14};
+ const result=placeChips(targets,sizes,{width:s.w,top:layout.oy+8,bottom:layout.oy+layout.height-58,rects:forecastObstacles(panes,rows),segments:forecastSegments(panes,rows),avoid,prefer:COLLISION_ANCHORS,gaps});
  chipCache.set(rows,{key,panes,result});return result;
 }
 
@@ -79,10 +83,11 @@ export function frameLayout(w,h=0){
  const narrow=w<460,height=Math.max(300,h||(narrow?560:520)),oy=0,top=58,bottom=height-58,gap=44;
  return {narrow,height,oy,top,bottom,gap,side:bottom-top,stack:(bottom-top-gap)/2};
 }
-// Each frame is framed around the encounter itself (where both bodies start and where they pass closest), with a fixed camera;
-// the forecast paths run on past the frame and are clipped to it.
+// Each frame is framed around the whole encounter: where both bodies start, where they pass closest and the outgoing paths for as long
+// as the approach took, with a fixed camera. Later forecast rows run on past the frame and are clipped to it.
 export function encounterBounds(rows,frame){
  const near=rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b),pts=[...rows[0].geometry.frames[frame],...near.geometry.frames[frame]];
+ for(const row of rows){if(row.t>2*near.t+1e-9)break;pts.push(...row.geometry.frames[frame]);}
  const xs=pts.map(q=>q.x),ys=pts.map(q=>q.y),radius=Math.max(...pts.map(q=>q.radius||0));
  const xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys),pad=Math.max(radius*1.5,.12*Math.max(xmax-xmin,ymax-ymin),.15);
  return [xmin-pad,xmax+pad,ymin-pad,ymax+pad];
@@ -137,7 +142,7 @@ function potential(s,f){
  const hard=p.interaction==='hard'||p.secondInteraction==='hard',R=p.secondInteraction==='hard'?p.secondRange:p.radius,
   min=hard?R:Math.max(.04,Math.min(.5,f.sample.separation*.7)),max=Math.max(p.distance*1.4,p.range*4,R*3);
  const points=Array.from({length:160},(_,i)=>{const r=min+(max-min)*i/159;return {r,u:interactionAt(p,r).potential+L*L/(2*mu*r*r)};});
- plot(s,points,{xkey:'r',ykey:'u',energy:E,cursor:{x:Math.max(min,f.sample.separation)},label:'r (m) · Ueff (J)'+(hard?' · wall at R':'')});
+ plot(s,points,{xkey:'r',ykey:'u',energy:E,cursor:{x:Math.max(min,f.sample.separation)},label:'r (m)',ytitle:'Effective potential · J',xmin:hard?R-(max-R)*.1:undefined,walls:hard?[{x:R,text:'hard wall · r = R'}]:[]});
 }
 const contactPreviews=new WeakMap();
 // Hard contact is an event, not the nearest 0.1 s forecast sample.
@@ -246,9 +251,10 @@ function encounter(s,f,data){
  const shown=visible?f.sample:nearest.sample,theta=shown.scatteringAngle,px=map.x(a.x),py=map.y(a.y),ray=Math.min(62,s.w*.2),sign=Math.sign(f.params.speed-f.params.targetSpeed)||1,start=sign>0?0:Math.PI;
  s.ctx.setLineDash([3,4]);s.line(px,py,px+sign*ray,py,C.muted,1);s.ctx.setLineDash([]);
  const disc=['hard','soft'].includes(f.params.interaction)||['hard','soft'].includes(f.params.secondInteraction)?Math.max(2,a.radius*map.scale):5;
+ s.discs=[{x:px,y:py,r:disc}];
  const ux=sign*Math.cos(theta),uy=-sign*Math.sin(theta);
  vector(s,px+ux*(disc+5),py+uy*(disc+5),ux*Math.min(ray,42),uy*Math.min(ray,42),C.blue,'u');
- if(Math.abs(theta)>.015){s.ctx.beginPath();s.ctx.arc(px,py,23,start,start-theta,theta>0);s.ctx.strokeStyle=C.purple;s.ctx.stroke();label(s,'θ',px+sign*34*Math.cos(theta/2),py-sign*34*Math.sin(theta/2),C.purple);}
+ if(Math.abs(theta)>.015){s.ctx.beginPath();s.ctx.arc(px,py,23,start,start-theta,theta>0);s.ctx.strokeStyle=C.purple;s.ctx.stroke();const lr=Math.max(34,disc+14);label(s,'θ',px+sign*lr*Math.cos(theta/2),py-sign*lr*Math.sin(theta/2),C.purple);}
  const spring=f.params.interaction==='soft'||f.params.secondInteraction==='soft';
  s.text(spring?'Spring contact \u00b7 discs show compression':visible?'Live \u00b7 t = '+fmt(f.t)+' s':(nearest.impact?'Contact preview \u00b7 ':'Closest approach \u00b7 ')+fmt(nearest.t)+' s',s.w/2,s.h-43,C.muted,12);
 }
@@ -269,7 +275,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   plot(s,points,{zero:cross,cursor:cross?null:{x:Math.abs(f.params.b),y:Math.abs(f.sample.scatteringAngle)}});
  },
  key:f=>f.closeup==='momentum'?'Blue p₁ · amber p₂ · green total P':f.closeup==='potential'?'Blue Ueff · amber relative E · white r':
-  f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?('Blue projectile \u00b7 amber target \u00b7 '+(f.contactForceDrawn?'green F':'blue u')):'Blue projectile · amber target · + CM',
+  f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='cross-section'?(f.params.interaction==='hard'?'Hard spheres · dσ/dΩ = R²/4 = '+fmt(f.params.radius**2/4)+' m²/sr, the same at every angle':'Classical dσ/dΩ = |b / (sin θ · dθ/db)| from the finished sweep'):f.closeup==='contact'?('Blue projectile \u00b7 amber target \u00b7 '+(f.contactForceDrawn?'green F':'blue u')):'Blue projectile · amber target · + CM',
  draw(s,f){
   const owner=shells.get(s);if(owner){parameterShells.set(f.params,owner);sceneHeight(owner,560,!!f.closeup,!!f.closeup,460,f.closeup==='momentum'?500:360);}s.chipRects=[];s.pathObstacles=[];s.physicsSegments=[];s.labelObstacles=[];
   if(s.h<200){const b=f.geometry.frames.lab,bounds=boundsFor([{geometry:f.geometry}],'lab'),map=camera(s,bounds,12,12);
@@ -284,8 +290,8 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   if(f.closeup==='scattering'||f.closeup==='cross-section'){
    const cross=f.closeup==='cross-section';title(s,cross?'Classical differential cross section':'Scattering and the impact parameter');const curve=curveFor(f.params,curveLifecycle(f));
    const points=cross?sectionPoints(f.params,curve.points).map(p=>({x:p.angle,y:p.sigma})):curve.points.filter(p=>p.complete).map(p=>({x:p.b,y:Math.abs(p.angle)}));
-   plot(s,points,{zero:cross,label:cross?'|θCM| (rad) · dσ/dΩ (m²/sr)':'Initial b (m) · |θCM| (rad)',cursor:cross?null:{x:Math.abs(f.params.b),y:Math.abs(f.sample.scatteringAngle)}});
-   if(!curve.done)s.text('Computing '+curve.points.length+' / '+curve.total,s.w/2,70,C.muted,11);return;
+   plot(s,points,{zero:cross,label:cross?'|θCM| (rad)':'Initial b (m)',ytitle:cross?'dσ/dΩ · m²/sr':'|θCM| · rad',cursor:cross?null:{x:Math.abs(f.params.b),y:Math.abs(f.sample.scatteringAngle)}});
+   if(!curve.done)s.text('Computing '+curve.points.length+' / '+curve.total,s.w/2,64,C.muted,11);return;
   }
   if(!data.done){s.text(data.error||'Preparing the fixed 60 s motion window…',s.w/2,s.h*.55,C.muted,s.w<380?11:13);return;}
   const panes=comparisonPanels(s,data.rows),first=data.rows[0].geometry.frames.lab,nearest=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b).geometry.frames.lab;

@@ -53,10 +53,22 @@ function caption(s,text){s.text(text,s.w/2,s.h-43,C.muted,12);}
 export function orbitBounds(rows,params,frame){
  let bounds=boundsFor(rows,frame);const q=rows[0].sample;
  if(q.bodyCount===2&&q.bound&&q.apoapsis>0&&!params.thrustAlong&&!params.thrustNormal&&['cm','primary'].includes(frame)){
-  const b=rows[0].geometry.bodies,total=b[0].mass+b[1].mass,extent=q.apoapsis*(frame==='primary'?1:Math.max(b[0].mass,b[1].mass)/total)*1.08+.5;
-  bounds=[-extent,extent,-extent,extent];
+  const g=rows[0].geometry,b=g.bodies,total=b[0].mass+b[1].mass;
+  if(q.keplerExact&&q.eccentricity<1&&q.semiMajorAxis>0){
+   // Both bodies' whole ellipses, as a bounding box: the drawn orbit is centered, not the focus.
+   const mu=G*params.gravityScale*total,{x,y,vx,vy}=g.relative,h=x*vy-y*vx,r=Math.hypot(x,y),w=Math.atan2(-vx*h/mu-y/r,vy*h/mu-x/r),e=q.eccentricity,a=q.semiMajorAxis,fractions=frame==='primary'?[0,1]:[-b[1].mass/total,b[0].mass/total];
+   let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
+   for(let i=0;i<=180;i++){const v=2*Math.PI*i/180,d=a*(1-e*e)/(1+e*Math.cos(v));
+    for(const k of fractions){const px=k*d*Math.cos(v+w),py=k*d*Math.sin(v+w);x0=Math.min(x0,px);x1=Math.max(x1,px);y0=Math.min(y0,py);y1=Math.max(y1,py);}}
+   const pad=Math.max(.5,.03*Math.max(x1-x0,y1-y0));bounds=[x0-pad,x1+pad,y0-pad,y1+pad];
+  }else{
+   const extent=q.apoapsis*(frame==='primary'?1:Math.max(b[0].mass,b[1].mass)/total)*1.08+.5;
+   bounds=[-extent,extent,-extent,extent];
+  }
  }return bounds;
 }
+// The orbit's bounding box fills about 86% of the stage's width (or of the band between the title and the captions), centered.
+export const orbitCamera=(s,bounds,closeup)=>closeup?camera(s,bounds,70,95):camera(s,bounds,24,84,.86);
 // Fixed chip obstacles include the entire orbit and every Breakdown arrow,
 // so seeking or playing cannot move the apparatus underneath a chip.
 const layoutCache=new WeakMap(),chipLayouts=new WeakMap();
@@ -88,6 +100,13 @@ export function orbitChipLayout(rows,params,map,w){
   // Breakdown arrows move with the body, so chips keep clear of their t = 0 position (the orbit itself is kept clear throughout).
   if(k===0)for(const a of breakdownSegments({...row,params},map,w))segments.push([a.x,a.y,a.ex,a.ey]);
  });
+ // The two shaded Breakdown sectors: their straight edges and the arc between them stay clear too.
+ const focus=first.bodies[0];
+ for(const band of equalTimeSectors(rows,rows[0].sample.period||12)){
+  if(band.length<2)continue;const pts=band.map(p=>{const r=p.geometry.relativeInertial||p.geometry.relative;return [map.x(focus.x+r.x),map.y(focus.y+r.y)];});
+  segments.push([map.x(focus.x),map.y(focus.y),...pts[0]],[map.x(focus.x),map.y(focus.y),...pts.at(-1)]);
+  pts.slice(1).forEach((p,i)=>segments.push([...pts[i],...p]));
+ }
  for(const a of start){
   rects.push({x:a.ex-22,y:a.ey-17,width:44,height:34});
   if(a.id==='r')rects.push({x:(a.x+a.ex)/2-22,y:(a.y+a.ey)/2-22,width:44,height:44});
@@ -96,15 +115,18 @@ export function orbitChipLayout(rows,params,map,w){
  const targets={periapsis:{x:tip.ex,y:tip.ey},barycentre:{x:map.x(cm.x),y:map.y(cm.y)},area:{x:map.x(initial[0].x),y:map.y(initial[0].y)}};
  const layout={key,params,targets,rects,segments};layoutCache.set(rows,layout);return layout;
 }
+// The radial and tangential parts are drawn (and named in the key) only when both are nonzero; at periapsis v is purely tangential.
+const COMPONENT_MIN=.01;
+export const decompositionParts=f=>{const {vr,vt}=values(f);return {radial:Math.abs(vt)>1e-6&&Math.abs(vr)>=COMPONENT_MIN,tangent:Math.abs(vr)>1e-6&&Math.abs(vt)>=COMPONENT_MIN};};
 function decomposition(s,f){
- title(s,'Gravity bends the velocity');const {vr,vt,force}=values(f),w=s.w,h=s.h;
+ title(s,'Gravity bends the velocity');const {vr,vt,force}=values(f),w=s.w,h=s.h,parts=decompositionParts(f);
  const left=w*.17,right=w*.66,cy=h*.57,unit=Math.min(20,(w*.18)/Math.max(1,Math.abs(vr),Math.abs(vt)));
  s.line(left,cy,right,cy,C.grid,1);s.circle(left,cy,8,C.pale);s.circle(right,cy,6,C.blue);
  vector(s,left,cy+58,right-left,0,C.muted,'r');
  vector(s,right,cy,-Math.min(70,w*.2),0,C.green,'Fᵣ');
  vector(s,right,cy,vr*unit,-vt*unit,C.blue,'v');
- if(Math.abs(vt)>1e-6)vector(s,right,cy+32,vr*unit,0,C.amber,'vᵣ');
- if(Math.abs(vr)>1e-6)vector(s,right+26,cy,0,-vt*unit,C.purple,'vₜ');
+ if(parts.radial)vector(s,right,cy+32,vr*unit,0,C.amber,'vᵣ');
+ if(parts.tangent)vector(s,right+26,cy,0,-vt*unit,C.purple,'vₜ');
  const angle=Math.atan2(-vt,vr);if(Math.abs(vr)+Math.abs(vt)>.01){s.ctx.beginPath();s.ctx.arc(right,cy,23,Math.min(0,angle),Math.max(0,angle));s.ctx.strokeStyle=C.muted;s.ctx.stroke();label(s,'φ',right+35,cy-14,C.muted);}
  caption(s,'Local r-axis → · tangent ↑');
 }
@@ -153,7 +175,7 @@ export const view={graphs,closeups,
  },
  closeupAnchors:s=>s.targetAnchors||{},
  key:f=>f.closeup==='poincare'?'Rotating frame · dim future · bright past':f.closeup==='potential'?'Radial potential · amber E · white current radius':
-  f.closeup==='area'?'Relative orbit · equal time intervals':f.closeup==='periapsis'?'Blue v · amber radial · violet tangent · green gravity':
+  f.closeup==='area'?'Relative orbit · equal time intervals':f.closeup==='periapsis'?(p=>['Blue v',p.radial&&'amber radial',p.tangent&&'violet tangent','green gravity'].filter(Boolean).join(' · '))(decompositionParts(f)):
   f.closeup==='barycentre'?'Distances and motion share one physical scale':f.params.frame==='primary'&&f.sample.bodyCount===2?'× primary focus · blue companion · + CM':'Pale primary · blue companion · + CM',
  draw(s,f){
   const shell=shells.get(s);if(shell){parameterShells.set(f.params,shell);sceneHeight(shell,500,!!f.closeup,!!f.closeup);}
@@ -172,7 +194,7 @@ export const view={graphs,closeups,
   if(f.closeup==='potential'){
    title(s,'Energy sets the allowed radii');const p=g.effectivePotential;
    if(p.available===false){s.text('N-body motion has no exact radial reduction',s.w/2,s.h/2,C.muted,s.w<380?11:13);return;}
-   plot(s,p.points.map(row=>({...row,potential:row.potential/ENERGY_UNIT})),{xkey:'r',ykey:'potential',energy:p.energy/ENERGY_UNIT,cursor:{x:p.r},label:'r (m) · Ueff / E₀'});return;
+   plot(s,p.points.map(row=>({...row,potential:row.potential/ENERGY_UNIT})),{xkey:'r',ykey:'potential',energy:p.energy/ENERGY_UNIT,cursor:{x:p.r},label:'r (m)',ytitle:'Effective potential · U/E₀'});return;
   }
   if(f.closeup==='poincare'){
    drawSection(s,f);return;
@@ -187,7 +209,7 @@ export const view={graphs,closeups,
   if(f.closeup==='area'){
    const radius=Math.max(...rows.map(p=>Math.hypot(p.geometry.relative.x,p.geometry.relative.y)),rows[0].sample.apoapsis||0);bounds=[-radius*1.15,radius*1.15,-radius*1.15,radius*1.15];
   }
-  const map=camera(s,bounds,f.closeup?70:s.w<460?120:85,f.closeup?95:s.w<460?150:95);
+  const map=orbitCamera(s,bounds,!!f.closeup);
   {let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;for(const row of rows)for(const q of [(row.geometry.frames[f.params.frame]||row.geometry.bodies)[1]]){x0=Math.min(x0,q.x);x1=Math.max(x1,q.x);y0=Math.min(y0,q.y);y1=Math.max(y1,q.y);}
    s.apparatusBox={x:map.x(x0),y:map.y(y1),width:map.x(x1)-map.x(x0),height:map.y(y0)-map.y(y1)};}
   if(!f.closeup&&data.done){
@@ -242,7 +264,7 @@ export const view={graphs,closeups,
    }
   }
   s.text(massNote(values(f).force),s.w/2,s.h-66,C.muted,11);
-  caption(s,q.status!=='running'?'Close encounter · point-mass limit':data.done?'60 s forecast · brighter trail = elapsed':'Preparing paths · fixed full-orbit envelope');
+  caption(s,q.status!=='running'?'Close encounter · point-mass limit':f.breakdown&&data.done&&data.rows.length>=4?'Blue and amber sectors use the same Δt':data.done?'60 s forecast · brighter trail = elapsed':'Preparing paths · fixed full-orbit envelope');
  },
  equations(f){const v=values(f),q=f.sample;return [
   String.raw`F_r=-\frac{Gm_1m_2}{r^2}\left(1+\frac{\alpha}{r}\right)`,
