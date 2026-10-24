@@ -24,3 +24,11 @@ test('a wrapped time-series draws independent paths, never a chord across a NaN'
  assert.equal(paths.length,1);assert.deepEqual(paths[0].map(p=>p[0]),['M','L','M','L']);
  assert.ok(paths[0].every(p=>p.slice(1).every(Number.isFinite)));
 });
+
+test('long tick labels such as 1.12×10⁻⁸ stay inside the graph',()=>{
+ const texts=[],ctx=new Proxy({measureText:t=>({width:String(t).length*6})},{get:(o,k)=>o[k]||(()=>{})});
+ const plot=Object.create(LinkedGraph.prototype);plot.descriptor={label:'Separation',unit:'rad',series:[{key:'x',label:'Δθ'}]};
+ plot.stage={w:400,h:180,dpr:1,ctx,labels:[],resize(){},begin(){},line(){},circle(){},text(text,x,y,color,size,align){if(align==='right')texts.push({text,left:x-ctx.measureText(text).width});}};
+ plot.draw([1.1e-8,1.12e-8,1.05e-8].map((x,t)=>({t,x})),0);
+ assert.ok(texts.length>=2);for(const l of texts)assert.ok(l.left>=0,l.text+' starts at '+l.left);
+});

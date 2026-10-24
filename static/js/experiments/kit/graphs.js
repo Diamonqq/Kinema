@@ -38,7 +38,7 @@ export class CustomGraph {
 export class LinkedGraph {
  constructor(host,descriptor){this.descriptor=descriptor;this.canvas=document.createElement('canvas');this.canvas.setAttribute('aria-label',descriptor.label+' graph');this.canvas.setAttribute('role','img');host.append(this.canvas);this.stage=new VectorStage(this.canvas);}
  draw(samples,time){
-  const s=this.stage;s.resize();s.begin();const {w,h,ctx}=s,d=this.descriptor,series=d.series||[],left=42,right=w-14,top=30,bottom=h-29;
+  const s=this.stage;s.resize();s.begin();const {w,h,ctx}=s,d=this.descriptor,series=d.series||[],right=w-14,top=30,bottom=h-29;
   const signature=JSON.stringify(d);
   if(this.rangeSource!==samples||this.rangeSignature!==signature||samples.length<(this.rangeCount||0)){
    this.rangeSource=samples;this.rangeSignature=signature;this.rangeCount=0;this.rangeLo=0;this.rangeHi=0;this.maxX=this.maxY=.001;this.cacheKey=null;
@@ -48,6 +48,8 @@ export class LinkedGraph {
    this.maxX=Math.max(this.maxX,Math.abs(point[series[0]?.key]||0));this.maxY=Math.max(this.maxY,Math.abs(point[series[1]?.key]||0));
   }
   this.rangeCount=samples.length;const [lo,hi]=valueRange([this.rangeLo,this.rangeHi]);
+  // The value gutter grows to fit long tick labels such as 1.12×10⁻⁸.
+  ctx.font='10px system-ui,sans-serif';const left=Math.max(42,Math.ceil(Math.max(...[hi,lo].map(v=>ctx.measureText(axisLabel(v))?.width||0)))+10);
   const [start,end]=graphTimeRange(d,samples.at(-1)?.t||0,time);this.timeRange=[start,end];this.yRange=[lo,hi];
   const tx=t=>left+(right-left)*(t-start)/(end-start||1),yy=v=>bottom-(bottom-top)*(v-lo)/(hi-lo);
   // Use the same mapping for future graph pointer/scrub interactions.
