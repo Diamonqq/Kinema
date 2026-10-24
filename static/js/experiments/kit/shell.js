@@ -1,8 +1,10 @@
-import {prepareCandidate,timelineBatches,SeekController} from './state.js';
+import {prepareCandidate,timelineBatches,SeekController,yieldTask} from './state.js';
 import {VectorStage} from './stage.js';
 import {LinkedGraph,CustomGraph} from './graphs.js';
 import {controlIcon} from '../../icons.js';
 import {esc,math} from '../../md.js';
+
+export const equationDue=(playing,last,now)=>!playing||last===undefined||now-last>=100;
 
 export class ExperimentShell {
  constructor(host,{model,view,manifest={},values={},onChange=()=>{},onBack=null}){
@@ -48,16 +50,17 @@ export class ExperimentShell {
   this.duration=60;this.endTime=null;this.q('.exp-time').max=this.duration;
   this.samples=[this.instance.sample()];this.forecastComplete=false;this.forecastError='';
   this.observeEnd(this.samples[0]);
-  const iterator=timelineBatches(this.model,{...this.params},{duration:this.duration,batchSize:8});
+  const iterator=timelineBatches(this.model,{...this.params},{duration:this.duration,batchSize:1});
   const batch=()=>{
    if(this.destroyed||generation!==this.forecastGeneration)return;
-   try{const result=iterator.next();if(result.done){this.forecastComplete=true;this.graphStatus();return;}
+   try{const deadline=performance.now()+(this.playing?8:14);do{const result=iterator.next();if(result.done){this.forecastComplete=true;this.graphStatus();return;}
     for(const sample of result.value){if(this.samples.at(-1)?.t!==sample.t&&this.samples.length<3601)this.samples.push(sample);if(sample.ended===true){this.observeEnd(sample);this.forecastComplete=true;this.graphStatus();return;}}
-    this.graphStatus();this.forecastTimer=setTimeout(batch,0);
+    }while(performance.now()<deadline);
+    this.graphStatus();yieldTask().then(batch);
    }catch(error){this.forecastError=error.message||'The trajectory stopped.';this.graphStatus();}
   };
   // A first paint is guaranteed before any forecast integration starts.
-  this.forecastFrame=requestAnimationFrame(()=>{this.forecastTimer=setTimeout(batch,0);});this.graphStatus();
+  this.forecastFrame=requestAnimationFrame(()=>{yieldTask().then(batch);});this.graphStatus();
  }
  observeEnd(sample){
   if(sample?.ended!==true||!Number.isFinite(sample.t)||sample.t<0||sample.t>60||this.endTime!==null&&sample.t>=this.endTime)return;
@@ -98,14 +101,14 @@ export class ExperimentShell {
   return this.seeker.run(this.model,this.params,this.seekTarget,{immediate,onComplete:candidate=>{if(this.destroyed)return;this.instance=candidate;this.observeEnd(candidate.sample());this.q('.exp-note').textContent='';this.draw();this.changed();},onError:error=>{this.q('.exp-note').textContent=error.message||'This time could not be reached.';this.draw();}});
  }
 
- setPlaying(value){if(value){this.cancelSeek();if(this.instance.t>=this.duration-1e-8||this.instance.sample().ended===true)this.instance.reset();}this.playing=!!value;const b=this.q('[data-exp=play]');b.innerHTML=controlIcon(this.playing?'pause':'play');b.setAttribute('aria-label',this.playing?'Pause':'Play');b.title=this.playing?'Pause':'Play';this.changed();}
+ setPlaying(value){const wasPlaying=this.playing;if(value){this.cancelSeek();if(this.instance.t>=this.duration-1e-8||this.instance.sample().ended===true)this.instance.reset();}this.playing=!!value;const b=this.q('[data-exp=play]');b.innerHTML=controlIcon(this.playing?'pause':'play');b.setAttribute('aria-label',this.playing?'Pause':'Play');b.title=this.playing?'Pause':'Play';if(wasPlaying&&!this.playing)this.draw?.();this.changed();}
  reset(){this.cancelSeek();this.setPlaying(false);this.instance.reset();this.closeup='';this.scene.classList.remove('is-closeup');this.stage.snap=true;this.q('.exp-zoom-back').hidden=true;this.draw();this.changed();}
  setCloseup(id){if(id&&!(this.view.closeups||this.manifest.closeups||[]).some(c=>c.id===id))return;this.closeup=id;this.q('.exp-zoom-back').hidden=!id;this.scene.classList.toggle('is-closeup',!!id);this.draw();this.changed();}
  setBreakdown(value){this.breakdown=!!value;this.q('[data-exp=breakdown]').setAttribute('aria-pressed',String(this.breakdown));this.equations.hidden=!this.breakdown;this.draw();this.changed();}
- equation(el,lines){const signature=JSON.stringify(lines);if(el.dataset.signature===signature)return;el.dataset.signature=signature;el.innerHTML=lines.map(s=>`<div class="exp-equation">\\[${esc(s)}\\]</div>`).join('');math(el);}
+ equation(el,lines){el.equationAt=performance.now();const signature=JSON.stringify(lines);if(el.dataset.signature===signature)return;el.dataset.signature=signature;el.innerHTML=lines.map(s=>`<div class="exp-equation">\\[${esc(s)}\\]</div>`).join('');math(el);}
  draw(){if(this.destroyed||!this.instance)return;const frame=this.frame();this.stage.resize();this.stage.begin();if(this.custom)this.custom.draw(frame);else this.view.draw(this.stage,frame);this.q('.exp-clock').textContent=frame.t.toFixed(2)+' s';this.q('.exp-time').value=this.seeker.pending?Math.min(this.duration,this.seekTarget):frame.t;
-  this.equations.hidden=!this.breakdown;if(this.breakdown)this.equation(this.equations,this.view.equations?.(frame)||[]);
-  const zoom=this.q('.exp-closeup-equation');zoom.hidden=!this.closeup;if(this.closeup){const lines=this.view.closeupEquation?.(frame)||'';this.equation(zoom,Array.isArray(lines)?lines:[lines]);}
+  const now=performance.now();this.equations.hidden=!this.breakdown;if(this.breakdown&&equationDue(this.playing,this.equations.equationAt,now))this.equation(this.equations,this.view.equations?.(frame)||[]);
+  const zoom=this.q('.exp-closeup-equation');zoom.hidden=!this.closeup;if(this.closeup&&equationDue(this.playing,zoom.equationAt,now)){const lines=this.view.closeupEquation?.(frame)||'';this.equation(zoom,Array.isArray(lines)?lines:[lines]);}
   const anchors=this.view.closeupAnchors?.(this.stage,frame);this.q('.exp-closeups').classList.toggle('has-anchors',!!anchors);if(anchors)for(const button of this.q('.exp-closeups').children){const a=anchors[button.dataset.id];if(a){button.style.left=Math.max(button.offsetWidth/2+8,Math.min(this.stage.w-button.offsetWidth/2-8,a.x))+'px';button.style.top=Math.min(this.stage.h-40,a.y)+'px';}}
   if(this.view.key)this.q('.exp-key').textContent=this.view.key(frame);
   if(!this.q('.exp-graph-panel').hidden)for(const g of this.graphs)if(!g.host.hidden)g.plot.draw(this.samples,this.instance.t,frame);
