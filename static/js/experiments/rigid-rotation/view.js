@@ -62,8 +62,18 @@ export function closeupEquations(f){
  default:return rawCloseupEquations(f);
  }
 }
-function line(group,points,color,dashed=false){const geometry=new THREE.BufferGeometry().setFromPoints(points.map(v));const material=dashed?new THREE.LineDashedMaterial({color,dashSize:.07,gapSize:.04}):new THREE.LineBasicMaterial({color,transparent:true,opacity:.8});const mesh=new THREE.Line(geometry,material);if(dashed)mesh.computeLineDistances();group.add(mesh);return mesh;}
-function arrow(group,origin,vector,length,color){if(norm(vector)<1e-10)return null;const a=new THREE.ArrowHelper(v(vector).normalize(),v(origin),length,color,Math.min(.09,length*.22),Math.min(.05,length*.12));a.traverse(o=>{o.renderOrder=30;if(o.material){o.material.depthTest=false;o.material.depthWrite=false;o.material.transparent=true;}});group.add(a);return a;}
+// Retained GPU resources. Capacity covers the existing 800-point trace exactly.
+export function createRetainedLayer(group,T=THREE){
+ const arrows=new Map(),lines=new Map(),meshes=new Map(),direction=new T.Vector3();let ai=0,li=0;
+ const allocations={arrows:0,lines:0,meshes:0,labels:0,leaders:0};
+ return {allocations,begin(){ai=li=0;for(const o of group.children)o.visible=false;},clear(){dispose(group);arrows.clear();lines.clear();meshes.clear();},
+  arrow(origin,vector,length,color,role){const key=role??ai++;if(norm(vector)<1e-10)return null;let a=arrows.get(key);if(!a){a=new T.ArrowHelper(direction.set(0,1,0),direction.set(0,0,0),1,color);a.traverse(o=>{o.renderOrder=30;if(o.material){o.material.depthTest=false;o.material.depthWrite=false;o.material.transparent=true;}});group.add(a);arrows.set(key,a);allocations.arrows++;}a.visible=true;a.position.fromArray(origin);a.setDirection(direction.fromArray(vector).normalize());a.setLength(length,Math.min(.09,length*.22),Math.min(.05,length*.12));if(a.userData.color!==color){a.setColor(color);a.userData.color=color;}return a;},
+  line(points,color,dashed=false){const key=(li++)+':'+dashed;let mesh=lines.get(key);if(!mesh){const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.BufferAttribute(new Float32Array(800*3),3));if(dashed)geometry.setAttribute('lineDistance',new T.BufferAttribute(new Float32Array(800),1));const material=dashed?new T.LineDashedMaterial({color,dashSize:.07,gapSize:.04}):new T.LineBasicMaterial({color,transparent:true,opacity:.8});mesh=new T.Line(geometry,material);mesh.frustumCulled=false;group.add(mesh);lines.set(key,mesh);allocations.lines++;}mesh.visible=true;mesh.material.color.set(color);const position=mesh.geometry.attributes.position,distance=mesh.geometry.attributes.lineDistance;let total=0;for(let i=0;i<points.length;i++){position.setXYZ(i,...points[i]);if(distance){if(i)total+=Math.hypot(position.getX(i)-position.getX(i-1),position.getY(i)-position.getY(i-1),position.getZ(i)-position.getZ(i-1));distance.setX(i,total);}}position.needsUpdate=true;if(distance)distance.needsUpdate=true;mesh.geometry.setDrawRange(0,points.length);return mesh;},
+  mesh(key,make){let mesh=meshes.get(key);if(!mesh){mesh=make();meshes.set(key,mesh);group.add(mesh);allocations.meshes++;}mesh.visible=true;return mesh;}
+ };
+}
+function line(group,points,color,dashed=false){return group.userData.retained.line(points,color,dashed);}
+function arrow(group,origin,vector,length,color,role){return group.userData.retained.arrow(origin,vector,length,color,role);}
 function dispose(group){group.traverse(o=>{o.geometry?.dispose();if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material?.dispose();});group.clear();}
 function makeBody(f){const p=f.params,g=f.geometry,b=new THREE.Group(),a=p.a,c=p.shape==='plate'?Math.min(.015,Math.min(p.a,p.b)*.025):p.c;
  let geo;if(p.shape==='rod'||p.shape==='symmetric-top'){geo=new THREE.CylinderGeometry(a/2,a/2,c,48);geo.rotateX(Math.PI/2);}else if(p.shape==='custom')geo=new THREE.IcosahedronGeometry(.35,1);else geo=new THREE.BoxGeometry(a,p.b,c);
@@ -96,6 +106,7 @@ export function finitePatchScale(center,corners){
 }
 function visibleTargets(f){return available(f).filter(id=>!['body','frames'].includes(id));}
 export const view={graphs,closeups,
+  paramVisible(spec,values){return !/^I[123]$/.test(spec.key)||values.shape==='custom';},
  graphDescriptors(params){const window=graphWindow(params);return graphs.map(g=>g.kind?g:{...g,window});},
  key:f=>f.compact?'\u03c9 rad/s \u00b7 L kg m\u00b2/s \u00b7 \u03c4 N m':f.closeup==='energy'?'Velocity space · radius is angular speed':'ω rad/s · L kg m²/s · τ N m · arrows use separate fixed scales',
  closeupAnchors(s,f){return f.rotationAnchors||Object.fromEntries(visibleTargets(f).map((id,i)=>[id,{x:s.w*(i===0?.27:i===1?.73:.5),y:i<2?(s.h<420?42:67):s.h-62}]));},
@@ -110,20 +121,25 @@ export const view={graphs,closeups,
   const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);root.prepend(renderer.domElement);renderer.domElement.setAttribute('aria-label','3D rigid body, angular velocity, angular momentum and torque');
   const scene=new THREE.Scene(),content=new THREE.Group();scene.add(content);scene.add(new THREE.HemisphereLight(0xdcecff,0x192131,2.4));const light=new THREE.DirectionalLight(0xffffff,3);light.position.set(3,-4,6);scene.add(light);
   const camera=new THREE.OrthographicCamera();camera.up.set(0,0,1);camera.position.set(3.6,-5.4,3.2);camera.lookAt(0,0,0);
-  let instance=null,referenceGeometry=null,body=null,geometryLayer=new THREE.Group(),vectorLayer=new THREE.Group(),bounds=1,zoom=1,lastTime=0,traceBody=[],traceSpace=[],lastTrace=-1,scales={};content.add(geometryLayer,vectorLayer);
+  let instance=null,referenceGeometry=null,body=null,geometryLayer=new THREE.Group(),vectorLayer=new THREE.Group(),bounds=1,zoom=1,lastTime=0,traceBody=[],traceSpace=[],lastTrace=-1,scales={};content.add(geometryLayer,vectorLayer);const retained=createRetainedLayer(vectorLayer);vectorLayer.userData.retained=retained;shell.rotationAllocations=retained.allocations;let paramsIdentity=null,renderWidth=0,renderHeight=0,previousRender=null,idleFrames=0;const chipSizes=new WeakMap();shell.rotationRenderStats={draws:0,skipped:0};
   const leaders=root.querySelector('.rr-leaders'),labels=root.querySelector('.rr-vector-labels'),caption=root.querySelector('.rr-title'),readout=root.querySelector('.rr-readout'),frameCaptions=root.querySelector('.rr-frame-captions');
-  function rebuild(f){dispose(geometryLayer);body=makeBody(f);geometryLayer.add(body);const p=f.params,g=f.geometry;bounds=Math.max(.6,Math.hypot(p.a,p.shape==='rod'||p.shape==='symmetric-top'?p.a:p.b,p.c)/2+(p.mode==='heavy-top'?p.distance:0))*1.6;
+  function rebuild(f){retained.clear();paramsIdentity=f.params;dispose(geometryLayer);body=makeBody(f);geometryLayer.add(body);const p=f.params,g=f.geometry;bounds=Math.max(.6,Math.hypot(p.a,p.shape==='rod'||p.shape==='symmetric-top'?p.a:p.b,p.c)/2+(p.mode==='heavy-top'?p.distance:0))*1.6;
    referenceGeometry=model.create(p).geometry();
    const probe=f.instance;scales={omega:bounds*.6/Math.max(1,norm(g.omegaSpace)),L:bounds*.75/Math.max(.01,norm(g.angularMomentumSpace)),torque:bounds*.6/Math.max(.01,norm(g.torqueSpace))};
    // Fixed axes span the body bounding sphere, never follow individual corners.
    instance=probe;traceBody=[];traceSpace=[];lastTrace=-1;
   }
   function cameraFor(width,height,extent){const aspect=width/Math.max(1,height);const halfHeight=extent/Math.min(1,aspect);camera.left=-halfHeight*aspect;camera.right=halfHeight*aspect;camera.top=halfHeight;camera.bottom=-halfHeight;camera.near=.01;camera.far=100;camera.updateProjectionMatrix();camera.updateMatrixWorld(true);}
-  const labelPositions=new Map();let leaderLengths=[];
+  const labelPositions=new Map(),labelNodes=new Map(),leaderNodes=new Map(),panelLabels=[];let currentPanel=0,leaderLengths=[];
+  function cachedText(el,text){if(el.textContent!==text)el.textContent=text;}
+  function cachedAttribute(el,name,value){if(el.getAttribute(name)!==value)el.setAttribute(name,value);}
+
   function textAt(text,point,color,rect,placed){
    const projected=point.clone().project(camera),x=rect.x+(projected.x+1)*rect.w/2,y=rect.y+(1-projected.y)*rect.h/2;
-   const el=document.createElement('span');el.textContent=text;el.style.color=color;labels.append(el);
-   const width=el.offsetWidth,height=el.offsetHeight,key=[shell.closeup,rect.x,rect.y,rect.w,rect.h,text].join(':');
+   const nodeKey=currentPanel+':'+text;let entry=labelNodes.get(nodeKey);
+   if(!entry){const el=document.createElement('span');el.textContent=text;el.style.color=color;labels.append(el);entry={el,width:el.offsetWidth,height:el.offsetHeight};labelNodes.set(nodeKey,entry);retained.allocations.labels++;}
+   const el=entry.el;entry.used=true;el.hidden=false;if(entry.color!==color){el.style.color=color;entry.color=color;}
+   const width=entry.width,height=entry.height,key=[shell.closeup,rect.x,rect.y,rect.w,rect.h,text].join(':');
    const intersects=a=>placed.some(b=>a.x<b.x+b.width+4&&a.x+width+4>b.x&&a.y<b.y+b.height+4&&a.y+height+4>b.y);
    const leaderLength=a=>Math.hypot(Math.max(a.x,Math.min(a.x+width,x))-x,Math.max(a.y,Math.min(a.y+height,y))-y);
    const valid=a=>a.x>=rect.x+3&&a.y>=rect.y+18&&a.x+width<=rect.x+rect.w-3&&a.y+height<=rect.y+rect.h-3&&!intersects(a)&&leaderLength(a)<=40;
@@ -131,14 +147,14 @@ export const view={graphs,closeups,
    // near that same tip, never a distant row that resembles another force vector.
    const offsets=[...(text==='mg'?[[-width-12,-height/2],[-width-12,8]]:[]),[9,-height/2],[9,-height-6],[9,7],[-width-9,-height/2],[-width/2,-height-12],[-width/2,13],[20,-height-18],[-width-20,13],[-width/2,27]];
    const target=offsets.map(([dx,dy])=>({x:x+dx,y:y+dy})).find(valid);
-   if(!target){el.remove();labelPositions.delete(key);return;}
+   if(!target){el.hidden=true;labelPositions.delete(key);return;}
    const previous=labelPositions.get(key),smooth=previous?{x:previous.x+(target.x-previous.x)*.2,y:previous.y+(target.y-previous.y)*.2}:target;
    const position=valid(smooth)?smooth:target;labelPositions.set(key,position);
-   el.style.left=position.x+'px';el.style.top=position.y+'px';placed.push({...position,width,height,text});
+   const transform=`translate(${position.x}px,${position.y}px)`;if(el.style.transform!==transform)el.style.transform=transform;entry.bounds={...position,width,height,text};placed.push(entry.bounds);
    const length=leaderLength(position);leaderLengths.push(length);
    if(length>7&&text!=='\u03c4 = 0'){
     const tx=Math.max(position.x,Math.min(position.x+width,x)),ty=Math.max(position.y,Math.min(position.y+height,y));
-    const guide=document.createElementNS('http://www.w3.org/2000/svg','path');guide.setAttribute('d',`M${x},${y} L${tx},${ty}`);guide.setAttribute('fill','none');guide.setAttribute('stroke',color);guide.setAttribute('stroke-opacity','.5');guide.setAttribute('stroke-width','1');leaders.append(guide);
+    let record=leaderNodes.get(nodeKey);if(!record){const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('fill','none');el.setAttribute('stroke-opacity','.5');el.setAttribute('stroke-width','1');leaders.append(el);record={el};leaderNodes.set(nodeKey,record);retained.allocations.leaders++;}record.used=true;record.el.style.display='';cachedAttribute(record.el,'d',`M${x},${y} L${tx},${ty}`);cachedAttribute(record.el,'stroke',color);
    }
   }
   function draw(f){
@@ -147,22 +163,26 @@ export const view={graphs,closeups,
    let controls=shell.setup.querySelector('.rr-frame-controls');
    if(!controls){controls=document.createElement('div');controls.className='rr-frame-controls';controls.innerHTML='<div>Viewing frame</div><div class="exp-presets" role="group" aria-label="Viewing frame"><button data-exp="scene">Space frame</button></div>';shell.setup.prepend(controls);}
    for(const id of ['body','frames']){const button=shell.q(`.exp-closeups [data-id="${id}"]`);if(button)controls.lastElementChild.append(button);}
-   for(const button of controls.querySelectorAll('button'))button.setAttribute('aria-pressed',String((button.dataset.id||'')===f.closeup));
-   host.classList.toggle('is-closeup',!!f.closeup);shell.host.classList.toggle('rr-breakdown',f.breakdown);const width=host.clientWidth,height=host.clientHeight;if(!width||!height)return;f.narrow=width<430;renderer.setSize(width,height,false);shell.stage.w=width;shell.stage.h=height;
-   if(instance!==f.instance){rebuild(f);}if(f.t<lastTime){traceBody=[];traceSpace=[];lastTrace=-1;}lastTime=f.t;
+   for(const button of controls.querySelectorAll('button'))cachedAttribute(button,'aria-pressed',String((button.dataset.id||'')===f.closeup));
+   host.classList.toggle('is-closeup',!!f.closeup);shell.host.classList.toggle('rr-breakdown',f.breakdown);const width=host.clientWidth,height=host.clientHeight;if(!width||!height)return;f.narrow=width<430;
+   const unchanged=previousRender&&previousRender.params===f.params&&previousRender.instance===f.instance&&previousRender.t===f.t&&previousRender.closeup===f.closeup&&previousRender.breakdown===f.breakdown&&previousRender.width===width&&previousRender.height===height&&!shell.stage.snap;
+   idleFrames=unchanged?idleFrames+1:0;if(idleFrames>100){f.compact=height<420;f.rotationAnchors=shell.rotationAnchors;shell.rotationRenderStats.skipped++;return;}
+   previousRender={params:f.params,instance:f.instance,t:f.t,closeup:f.closeup,breakdown:f.breakdown,width,height};shell.rotationRenderStats.draws++;
+   if(width!==renderWidth||height!==renderHeight){renderer.setSize(width,height,false);renderWidth=width;renderHeight=height;}shell.stage.w=width;shell.stage.h=height;
+   if(paramsIdentity!==f.params){rebuild(f);}else if(instance!==f.instance){instance=f.instance;const g=f.geometry;scales={omega:bounds*.6/Math.max(1,norm(g.omegaSpace)),L:bounds*.75/Math.max(.01,norm(g.angularMomentumSpace)),torque:bounds*.6/Math.max(.01,norm(g.torqueSpace))};traceBody=[];traceSpace=[];lastTrace=-1;}if(f.t<lastTime){traceBody=[];traceSpace=[];lastTrace=-1;}lastTime=f.t;
    const p=f.params,g=f.geometry,isBody=['body','axis','inertia','energy'].includes(f.closeup),compare=f.closeup==='frames',energy=f.closeup==='energy';
-   const layout=sceneLayout(width,height,f.closeup);f.compact=layout.compact;root.classList.toggle('rr-compact',layout.compact);const ids=visibleTargets(f,height);for(const b of shell.q('.exp-closeups').children)b.hidden=!ids.includes(b.dataset.id);
-   caption.textContent=f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' '));
-   readout.textContent=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a ${readoutNumber(p.a)} m · b ${readoutNumber(p.b)} m · c ${readoutNumber(p.c)} m`:`θ ${readoutNumber(f.sample.theta)} rad · T ${readoutNumber(f.sample.kinetic)} J`;
-   if(norm(g.torqueSpace)<1e-10&&!energy)readout.textContent+=' · τ 0 N m';
-   leaderLengths=[];frameCaptions.replaceChildren();labels.replaceChildren();leaders.replaceChildren();leaders.setAttribute('viewBox',`0 0 ${width} ${height}`);dispose(vectorLayer);
+   const layout=sceneLayout(width,height,f.closeup);f.compact=layout.compact;root.classList.toggle('rr-compact',layout.compact);const ids=visibleTargets(f,height);for(const b of shell.q('.exp-closeups').children){const hidden=!ids.includes(b.dataset.id);if(b.hidden!==hidden)b.hidden=hidden;}
+   cachedText(caption,f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' ')));
+   let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a ${readoutNumber(p.a)} m · b ${readoutNumber(p.b)} m · c ${readoutNumber(p.c)} m`:`θ ${readoutNumber(f.sample.theta)} rad · T ${readoutNumber(f.sample.kinetic)} J`;
+   if(norm(g.torqueSpace)<1e-10&&!energy)readoutText+=' · τ 0 N m';cachedText(readout,readoutText);
+   leaderLengths=[];for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
    if(f.t-lastTrace>.025){traceBody.push([...g.omegaBody]);traceSpace.push([...g.omegaSpace]);if(traceBody.length>800){traceBody.shift();traceSpace.shift();}lastTrace=f.t;}
    const target=f.closeup?1.18:1,dt=Math.min(.1,(performance.now()-(draw.last||performance.now()))/1000);draw.last=performance.now();zoom+= (target-zoom)*(1-Math.exp(-dt*10));if(shell.stage.snap){zoom=target;shell.stage.snap=false;}
    const narrow=width<430,{top,area}=layout;
    const dual=compare||energy,vertical=dual&&narrow;const panels=dual?[{x:0,y:top,w:vertical?width:width/2,h:vertical?area.h/2:area.h},{x:vertical?0:width/2,y:vertical?top+area.h/2:top,w:vertical?width:width/2,h:vertical?area.h/2:area.h}]:[area];
    const projectedBodies=[];const placed=[];renderer.setScissorTest(false);renderer.clear();renderer.setScissorTest(true);
    panels.forEach((r,index)=>{
-    dispose(vectorLayer);const bodyFrame=energy?index===0:compare?index===1:isBody;
+    retained.begin();currentPanel=index;const bodyFrame=energy?index===0:compare?index===1:isBody;
     content.quaternion.copy(bodyFrame?q(g.quaternion).invert():new THREE.Quaternion());body.position.copy(v(g.centreOfMass));body.quaternion.copy(q(g.quaternion));body.visible=!energy;
     const factor=f.breakdown&&!f.closeup ? .7 : cameraExtentFactor(width,height,f.closeup),cornerPadding=factor<1&&p.shape==='corner-masses' ? .11*Math.min(p.a,p.b,p.c) : 0;
     const extent=bounds/zoom*factor+cornerPadding;cameraFor(r.w,r.h,extent);renderer.setViewport(r.x,height-r.y-r.h,r.w,r.h);renderer.setScissor(r.x,height-r.y-r.h,r.w,r.h);
@@ -175,23 +195,23 @@ export const view={graphs,closeups,
      const lowerRow=Math.min(height-106,below+12);
      f.rotationAnchors=Object.fromEntries(ids.map((id,i)=>[id,narrow?{x:width*(['gravity','precession'].includes(id)?.26:i===0?.28:i===1?.72:.5),y:i===0?Math.max(60,Math.min(above-42,lowerRow-44)):lowerRow+(i-1)*44}:i<2?{x:i===0?left-74:right+74,y:cy-16}:{x:id==='precession'?left-74:width/2,y:Math.min(height-62,below+12)}]));
      shell.rotationAnchors=f.rotationAnchors;
-     for(const button of shell.q('.exp-closeups').children){const a=f.rotationAnchors[button.dataset.id];if(!a||button.hidden)continue;const w=button.offsetWidth,h=button.offsetHeight,x=Math.max(w/2+8,Math.min(width-w/2-8,a.x));placed.push({x:x-w/2,y:Math.min(height-40,a.y),width:w,height:h});}
+     for(const button of shell.q('.exp-closeups').children){const a=f.rotationAnchors[button.dataset.id];if(!a||button.hidden)continue;let size=chipSizes.get(button);if(!size){size={w:button.offsetWidth,h:button.offsetHeight};chipSizes.set(button,size);}const {w,h}=size,x=Math.max(w/2+8,Math.min(width-w/2-8,a.x));placed.push({x:x-w/2,y:Math.min(height-40,a.y),width:w,height:h});}
     }
     const origin=[0,0,0],basis=bodyFrame?[[1,0,0],[0,1,0],[0,0,1]]:g.principalAxes;
     if(energy){
      content.quaternion.identity();const scale=bounds*.65/Math.max(...g.inertiaEllipsoidRadii,1);const point=(bodyFrame?g.omegaBody:g.omegaSpace).map(x=>x*scale);
-     if(bodyFrame){const ell=new THREE.Mesh(new THREE.SphereGeometry(1,36,24),new THREE.MeshBasicMaterial({color:C.omega,wireframe:true,transparent:true,opacity:.18}));ell.scale.set(...g.inertiaEllipsoidRadii.map(x=>x*scale));vectorLayer.add(ell);}
-     else {const size=bounds*.9,plane=new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshBasicMaterial({color:C.L,side:THREE.DoubleSide,transparent:true,opacity:.12}));const L=v(g.angularMomentumSpace);plane.quaternion.setFromUnitVectors(v([0,0,1]),L.clone().normalize());plane.position.copy(L.clone().multiplyScalar(2*f.sample.kinetic/(L.lengthSq()||1)*scale));const center=plane.position.clone().project(camera),corners=[];for(const x of [-size/2,size/2])for(const y of [-size/2,size/2])corners.push(v([x,y,0]).applyQuaternion(plane.quaternion).add(plane.position).project(camera));plane.scale.setScalar(finitePatchScale(center,corners));vectorLayer.add(plane);}
-     const trace=bodyFrame?traceBody:traceSpace;if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),bodyFrame?C.omega:C.L);arrow(vectorLayer,origin,point,norm(point),C.omega);
+     if(bodyFrame){const ell=retained.mesh('ellipsoid',()=>new THREE.Mesh(new THREE.SphereGeometry(1,36,24),new THREE.MeshBasicMaterial({color:C.omega,wireframe:true,transparent:true,opacity:.18})));ell.scale.set(...g.inertiaEllipsoidRadii.map(x=>x*scale));}
+     else {const size=bounds*.9,plane=retained.mesh('tangent',()=>new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshBasicMaterial({color:C.L,side:THREE.DoubleSide,transparent:true,opacity:.12})));const L=v(g.angularMomentumSpace);plane.quaternion.setFromUnitVectors(v([0,0,1]),L.clone().normalize());plane.position.copy(L.clone().multiplyScalar(2*f.sample.kinetic/(L.lengthSq()||1)*scale));const center=plane.position.clone().project(camera),corners=[];for(const x of [-size/2,size/2])for(const y of [-size/2,size/2])corners.push(v([x,y,0]).applyQuaternion(plane.quaternion).add(plane.position).project(camera));plane.scale.setScalar(finitePatchScale(center,corners));}
+     const trace=bodyFrame?traceBody:traceSpace;if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),bodyFrame?C.omega:C.L);arrow(vectorLayer,origin,point,norm(point),C.omega,'energy-angular-velocity');
      textAt(bodyFrame?'ω body':'ω space',v(point),C.omega,r,placed);
     }else {
-     for(let i=0;i<3;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));arrow(vectorLayer,origin,axis.toArray(),bounds*.57,C.axes[i]);if(f.closeup==='axis'&&(!narrow||i===1))textAt('e'+['₁','₂','₃'][i],axis.multiplyScalar(bounds*.57).applyQuaternion(content.quaternion),C.axes[i],r,placed);}
+     for(let i=0;i<3;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));arrow(vectorLayer,origin,axis.toArray(),bounds*.57,C.axes[i],'axis-'+i);if(f.closeup==='axis'&&(!narrow||i===1))textAt('e'+['₁','₂','₃'][i],axis.multiplyScalar(bounds*.57).applyQuaternion(content.quaternion),C.axes[i],r,placed);}
      const vectors=[['ω',g.omegaSpace,C.omega,scales.omega],['L',g.angularMomentumSpace,C.L,scales.L],['τ',g.torqueSpace,C.torque,scales.torque]];
-     for(const [label,a,color,scale] of vectors){const length=Math.min(bounds*.93,norm(a)*scale);arrow(vectorLayer,origin,a,length,color);if(norm(a)>1e-10)textAt(label,v(a).normalize().multiplyScalar(length).applyQuaternion(content.quaternion),color,r,placed);}
+     for(const [label,a,color,scale] of vectors){const length=Math.min(bounds*.93,norm(a)*scale);arrow(vectorLayer,origin,a,length,color,label);if(norm(a)>1e-10)textAt(label,v(a).normalize().multiplyScalar(length).applyQuaternion(content.quaternion),color,r,placed);}
      if(p.mode==='heavy-top'){
-      line(vectorLayer,[origin,g.centreOfMass],C.torque);const pivot=new THREE.Mesh(new THREE.SphereGeometry(bounds*.025,12,10),new THREE.MeshBasicMaterial({color:'#d2d9e3'}));vectorLayer.add(pivot);
+      line(vectorLayer,[origin,g.centreOfMass],C.torque);retained.mesh('pivot',()=>new THREE.Mesh(new THREE.SphereGeometry(bounds*.025,12,10),new THREE.MeshBasicMaterial({color:'#d2d9e3'})));
       if(f.breakdown||['gravity','precession'].includes(f.closeup)){
-       const arm=g.centreOfMass,forceLength=bounds*.48;arrow(vectorLayer,arm,g.gravityForce,forceLength,C.torque);textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed);if(!narrow)textAt('r',v(arm).multiplyScalar(.5).applyQuaternion(content.quaternion),'#d6bd82',r,placed);
+       const arm=g.centreOfMass,forceLength=bounds*.48;arrow(vectorLayer,arm,g.gravityForce,forceLength,C.torque,'gravity');textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed);if(!narrow)textAt('r',v(arm).multiplyScalar(.5).applyQuaternion(content.quaternion),'#d6bd82',r,placed);
        line(vectorLayer,[origin,[0,0,p.distance]],'#8a99ad',true);line(vectorLayer,[arm,[0,0,arm[2]]],'#d6bd82',true);
        const az=Math.atan2(arm[1],arm[0]),arc=Array.from({length:33},(_,i)=>{const t=f.sample.theta*i/32;return [Math.cos(az)*Math.sin(t)*p.distance*.45,Math.sin(az)*Math.sin(t)*p.distance*.45,Math.cos(t)*p.distance*.45];});line(vectorLayer,arc,'#d6bd82');
        if(!narrow)textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#d6bd82',r,placed);
@@ -209,13 +229,17 @@ export const view={graphs,closeups,
     // Inspect actual rendered body geometry, including its corner marker. Keep
     // the camera fixed to the full-motion sphere; these bounds are evidence only.
     content.updateMatrixWorld(true);const projected=[];
-    body.traverse(object=>{if(!object.geometry)return;object.geometry.computeBoundingBox();const box=object.geometry.boundingBox;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const point=v([x,y,z]).applyMatrix4(object.matrixWorld).project(camera);projected.push({x:r.x+(point.x+1)*r.w/2,y:r.y+(1-point.y)*r.h/2});}});
+    body.traverse(object=>{if(!object.geometry)return;if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();const box=object.geometry.boundingBox;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const point=v([x,y,z]).applyMatrix4(object.matrixWorld).project(camera);projected.push({x:r.x+(point.x+1)*r.w/2,y:r.y+(1-point.y)*r.h/2});}});
     projectedBodies.push({visible:body.visible,panel:{...r},x:Math.min(...projected.map(p=>p.x)),right:Math.max(...projected.map(p=>p.x)),y:Math.min(...projected.map(p=>p.y)),bottom:Math.max(...projected.map(p=>p.y))});
     renderer.render(scene,camera);
-    if(dual){const label=document.createElement('span');label.textContent=energy?(index?'Space tangent plane':'Body inertia ellipsoid'):(index?'Body frame':'Space frame');label.style.cssText=`position:absolute;left:${r.x+8}px;top:${r.y+3}px;color:#9caec5;font-size:10px`;frameCaptions.append(label);}
+    if(dual){let label=panelLabels[index];if(!label){label=document.createElement('span');panelLabels[index]=label;frameCaptions.append(label);retained.allocations.labels++;}label.hidden=false;cachedText(label,energy?(index?'Space tangent plane':'Body inertia ellipsoid'):(index?'Body frame':'Space frame'));const css=`position:absolute;left:${r.x+8}px;top:${r.y+3}px;color:#9caec5;font-size:10px`;if(label.style.cssText!==css)label.style.cssText=css;}
+
    });renderer.setScissorTest(false);
    // Record actual visible DOM bounds for the same overlap checks as canvas stages.
-   const hr=host.getBoundingClientRect();shell.stage.labels=[...root.querySelectorAll('span')].filter(el=>el.getClientRects().length&&el.textContent).map(el=>{const r=el.getBoundingClientRect();return {text:el.textContent,x:r.x-hr.x,y:r.y-hr.y,width:r.width,height:r.height};});
+   for(const entry of labelNodes.values())if(!entry.used)entry.el.hidden=true;
+   for(const entry of leaderNodes.values())if(!entry.used)entry.el.style.display='none';
+   const hr=host.getBoundingClientRect();shell.stage.labels=[caption,readout,...panelLabels].filter(el=>!el.hidden&&el.textContent).map(el=>{const r=el.getBoundingClientRect();return {text:el.textContent,x:r.x-hr.x,y:r.y-hr.y,width:r.width,height:r.height};});
+   for(const entry of labelNodes.values())if(entry.used&&!entry.el.hidden)shell.stage.labels.push(entry.bounds);
    shell.rotationLeaderLengths=[...leaderLengths];shell.rotationBodyBounds={scene:{width,height},compact:layout.compact,panels:projectedBodies};shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
   }
   return {draw,resize(){},destroy(){dispose(content);renderer.dispose();renderer.forceContextLoss();root.remove();style.remove();shell.host.classList.remove('rr-experiment');}};

@@ -53,7 +53,7 @@ export function steadyPrecessionRates(I,omega3,m,g,d,theta) {
 }
 
 export const model = {
-  id:'rigid-rotation', title:'Rigid body rotation', version:'1.2.0', params,
+  id:'rigid-rotation', title:'Rigid body rotation', version:'1.3.0', params,
   presets:[
     {id:'flip',label:'Intermediate-axis flip',values:{mode:'free',shape:'box',mass:1,a:1.2,b:.6,c:.12,w1:.015,w2:4,w3:.008,tilt:.5},note:'The middle principal axis is unstable.'},
     {id:'minimum',label:'Smallest moment',values:{mode:'free',shape:'box',a:1.2,b:.6,c:.12,w1:4,w2:.015,w3:.008},note:'A small wobble stays bounded.'},
@@ -72,6 +72,7 @@ export const model = {
     {id:'tilted-fixed',label:'Tilted long-body constraint',values:{mode:'fixed-axis',shape:'corner-masses',mass:1,a:.3,b:.3,c:.8,tilt:.52,w1:-2.981,w2:0,w3:5.207},note:'A long body tilted about 30 degrees rotates around a nearly vertical space axis; the support supplies torque.'},
   ].map(p=>({...p,values:{...Object.fromEntries(params.map(p=>[p.key,p.value])),...p.values}})),
   observables:[
+    ...[1,2,3].map(i=>({key:'I'+i,label:'Principal moment '+i,symbol:'I_'+i,unit:'kg m\u00b2'})),
     ...['w1','w2','w3','omega'].map(key=>({key,label:key,symbol:key,unit:'rad/s'})),
     ...['Lx','Ly','Lz','angularMomentum'].map(key=>({key,label:key,symbol:key,unit:'kg m²/s'})),
     ...['kinetic','potential','energy','work'].map(key=>({key,label:key,symbol:key,unit:'J'})),
@@ -108,32 +109,57 @@ export const model = {
     }
     let state, time;
     const compute = s => {
-      const w=s.slice(0,3), q=normalized(s.slice(3,7)), L=w.map((v,i)=>v*I[i]);
+      const w=Array.from(s.subarray(0,3)), q=normalized(Array.from(s.subarray(3,7))), L=w.map((v,i)=>v*I[i]);
       const ws=rotate(q,w), Ls=rotate(q,L), axis=rotate(q,[0,0,1]);
       const r=axis.map(v=>p.distance*v), force=[0,0,-p.mass*p.g];
       const tiltTorque=[-coefficient*axis[1],coefficient*axis[0],0];
       const torque=p.mode==='fixed-axis'?cross(ws,Ls):external.map((v,i)=>v+tiltTorque[i]);
       return {w,q,L,ws,Ls,axis,r,force,torque};
     };
-    const derivative = s => {
-      const {w,q,L,ws,torque}=compute(s), tb=rotate(conjugate(q),torque), gyroscopic=cross(w,L);
-      const dw=p.mode==='fixed-axis'?[0,0,0]:tb.map((v,i)=>(v-gyroscopic[i])/I[i]);
-      return [...dw,...mul(q,[0,...w]).map(v=>v/2),dot(external,ws)];
+    // Per-instance RK4 scratch: no arrays, vectors or quaternions allocated per substep.
+    // The same angular-advance bound and normalized stage attitudes are retained.
+    const k1=new Float64Array(8),k2=new Float64Array(8),k3=new Float64Array(8),k4=new Float64Array(8),tmp=new Float64Array(8);
+    const fixed=p.mode==='fixed-axis', minI=Math.min(...I);
+    const ex=external[0],ey=external[1],ez=external[2],hasTorque=coefficient!==0||ex!==0||ey!==0||ez!==0;
+    const derivative = (s,out) => {
+      const x=s[0],y=s[1],z=s[2],qn=Math.hypot(s[3],s[4],s[5],s[6]);
+      const a=s[3]/qn,b=s[4]/qn,c=s[5]/qn,d=s[6]/qn;
+      let tx=0,ty=0,tz=0,work=0;
+      if(hasTorque&&!fixed){
+        const r00=a*a+b*b-c*c-d*d,r01=2*(b*c-a*d),r02=2*(b*d+a*c);
+        const r10=2*(b*c+a*d),r11=a*a-b*b+c*c-d*d,r12=2*(c*d-a*b);
+        const r20=2*(b*d-a*c),r21=2*(c*d+a*b),r22=a*a-b*b-c*c+d*d;
+        const sx=ex-coefficient*r12,sy=ey+coefficient*r02;
+        tx=r00*sx+r10*sy+r20*ez;ty=r01*sx+r11*sy+r21*ez;tz=r02*sx+r12*sy+r22*ez;
+        work=ex*(r00*x+r01*y+r02*z)+ey*(r10*x+r11*y+r12*z)+ez*(r20*x+r21*y+r22*z);
+      }
+      out[0]=fixed?0:(tx+(I[1]-I[2])*y*z)/I[0];
+      out[1]=fixed?0:(ty+(I[2]-I[0])*z*x)/I[1];
+      out[2]=fixed?0:(tz+(I[0]-I[1])*x*y)/I[2];
+      out[3]=(-b*x-c*y-d*z)/2;out[4]=(a*x+c*z-d*y)/2;
+      out[5]=(a*y+d*x-b*z)/2;out[6]=(a*z+b*y-c*x)/2;out[7]=work;
     };
-    const offset=(s,k,h)=>s.map((v,i)=>v+h*k[i]);
+    const offset=(s,k,h)=>{for(let j=0;j<8;j++)tmp[j]=s[j]+h*k[j];return tmp;};
+    const accelerationBound=s=>{
+      if(fixed)return Math.hypot((I[2]-I[1])*s[1]*s[2],(I[0]-I[2])*s[2]*s[0],(I[1]-I[0])*s[0]*s[1])/minI;
+      if(!hasTorque)return 0;
+      const n=Math.hypot(s[3],s[4],s[5],s[6]),a=s[3]/n,b=s[4]/n,c=s[5]/n,d=s[6]/n;
+      return Math.hypot(ex-coefficient*2*(c*d-a*b),ey+coefficient*2*(b*d+a*c),ez)/minI;
+    };
     const api={
       get t(){return time;},
-      reset(){state=[...w0,...q0,0];time=0;return api;},
+      reset(){state=new Float64Array([...w0,...q0,0]);time=0;return api;},
       step(dt){
         if(!Number.isFinite(dt)||dt<0||dt>60) throw new RangeError('dt must be between 0 and 60 seconds');
         const end=time+dt;
         while(time<end){
           // Limit both physical time and angular advance; include anticipated torque acceleration.
-          const {w,torque}=compute(state), accel=norm(torque)/Math.min(...I);
-          const h=Math.min(end-time,.002,.01/(1+norm(w)+Math.sqrt(accel)));
-          const a=derivative(state),b=derivative(offset(state,a,h/2)),c=derivative(offset(state,b,h/2)),d=derivative(offset(state,c,h));
-          state=state.map((v,i)=>v+h*(a[i]+2*b[i]+2*c[i]+d[i])/6);
-          state.splice(3,4,...normalized(state.slice(3,7)));
+          const accel=accelerationBound(state);
+          const h=Math.min(end-time,.002,.01/(1+Math.hypot(state[0],state[1],state[2])+Math.sqrt(accel)));
+          derivative(state,k1);derivative(offset(state,k1,h/2),k2);derivative(offset(state,k2,h/2),k3);derivative(offset(state,k3,h),k4);
+          for(let j=0;j<8;j++)state[j]+=h*(k1[j]+2*k2[j]+2*k3[j]+k4[j])/6;
+          const qn=Math.hypot(state[3],state[4],state[5],state[6]);
+          for(let j=3;j<7;j++)state[j]/=qn;
           time+=h;
         }
         time=end; return api;
@@ -146,7 +172,7 @@ export const model = {
         const phi=regular?Math.atan2(axis[1],axis[0]):0;
         // Z-Y-Z angles are not unique at either pole; choose a finite gauge and flag it.
         const psi=regular?Math.atan2(yAxis[2],-xAxis[2]):Math.atan2(xAxis[1],axis[2]<0?-xAxis[0]:xAxis[0]);
-        return {t:time,w1:w[0],w2:w[1],w3:w[2],omega:norm(w),Lx:Ls[0],Ly:Ls[1],Lz:Ls[2],angularMomentum:norm(Ls),kinetic,potential,energy:kinetic+potential,work:state[7],theta:Math.acos(Math.max(-1,Math.min(1,axis[2]))),phi,psi,eulerRegular:regular?1:0,precessionRate:regular?(axis[0]*da[1]-axis[1]*da[0])/rho2:0,quaternionNorm:norm(q)};
+        return {t:time,I1:I[0],I2:I[1],I3:I[2],w1:w[0],w2:w[1],w3:w[2],omega:norm(w),Lx:Ls[0],Ly:Ls[1],Lz:Ls[2],angularMomentum:norm(Ls),kinetic,potential,energy:kinetic+potential,work:state[7],theta:Math.acos(Math.max(-1,Math.min(1,axis[2]))),phi,psi,eulerRegular:regular?1:0,precessionRate:regular?(axis[0]*da[1]-axis[1]*da[0])/rho2:0,quaternionNorm:norm(q)};
       },
       invariants(){const s=api.sample();return {energy:s.energy,angularMomentum:[s.Lx,s.Ly,s.Lz],angularMomentumMagnitude:s.angularMomentum,verticalAngularMomentum:s.Lz,bodyAxialAngularMomentum:I[2]*s.w3,work:s.work,energyMinusWork:s.energy-s.work};},
       geometry(){
