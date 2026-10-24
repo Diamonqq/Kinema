@@ -63,5 +63,32 @@ test('pendulum default tangential force extends beyond the bob by at least 8 px'
  for(const [w,h] of [[306,340],[570,340],[306,685],[570,685]])for(const closeup of ['', 'gravity']){const s=stage(w,h),f={...frame(pendulum),breakdown:!closeup,closeup};pendulumView.draw(s,f);const a=s.forceArrows.find(a=>a.text.includes('sin'));assert.ok(a);assert.ok(Math.hypot(a.x-a.ax,a.y-a.ay)>=s.bobRadius+8);}
 });
 test('force equations end with numerical units and omit inactive drive/damping terms',async()=>{
- for(const id of ['pendulum','anharmonic','motion-generator']){const {model}=await import('../../static/js/experiments/'+id+'/model.js'),{view}=await import('../../static/js/experiments/'+id+'/view.js'),f=frame(model),lines=view.equations(f),all=lines.join(' ');assert.ok(!all.includes('reservoir'));assert.ok(!all.includes('cos(\\Omega'));assert.ok(!all.includes('-b'));assert.ok(/\\mathrm/.test(lines.at(-1)));if(id==='motion-generator'){assert.ok(all.includes('ma_x='));assert.ok(!view.graphDescriptors(f.params).some(g=>g.id==='balance'));assert.equal(view.key({...f,breakdown:true}),'');}if(id==='anharmonic'){assert.ok(all.includes('-(1)(1.000)^3'));assert.ok(all.includes('-2.000'));}}
+ for(const id of ['pendulum','anharmonic','motion-generator']){const {model}=await import('../../static/js/experiments/'+id+'/model.js'),{view}=await import('../../static/js/experiments/'+id+'/view.js'),f=frame(model),lines=view.equations(f),all=lines.join(' ');assert.ok(!all.includes('reservoir'));assert.ok(!all.includes('cos(\\Omega'));assert.ok(!all.includes('-b'));assert.ok(/\\mathrm/.test(lines.at(-1)));if(id==='motion-generator'){assert.ok(all.includes('ma_x='));assert.ok(!view.graphDescriptors(f.params).some(g=>g.id==='balance'));assert.equal(view.key({...f,breakdown:true}),'');}if(id==='anharmonic'){assert.ok(all.includes('-(1.00)(1.00)^3'));assert.ok(all.includes('-2.00'));}}
+});
+
+
+test('judge: shared formatter has identical precision in labels and equations, no e-notation',async()=>{
+ const {fmt,tex,withUnit}=await import('../../static/js/experiments/motion-generator/view-tools.js');
+ for(const [v,plain,math] of [[-1,'\u22121.00','-1.00'],[.2333,'0.233','0.233'],[-.0001108,'\u22121.11\u00d710\u207b\u2074','-1.11\\times10^{-4}']]){assert.equal(fmt(v),plain);assert.equal(tex(v),math);assert.equal(withUnit(v,'N'),plain+' N');assert.ok(!/[eE][+-]?\d/.test(fmt(v)));}
+});
+test('judge: force symbols cover every model force key and track survives zoom',async()=>{
+ const {model}=await import('../../static/js/experiments/motion-generator/model.js'),{view,forceSymbols}=await import('../../static/js/experiments/motion-generator/view.js');
+ const f={...frame(model),closeup:'force'},s=stage(570,500),lines=[];s.line=(...a)=>lines.push(a);view.draw(s,f);
+ assert.deepEqual(Object.keys(forceSymbols).sort(),Object.keys(f.geometry.forces).sort());assert.ok(s.labels.some(l=>l.text==='F_{s} = \u22121.00 N'));assert.ok(s.labels.some(l=>l.text==='x = 0'));assert.ok(lines.some(a=>a[0]===24&&a[2]===546));
+});
+test('judge: pendulum release and over-the-top preset, inward tension matches centripetal acceleration within 1e-12 N',()=>{
+ assert.equal(pendulum.params.find(p=>p.key==='theta0').value,1);assert.equal(pendulum.params.find(p=>p.key==='omega0').value,0);assert.equal(pendulum.presets.find(p=>p.id==='rotation').values.omega0,7);
+ const f=frame(pendulum,{theta0:0,omega0:7}),s=stage(570,500);pendulumView.draw(s,{...f,breakdown:true});assert.ok(Math.abs(f.geometry.tension-58.81)<1e-12);const T=s.forceArrows.find(a=>a.text==='T');assert.ok(T);assert.ok(T.y<T.ay);const g=s.forceArrows.find(a=>a.text==='mg');assert.ok(g.y>g.ay);const eq=pendulumView.equations(f).join(' ');assert.ok(eq.includes('58.8'));assert.ok(eq.includes('F_{g,r}'));assert.ok(eq.includes('m\\omega^2L'));
+});
+test('judge: wrapped angle spans (-pi, pi] and a NaN breaks every sampled rotation wrap',()=>{
+ const i=pendulum.create({theta0:0,omega0:7});let before=i.sample(),wraps=0;
+ for(let n=0;n<1200;n++){i.step(.01);const q=i.sample(),wrapped=Math.atan2(Math.sin(q.theta),Math.cos(q.theta));if(Math.abs(Math.atan2(Math.sin(before.theta),Math.cos(before.theta))-wrapped)>Math.PI){assert.ok(Number.isNaN(q.thetaWrapped));assert.ok(Number.isNaN(i.sample().thetaWrapped));wraps++;}else assert.ok(q.thetaWrapped>-Math.PI&&q.thetaWrapped<=Math.PI);before=q;}
+ assert.ok(wraps>=5);i.reset();assert.equal(i.sample().thetaWrapped,0);assert.equal(pendulumView.graphs.find(g=>g.id==='motion').series[0].key,'thetaWrapped');assert.ok(pendulumView.graphs.find(g=>g.id==='phase').label.includes('unwrapped'));
+});
+test('judge: coupled default releases one mass, excites two modes and transfers energy (fraction < .004)',async()=>{
+ const {model,defaults}=await import('../../static/js/experiments/coupled-oscillators/model.js');assert.equal(defaults.x1,.2);assert.equal(defaults.x2,0);assert.equal(defaults.modeA,0);assert.ok(model.presets.some(p=>p.id==='mode1'));const i=model.create({}),initial=i.sample(),T=2*Math.PI/(i.modes[1].omega-i.modes[0].omega);assert.ok(initial.q1&&initial.q2);const E=initial.energy;i.step(T/2);const q=i.sample();assert.ok((.5*q.v1**2+10*q.x1**2)/E<.004);
+});
+test('judge: narrow anharmonic scene caps its content height and phase cards have one unit title',async()=>{
+ for(const id of ['anharmonic','motion-generator','pendulum']){const {view}=await import('../../static/js/experiments/'+id+'/view.js');assert.equal(view.graphs.find(g=>g.id==='phase').unit,undefined);}
+ const {model}=await import('../../static/js/experiments/anharmonic/model.js'),{view}=await import('../../static/js/experiments/anharmonic/view.js'),s=stage(306,685);s.canvas={parentElement:{style:{}}};view.draw(s,frame(model));assert.equal(s.canvas.parentElement.style.maxHeight,'360px');
 });

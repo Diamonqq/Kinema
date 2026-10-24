@@ -1,15 +1,20 @@
 // View utilities owned by the oscillator lane. SI geometry stays in each core.
+import {num,texNum,withUnit} from '../kit/format.js';
+export {withUnit};
 import {spectrum} from '../anharmonic/analysis.js';
 export const C={blue:'#8ab9ff',gold:'#e9bb88',green:'#b0c9ad',violet:'#bcabef',dim:'#71839b',ink:'#cbd8e9',grid:'#344355'};
-export const fmt=(x,n=2)=>{if(!Number.isFinite(x))return 'unbound';const a=Math.abs(x);if(a<.5*10**-n)return (0).toFixed(n);const str=a>=1000||a<.005?x.toExponential(2):x.toFixed(Math.min(n,a>=100?0:a>=10?1:n));return str.replace(/-/g,'−');};
-export const tex=x=>fmt(x,3).replace(/\u2212/g,'-');
+export const fmt=(x,n=3)=>num(x,n);
+export const tex=(x,n=3)=>texNum(x,n);
 export function label(s,text,x,y,color=C.ink,size=12,align='center'){
- const c=s.ctx;c.font=`${size}px system-ui,sans-serif`;const width=c.measureText(text).width;
- const left=align==='left'?x:align==='right'?x-width:x-width/2;
+ const c=s.ctx,parts=String(text).split(/(_\{[^}]+\})/).filter(Boolean).map(t=>({text:t.startsWith('_{')?t.slice(2,-1):t,sub:t.startsWith('_{')}));
+ const widths=parts.map(p=>{c.font=`${size*(p.sub?.72:1)}px system-ui,sans-serif`;return c.measureText(p.text).width;}),width=widths.reduce((a,b)=>a+b,0),left=align==='left'?x:align==='right'?x-width:x-width/2;
  if(left<5||left+width>s.w-5||y<size||y>s.h-44)return false;
- const rect={x:left-3,y:y-size*.65,width:width+6,height:size*1.3};
+ const rect={x:left-3,y:y-size*.65,width:width+6,height:size*1.4};
  if([...(s.labels||[]),...(s.avoid||[])].some(b=>rect.x<b.x+b.width+2&&rect.x+rect.width>b.x-2&&rect.y<b.y+b.height+2&&rect.y+rect.height>b.y-2))return false;
- s.text(text,x,y,color,size,align);return true;
+ if(!parts.some(p=>p.sub)){s.text(text,x,y,color,size,align);return true;}
+ c.fillStyle=color;c.textAlign='left';c.textBaseline='middle';let cursor=left;
+ parts.forEach((p,i)=>{c.font=`${size*(p.sub?.72:1)}px system-ui,sans-serif`;c.fillText(p.text,cursor,y+(p.sub?size*.24:0));cursor+=widths[i];});
+ s.labels.push({...rect,text:String(text)});return true;
 }
 export function tip(s,text,x,y,color){
  for(const [dx,dy] of [[0,-14],[0,15],[30,-14],[-30,15],[0,-29],[-55,-30],[55,-30],[-65,14],[65,14],[0,-50]])if(label(s,text,x+dx,y+dy,color,s.w<360?10:12)){if(Math.abs(dx)>35||Math.abs(dy)>35)s.line(x,y,x+dx,y+dy-5,color+'80',1);return;}
@@ -40,7 +45,7 @@ export function linePlot(s,{title,points=[],xkey='x',ykey='y',cursor,color=C.blu
  if(xmax-xmin<1e-9){xmin-=.5;xmax+=.5;}if(yFloor!==undefined){ymin=yFloor;ymax=Math.max(ymax,yFloor+1e-9);}else if(ymax-ymin<1e-9){ymin-=.5;ymax+=.5;}
  const dy=(ymax-ymin)*.12;ymin=yFloor??ymin-dy;ymax+=dy;s.plotBounds={xmin,xmax,ymin,ymax,left:l,right:r,top:t,bottom:b};const xx=x=>l+(r-l)*(x-xmin)/(xmax-xmin),yy=y=>b-(b-t)*(y-ymin)/(ymax-ymin);
  const c=s.ctx;c.save();c.beginPath();c.rect(l,t,r-l,b-t);c.clip();
- if(scatter){for(const p of data)s.circle(xx(p[xkey]),yy(p[ykey]),2.6,color);}else{c.beginPath();data.forEach((p,i)=>i?c.lineTo(xx(p[xkey]),yy(p[ykey])):c.moveTo(xx(p[xkey]),yy(p[ykey])));c.strokeStyle=color;c.lineWidth=1.7;c.stroke();}
+ if(scatter){for(const p of data)s.circle(xx(p[xkey]),yy(p[ykey]),2.6,color);}else{c.beginPath();let pen=false;for(const p of points){if(!Number.isFinite(p[xkey])||!Number.isFinite(p[ykey])){pen=false;continue;}if(pen)c.lineTo(xx(p[xkey]),yy(p[ykey]));else c.moveTo(xx(p[xkey]),yy(p[ykey]));pen=true;}c.strokeStyle=color;c.lineWidth=1.7;c.stroke();}
  if(cursor&&Number.isFinite(cursor[xkey])&&Number.isFinite(cursor[ykey]))s.circle(xx(cursor[xkey]),yy(cursor[ykey]),4,'#ffffff');c.restore();
  s.text(fmt(ymax),l-5,t,C.dim,9,'right');s.text(fmt(ymin),l-5,b,C.dim,9,'right');s.text(fmt(xmin),l,b+12,C.dim,9,'left');s.text(fmt(xmax),r,b+12,C.dim,9,'right');s.text(xlabel,(l+r)/2,h-7,C.dim,10);
 }

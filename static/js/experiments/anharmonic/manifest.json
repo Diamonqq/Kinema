@@ -706,7 +706,6 @@
     {
       "id": "phase",
       "label": "Phase space",
-      "unit": "m, m/s",
       "kind": "custom",
       "series": [
         {
