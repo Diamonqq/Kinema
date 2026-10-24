@@ -31,14 +31,36 @@ export function mapWorld(stage,bounds,top=50,bottom=stage.h-150,padding=stage.w<
  return {x:q=>w/2+(q-cam.cx)*cam.scale,y:q=>(top+bottom)/2-(q-cam.cy)*cam.scale,scale:cam.scale};
 }
 function path(s,points,map,color,dashed=false){s.ctx.setLineDash(dashed?[4,6]:[]);s.ctx.beginPath();points.forEach((q,j)=>j?s.ctx.lineTo(map.x(q.x),map.y(q.y)):s.ctx.moveTo(map.x(q.x),map.y(q.y)));s.ctx.strokeStyle=color;s.ctx.lineWidth=dashed?1.3:2;s.ctx.stroke();s.ctx.setLineDash([]);}
+// Segment/rectangle clipping also keeps caption leaders out of close-up chips.
+export function segmentHitsRect(x0,y0,x1,y1,r){
+ let lo=0,hi=1;const dx=x1-x0,dy=y1-y0;
+ for(const [p,q] of [[-dx,x0-r.x],[dx,r.x+r.width-x0],[-dy,y0-r.y],[dy,r.y+r.height-y0]]){
+  if(Math.abs(p)<1e-9){if(q<0)return false;continue;}
+  const t=q/p;if(p<0)lo=Math.max(lo,t);else hi=Math.min(hi,t);if(lo>hi)return false;
+ }
+ return true;
+}
 function vector(s,x,y,dx,dy,label,color,scale=1,labelOffset){
  if(Math.hypot(dx,dy)<1e-7)return;
  const tx=x+dx*scale,ty=y-dy*scale;s.arrow(x,y,tx,ty,color,2);
  const c=s.ctx;c.font='12px system-ui,sans-serif';const width=c.measureText(label).width||label.length*6;
- let px=Math.max(width/2+7,Math.min(s.w-width/2-7,tx+(dx>0?12:dx<0?-12:0))),py=ty+(labelOffset??(dy>=0?-15:16));
- const clear=y=>![...(s.labels||[]),...(s.vectorObstacles||[])].some(a=>px-width/2<a.x+a.width+4&&px+width/2>a.x-4&&y-7<a.y+a.height+4&&y+7>a.y-4);
- for(const offset of [0,-18,18,-36,36,-54,54,-72,72,-90,90])if(clear(py+offset)){py+=offset;break;}
- py=Math.max(10,Math.min(s.h-15,py));if(Math.hypot(px-tx,py-ty)>27)s.line(tx,ty,px,py,color+'80',.8);s.text(label,px,py,color,12);
+ const baseX=tx+(dx>0?12:dx<0?-12:0),baseY=ty+(labelOffset??(dy>=0?-15:16));
+ const clear=(px,py)=>{
+  if(py<10||py>s.h-15)return false;
+  const rect={x:px-width/2-4,y:py-9,width:width+8,height:18};
+  if([...(s.labels||[]),...(s.vectorObstacles||[])].some(a=>rect.x<a.x+a.width&&rect.x+rect.width>a.x&&rect.y<a.y+a.height&&rect.y+rect.height>a.y))return false;
+  // A vertical downward force keeps its label beyond the tip, never on its shaft.
+  if(dy<0&&Math.abs(dx)<1e-9&&py<ty+12)return false;
+  if(segmentHitsRect(x,y,tx,ty,rect))return false;
+  return !(s.vectorChips||[]).some(a=>segmentHitsRect(tx,ty,px,py,a));
+ };
+ let selected;
+ outer:for(const oy of [0,18,-18,36,-36,54,-54,72,-72,90,-90])for(const ox of [0,32,-32,60,-60,90,-90]){
+  const px=Math.max(width/2+7,Math.min(s.w-width/2-7,baseX+ox)),py=baseY+oy;
+  if(clear(px,py)){selected={px,py};break outer;}
+ }
+ const {px,py}=selected||{px:Math.max(width/2+7,Math.min(s.w-width/2-7,baseX)),py:Math.max(10,Math.min(s.h-15,baseY))};
+ if(Math.hypot(px-tx,py-ty)>27)s.line(tx,ty,px,py,color+'80',.8);s.text(label,px,py,color,12);
 }
 function triangle(s,f,live=false){
  const p=f.params,q=f.sample,top=55,bottom=s.h-62,cx=s.w*.3,cy=(top+bottom)/2+15;
@@ -74,7 +96,7 @@ export const view={graphs,closeups,
  closeupAnchors(s,f){if(f.closeup)return {};const data=preview(f.params),m=mapWorld(s,data.bounds),q=data.path[Math.min(data.path.length-1,Math.max(1,Math.floor(data.path.length*.2)))];return {angle:{x:m.x(0)+(s.w<440?0:(f.breakdown?0:-70)),y:m.y(f.params.height)+(s.w<440?-85:(f.breakdown?65:-40))},'air-force':{x:m.x((data.ghost[0].x+data.ghost.at(-1).x)/2),y:m.y(0)+14},apex:{x:m.x(data.apex.x),y:Math.max(35,m.y(data.apex.y)-120)}};},
  key:f=>f.closeup==='air-force'?['Blue: u',...(Math.hypot(f.geometry.forces.drag.x,f.geometry.forces.drag.y)>1e-7?['Green: drag']:[]),'Amber: gravity',...(Math.hypot(f.geometry.forces.lift.x,f.geometry.forces.lift.y)>1e-7?['Violet: lift']:[])].join(' \u00b7 '):f.closeup?'Angles measured from horizontal':'Blue: projectile \u00b7 dashed: vacuum',
  draw(s,f){
-  s.vectorObstacles=[];const data=preview(f.params);
+  s.vectorObstacles=[];s.vectorChips=[];const data=preview(f.params);
   if(f.closeup){
    // A normalized world supplies the shared animated camera transition, while
    // magnified vector diagrams keep fixed readable screen-space caption bands.
@@ -93,6 +115,7 @@ export const view={graphs,closeups,
   if(f.breakdown){
    const widths={angle:93,'air-force':105,apex:84};
    s.vectorObstacles=Object.entries(view.closeupAnchors(s,f)).map(([id,a])=>{const w=widths[id];return {x:Math.max(w/2+8,Math.min(s.w-w/2-8,a.x))-w/2,y:Math.min(s.h-40,a.y),width:w,height:32};});
+   s.vectorChips=[...s.vectorObstacles];
    for(const q of data.path)s.vectorObstacles.push({x:m.x(q.x)-1,y:m.y(q.y)-1,width:2,height:2});
    for(let x=0;x<s.w;x+=6)s.vectorObstacles.push({x,y:m.y(0)-1,width:6,height:2});
    const len=Math.min(48,s.w*.11),v=f.geometry.velocity,vscale=len/Math.max(1,Math.hypot(v.x,v.y));
@@ -101,7 +124,7 @@ export const view={graphs,closeups,
    if(f.t>.2&&s.w>=440){vector(s,lx,ly,l*Math.cos(a),0,'v₀x',blue,1,-15);vector(s,lx,ly,0,l*Math.sin(a),'v₀y',green);}
    // Force vectors on the moving ball; labels use fixed caption rows below.
    const fs=f.geometry.forces,max=Math.max(.001,...Object.values(fs).map(q=>Math.hypot(q.x,q.y))),k=34/max;
-   for(const [name,c,term] of [['gravity',orange,'mg'],['drag',green,'Fᴅ'],['lift',purple,'Fʟ']]){const q=fs[name];vector(s,m.x(p.x),m.y(p.y),q.x,q.y,term,c,k,s.w<440&&name==='drag'?-24:undefined);}
+   if(!f.sample.landed)for(const [name,c,term] of [['gravity',orange,'mg'],['drag',green,'Fᴅ'],['lift',purple,'Fʟ']]){const q=fs[name];vector(s,m.x(p.x),m.y(p.y),q.x,q.y,term,c,k,s.w<440&&name==='drag'?-24:undefined);}
   }
  },
  equations(f){const p=f.params,q=f.sample,g=f.geometry,theta=p.angle*rad;return [
@@ -117,4 +140,3 @@ export const view={graphs,closeups,
   return [p.drag==='vacuum'?'F_D=0':p.drag==='linear'?String.raw`\mathbf F_D=-b\mathbf u`:p.drag==='combined'?String.raw`\mathbf F_D=-b\mathbf u-\frac12\rho C_D A|\mathbf u|\mathbf u`:String.raw`\mathbf F_D=-\frac12\rho C_D A|\mathbf u|\mathbf u`,String.raw`F_{Dx}=${fmt(g.forces.drag.x)}\,\mathrm{N}`,String.raw`F_{Dy}=${fmt(g.forces.drag.y)}\,\mathrm{N}`,String.raw`mg=${fmt(p.mass*p.gravity)}\,\mathrm{N}`];
  },
 };
-

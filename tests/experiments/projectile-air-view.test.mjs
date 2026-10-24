@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {model} from '../../static/js/experiments/projectile-air/model.js';
-import {view,preview,mapWorld} from '../../static/js/experiments/projectile-air/view.js';
+import {view,preview,mapWorld,segmentHitsRect} from '../../static/js/experiments/projectile-air/view.js';
 const params=Object.fromEntries(model.params.map(p=>[p.key,p.value]));
 test('projectile manifest is exactly synchronized with parameter, preset, graph and close-up descriptors',()=>{
  const m=JSON.parse(fs.readFileSync(new URL('../../static/js/experiments/projectile-air/manifest.json',import.meta.url)));
@@ -28,4 +28,13 @@ test('320 px flight framing uses at least 80% of the 300 px stage width (1e-9 px
   const map=mapWorld(stage,data.bounds),xs=data.ghost.map(q=>map.x(q.x));
   assert.ok(Math.max(...xs)-Math.min(...xs)>=.8*stage.w-1e-9,preset.id);
  }
+});
+
+test('leader clipping detects crossing and grazing chips, and permits clear routes (1e-9 px parallel tolerance)',()=>{
+ const chip={x:20,y:20,width:40,height:32};
+ assert.equal(segmentHitsRect(0,30,90,30,chip),true);
+ assert.equal(segmentHitsRect(0,20,90,20,chip),true);
+ assert.equal(segmentHitsRect(30,30,90,90,chip),true);
+ assert.equal(segmentHitsRect(0,10,90,10,chip),false);
+ assert.equal(segmentHitsRect(10,0,10,90,chip),false);
 });
