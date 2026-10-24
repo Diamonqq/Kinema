@@ -16,10 +16,11 @@ export class Experiments {
   try{
    const entries=await this.catalog();if(this.t.page!=='experiments'||epoch!==this.galleryEpoch)return;
    this.gallery.innerHTML='<div class="exp-gallery-head"><h1>Experiments</h1><p>Change something. See what follows.</p></div>'+['Mechanics','Relativity'].filter(group=>entries.some(e=>e.group===group)).map(group=>`<section class="exp-group"><h2>${group}</h2><div class="exp-grid">${entries.filter(e=>e.group===group).map(e=>`<button class="exp-card" data-experiment="${esc(e.id)}"><div class="exp-thumb"><canvas data-thumbnail="${esc(e.id)}" aria-hidden="true"></canvas></div><h3>${esc(e.title)}</h3><p>${esc(e.description)}</p><span>Open experiment ↗</span></button>`).join('')}</div></section>`).join('');
-   for(const entry of entries){
-    try{const [{model},{view}]=await Promise.all([import(`./${entry.id}/model.js`),import(`./${entry.id}/view.js`)]);if(epoch!==this.galleryEpoch||this.t.page!=='experiments')return;const canvas=this.gallery.querySelector(`[data-thumbnail="${entry.id}"]`);if(!canvas)continue;const stage=new VectorStage(canvas),instance=model.create();stage.begin();view.draw(stage,{instance,params:{...Object.fromEntries(model.params.map(p=>[p.key,p.value]))},sample:instance.sample(),geometry:instance.geometry(),t:0,breakdown:false,closeup:'',thumbnail:true,samples:[instance.sample()]});}
+   // Thumbnails load together, so one slow module does not hold back the others.
+   await Promise.all(entries.map(async entry=>{
+    try{const [{model},{view}]=await Promise.all([import(`./${entry.id}/model.js`),import(`./${entry.id}/view.js`)]);if(epoch!==this.galleryEpoch||this.t.page!=='experiments')return;const canvas=this.gallery.querySelector(`[data-thumbnail="${entry.id}"]`);if(!canvas)return;const stage=new VectorStage(canvas),instance=model.create();stage.begin();view.draw(stage,{instance,params:{...Object.fromEntries(model.params.map(p=>[p.key,p.value]))},sample:instance.sample(),geometry:instance.geometry(),t:0,breakdown:false,closeup:'',thumbnail:true,samples:[instance.sample()]});}
     catch{const card=this.gallery.querySelector(`[data-experiment="${entry.id}"]`);if(card){card.disabled=true;card.querySelector('span').textContent='Could not open · reload to try again';}}
-   }
+   }));
   }catch(e){if(epoch===this.galleryEpoch)this.gallery.innerHTML=`<div class="exp-gallery-head"><h1>Experiments</h1><p role="alert">Could not load experiments. ${esc(e.message)}</p><button data-experiments-retry>Try again</button></div>`;}
  }
  async open(id){const ok=await this.t.newChat({mode:'experiment',experiment_id:id,resume:true});if(ok){this.t.syncSection();await this.sync(this.t.thread,true);}}
