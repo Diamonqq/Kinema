@@ -1,4 +1,4 @@
-// Constrained rolling on an oval, valid only while tyre grip can supply the turn.
+// Constrained rolling on an oval, valid only while tire grip can supply the turn.
 // Loss of grip ends the valid lap; no invented post-slip vehicle dynamics.
 const rad=Math.PI/180;
 const n=(key,label,symbol,unit,min,max,step,value,group)=>({key,label,symbol,unit,min,max,step,value,group});
@@ -10,8 +10,8 @@ const params=[
   n('rolling','Rolling coefficient','c_r','1',0,.05,.001,0,'Car'),
   n('radius','Corner radius','r','m',5,300,1,50,'Track'),
   n('halfStraight','Half straight length','L','m',0,300,1,50,'Track'),
-  n('bank','Corner bank angle','θ','°',0,35,1,0,'Track'),
-  n('mu','Tyre friction coefficient','μ','1',0,1,.01,.8,'Track'),
+  n('bank','Corner bank angle','θ','°',0,35,1,20,'Track'),
+  n('mu','Tire friction coefficient','μ','1',0,1,.01,.8,'Track'),
   n('gravity','Gravity','g','m/s²',1,25,.01,9.81,'World'),
 ];
 export function resolve(values={}){const p={};for(const d of params){const v=values[d.key]??d.value;if(typeof v!=='number'||!Number.isFinite(v)||v<d.min||v>d.max)throw new RangeError(`Invalid ${d.key}`);p[d.key]=v;}return p;}
@@ -70,10 +70,10 @@ function create(values={}){
 const base={mass:1000,speed:15,drive:0,drag:0,rolling:0,radius:50,halfStraight:50,bank:0,mu:.8,gravity:9.81};
 const preset=(id,label,values,note)=>({id,label,values:{...base,...values},note});
 export const model={id:'race-track',title:'Race track',params,presets:[
-  preset('flat','Flat corner',{},'Static tyre friction supplies the inward acceleration.'),
+  preset('flat','Flat corner',{},'Static tire friction supplies the inward acceleration.'),
   preset('banked','Banked corner',{halfStraight:0,bank:20,speed:13.4},'Near the design speed, banking supplies almost all the inward force.'),
-  preset('ice','Ice loses grip',{halfStraight:0,mu:.1,speed:15},'The demanded turn exceeds the tyre limit; the valid lap ends.'),
+  preset('ice','Ice loses grip',{halfStraight:0,mu:.1,speed:15},'The demanded turn exceeds the tire limit; the valid lap ends.'),
   preset('brake','Brake while turning',{halfStraight:0,drive:-5000},'Braking and turning share the same friction circle.'),
   preset('tight','Tighter curve',{radius:20,speed:10},'The same speed needs more inward acceleration at smaller radius.'),
   preset('coast','Coast to a stop',{drag:.5,rolling:.01},'Lost mechanical energy appears in dissipated work.'),
-],observables:[['speed','Speed','v','m/s'],['distance','Distance','s','m'],['normal','Normal force','N','N'],['lateralFriction','Lateral tyre force','f_⊥','N'],['longitudinalFriction','Drive / braking tyre force','f_∥','N'],['frictionCapacity','Tyre capacity','μN','N'],['cornerMaxSpeed','Corner maximum speed','v_max','m/s'],['cornerMinSpeed','Corner minimum speed','v_min','m/s'],['lapTime','First completed lap','T','s'],['energy','Kinetic energy','K','J'],['dissipatedWork','Dissipated work','D','J'],['driveWork','Drive work','W','J']].map(([key,label,symbol,unit])=>({key,label,symbol,unit})),create};
+],observables:[['speed','Speed','v','m/s'],['distance','Distance','s','m'],['normal','Normal force','N','N'],['lateralFriction','Lateral tire force','f_⊥','N'],['longitudinalFriction','Drive / braking tire force','f_∥','N'],['frictionCapacity','Tire capacity','μN','N'],['cornerMaxSpeed','Corner maximum speed','v_max','m/s'],['cornerMinSpeed','Corner minimum speed','v_min','m/s'],['lapTime','First completed lap','T','s'],['energy','Kinetic energy','K','J'],['dissipatedWork','Dissipated work','D','J'],['driveWork','Drive work','W','J']].map(([key,label,symbol,unit])=>({key,label,symbol,unit})),create};

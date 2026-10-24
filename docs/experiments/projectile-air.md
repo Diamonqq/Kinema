@@ -56,11 +56,11 @@ throw; descriptors supply the UI/server step validation.
   F_lift = rho A Cl |u| (-u_y,u_x)/2. Illustrative, not a calibrated sports-ball
   trajectory predictor; lift vanishes at rest and in vacuum.
 - RK4 with <=0.01 s substeps, shortened by both drag and lift relaxation rates.
-  Bisection locates ground impact and apex within a substep. Impact retains
-  just-before-contact velocity/energy and freezes the trajectory; no bounce.
+  Bisection locates ground impact and apex within a substep. Impact stops the projectile in a perfectly inelastic ground capture; no bounce.
+  The lost kinetic energy is recorded separately as impactLoss, not air heating.
   `t` always advances exactly dt; `flightTime` stops at impact. Reset is exact.
 - Energy ledger: E = m v²/2 + mgy; D' = -F_drag dot u >= 0;
-  W_w' = (F_drag+F_lift) dot w; **E + D - W_w = E_initial**.
+  W_w' = (F_drag+F_lift) dot w; **E + D + impactLoss - W_w = E_initial**.
   Lift is perpendicular to u, not necessarily to ground-frame v.
 - `terminalSpeed` is the local **still-air, no-spin drag-only** descent speed;
   it is not the terminal state with wind/spin. `hasTerminal=false` with numeric
@@ -136,3 +136,9 @@ isolated port-8843 fixture. Browser checks now wait for asynchronous seek, clear
 restored panels before opening scenes and toggle graph chips through user clicks.
 Text rectangles alone missed two adjacent labels touching at their boundary;
 manual inspection of the 320 px Breakdown capture caught it. Keep both checks.
+
+Merged polish: landing sets sample.ended, zero velocity and acceleration, and
+adds an explicit inelastic-impact ledger. Shared graphs stop at that sample.
+Main framing reserves side margins for arrows; labels clamp inside the canvas.
+Chips use launch/apex/early-flight world targets, not a diagonal caption stack.
+The complete blue forecast matches its key. Values use three significant figures.

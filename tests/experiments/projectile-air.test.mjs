@@ -53,3 +53,8 @@ test('lift-dominated light object remains finite and closes energy (absolute .00
 test('tiny positive dt advances physical state too (absolute 1e-24 m)',()=>{
   const i=model.create({drag:'vacuum',height:1,speed:1,angle:0});i.step(1e-13);near(i.sample().x,1e-13,1e-24);assert.equal(i.t,1e-13);
 });
+
+
+test('landing ends the timeline, stops motion and records inelastic impact loss (absolute 1e-6 J)',()=>{
+ const i=model.create({drag:'vacuum',speed:20,angle:45});i.step(10);const q=i.sample();assert.equal(q.ended,true);assert.equal(q.vx,0);assert.equal(q.vy,0);assert.equal(q.speed,0);assert.equal(q.ax,0);assert.equal(q.ay,0);assert.ok(Math.abs(q.impactLoss-q.initialEnergy)<1e-6);assert.ok(Math.abs(q.energyError)<1e-6);const x=q.x;i.step(1);assert.equal(i.sample().x,x);assert.equal(i.geometry().velocity.x,0);i.reset();assert.equal(i.sample().ended,false);assert.equal(i.sample().impactLoss,0);
+});

@@ -417,13 +417,18 @@
         },
         {
           "key": "dissipatedWork",
-          "label": "heat",
+          "label": "D",
           "color": "#e9bb88"
         },
         {
           "key": "windWork",
-          "label": "wind",
+          "label": "W",
           "color": "#bcabef"
+        },
+        {
+          "key": "impactLoss",
+          "label": "Q",
+          "color": "#b0c9ad"
         }
       ]
     }
@@ -440,6 +445,86 @@
     {
       "id": "apex",
       "label": "Zoom · apex"
+    }
+  ],
+  "observables": [
+    {
+      "key": "x",
+      "label": "Horizontal position",
+      "symbol": "x",
+      "unit": "m"
+    },
+    {
+      "key": "y",
+      "label": "Height",
+      "symbol": "y",
+      "unit": "m"
+    },
+    {
+      "key": "vx",
+      "label": "Horizontal speed",
+      "symbol": "v_x",
+      "unit": "m/s"
+    },
+    {
+      "key": "vy",
+      "label": "Vertical speed",
+      "symbol": "v_y",
+      "unit": "m/s"
+    },
+    {
+      "key": "speed",
+      "label": "Speed",
+      "symbol": "v",
+      "unit": "m/s"
+    },
+    {
+      "key": "range",
+      "label": "Range",
+      "symbol": "R",
+      "unit": "m"
+    },
+    {
+      "key": "apex",
+      "label": "Apex",
+      "symbol": "y_max",
+      "unit": "m"
+    },
+    {
+      "key": "flightTime",
+      "label": "Flight time",
+      "symbol": "T",
+      "unit": "s"
+    },
+    {
+      "key": "terminalSpeed",
+      "label": "Local terminal speed",
+      "symbol": "v_t",
+      "unit": "m/s"
+    },
+    {
+      "key": "energy",
+      "label": "Mechanical energy",
+      "symbol": "E",
+      "unit": "J"
+    },
+    {
+      "key": "dissipatedWork",
+      "label": "Air heating",
+      "symbol": "D",
+      "unit": "J"
+    },
+    {
+      "key": "windWork",
+      "label": "Wind work",
+      "symbol": "W_w",
+      "unit": "J"
+    },
+    {
+      "key": "impactLoss",
+      "label": "Impact loss",
+      "symbol": "Q_i",
+      "unit": "J"
     }
   ]
 }

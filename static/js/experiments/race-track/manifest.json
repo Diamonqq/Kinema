@@ -89,12 +89,12 @@
       "min": 0,
       "max": 35,
       "step": 1,
-      "value": 0,
+      "value": 20,
       "group": "Track"
     },
     {
       "key": "mu",
-      "label": "Tyre friction coefficient",
+      "label": "Tire friction coefficient",
       "symbol": "μ",
       "unit": "1",
       "min": 0,
@@ -131,7 +131,7 @@
         "mu": 0.8,
         "gravity": 9.81
       },
-      "note": "Static tyre friction supplies the inward acceleration."
+      "note": "Static tire friction supplies the inward acceleration."
     },
     {
       "id": "banked",
@@ -165,7 +165,7 @@
         "mu": 0.1,
         "gravity": 9.81
       },
-      "note": "The demanded turn exceeds the tyre limit; the valid lap ends."
+      "note": "The demanded turn exceeds the tire limit; the valid lap ends."
     },
     {
       "id": "brake",
@@ -244,17 +244,17 @@
     },
     {
       "id": "grip",
-      "label": "Tyre forces",
+      "label": "Tire forces",
       "unit": "N",
       "series": [
         {
           "key": "lateralFriction",
-          "label": "side",
+          "label": "f⊥",
           "color": "#b0c9ad"
         },
         {
           "key": "longitudinalFriction",
-          "label": "drive",
+          "label": "f∥",
           "color": "#bcabef"
         },
         {
@@ -276,19 +276,19 @@
         },
         {
           "key": "dissipatedWork",
-          "label": "heat",
+          "label": "D",
           "color": "#e9bb88"
         },
         {
           "key": "driveWork",
-          "label": "work",
+          "label": "W",
           "color": "#b0c9ad"
         }
       ]
     },
     {
       "id": "distance",
-      "label": "Distance travelled",
+      "label": "Distance traveled",
       "unit": "m",
       "series": [
         {
@@ -306,7 +306,81 @@
     },
     {
       "id": "grip",
-      "label": "Zoom · tyre grip"
+      "label": "Zoom · tire grip"
+    }
+  ],
+  "observables": [
+    {
+      "key": "speed",
+      "label": "Speed",
+      "symbol": "v",
+      "unit": "m/s"
+    },
+    {
+      "key": "distance",
+      "label": "Distance",
+      "symbol": "s",
+      "unit": "m"
+    },
+    {
+      "key": "normal",
+      "label": "Normal force",
+      "symbol": "N",
+      "unit": "N"
+    },
+    {
+      "key": "lateralFriction",
+      "label": "Lateral tire force",
+      "symbol": "f_⊥",
+      "unit": "N"
+    },
+    {
+      "key": "longitudinalFriction",
+      "label": "Drive / braking tire force",
+      "symbol": "f_∥",
+      "unit": "N"
+    },
+    {
+      "key": "frictionCapacity",
+      "label": "Tire capacity",
+      "symbol": "μN",
+      "unit": "N"
+    },
+    {
+      "key": "cornerMaxSpeed",
+      "label": "Corner maximum speed",
+      "symbol": "v_max",
+      "unit": "m/s"
+    },
+    {
+      "key": "cornerMinSpeed",
+      "label": "Corner minimum speed",
+      "symbol": "v_min",
+      "unit": "m/s"
+    },
+    {
+      "key": "lapTime",
+      "label": "First completed lap",
+      "symbol": "T",
+      "unit": "s"
+    },
+    {
+      "key": "energy",
+      "label": "Kinetic energy",
+      "symbol": "K",
+      "unit": "J"
+    },
+    {
+      "key": "dissipatedWork",
+      "label": "Dissipated work",
+      "symbol": "D",
+      "unit": "J"
+    },
+    {
+      "key": "driveWork",
+      "label": "Drive work",
+      "symbol": "W",
+      "unit": "J"
     }
   ]
 }

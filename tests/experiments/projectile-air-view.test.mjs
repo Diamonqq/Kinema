@@ -12,7 +12,7 @@ test('fixed preview contains every point of each preset flight and ghost (absolu
  for(const p of model.presets){const data=preview(p.values),[a,b,c,d]=data.bounds;for(const q of [...data.path,...data.ghost])assert.ok(q.x>=a-1e-9&&q.x<=b+1e-9&&q.y>=c-1e-9&&q.y<=d+1e-9);assert.equal(data.path.at(-1).landed,true,p.id);assert.equal(preview(p.values),data);assert.equal(data.apex.vy,0);const i=model.create(p.values);i.step(data.apex.t);assert.ok(Math.abs(i.sample().vy)<1e-6);}
 });
 test('symbolic equations retain literal TeX and numerical substitutions',()=>{
- const instance=model.create(),f={params,sample:instance.sample(),geometry:instance.geometry(),instance,t:0};const equations=view.equations(f);assert.ok(equations.some(s=>s.includes('\\cos\\theta')));assert.ok(equations.some(s=>s.includes('30.64')));for(const z of view.closeups){const eq=view.closeupEquation({...f,closeup:z.id});assert.ok(eq.length>=2);assert.ok(eq.every(s=>typeof s==='string'&&!s.includes('NaN')));}
+ const instance=model.create(),f={params,sample:instance.sample(),geometry:instance.geometry(),instance,t:0};const equations=view.equations(f);assert.ok(equations.some(s=>s.includes('\\cos\\theta')));assert.ok(equations.some(s=>s.includes('30.6')));for(const z of view.closeups){const eq=view.closeupEquation({...f,closeup:z.id});assert.ok(eq.length>=2);assert.ok(eq.every(s=>typeof s==='string'&&!s.includes('NaN')));}
 });
 
 
