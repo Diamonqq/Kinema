@@ -59,7 +59,7 @@ export function closeupEquations(f){
  case 'inertia':return [rawCloseupEquations(f)[0],...g.centreMoments.map((x,i)=>`I_{${i+1},\\rm CM}=${texNum(x)}\\,\\mathrm{kg\\,m^2}`)];
  case 'tilt':return ['\\boldsymbol\\tau=\\kappa\\hat{\\mathbf z}\\times\\hat{\\mathbf e}_3','|\\tau|=|\\kappa|\\sin\\theta',`|\\tau|=${texNum(norm(g.tiltTorqueSpace))}\\,\\mathrm{N\\,m}`,`U=\\kappa\\cos\\theta=${texNum(p.tiltTorque*Math.cos(s.theta))}\\,\\mathrm J`];
  case 'precession':return [rawCloseupEquations(f)[0],`C=${texNum(g.tiltTorqueCoefficient)}\\,\\mathrm{N\\,m}`,`\\dot\\phi=${texNum(s.precessionRate)}\\,\\mathrm{rad/s}`,`\\theta=${texNum(s.theta)}\\,\\mathrm{rad}`];
- case 'energy':return [rawCloseupEquations(f)[0],`2T=${texNum(2*s.kinetic)}\\,\\mathrm J`,'\\text{Body: polhode}','\\text{Space: herpolhode}','\\boldsymbol\\omega\\cdot\\mathbf L=2T'];
+ case 'energy':return [rawCloseupEquations(f)[0],`2T=${texNum(2*s.kinetic)}\\,\\mathrm J`,'\\text{Body polhode; space herpolhode}'];
  default:return rawCloseupEquations(f);
  }
 }
@@ -204,7 +204,7 @@ export const view={graphs,closeups,
    const el=entry.el;entry.used=true;el.hidden=false;tips.push({text,x,y,box:null,panel:currentPanel});tips.at(-1).el=el;if(entry.color!==color){el.style.color=color;entry.color=color;}
    const width=entry.width,height=entry.height;
    let dx=x-ox,dy=y-oy;const len=Math.hypot(dx,dy);if(len<1e-6){dx=1;dy=0;}else{dx/=len;dy/=len;}
-   const intersects=a=>placed.some(b=>a.x<b.x+b.width+3&&a.x+width+3>b.x&&a.y<b.y+b.height+3&&a.y+height+3>b.y);
+   const intersects=a=>placed.some(b=>a.x<b.x+b.width+6&&a.x+width+6>b.x&&a.y<b.y+b.height+6&&a.y+height+6>b.y);
    // Clear of every recorded shaft and head (plus a pixel or two); the label's own tip keeps its 3 px gap.
    const hitsArrow=a=>{for(const o of currentObstacles){const dx=o.x1-o.x0,dy=o.y1-o.y0,len=Math.hypot(dx,dy),n=Math.max(1,Math.ceil(len/1.5));for(let i=0;i<=n;i++){const t=i/n,px=o.x0+dx*t,py=o.y0+dy*t,back=len*(1-t),clear=Math.max(1.5,back<o.hl?o.hr*back/Math.max(1e-6,o.hl):0)+2;if(Math.hypot(Math.max(a.x-px,0,px-a.x-width),Math.max(a.y-py,0,py-a.y-height))<clear-.01)return true;}}return false;};
    const side=LABEL_SIDE[text]??1;
@@ -226,14 +226,14 @@ export const view={graphs,closeups,
    if(first<0){leash+=24;tips.at(-1).depth=depth+24;squeeze=false;bounds=rect;first=search();if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}}
    // Keep the previous choice while it is valid; when it is not, move to the valid candidate nearest the old position.
    if(first>=0&&entry.choice>=0&&entry.choice<count){if(valid(candidate(entry.choice))){if(leaderLength(candidate(entry.choice))<=24||leaderLength(candidate(first))>10)first=entry.choice;}else{const was=candidate(entry.choice);let best=1e9;for(const cap of [1e9]){for(const pad of [16,8,1]){for(let n=0;n<count;n++){const c=candidate(n),d=Math.hypot(c.x-was.x,c.y-was.y);if(d<best&&leaderLength(c)<=cap&&valid(c,pad)){best=d;first=n;}}if(best<1e9)break;}if(best<1e9)break;}}}
-   if(first<0){entry.choice=-1;entry.ready=false;el.hidden=true;return;}
+   if(first<0){entry.choice=-1;el.hidden=true;return;}
    entry.choice=first;position=candidate(first);
    tips.at(-1).box={x:position.x,y:position.y,width,height};
    const transform=`translate(${position.x}px,${position.y}px)`;if(el.style.transform!==transform){el.style.transition=entry.ready?'transform 120ms ease-out':'none';el.style.transform=transform;}entry.ready=true;entry.bounds={...position,width,height,text};placed.push(entry.bounds);
    const length=leaderLength(position);leaderLengths.push(length);
    if(length>7){
     const tx=Math.max(position.x,Math.min(position.x+width,x)),ty=Math.max(position.y,Math.min(position.y+height,y));
-    let record=leaderNodes.get(nodeKey);if(!record){const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('fill','none');el.setAttribute('stroke-opacity','.5');el.setAttribute('stroke-width','1');leaders.append(el);record={el};leaderNodes.set(nodeKey,record);retained.allocations.leaders++;}record.used=true;record.el.style.display='';cachedAttribute(record.el,'d',`M${x},${y} L${tx},${ty}`);cachedAttribute(record.el,'stroke',color);
+    let record=leaderNodes.get(nodeKey);if(!record){const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('fill','none');el.setAttribute('stroke-opacity','.7');el.setAttribute('stroke-width','1');leaders.append(el);record={el};leaderNodes.set(nodeKey,record);retained.allocations.leaders++;}record.used=true;record.el.style.display='';cachedAttribute(record.el,'d',`M${x},${y} L${tx},${ty}`);cachedAttribute(record.el,'stroke',color);
    }
   }
   function chipSizes_(ids){return ids.map(id=>{const button=shell.q(`.exp-closeups [data-id="${id}"]`);let size=button&&chipSizes.get(button);if(!size||!size.w){size={w:button?.offsetWidth||0,h:button?.offsetHeight||0};if(button&&size.w)chipSizes.set(button,size);}return size.w?size:{w:130,h:32};});}
@@ -357,7 +357,7 @@ export const view={graphs,closeups,
        const arm=g.centreOfMass,forceLength=bounds*.48;A(arm,g.gravityForce,forceLength,C.torque,'gravity');later(1,()=>textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed));if(!narrow)later(3,()=>textAt('r',v(arm).multiplyScalar(.25).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
        line(vectorLayer,[origin,[0,0,p.distance]],'#8a99ad',true);line(vectorLayer,[arm,[0,0,arm[2]]],'#d6bd82',true);
        const az=Math.atan2(arm[1],arm[0]),arc=Array.from({length:33},(_,i)=>{const t=f.sample.theta*i/32;return [Math.cos(az)*Math.sin(t)*p.distance*.45,Math.sin(az)*Math.sin(t)*p.distance*.45,Math.cos(t)*p.distance*.45];});line(vectorLayer,arc,'#d6bd82');
-       if(!narrow)later(3,()=>textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
+       if(!narrow)later(3,()=>textAt('θ',v(arc[8]).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
       }
      }
      if(f.closeup==='precession'){const radius=Math.sin(f.sample.theta)*bounds*.65,z=Math.cos(f.sample.theta)*bounds*.65;line(vectorLayer,Array.from({length:81},(_,i)=>[radius*Math.cos(i*Math.PI/40),radius*Math.sin(i*Math.PI/40),z]),'#6f8296',true);}
@@ -382,7 +382,7 @@ export const view={graphs,closeups,
 
    });renderer.setScissorTest(false);
    // Record actual visible DOM bounds for the same overlap checks as canvas stages.
-   for(const entry of labelNodes.values())if(!entry.used){entry.el.hidden=true;entry.ready=false;}
+   for(const entry of labelNodes.values())if(!entry.used)entry.el.hidden=true;
    for(const entry of leaderNodes.values())if(!entry.used)entry.el.style.display='none';
    const hr=host.getBoundingClientRect();shell.stage.labels=[caption,readout,...panelLabels].filter(el=>!el.hidden&&el.textContent).map(el=>{const r=el.getBoundingClientRect();return {text:el.textContent,x:r.x-hr.x,y:r.y-hr.y,width:r.width,height:r.height};});
    for(const entry of labelNodes.values())if(entry.used&&!entry.el.hidden)shell.stage.labels.push(entry.bounds);

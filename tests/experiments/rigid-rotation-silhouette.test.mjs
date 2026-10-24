@@ -67,3 +67,8 @@ test('round 5: the marked point is named, edge labels sit at edge midpoints, and
  assert.match(text,/points\[0\]\.clone\(\)\.add\(points\[i\]\)\.multiplyScalar\(\.5\)/);
  assert.match(text,/transform 120ms ease-out/);
 });
+
+test('round 6: compact energy equations fit three lines and θ sits on the arc away from r',()=>{
+ assert.ok(text.includes("Body polhode; space herpolhode}"));
+ assert.ok(text.includes("textAt('θ',v(arc[8])"));
+});
