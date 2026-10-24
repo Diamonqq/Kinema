@@ -50,7 +50,7 @@ function eventLetter(s,f,p,m,key,record,extra=[],soft=[]){
 }
 // The green hyperbola is every event at interval L from the origin; it has the same shape in S and S′.
 function intervalCaption(s,f,p,m,key,curve,avoid=[],soft=[]){
-  const text='invariant interval',width=richWidth(s,text,11),w=width+6,h=18,pad=3;
+  const text='invariant interval',width=richWidth(s,text,11),w=width+6,h=18,pad=6;
   const hard=[...curve,...avoid,[p.left,m.y(0),p.left+p.width,m.y(0)],[m.x(0),p.top,m.x(0),p.top+p.height]];
   // Beside the curve, nearest clear spot first; the outer arms win because the worldlines gather near the vertex.
   const spots=[];
@@ -66,7 +66,10 @@ function intervalCaption(s,f,p,m,key,curve,avoid=[],soft=[]){
     richText(s,text,box.left+3,c.y,colors[2],11,'left');return Object.assign(box,{relaxed:lines===hard&&soft.length>0});
   }
 }
-function eventBounds(f,key){const a=coord(selected(f,key),f.params.length),span=Math.max(.4,Math.min(1.4,(context(f).bounds[3]-context(f).bounds[2])*.18));return [a[0]-span,a[0]+span,a[1]-span,a[1]+span];}
+function eventBounds(f,key){const L=f.params.length,pts=namedEvents(f).map(r=>coord(key==='moving'?boost(r.event,beta(f.params)):r.event,L));
+  if(pts.length>1){const xs=pts.map(a=>a[0]),ys=pts.map(a=>a[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),pad=Math.max(.5,.35*Math.max(x1-x0,y1-y0));return [x0-pad,x1+pad,y0-pad,y1+pad];}
+  return eventBoundsAround(f,key);}
+function eventBoundsAround(f,key){const a=coord(selected(f,key),f.params.length),span=Math.max(.4,Math.min(1.4,(context(f).bounds[3]-context(f).bounds[2])*.18));return [a[0]-span,a[0]+span,a[1]-span,a[1]+span];}
 function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
   const L=f.params.length,g=f.geometry[key],b=beta(f.params),base=s.w<470||f.graph||f.thumbnail?context(f).narrowBounds:context(f).bounds;
   const bounds=zoom?eventBounds(f,key):base,m=mapPanel(s,p,bounds,key),primed=key==='moving';
@@ -107,9 +110,10 @@ function drawDiagram(s,f,p,key,{cone=true,calibration=false,zoom=false}={}){
     ...(cone?origins.flatMap(a=>[-1,1].map(sg=>[m.x(a[0]-range),m.y(a[1]-sg*range),m.x(a[0]+range),m.y(a[1]+sg*range)])):[])];
   let names=[];
   if(!f.thumbnail)names=axisLabels(s,m,p,{x:primed?'x′ / L':'x / L',y:primed?'ct′ / L':'ct / L',avoid:[...wl,...curve,...guides,...extra,...own]})||[];
-  const interval=curve.length?intervalCaption(s,f,p,m,key,curve,[...wl,...guides],extra):null;
-  (s.diag||(s.diag={}))[key]={names,interval,worldlines:wl,guides,extra,curve,own};
+  const diag={names,interval:null,worldlines:wl,guides,extra,curve,own};(s.diag||(s.diag={}))[key]=diag;
   if(!f.thumbnail&&!f.graph)for(const record of namedEvents(f))eventLetter(s,f,p,m,key,record,[...curve,...own],[...guides,...extra]);
+  // The caption goes last so it keeps clear of the event letters as well.
+  if(curve.length)diag.interval=intervalCaption(s,f,p,m,key,curve,[...wl,...guides],extra);
   return m;
 }
 function spatial(s,f,p){

@@ -98,8 +98,8 @@ function budget(f){const e=data(f).e,cm=f.params.frame==='cm',a=sumMomentum(cm?e
 function drawBudget(s,f){
   // The title, both bars and Q form one block centered in the stage; the larger bar spans the whole centered track.
   const {e}=data(f),max=Math.max(.001,e.W,e.requiredMass),width=Math.min(s.w-64,520),left=(s.w-width)/2;
-  const top=Math.max(30,(s.h-226)/2),y1=top+62,y2=top+146,bar=18;
-  s.text('Center-of-momentum energy budget',s.w/2,top+8,'#c7d9ee',s.w<470?12:15);
+  const H=Math.min(Math.max(226,s.h*.6),380),k=(H-80)/146,top=Math.max(30,(s.h-H)/2+s.h*.03),y1=top+62*k,y2=top+146*k,bar=Math.round(Math.min(30,18+(k-1)*10));
+  s.text('Center-of-momentum energy budget',s.w/2,top+8*k,'#c7d9ee',s.w<470?12:15);
   for(const [i,[label,value,color]] of [[0,['√s · available',e.W,colors[0]]],[1,['Σmc² · required',e.requiredMass,e.allowed?colors[2]:'#e4a9bd']]]){
     const y=i?y2:y1;s.text(label,left,y-24,color,12,'left');s.ctx.fillStyle=color+'a0';s.ctx.fillRect(left,y,width*value/max,bar);if(value===0)s.line(left,y-4,left,y+bar+4,color,2);
     s.text(fmt(value)+' MeV',left,y+bar+18,color,11,'left');
