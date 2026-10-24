@@ -212,20 +212,22 @@ export const view={graphs,closeups,
    let dx=x-ox,dy=y-oy;const len=Math.hypot(dx,dy);if(len<1e-6){dx=1;dy=0;}else{dx/=len;dy/=len;}
    const intersects=a=>placed.some(b=>a.x<b.x+b.width+6&&a.x+width+6>b.x&&a.y<b.y+b.height+6&&a.y+height+6>b.y);
    // Clear of every recorded shaft and head (plus a pixel or two); the label's own tip keeps its 3 px gap.
-   const hitsArrow=a=>{for(const o of currentObstacles){const dx=o.x1-o.x0,dy=o.y1-o.y0,len=Math.hypot(dx,dy),n=Math.max(1,Math.ceil(len/1.5));for(let i=0;i<=n;i++){const t=i/n,px=o.x0+dx*t,py=o.y0+dy*t,back=len*(1-t),clear=Math.max(1.5,back<o.hl?o.hr*back/Math.max(1e-6,o.hl):0)+2;if(Math.hypot(Math.max(a.x-px,0,px-a.x-width),Math.max(a.y-py,0,py-a.y-height))<clear-.01)return true;}}return false;};
+   const margin=text==='τ'?4:0;
+   const hitsArrow=a=>{for(const o of currentObstacles){const dx=o.x1-o.x0,dy=o.y1-o.y0,len=Math.hypot(dx,dy),n=Math.max(1,Math.ceil(len/1.5));for(let i=0;i<=n;i++){const t=i/n,px=o.x0+dx*t,py=o.y0+dy*t,back=len*(1-t),clear=Math.max(1.5,back<o.hl?o.hr*back/Math.max(1e-6,o.hl):0)+2+margin;if(Math.hypot(Math.max(a.x-px,0,px-a.x-width),Math.max(a.y-py,0,py-a.y-height))<clear-.01)return true;}}return false;};
    const side=LABEL_SIDE[text]??1;
    // A label also stays outside the projected body. A tip that lies inside the silhouette extends the leash by its depth.
    const depth=currentShapes.reduce((m,poly)=>Math.max(m,pointDepth(poly,x,y)),0);let leash=LABEL_LEASH+depth;tips.at(-1).depth=depth;
    const hitsBody=(a,pad)=>currentShapes.some(poly=>rectHitsConvex({x:a.x,y:a.y,width,height},poly,pad));
+   const ov=text==='τ'&&depth>0;
    const leaderLength=a=>Math.hypot(Math.max(a.x,Math.min(a.x+width,x))-x,Math.max(a.y,Math.min(a.y+height,y))-y);
    // A panel edge may be crossed only as a last resort (stacked comparison panels in a short scene); the scene itself is never left.
-   let bounds=rect;const valid=(a,pad=1)=>a.x>=bounds.x+3&&a.y>=bounds.y+topMargin&&a.x+width<=bounds.x+bounds.w-3&&a.y+height<=bounds.y+bounds.h-3&&leaderLength(a)<=leash&&!intersects(a)&&!hitsArrow(a)&&(overlay||!hitsBody(a,pad));
+   let bounds=rect;const valid=(a,pad=1)=>a.x>=bounds.x+3&&a.y>=bounds.y+topMargin&&a.x+width<=bounds.x+bounds.w-3&&a.y+height<=bounds.y+bounds.h-3&&leaderLength(a)<=leash&&!intersects(a)&&!hitsArrow(a)&&(overlay||ov||!hitsBody(a,pad));
    let squeeze=false;
-   const candidate=n=>{const tier=LABEL_TIERS[Math.floor(n/LABEL_TURNS.length)],turn=LABEL_TURNS[n%LABEL_TURNS.length]*side,c=Math.cos(turn),s=Math.sin(turn),ux=dx*c-dy*s,uy=dx*s+dy*c,reachOut=Math.abs(ux)*width/2+Math.abs(uy)*height/2+3+tier;const c0={x:x+ux*reachOut-width/2,y:y+uy*reachOut-height/2};return squeeze?{x:Math.max(bounds.x+3,Math.min(bounds.x+bounds.w-3-width,c0.x)),y:Math.max(bounds.y+topMargin,Math.min(bounds.y+bounds.h-3-height,c0.y))}:c0;};
+   const candidate=n=>{const tier=LABEL_TIERS[Math.floor(n/LABEL_TURNS.length)],turn=LABEL_TURNS[n%LABEL_TURNS.length]*side,c=Math.cos(turn),s=Math.sin(turn),ux=dx*c-dy*s,uy=dx*s+dy*c,reachOut=Math.abs(ux)*width/2+Math.abs(uy)*height/2+(text==='θ'?2:3)+tier;const c0={x:x+ux*reachOut-width/2,y:y+uy*reachOut-height/2};return squeeze?{x:Math.max(bounds.x+3,Math.min(bounds.x+bounds.w-3-width,c0.x)),y:Math.max(bounds.y+topMargin,Math.min(bounds.y+bounds.h-3-height,c0.y))}:c0;};
    let first=-1,position=null;const count=LABEL_TURNS.length*LABEL_TIERS.length;
    // A new choice keeps 16 px from the silhouette so a turning body does not push it away again at once; a kept one may come within 1 px.
    const pref=LABEL_TURN_PREFERENCE[text]||0,turnOf=n=>LABEL_TURNS[n%LABEL_TURNS.length]*side,onSide=n=>!pref||turnOf(n)*pref>=0;
-   const search=()=>{for(const pad of [16,8,1]){if(pref)for(let n=0;n<count;n++)if(onSide(n)&&valid(candidate(n),pad))return n;for(let n=0;n<count;n++)if(valid(candidate(n),pad))return n;}return -1;};
+   const search=()=>{if(pref)for(const pad of [16,8,1])for(let n=0;n<count;n++)if(onSide(n)&&valid(candidate(n),pad))return n;for(const pad of [16,8,1])for(let n=0;n<count;n++)if(valid(candidate(n),pad))return n;return -1;};
    const searchNear=()=>{const near=search();if(near<0||leaderLength(candidate(near))<=8)return near;let best=near,score=leaderLength(candidate(near));for(const [pad,cost] of [[8,3],[1,6]])for(let n=0;n<count;n++){const c=candidate(n),v=leaderLength(c)+cost;if(v<score&&(onSide(n)||!onSide(near))&&valid(c,pad)){score=v;best=n;}}return best;};
    first=entry.choice<0?searchNear():search();
    if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};first=search();}
@@ -239,7 +241,7 @@ export const view={graphs,closeups,
    const transform=`translate(${position.x}px,${position.y}px)`;if(el.style.transform!==transform){el.style.transition=entry.ready?'transform 120ms ease-out':'none';el.style.transform=transform;}entry.ready=true;entry.bounds={...position,width,height,text};placed.push(entry.bounds);
    const length=leaderLength(position);leaderLengths.push(length);
    if(length>7){
-    const tx=Math.max(position.x,Math.min(position.x+width,x)),ty=Math.max(position.y,Math.min(position.y+height,y));
+    const ix=Math.min(3,width/2-1),iy=Math.min(4,height/2-1),tx=Math.max(position.x+ix,Math.min(position.x+width-ix,x)),ty=Math.max(position.y+iy,Math.min(position.y+height-iy,y));
     let record=leaderNodes.get(nodeKey);if(!record){const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('fill','none');el.setAttribute('stroke-opacity','.7');el.setAttribute('stroke-width','1');leaders.append(el);record={el};leaderNodes.set(nodeKey,record);retained.allocations.leaders++;}record.used=true;record.el.style.display='';cachedAttribute(record.el,'d',`M${x},${y} L${tx},${ty}`+(depth>0?` M${x-2.5},${y} a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0`:''));cachedAttribute(record.el,'stroke',color);
    }
   }
@@ -363,8 +365,8 @@ export const view={graphs,closeups,
       if(f.breakdown||['gravity','precession'].includes(f.closeup)){
        const arm=g.centreOfMass,forceLength=bounds*.48;A(arm,g.gravityForce,forceLength,C.torque,'gravity');later(1,()=>textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed));if(!narrow)later(3,()=>textAt('r',v(arm).multiplyScalar(.25).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
        line(vectorLayer,[origin,[0,0,p.distance]],'#8a99ad',true);line(vectorLayer,[arm,[0,0,arm[2]]],'#d6bd82',true);
-       const az=Math.atan2(arm[1],arm[0]),arc=Array.from({length:33},(_,i)=>{const t=f.sample.theta*i/32;return [Math.cos(az)*Math.sin(t)*p.distance*.7,Math.sin(az)*Math.sin(t)*p.distance*.7,Math.cos(t)*p.distance*.7];});{const arcLine=line(vectorLayer,arc,'#d6bd82');arcLine.material.depthTest=false;arcLine.material.opacity=1;arcLine.renderOrder=24;}
-       if(!narrow)later(3,()=>textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#d6bd82',r,placed,true));
+       const az=Math.atan2(arm[1],arm[0]),arc=Array.from({length:33},(_,i)=>{const t=f.sample.theta*i/32;return [Math.cos(az)*Math.sin(t)*p.distance*.7,Math.sin(az)*Math.sin(t)*p.distance*.7,Math.cos(t)*p.distance*.7];});for(const k of [1,1.017]){const arcLine=line(vectorLayer,arc.map(q=>q.map(c=>c*k)),'#f3d98f');arcLine.material.depthTest=false;arcLine.material.opacity=1;arcLine.renderOrder=24;}
+       if(!narrow)later(3,()=>textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#f3d98f',r,placed,true));
       }
      }
      if(f.closeup==='precession'){const radius=Math.sin(f.sample.theta)*bounds*.65,z=Math.cos(f.sample.theta)*bounds*.65;line(vectorLayer,Array.from({length:81},(_,i)=>[radius*Math.cos(i*Math.PI/40),radius*Math.sin(i*Math.PI/40),z]),'#6f8296',true);}

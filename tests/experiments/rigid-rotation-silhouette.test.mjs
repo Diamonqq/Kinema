@@ -83,8 +83,9 @@ test('Breakdown scrolls so its last equation line can reach above the transport'
 
 test('round 7: τ and e₂ take opposite sides, θ labels its arc, Energy legend entries own a curve, zoom titles are sentence case',()=>{
  assert.ok(text.includes("LABEL_TURN_PREFERENCE={'τ':1,'e₂':-1}"));
- assert.ok(text.includes("textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#d6bd82',r,placed,true)"));
+ assert.ok(text.includes("textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#f3d98f',r,placed,true)"));
  assert.ok(text.includes("arcLine.material.depthTest=false"));
+ assert.ok(text.includes("const ov=text==='τ'&&depth>0;"));
  assert.ok(text.includes("label:'E = T'"));
  assert.ok(text.includes("sentenceCase(closeups.find"));
  assert.ok(text.includes(".rr-experiment .is-closeup .rr-captions{top:53px}"));
