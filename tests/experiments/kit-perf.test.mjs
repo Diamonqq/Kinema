@@ -64,8 +64,42 @@ test('static graph layer is reused and invalidates on samples, window, descripto
 });
 
 test('equations throttle only playback; pausing and direct changes render immediately',()=>{
- assert.equal(equationDue(true,100,199),false);assert.equal(equationDue(true,100,200),true);assert.equal(equationDue(true,undefined,100),true);assert.equal(equationDue(false,100,101),true);
+ assert.equal(equationDue(true,100,349),false);assert.equal(equationDue(true,100,350),true);assert.equal(equationDue(true,undefined,100),true);assert.equal(equationDue(false,100,101),true);
  let renders=0;const el={dataset:{},set innerHTML(value){renders++;this.html=value}};
  const original=globalThis.window;globalThis.window={};try{ExperimentShell.prototype.equation(el,['x=1']);ExperimentShell.prototype.equation(el,['x=1']);assert.equal(renders,1);ExperimentShell.prototype.equation(el,['x=2']);assert.equal(renders,2);}finally{globalThis.window=original;}
  let draws=0;const shell={playing:true,q:()=>({setAttribute(){}}),draw(){draws++},changed(){}};ExperimentShell.prototype.setPlaying.call(shell,false);assert.equal(draws,1);
+});
+
+test('equation blocks retain unchanged DOM, spread playback work, and flush on pause',()=>{
+ const originalWindow=globalThis.window,originalDocument=globalThis.document;let renders=0,wakes=0;
+ globalThis.window={renderMathInElement(){renders++}};globalThis.document={createElement:()=>({dataset:{},innerHTML:''})};
+ try{
+  const el={dataset:{},children:[],append(row){this.children.push(row)}},shell={playing:true,invalidate(){wakes++}};
+  ExperimentShell.prototype.equation.call(shell,el,['a=1','b=2']);assert.equal(renders,1);assert.ok(el.equationPending);assert.equal(wakes,1);const first=el.children[0];
+  ExperimentShell.prototype.equation.call(shell,el,['a=3','b=4']);assert.equal(renders,2);assert.equal(el.equationPending,null);assert.equal(el.dataset.signature,JSON.stringify(['a=1','b=2']));
+  shell.playing=false;ExperimentShell.prototype.equation.call(shell,el,['a=1','b=4']);assert.equal(renders,3);assert.equal(el.children[0],first);assert.equal(el.dataset.signature,JSON.stringify(['a=1','b=4']));
+ }finally{globalThis.window=originalWindow;globalThis.document=originalDocument;}
+});
+
+test('clean paused frames and hidden panes or documents do no drawing or stepping',()=>{
+ const oldDocument=globalThis.document,oldRAF=globalThis.requestAnimationFrame;let draws=0,steps=0,requests=0,rects=true;
+ globalThis.document={hidden:false};globalThis.requestAnimationFrame=()=>++requests;
+ try{
+  const shell=Object.assign(Object.create(ExperimentShell.prototype),{host:{isConnected:true,getClientRects:()=>rects?[{}]:[]},tickReady:true,dirty:false,playing:false,last:0,speed:1,duration:60,instance:{t:0,step(){steps++},sample:()=>({})},observeEnd(){},draw(){draws++;this.dirty=false;}});
+  for(let i=0;i<600;i++)shell.tick(i*16);assert.equal(draws,0);assert.equal(requests,0);
+  shell.invalidate();assert.equal(requests,1);shell.tick(10000);assert.equal(draws,1);
+  shell.playing=true;rects=false;for(let i=0;i<600;i++)shell.tick(11000+i*16);assert.equal(draws,1);assert.equal(steps,0);
+  rects=true;document.hidden=true;for(let i=0;i<600;i++)shell.tick(21000+i*16);assert.equal(draws,1);assert.equal(steps,0);
+  document.hidden=false;shell.invalidate();shell.tick(32000);assert.equal(draws,2);assert.equal(steps,1);
+ }finally{globalThis.document=oldDocument;globalThis.requestAnimationFrame=oldRAF;}
+});
+
+test('view cleanup signals abort once on forecast restart and destroy',()=>{
+ const oldRAF=globalThis.requestAnimationFrame,oldCancel=globalThis.cancelAnimationFrame;globalThis.requestAnimationFrame=()=>1;globalThis.cancelAnimationFrame=()=>{};
+ try{
+  let cleanups=0;const shell=Object.assign(Object.create(ExperimentShell.prototype),{lifecycle:new AbortController(),model:{create(){return {sample:()=>({t:0})}}},params:{},instance:{sample:()=>({t:0})},q:()=>({}),observeEnd(){},graphStatus(){},cancelSeek(){},observer:{disconnect(){}},host:{replaceChildren(){}},custom:null});
+  shell.startForecast();const first=shell.signal;shell.onCleanup(()=>cleanups++);const unregister=shell.onCleanup(()=>cleanups+=100);unregister();
+  shell.startForecast();assert.equal(first.aborted,true);assert.equal(shell.signal.aborted,false);assert.equal(cleanups,1);
+  const second=shell.signal;shell.onCleanup(()=>cleanups++);shell.destroy();shell.destroy();assert.equal(second.aborted,true);assert.equal(cleanups,2);assert.equal(shell.lifecycle.signal.aborted,true);
+ }finally{globalThis.requestAnimationFrame=oldRAF;globalThis.cancelAnimationFrame=oldCancel;}
 });

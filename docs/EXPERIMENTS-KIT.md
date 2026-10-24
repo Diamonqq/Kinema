@@ -159,12 +159,54 @@ known. Numerical seeks also stop if they discover an event before the requested
 time. Models without `ended` retain the 60 s timeline. A time-zero end is valid.
 
 `shell.seek(seconds)` returns a Promise. Numerical replay uses a private candidate
-and yields between batches (at most eight 1/60-second steps or roughly 6 ms per
-turn). The current scene stays intact until the newest seek finishes, then commits
+and yields with MessageChannel tasks after about 14 ms of work. Forecast tasks use
+about 8 ms while playing or 14 ms paused. The original 1/60 step boundaries are
+unchanged; batching never changes a trajectory. The current scene stays intact
+until the newest seek finishes, then commits
 the candidate and saves its exact time. A newer seek, accepted parameter change,
 Reset, Play or destroy cancels stale replay through a generation ID. Failed replay
 keeps the existing scene and reports a quiet error. The analytic coupled-oscillator
 mode path remains immediate; its physics and scrubber behavior are unchanged.
+
+## View work and cleanup
+
+The shell renders dirty frames and active playback. It sleeps while paused and
+clean, and suspends rendering and forecast work when its pane or document is
+hidden. Pointer interaction, camera settling, resize, parameter changes and
+explicit controls still redraw. An asynchronous view must call
+`frame.invalidate()` (or `shell.invalidate()`) after publishing new results;
+it must not rely on an idle animation loop to poll its private state.
+
+`shell.signal` and `frame.signal` are an AbortSignal for the current setup.
+Accepted parameter changes, any forecast restart, and destroy abort that signal.
+The next forecast gets a new signal. Invalid parameter candidates leave the
+current signal and view intact. Capture the signal for each computation, check it
+before each chunk and before publishing results. A signal never grants permission
+to mutate a destroyed view. `shell.onCleanup(callback)` is a convenience for
+registering once-only cleanup on that same signal; it returns an unregister
+function. Register again when starting work for a new setup.
+
+```js
+const signal = frame.signal; // capture this computation's lifetime
+let timer;
+const cancel = () => clearTimeout(timer);
+signal.addEventListener('abort', cancel, {once:true});
+function batch() {
+  if (signal.aborted) return;
+  const done = computeOneBoundedBatch();
+  frame.invalidate();
+  if (!done) timer = setTimeout(batch, 0);
+  else signal.removeEventListener('abort', cancel);
+}
+batch();
+```
+
+Ordinary linked graphs cache their static paths, axes and registered labels;
+time-series windows use binary sample bounds and preserve pixel-column extrema.
+The cursor remains live. Custom graph callbacks keep their existing contract.
+Live equation blocks update at most about four times per second while playing,
+with changed blocks spread over frames and unchanged blocks retained. Pausing,
+seeking and parameter changes update the exact current equations immediately.
 
 At narrow widths, opening Graphs gives the scene its 280 px readable minimum and
 scrolls only the experiment shell enough to reveal the first enabled graph canvas
