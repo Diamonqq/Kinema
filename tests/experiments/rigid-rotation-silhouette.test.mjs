@@ -72,3 +72,7 @@ test('round 6: compact energy equations fit three lines and θ sits on the arc a
  assert.ok(text.includes("Body polhode; space herpolhode}"));
  assert.ok(text.includes("textAt('θ',v(arc[8])"));
 });
+
+test('narrow zooms let the scene shrink so the text stays above the transport',()=>{
+ assert.ok(text.includes('.rr-experiment .exp-scene.is-closeup{min-height:340px;flex-basis:340px}'));
+});
