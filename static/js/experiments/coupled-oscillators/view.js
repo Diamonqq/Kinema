@@ -6,6 +6,9 @@ const envelopes=new WeakMap(),drag=new WeakMap(),sub=n=>String(n).replace(/\d/g,
 const fmt=x=>(Math.abs(x)<.0005?0:x).toFixed(3);
 const signed=x=>fmt(x).replace('-','−'),windows=new WeakMap();
 const forceValue=value=>(Math.abs(value)<.005?0:value).toFixed(2).replace('-','−');
+// Zigzag spring whose coil count follows its length, so a short spring at thumbnail size stays open instead of filling in.
+export function coilCount(length,amplitude){return Math.max(4,Math.min(24,2*Math.round(length/(amplitude*1.7))));}
+function coil(s,x0,y,x1,color,amplitude){const n=coilCount(Math.abs(x1-x0)*.8,amplitude),c=s.ctx,dx=x1-x0;c.strokeStyle=color;c.lineWidth=2;c.beginPath();c.moveTo(x0,y);for(let i=0;i<=n;i++){const a=i===0||i===n?0:(i%2?amplitude:-amplitude);c.lineTo(x0+dx*(.1+.8*i/n),y+a);}c.lineTo(x1,y);c.stroke();}
 // First index: receiving mass. Second index: spring; unlike k these are forces.
 export function springForces(geometry,index){
  const mass=geometry.masses[index],previous=geometry.masses[index-1]?.displacement||0,next=geometry.masses[index+1]?.displacement||0;
@@ -78,7 +81,7 @@ export const view={
   for(let j=0;j<=n;j++){
    if(!f.geometry.springs[j])continue;
    const start=j?x(f.geometry.masses[j-1].x)+massW/2:x(0),end=j<n?x(f.geometry.masses[j].x)-massW/2:x(length);
-   s.spring(start,cy,end,cy,j===1?'#a0b3cc':'#718297',Math.max(4,Math.min(9,scale*.07)));
+   coil(s,start,cy,end,j===1?'#a0b3cc':'#718297',Math.max(4,Math.min(9,scale*.07)));
    const eq=1.3*(j+.5),labelY=Math.max(44,cy-(f.breakdown?115:massH*.5+41)),k=f.params['k'+(j+1)];
    if(scale*1.3>115)s.text('k'+sub(j+1)+' = '+k+' N/m',x(eq),labelY,'#93a5bd',12);
    else {s.text('k'+sub(j+1),x(eq),labelY,'#93a5bd',n>4?10:11);if(n<=4)s.text(k+' N/m',x(eq),labelY+15,'#93a5bd',10);}

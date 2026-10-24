@@ -81,3 +81,11 @@ test('a substituted line stays whole when it fits and wraps at an operator when 
   assert.equal(narrow.length, 2);
   assert.ok(narrow[1].startsWith(String.raw`\times`));
 });
+
+test('coupled oscillators: a short spring gets fewer coils so it stays open at thumbnail size', async () => {
+  const {coilCount}=await import('../../static/js/experiments/coupled-oscillators/view.js');
+  assert.ok(coilCount(24,4)<coilCount(200,4));
+  for(const length of [24,50,200])assert.ok(length/coilCount(length,4)>=3);
+  assert.equal(coilCount(1,4)%2,0);
+  assert.ok(coilCount(1000,4)<=24);
+});
