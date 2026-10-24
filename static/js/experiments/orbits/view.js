@@ -104,7 +104,10 @@ export function orbitChipLayout(rows,params,map,w){
  const focus=first.bodies[0];
  for(const band of equalTimeSectors(rows,rows[0].sample.period||12)){
   if(band.length<2)continue;const pts=band.map(p=>{const r=p.geometry.relativeInertial||p.geometry.relative;return [map.x(focus.x+r.x),map.y(focus.y+r.y)];});
-  segments.push([map.x(focus.x),map.y(focus.y),...pts[0]],[map.x(focus.x),map.y(focus.y),...pts.at(-1)]);
+  // Radial lines through the whole wedge, so a chip never sits inside the shaded sector.
+  for(const p of pts)segments.push([map.x(focus.x),map.y(focus.y),...p]);
+  // And a margin of about 10 px beside the wedge's two straight edges.
+  for(const p of [pts[0],pts.at(-1)]){const fx=map.x(focus.x),fy=map.y(focus.y),d=Math.hypot(p[0]-fx,p[1]-fy)||1,nx=-(p[1]-fy)/d*10,ny=(p[0]-fx)/d*10;segments.push([fx+nx,fy+ny,p[0]+nx,p[1]+ny],[fx-nx,fy-ny,p[0]-nx,p[1]-ny]);}
   pts.slice(1).forEach((p,i)=>segments.push([...pts[i],...p]));
  }
  for(const a of start){
@@ -219,8 +222,15 @@ export const view={graphs,closeups,
   }
   if(f.closeup==='barycentre'){
    title(s,'Both bodies orbit their center of mass');
-   const bodies=g.frames.cm||g.bodies;for(let i=0;i<2;i++){const b=bodies[i];s.circle(map.x(b.x),map.y(b.y),i?5:8,i?C.blue:C.pale);}
+   const bodies=g.frames.cm||g.bodies;
+   // Both orbits about the center of mass, at one true scale (dashed), then the two bodies and their distances r₁ and r₂ from the CM.
+   s.ctx.setLineDash([4,5]);for(let i=0;i<2;i++)linePath(s,rows.map(p=>(p.geometry.frames.cm||p.geometry.bodies)[i]),map,(i?C.blue:C.pale)+'90',1.2);s.ctx.setLineDash([]);
+   for(let i=0;i<2;i++){const b=bodies[i];s.circle(map.x(b.x),map.y(b.y),i?5:8,i?C.blue:C.pale);}
    s.line(map.x(bodies[0].x),map.y(bodies[0].y),map.x(bodies[1].x),map.y(bodies[1].y),C.grid);
+   // Each r label sits just past its body, on the line from the CM, outside both orbits' crowded middle.
+   for(let i=0;i<2;i++){const b=bodies[i],dx=map.x(b.x)-map.x(0),dy=map.y(b.y)-map.y(0),n=Math.hypot(dx,dy)||1,gap=i?15:17;
+    s.line(map.x(0),map.y(0),map.x(b.x),map.y(b.y),(i?C.blue:C.pale)+'c0',1.4);
+    label(s,i?'r₂':'r₁',map.x(b.x)+dx/n*gap,map.y(b.y)+dy/n*gap,i?C.blue:C.pale);}
    s.line(map.x(0)-5,map.y(0),map.x(0)+5,map.y(0),C.green);s.line(map.x(0),map.y(0)-5,map.x(0),map.y(0)+5,C.green);
    caption(s,'m₁ r₁ = m₂ r₂');return;
   }

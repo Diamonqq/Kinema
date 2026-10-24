@@ -1,7 +1,7 @@
 import {num as fmt,texNum as tex} from '../kit/format.js';
 import {runBatches} from '../orbits/work.js';
 import {model,interactionAt,scatteringCurve,differentialCrossSection} from './model.js';
-import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sceneHeight} from '../orbits/scene.js';
+import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sceneHeight,segmentHitsRect} from '../orbits/scene.js';
 import {placeChips} from './chips.js';
 export const graphs=[
  {id:'motion',label:'Separation',unit:'m',series:[{key:'separation',label:'r',color:C.blue}]},
@@ -167,18 +167,26 @@ export function encounterPreview(params,rows){
  const preview={t:event.t,sample,geometry,impact:{before:event.relativeNormalBefore,after}};contactPreviews.set(rows,preview);return preview;
 }
 export function momentumArrows(bodies,map,rect){
- const [q,z]=bodies,scale=Math.min(30,rect.w*.18/Math.max(q.mass*Math.hypot(q.vx,q.vy),z.mass*Math.hypot(z.vx,z.vy),1));
+ const [q,z]=bodies,total=q.mass+z.mass,cx=map.x((q.mass*q.x+z.mass*z.x)/total),cy=map.y((q.mass*q.y+z.mass*z.y)/total);
+ let scale=Math.min(30,rect.w*.18/Math.max(q.mass*Math.hypot(q.vx,q.vy),z.mass*Math.hypot(z.vx,z.vy),1));
+ // One common scale for both arrows (true proportion), shortened just enough that no arrowhead reaches the CM marker
+ // (unless a body sits within about 24 px of the CM, where a visible arrow cannot also clear it).
+ for(const b of [q,z]){const dx=b.mass*b.vx,dy=-b.mass*b.vy,len=Math.hypot(dx,dy)*scale;if(len<1e-6)continue;
+  const ux=dx/Math.hypot(dx,dy),uy=dy/Math.hypot(dx,dy),t=(cx-map.x(b.x))*ux+(cy-map.y(b.y))*uy,off=Math.abs((cx-map.x(b.x))*uy-(cy-map.y(b.y))*ux);
+  if(off<10&&t>0&&len>t-12)scale=Math.max(scale*.25,(t-12)/Math.hypot(dx,dy));}
  return [q,z].map((b,j)=>({id:j?'p2':'p1',x:map.x(b.x),y:map.y(b.y),ex:map.x(b.x)+b.mass*b.vx*scale,ey:map.y(b.y)-b.mass*b.vy*scale}));
 }
 const overlap=(a,b,pad=0)=>a.x<b.x+b.width+pad&&a.x+a.width+pad>b.x&&a.y<b.y+b.height+pad&&a.y+a.height+pad>b.y;
 // A label at its arrow tip: just past the tip, else beside it, clear of markers, other labels and chips.
 function tipLabel(s,text,a,color){
  s.ctx.font='12px system-ui';const w=s.ctx.measureText(text).width,h=14,len=Math.hypot(a.ex-a.x,a.ey-a.y),ux=(a.ex-a.x)/len,uy=(a.ey-a.y)/len,nx=-uy,ny=ux;
- const blocked=[...s.labels,...s.chipRects,...s.labelObstacles];let pick=null;
- for(const [u,n] of [[13,0],[8,12],[8,-12],[0,16],[0,-16],[18,13],[18,-13],[0,24],[0,-24],[26,0]]){
+ const blocked=[...s.labels,...s.chipRects,...s.labelObstacles],paths=s.tipPaths||[];let pick=null;
+ // Beside the tip first, then rings of growing radius around it.
+ const ring=[20,28,36,46].flatMap(r=>[0,30,-30,60,-60,90,-90,120,-120,150,-150,180].map(d=>[r*Math.cos(d*Math.PI/180),r*Math.sin(d*Math.PI/180)]));
+ for(const [u,n] of [[13,0],[8,12],[8,-12],[0,16],[0,-16],[18,13],[18,-13],[0,24],[0,-24],[26,0],...ring]){
   const x=a.ex+ux*u+nx*n,y=a.ey+uy*u+ny*n,box={x:x-w/2,y:y-h/2,width:w,height:h};
   if(box.x<6||box.x+w>s.w-6||box.y<34||box.y+h>s.h-34)continue;
-  if(!blocked.some(o=>overlap(box,o,2))){pick={x,y};break;}
+  if(!blocked.some(o=>overlap(box,o,5))&&!paths.some(l=>segmentHitsRect(l[0],l[1],l[2],l[3],box,3))){pick={x,y};break;}
  }
  pick??={x:a.ex+ux*13,y:a.ey+uy*13};s.text(text,pick.x,pick.y,color,12);
 }
@@ -297,6 +305,8 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   const panes=comparisonPanels(s,data.rows),first=data.rows[0].geometry.frames.lab,nearest=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b).geometry.frames.lab;
   const impact=impactCaption(panes[0],first,f.params.b);
   const start=first[0],encounterPoint={x:(nearest[0].x+nearest[1].x)/2,y:(nearest[0].y+nearest[1].y)/2},lab=panes[0].map;
+  // The drawn forecast paths: breakdown labels keep off them too.
+  s.tipPaths=panes.flatMap(({map},i)=>{const out=[],fr=i?'cm':'lab';for(let k=1;k<data.rows.length;k++)for(let j=0;j<2;j++){const A=data.rows[k-1].geometry.frames[fr][j],B=data.rows[k].geometry.frames[fr][j];out.push([map.x(A.x),map.y(A.y),map.x(B.x),map.y(B.y)]);}return out;});
   s.pathObstacles=forecastObstacles(panes,data.rows);s.apparatusBoxes=['lab','cm'].map((frame,i)=>{const [x0,x1,y0,y1]=encounterBounds(data.rows,frame),{map}=panes[i];return {x:map.x(x0),y:map.y(y1),width:map.x(x1)-map.x(x0),height:map.y(y0)-map.y(y1)};});s.paneRects=panes.map(p=>p.rect);
   const cmMap=panes[1].map,layout=frameLayout(s.w,s.h),first_cm=data.rows[0].geometry.frames.cm;
   const avoid=panes.map(({rect})=>({x:rect.x+rect.w/2-48,y:rect.y-17,width:96,height:17}));
@@ -327,7 +337,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
    if(f.breakdown){
     // A body that has left the frame has no arrow to draw here.
     const arrows=momentumArrows(b,map,rect).map(a=>a.x<rect.x||a.x>rect.x+rect.w||a.y<rect.y||a.y>rect.y+rect.h?{...a,ex:a.x,ey:a.y}:a);s.physicsSegments.push(...arrows.map(a=>{const dx=a.ex-a.x,dy=a.ey-a.y;let k=1;if(dx>0)k=Math.min(k,(rect.x+rect.w-a.x)/dx);if(dx<0)k=Math.min(k,(rect.x-a.x)/dx);if(dy>0)k=Math.min(k,(rect.y+rect.h-a.y)/dy);if(dy<0)k=Math.min(k,(rect.y-a.y)/dy);k=Math.max(0,k);return {...a,ex:a.x+dx*k,ey:a.y+dy*k};}));
-    s.labelObstacles.push({x:map.x(cm.x)-7,y:map.y(cm.y)-7,width:14,height:14},...b.map(q=>({x:map.x(q.x)-8,y:map.y(q.y)-8,width:16,height:16})),
+    s.labelObstacles.push({x:map.x(cm.x)-10,y:map.y(cm.y)-10,width:20,height:20},...b.map(q=>({x:map.x(q.x)-8,y:map.y(q.y)-8,width:16,height:16})),
      ...arrows.flatMap(a=>{const n=Math.max(1,Math.ceil(Math.hypot(a.ex-a.x,a.ey-a.y)/6));return Array.from({length:n+1},(_,k)=>({x:a.x+(a.ex-a.x)*k/n-3,y:a.y+(a.ey-a.y)*k/n-3,width:6,height:6}));}));
     arrows.forEach((a,j)=>{if(Math.hypot(a.ex-a.x,a.ey-a.y)<.05)return;const inside=a.ex>=rect.x+4&&a.ex<=rect.x+rect.w-4&&a.ey>=rect.y+4&&a.ey<=rect.y+rect.h-4;
      // An arrow that reaches past the frame is cut at its edge and loses its label rather than spilling over the captions.
