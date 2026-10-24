@@ -1,5 +1,5 @@
 import {VectorStage,palette} from './stage.js';
-import {num} from './format.js';
+import {num,niceTicks,tickLabel} from './format.js';
 // Zero stays on the axis; padding never invents a negative range for nonnegative data (or the reverse).
 export function valueRange(vals){let lo=0,hi=0;for(const value of vals){if(value<lo)lo=value;if(value>hi)hi=value;}if(hi===lo)hi=lo+1;const pad=(hi-lo)*.12;if(hi>0)hi+=pad;if(lo<0)lo-=pad;return [lo,hi];}
 export const axisLabel=v=>num(v);
@@ -38,7 +38,7 @@ export class CustomGraph {
 export class LinkedGraph {
  constructor(host,descriptor){this.descriptor=descriptor;this.canvas=document.createElement('canvas');this.canvas.setAttribute('aria-label',descriptor.label+' graph');this.canvas.setAttribute('role','img');host.append(this.canvas);this.stage=new VectorStage(this.canvas);}
  draw(samples,time){
-  const s=this.stage;s.resize();s.begin();const {w,h,ctx}=s,d=this.descriptor,series=d.series||[],right=w-14,top=30,bottom=h-29;
+  const s=this.stage;s.resize();s.begin();const {w,h,ctx}=s,d=this.descriptor,series=d.series||[],right=w-14,top=30,bottom=h-31;
   const signature=JSON.stringify(d);
   if(this.rangeSource!==samples||this.rangeSignature!==signature||samples.length<(this.rangeCount||0)){
    this.rangeSource=samples;this.rangeSignature=signature;this.rangeCount=0;this.rangeLo=0;this.rangeHi=0;this.maxX=this.maxY=.001;this.cacheKey=null;
@@ -48,8 +48,9 @@ export class LinkedGraph {
    this.maxX=Math.max(this.maxX,Math.abs(point[series[0]?.key]||0));this.maxY=Math.max(this.maxY,Math.abs(point[series[1]?.key]||0));
   }
   this.rangeCount=samples.length;const [lo,hi]=valueRange([this.rangeLo,this.rangeHi]);
-  // The value gutter grows to fit long tick labels such as 1.12×10⁻⁸.
-  ctx.font='10px system-ui,sans-serif';const left=Math.max(42,Math.ceil(Math.max(...[hi,lo].map(v=>ctx.measureText(axisLabel(v))?.width||0)))+10);
+  // Round ticks (zero included) label the value axis; the gutter grows to fit long labels such as 1.12×10⁻⁸.
+  const phase=d.kind==='phase',yt=niceTicks(phase?-this.maxY/.9:lo,phase?this.maxY/.9:hi,Math.max(2,Math.floor((bottom-top)/34)));
+  ctx.font='9px system-ui,sans-serif';const left=Math.max(42,Math.ceil(Math.max(0,...yt.ticks.map(v=>ctx.measureText(tickLabel(v,yt.step))?.width||0)))+12);
   const [start,end]=graphTimeRange(d,samples.at(-1)?.t||0,time);this.timeRange=[start,end];this.yRange=[lo,hi];
   const tx=t=>left+(right-left)*(t-start)/(end-start||1),yy=v=>bottom-(bottom-top)*(v-lo)/(hi-lo);
   // Use the same mapping for future graph pointer/scrub interactions.
@@ -59,19 +60,22 @@ export class LinkedGraph {
   const cacheHit=this.staticLayer&&this.cacheKey===cacheKey;
   const staticDraw=()=>{
   s.text(d.label+(d.unit?' · '+d.unit:''),left,13,'#c5cfdb',12,'left');
-  s.line(left,top,left,bottom,'#36414f',1);s.line(left,bottom,right,bottom,'#36414f',1);s.line(left,yy(0),right,yy(0),'#26303c',1);
-  s.text(axisLabel(hi),left-5,top,'#8190a4',10,'right');s.text(axisLabel(lo),left-5,bottom,'#8190a4',10,'right');
+  const GRID='rgba(160,180,210,0.10)',ZERO='rgba(160,180,210,0.24)',TICK='#7b8a9e',yAt=phase?v=>top+(bottom-top)*(.5-.45*v/this.maxY):yy;
+  const xTicks=(lo2,hi2,at,suffix)=>{const xt=niceTicks(lo2,hi2,Math.max(2,Math.floor((right-left)/64))),shown=xt.ticks.filter(v=>at(v)>=left-.5&&at(v)<=right+.5);for(const v of shown)s.line(at(v),top,at(v),bottom,v===0?ZERO:GRID,1);
+   ctx.font='9px system-ui,sans-serif';for(const v of shown){const text=tickLabel(v,xt.step)+(suffix&&v===shown.at(-1)?' '+suffix:''),half=(ctx.measureText(text)?.width||0)/2;s.text(text,Math.min(at(v),w-2-half),bottom+12,TICK,9);}};
+  for(const v of yt.ticks){const y=yAt(v);if(y<top-.5||y>bottom+.5)continue;s.line(left,y,right,y,v===0?ZERO:GRID,1);s.text(tickLabel(v,yt.step),left-5,y,TICK,9,'right');}
+  s.line(left,top,left,bottom,'#36414f',1);s.line(left,bottom,right,bottom,'#36414f',1);
   if(d.kind==='spectrum'){
-   series.forEach((v,i)=>{const x=left+(right-left)*(i+.5)/series.length;ctx.fillStyle=v.color||palette[i%palette.length];ctx.fillRect(x-8,yy(Math.abs(point?.[v.key]||0)),16,bottom-yy(Math.abs(point?.[v.key]||0)));s.text(v.label,x,bottom+13,'#adb9ca',10)});return;
+   series.forEach((v,i)=>{const x=left+(right-left)*(i+.5)/series.length;ctx.fillStyle=v.color||palette[i%palette.length];ctx.fillRect(x-8,yy(Math.abs(point?.[v.key]||0)),16,bottom-yy(Math.abs(point?.[v.key]||0)));s.text(v.label,x,bottom+13,'#adb9ca',11)});return;
   }
   if(d.kind==='phase'){
    const sx=series[0]?.key,sy=series[1]?.key;if(!sx||!sy)return;const xx=v=>left+(right-left)*(.5+.45*v/this.maxX),py=v=>top+(bottom-top)*(.5-.45*v/this.maxY);
-   ctx.beginPath();samples.forEach((p,i)=>i?ctx.lineTo(xx(p[sx]),py(p[sy])):ctx.moveTo(xx(p[sx]),py(p[sy])));ctx.strokeStyle=palette[0];ctx.lineWidth=1.6;ctx.stroke();s.text(series.map(x=>x.label).join(' / '),(left+right)/2,bottom+15,'#9aaabe',10);return;
+   ctx.beginPath();samples.forEach((p,i)=>i?ctx.lineTo(xx(p[sx]),py(p[sy])):ctx.moveTo(xx(p[sx]),py(p[sy])));ctx.strokeStyle=palette[0];ctx.lineWidth=1.6;ctx.stroke();xTicks(-this.maxX/.9,this.maxX/.9,xx);s.text(series.map(x=>x.label).join(' / '),(left+right)/2,h-6,'#9aaabe',11);return;
   }
   ctx.save();ctx.beginPath();ctx.rect(left,top,right-left,bottom-top);ctx.clip();
   series.forEach((v,j)=>{ctx.beginPath();let first=true;for(const p of decimate(samples,v.key,start,end,Math.max(1,Math.floor(right-left)))){if(!Number.isFinite(p[v.key])){first=true;continue;}first?ctx.moveTo(tx(p.t),yy(p[v.key])):ctx.lineTo(tx(p.t),yy(p[v.key]));first=false;}ctx.strokeStyle=v.color||palette[j%palette.length];ctx.lineWidth=1.5;ctx.stroke();});
-  ctx.restore();const seconds=t=>Number(t.toFixed(2))+' s';s.text(seconds(start),left,bottom+15,'#8190a4',10);s.text(seconds(end),right,bottom+15,'#8190a4',10,'right');
-  let x=left;series.forEach((v,j)=>{s.circle(x+3,h-6,2,v.color||palette[j%palette.length]);s.text(v.label,x+10,h-6,'#acb9cc',10,'left');x+=Math.max(42,v.label.length*7+20)});
+  ctx.restore();xTicks(start,end,tx,'s');
+  let x=left;series.forEach((v,j)=>{s.circle(x+3,h-6,2.5,v.color||palette[j%palette.length]);s.text(v.label,x+10,h-6,'#acb9cc',11,'left');x+=Math.max(46,v.label.length*7.5+22)});
   };
   if(cacheHit){ctx.drawImage(this.staticLayer,0,0,w,h);s.labels=this.staticLabels.slice();}
   else {

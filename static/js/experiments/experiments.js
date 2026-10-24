@@ -49,7 +49,7 @@ export class Experiments {
      this.splitter.layout();
      let restoring=true;
      const shell=this.shell=new ExperimentShell(host,{model,view,manifest,values:state.params,onChange:s=>{if(!restoring)this.remember(this.t.thread?.id===t.id?this.t.thread:t,s);},onBack:()=>this.back()});shell.threadId=t.id;
-     shell.seek(state.t||0);shell.setCloseup(state.closeup||'');shell.setBreakdown(state.breakdown||false);for(const id of state.graphs||[])shell.enabledGraphs.add(id);if(shell.enabledGraphs.size){shell.q('.exp-graph-panel').hidden=false;shell.q('[data-exp=graphs]').setAttribute('aria-expanded','true');shell.syncGraphVisibility();}
+     shell.seek(state.t||0);shell.setCloseup(state.closeup||'');shell.setBreakdown(state.breakdown||false);for(const id of state.graphs||[])shell.enabledGraphs.add(id);if(state.graphsOpen??shell.enabledGraphs.size>0){shell.q('.exp-graph-panel').hidden=false;shell.q('[data-exp=graphs]').setAttribute('aria-expanded','true');shell.syncGraphVisibility();}
      restoring=false;
      return {experimentKey:key,resize:()=>shell.resize(),destroy:()=>{this.remember(this.t.thread?.id===t.id?this.t.thread:t,shell.snapshot());shell.destroy();if(this.shell===shell)this.shell=null;}};
     });

@@ -84,7 +84,7 @@ test('windowed draw keeps full-forecast y range and maps pointer and cursor to t
  plot.stage={w:400,h:180,ctx,resize(){},begin(){text.length=0;lines.length=0},text(...args){text.push(args)},line(...args){lines.push(args)},circle(){}};
  const samples=Array.from({length:21},(_,t)=>({t,x:t===0?100:Math.sin(t)}));
  plot.draw(samples,10);const range=plot.yRange.slice();assert.deepEqual(plot.timeRange,[8,12]);assert.equal(plot.timeAt(42),8);assert.equal(plot.timeAt(386),12);assert.equal(plot.timeAt(214),10);
- assert.ok(lines.some(l=>l[0]===214&&l[2]===214));assert.ok(text.some(l=>l[0]==='8 s'));assert.ok(text.some(l=>l[0]==='12 s'));
+ assert.ok(lines.some(l=>l[0]===214&&l[2]===214));assert.ok(text.some(l=>l[0]==='8'));assert.ok(text.some(l=>l[0]==='12 s'));
  plot.draw(samples,17);assert.deepEqual(plot.yRange,range);assert.deepEqual(plot.timeRange,[15,19]);assert.ok(range[1]>100);
 });
 

@@ -84,7 +84,7 @@ def is_inert(param, params):
 
 def initial(manifest):
     return {'params': {p['key']: p['value'] for p in manifest['params']}, 't': 0,
-            'observables': {}, 'playing': False, 'closeup': '', 'breakdown': False, 'graphs': []}
+            'observables': {}, 'playing': False, 'closeup': '', 'breakdown': False, 'graphs': [], 'graphsOpen': False}
 
 
 def snapshot(manifest, raw, previous=None):
@@ -113,6 +113,8 @@ def snapshot(manifest, raw, previous=None):
     if not isinstance(graphs, list) or len(graphs) > 16 or any(g not in [r['id'] for r in manifest.get('graphs', [])] for g in graphs):
         raise ValueError('Unknown graph.')
     state['graphs'] = list(dict.fromkeys(graphs))
+    # An older client sends no flag: the panel stays open when any graph was enabled, as it used to.
+    state['graphsOpen'] = raw['graphsOpen'] if isinstance(raw.get('graphsOpen'), bool) else bool(state['graphs'])
     return state
 
 
@@ -173,6 +175,7 @@ def apply(manifest, state, action):
         graphs = set(state['graphs'])
         graphs.add(action['id']) if action['enabled'] else graphs.discard(action['id'])
         state['graphs'] = sorted(graphs)
+        state['graphsOpen'] = True
     return state
 
 

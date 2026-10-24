@@ -92,6 +92,7 @@ export class ExperimentShell {
   this.q('.exp-graph-panel').hidden=!open;this.q('[data-exp=graphs]').setAttribute('aria-expanded',String(open));
   if(open&&!this.enabledGraphs.size)for(const graph of this.graphDescriptors().slice(0,2))this.enabledGraphs.add(graph.id);
   this.syncGraphVisibility();if(open)this.revealGraph();else this.host.scrollTop=0;
+  this.changed();
  }
  revealGraph(){
   if(innerWidth>900)return;cancelAnimationFrame(this.graphRevealFrame);
@@ -143,7 +144,7 @@ export class ExperimentShell {
   this.cameraMoving=!!this.stage.animating||!!camera&&Object.keys(camera).some(key=>cameraMoved(camera[key],this.stage.camera[key]));if(this.dirty||this.cameraMoving||this.playing)this.wake();
  }
  tick(now){this.raf=0;if(this.destroyed)return;if(!this.visible()){this.last=0;return;}const elapsed=this.last?Math.min(.06,(now-this.last)/1000):0;this.last=now;if(this.playing){try{this.instance.step(Math.max(0,Math.min(elapsed*this.speed,this.duration-this.instance.t)));this.observeEnd(this.instance.sample());if(this.playing&&this.instance.t>=this.duration-1e-8)this.setPlaying(false);}catch(error){this.setPlaying(false);this.q('.exp-note').textContent=error.message||'Motion stopped at this state.';}}if(this.playing||this.dirty||this.cameraMoving||now<(this.interactionUntil||0))this.draw();if(this.playing||this.dirty||this.cameraMoving||now<(this.interactionUntil||0))this.wake();else this.last=0;}
- snapshot(){return {params:{...this.params},t:this.instance.t,observables:this.instance.sample(),playing:this.playing,closeup:this.closeup,breakdown:this.breakdown,graphs:[...this.enabledGraphs]};}
+ snapshot(){return {params:{...this.params},t:this.instance.t,observables:this.instance.sample(),playing:this.playing,closeup:this.closeup,breakdown:this.breakdown,graphs:[...this.enabledGraphs],graphsOpen:!this.q('.exp-graph-panel').hidden};}
  changed(){this.onChange(this.snapshot());}
  apply(a){if(!a)return;if(a.type==='set_params')return this.setParams(a.values);if(a.type==='preset'){const p=this.model.presets.find(p=>p.id===a.id);return p?this.setParams(p.values):false;}if(a.type==='play')this.setPlaying(true);if(a.type==='pause')this.setPlaying(false);if(a.type==='reset')this.reset();if(a.type==='closeup')this.setCloseup(a.id);if(a.type==='breakdown')this.setBreakdown(a.enabled);if(a.type==='graph'){a.enabled?this.enabledGraphs.add(a.id):this.enabledGraphs.delete(a.id);this.setGraphsOpen(true);this.changed();}}
  resize(){if(this.destroyed)return;if(!this.visible()){cancelAnimationFrame(this.raf);this.raf=0;this.last=0;this.dirty=true;return;}this.stage.resize();this.custom?.resize?.();this.draw();}

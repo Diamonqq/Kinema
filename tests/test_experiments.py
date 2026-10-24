@@ -208,3 +208,16 @@ def test_reply_instructions_limit_actions_and_length(monkeypatch):
     for rule in ('about 80 words', 'a question gets an explanation with action=null', 'use the preset action',
                  'Never clamp or substitute a value silently', 'never mention JSON', 'what to look for'):
         assert rule.lower() in system.lower(), rule
+
+
+def test_graphs_open_flag_is_kept_as_a_boolean():
+    m = experiments.get('coupled-oscillators')
+    gid = m['graphs'][0]['id']
+    assert experiments.initial(m)['graphsOpen'] is False
+    assert experiments.snapshot(m, {'params': {'k2': 40}, 'graphs': [gid], 'graphsOpen': False})['graphsOpen'] is False
+    assert experiments.snapshot(m, {'params': {'k2': 40}, 'graphs': [gid], 'graphsOpen': True})['graphsOpen'] is True
+    # a non-boolean is never stored; an older client without the flag keeps the panel open when graphs were enabled
+    assert experiments.snapshot(m, {'params': {'k2': 40}, 'graphs': [gid], 'graphsOpen': 'yes'})['graphsOpen'] is True
+    assert experiments.snapshot(m, {'params': {'k2': 40}})['graphsOpen'] is False
+    state = experiments.apply(m, experiments.initial(m), {'type': 'graph', 'id': gid, 'enabled': True})
+    assert state['graphsOpen'] is True
