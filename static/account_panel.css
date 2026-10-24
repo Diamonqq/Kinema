@@ -130,7 +130,7 @@ html.ka-first-run-check body>*:not(dialog){visibility:hidden}
 .kw-quiet p{margin:0;color:#868e9c;font-size:12px;max-width:46ch;line-height:1.55}
 .kw-close{width:34px;height:34px;justify-self:end}
 .kw-screen .ka-error,.kw-screen .ka-notice{margin-top:16px}
-.kw-screen .kp-ask{width:min(560px,100%)}
+.kw-screen .kp-ask{width:min(560px,100%);margin:auto;text-align:left}
 .kw-done .ka-models{width:100%;margin-top:4px}
 .kw-done .ka-account-ready{justify-content:center}
 .kw-why{margin:12px 0 0;max-width:46ch;color:#9aa2b0;font-size:12.5px;line-height:1.6}

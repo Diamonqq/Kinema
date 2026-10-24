@@ -4,6 +4,34 @@
   "book": "morin",
   "classes": [
     {
+      "id": "2300",
+      "title": "Mechanics I",
+      "subtitle": "Morin chapters 1–7",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "2301",
+      "title": "Mechanics II",
+      "subtitle": "Morin chapters 8–14",
+      "chapters": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
       "id": "other",
       "title": "Mechanics",
       "subtitle": "Choose the chapters you want to study",

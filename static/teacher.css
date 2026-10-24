@@ -33,6 +33,7 @@ body.v-teacher>header{display:none}
 .tv-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .tv-icon:hover,.tv-row:hover{background:var(--tv-wash);color:var(--tv-ink)}
 .tv-row{display:flex;align-items:center;gap:8px;width:100%;min-height:34px;padding:7px 10px;border-radius:8px;color:#d9d9dc;font-size:13px;text-align:left}
+.tv-row[hidden]{display:none}
 .tv-row svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
 .tv-label{margin:12px 10px 4px;color:var(--tv-faint);font-size:11px}
 .tv-courses,.tv-threads{display:flex;flex-direction:column;gap:2px;min-height:0}

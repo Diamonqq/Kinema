@@ -108,6 +108,16 @@ export const model = {
 //             geometry() /* positions/orientations a renderer needs, SI units */ }
 ```
 
+A param may carry `appliesWhen: { otherKey: [allowed values...] }` when it only does something under
+some other setting, e.g. `{ key:'parentMass', ..., appliesWhen:{ reaction:['decay'] } }`. Every key
+must hold one of its listed values (AND across keys, OR within a list); `otherKey` is another param of
+the same manifest (an unknown key, itself, or an empty list hides the card). A param whose rule is unmet
+by the current values is *inert*. The tutor context (`app/experiments.py` `compact`) marks it
+`inert:true` and tells the tutor never to suggest or change it on its own; a `set_params` that touches an
+inert param is dropped unless the same action also sets the controlling param, so "custom decay with
+M = 500 MeV" works. The UI is free to dim or hide inert controls. The tutor receives a compact manifest
+(param limits and options, preset id/label/note, close-up and graph id/label, observables), not preset values.
+
 Choose integrators per physics (symplectic for conservative, RK4/adaptive RK45 for
 damped/driven, quaternions for rotation). Tests in `tests/experiments/<id>.test.mjs`
 run with `node --test` and compare against analytic results (normal-mode

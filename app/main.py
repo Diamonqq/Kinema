@@ -326,7 +326,7 @@ async def settings_set(request: Request) -> dict:
 @app.get("/api/models")
 def models_get():
     s = _settings()
-    return {"models": model_choices.catalog(), "account": account.active_provider(),
+    return {"models": model_choices.signed_in_catalog(), "account": account.active_provider(),
             "roles": {r: model_choices.profile(s, r) for r in model_choices.ROLES}}
 
 @app.get("/api/languages")

@@ -19,3 +19,5 @@
 .library-content .folder-actions button{border-radius:999px}
 @media(max-width:1100px){.teacher .pg-library .library-layout{grid-template-columns:132px minmax(0,1fr);gap:20px;padding-inline:20px}.library-nav button{padding-inline:12px}}
 @media(max-width:800px){.teacher .pg-library .library-layout{display:block;padding:12px 16px 36px}.library-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:4px;margin-bottom:24px}.library-nav button{font-size:12px;min-height:36px;padding:7px 12px;gap:7px}.library-nav svg{width:15px;height:15px}.library-content>h1{font-size:21px;margin-bottom:20px}.book-browser .book-search input{flex-basis:100%}.book-browser .book-search .choice-trigger{max-width:calc(50% - 4px);min-width:0}.book-browser .book-list button{padding:13px 12px;gap:8px}}
+/* 1.50: the Library filters fill the row on phones so "All questions" is not cut off */
+@media(max-width:420px){.book-browser .book-search .choice-trigger{flex:1 1 100%;max-width:none}}

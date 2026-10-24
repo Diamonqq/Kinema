@@ -9,9 +9,10 @@ export function setModelCatalog(models = []) {
 }
 export function modelName(id, fallback = 'Model not recorded') {
   if (!id) return fallback;
-  if (catalogNames.has(id)) return catalogNames.get(id);
-  const tag = String(id).replace(/^(codex|claude|local):/, '');
-  const aliases = {opus:'Claude Opus 5',sonnet:'Claude Sonnet 5',fable:'Claude Fable 5.1','fable-5.1':'Claude Fable 5.1'};
+  const tag = String(id).replace(/^(codex|claude|local):/, ''), named = catalogNames.get(id);
+  // a catalog label that only repeats the raw id ("haiku") is no name; the readable one below wins
+  if (named && named.toLowerCase() !== tag.toLowerCase() && named.toLowerCase() !== String(id).toLowerCase()) return named;
+  const aliases = {opus:'Claude Opus 5.5',sonnet:'Claude Sonnet 5.5',haiku:'Claude Haiku 5.5',fable:'Claude Fable 5.1','fable-5.1':'Claude Fable 5.1'};
   if (aliases[tag]) return aliases[tag];
   const c = /^claude-(fable|opus|sonnet|haiku)-(\d+)(?:(?:[.-](\d{1,2}))(?:-\d{8})?|-(?:\d{8}))?$/.exec(tag);
   if (c) return `Claude ${c[1][0].toUpperCase()+c[1].slice(1)} ${c[2]}${c[3] ? '.'+c[3] : ''}`;
