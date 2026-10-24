@@ -89,14 +89,11 @@ function layoutFor(s,f){
   if(s.w>=470){const size=Math.min(ps[0].width,ps[0].height);bottom=ps[0].top+size;}else bottom=ps[1].top+ps[1].height;
   return {ps,need:blockHeight(s,opts),cap:(22+ps[0].height+opts.tail)/.72,paneBottom:bottom,paneHeight:ps[0].height,chipTop:bottom+6};
 }
-// Number as KaTeX shows it, read back, so a substituted line can be checked against what it displays.
-const shown=(x,sig)=>Number(texNum(x,sig).replace(/\\times10\^\{(-?\d+)\}/,'e$1'));
-// Component lines p_x = p cos θ and p_y = p sin θ. Momentum and angle get just enough figures that both products recompute to the shown results.
+// Component lines p_x = p cos θ and p_y = p sin θ with momentum, angle and result at 4 significant figures; recomputing the shown inputs agrees to rounding.
 export function componentLines(v,star=''){
-  const P=Math.hypot(v.px,v.py),A=Math.atan2(v.py,v.px)*180/Math.PI;let sp=7,sa=8;
-  search:for(let a=4;a<=7;a++)for(let b=3;b<=8;b++){const p=shown(P,a),t=shown(A,b)*Math.PI/180;if(shown(p*Math.cos(t),4)===shown(v.px,4)&&shown(p*Math.sin(t),4)===shown(v.py,4)){sp=a;sa=b;break search;}}
-  const p=texNum(P,sp),a=texNum(A,sa),unit='\\,\\mathrm{MeV}/c',sym=`p${star}_{1}`,ang=`\\theta${star}_{1}`;
-  return [`p${star}_{1x}=${sym}\\cos${ang}`,`p${star}_{1x}=${p}\\cos(${a}^\\circ)=${texNum(v.px,4)}${unit}`,`p${star}_{1y}=${sym}\\sin${ang}`,`p${star}_{1y}=${p}\\sin(${a}^\\circ)=${texNum(v.py,4)}${unit}`];
+  const P=Math.hypot(v.px,v.py),A=Math.atan2(v.py,v.px)*180/Math.PI;
+  const p=`(${texNum(P,4)}\\,\\mathrm{MeV}/c)`,a=texNum(A,4),unit='\\,\\mathrm{MeV}/c',sym=`p${star}_{1}`,ang=`\\theta${star}_{1}`;
+  return [`p${star}_{1x}=${sym}\\cos${ang}`,`\\begin{aligned}p${star}_{1x}&=${p}\\cos(${a}^\\circ)\\\\&=${texNum(v.px,4)}${unit}\\end{aligned}`,`p${star}_{1y}=${sym}\\sin${ang}`,`\\begin{aligned}p${star}_{1y}&=${p}\\sin(${a}^\\circ)\\\\&=${texNum(v.py,4)}${unit}\\end{aligned}`];
 }
 export const view={closeups,graphs,paramVisible,
   mount(shell){holdShell(shell);shell.scene.style.minHeight='550px';shell.scene.style.flexBasis='550px';},

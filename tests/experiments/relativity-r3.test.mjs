@@ -9,21 +9,22 @@ import {fakeStage,frame} from './minkowski-view.test.mjs';
 // Round 3: displayed substitutions recompute, CM symbols are starred, labels clear every drawn line, graph axes carry units.
 const NUM='(-?[\\d.]+(?:\\\\times10\\^\\{-?\\d+\\})?)';
 const read=t=>Number(t.replace(/\\times10\^\{(-?\d+)\}/,'e$1'));
-const places=t=>(/\.(\d+)$/.exec(t.replace(/\\times.*$/,''))||[,''])[1].length;
-const component=new RegExp('='+NUM+'\\\\(cos|sin)\\('+NUM+'\\^\\\\circ\\)='+NUM+'\\\\,');
+const sigFigs=t=>t.replace(/\\times.*$/,'').replace(/[-.]/g,'').replace(/^0+/,'').length;
+const component=new RegExp('=\\('+NUM+'\\\\,\\\\mathrm\\{MeV\\}/c\\)\\\\(cos|sin)\\('+NUM+'\\^\\\\circ\\)='+NUM+'\\\\,\\\\mathrm\\{MeV\\}/c');
 
 test('every substituted component line recomputes from its displayed numbers, in both frames',()=>{
  let lines=0;
  for(const preset of rel.presets)for(const frameName of ['lab','cm']){
   const f=frame(rel,{...preset.values,frame:frameName},.5);
   for(const t of relView.equations(f).filter(t=>t.includes('\\circ)'))){
-   const m=component.exec(t);assert.ok(m,`${preset.id} ${frameName} parses: ${t}`);
-   const [,P,fn,A,R]=m,got=read(P)*Math[fn](read(A)*Math.PI/180),tol=.5*10**-places(R)+1e-9*Math.abs(read(R));
-   assert.ok(Math.abs(got-read(R))<=tol,`${preset.id} ${frameName}: ${P} ${fn}(${A} deg) = ${got}, shown ${R}`);lines++;
+   const m=component.exec(t.replace('\\\\&=','='));assert.ok(m,`${preset.id} ${frameName} parses: ${t}`);
+   const [,P,fn,A,R]=m,got=read(P)*Math[fn](read(A)*Math.PI/180);
+   for(const n of [P,A,R])assert.ok(sigFigs(n)<=4,`${preset.id} ${frameName}: ${n} has more than 4 significant figures`);
+   assert.ok(Math.abs(got-read(R))<=.001*Math.abs(read(R))+1e-9,`${preset.id} ${frameName}: ${P} ${fn}(${A} deg) = ${got}, shown ${R}`);lines++;
   }
  }
  assert.ok(lines>=32,'checked '+lines);
- assert.ok(relView.equations(frame(rel,{reaction:'pion-decay',frame:'lab'},.5)).some(t=>/32\.\d/.test(t)),'the lab angle shows a decimal');
+ assert.ok(relView.equations(frame(rel,{reaction:'pion-decay',frame:'lab'},.5)).some(t=>/32\.20\^/.test(t)),'the lab angle shows 4 significant figures');
 });
 
 test('CM equations and drawing use starred symbols, lab ones stay plain',()=>{
