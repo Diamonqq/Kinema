@@ -7,7 +7,7 @@ const {model}=await load('model.js');
 const source=await readFile(new URL('view.js',dir),'utf8');
 const modelURL='data:text/javascript;base64,'+Buffer.from(await readFile(new URL('model.js',dir),'utf8')).toString('base64');
 // Pure equation/descriptor tests only. Actual three.js is checked by the browser fixture.
-const {view,available,sceneLayout,cameraExtentFactor,readoutNumber,graphWindow,finitePatchScale}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(/^import .*;\r?\n/,'const THREE={};\n').replace("'./model.js'",JSON.stringify(modelURL))).toString('base64'));
+const {view,available,sceneLayout,cameraExtentFactor,readoutNumber,graphWindow,finitePatchScale,createRetainedLayer}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(/^import .*;\r?\n/,'const THREE={};\n').replace("'./model.js'",JSON.stringify(modelURL))).toString('base64'));
 const manifest=JSON.parse(await readFile(new URL('manifest.json',dir),'utf8'));
 const frame=values=>{const instance=model.create(values);return {instance,params:values,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:''};};
 test('manifest matches every model parameter and complete preset exactly (zero tolerance)',()=>{
@@ -66,4 +66,22 @@ test('narrow Euler results keep signed values and units on a short separate line
 test('finite tangent patch stays within panel margin around its fixed center (1e-12 NDC)',()=>{
  for(const x of [-.65,0,.65])for(const y of [-.65,0,.65]){const center={x,y},corners=[{x:x-1,y:y-1},{x:x+1,y:y-1},{x:x-1,y:y+1},{x:x+1,y:y+1}],scale=finitePatchScale(center,corners);assert.ok(scale>0);for(const c of corners){assert.ok(Math.abs(x+(c.x-x)*scale)<=.9+1e-12);assert.ok(Math.abs(y+(c.y-y)*scale)<=.9+1e-12);}}
  for(const {id} of view.closeups)assert.ok(sceneLayout(300,280,id).area.y>=96);
+});
+test('retained arrows and buffers update 1000 frames without new resources (exact identity)',async()=>{
+ const T=await import(new URL('../../static/vendor/three/build/three.module.js',import.meta.url));
+ const group=new T.Group(),pool=createRetainedLayer(group,T),points=[[0,0,0],[1,2,3]],a=pool.arrow(points[0],points[1],2,'#82b5ff','omega'),l=pool.line(points,'#8fd5b4',true);
+ const geometry=l.geometry,material=l.material,position=geometry.attributes.position,distance=geometry.attributes.lineDistance,counts={...pool.allocations};
+ for(let i=0;i<1000;i++){pool.begin();points[1]=[i/1000,2,-3];assert.equal(pool.arrow(points[0],points[1],.5+i/1000,'#efa67f','omega'),a);assert.equal(pool.line(points,'#8fd5b4',true),l);assert.equal(l.geometry,geometry);assert.equal(l.material,material);assert.equal(geometry.attributes.position,position);assert.equal(geometry.attributes.lineDistance,distance);assert.equal(geometry.drawRange.count,2);}
+ assert.deepEqual(pool.allocations,counts);assert.equal(position.getZ(1),-3);assert.ok(Math.abs(distance.getX(1)-Math.hypot(position.getX(1),2,3))<1e-6);
+ pool.begin();assert.ok(group.children.every(o=>!o.visible));pool.clear();assert.equal(group.children.length,0);
+});
+
+test('tutor receives computed principal moments with SI units for every shape and pivot (1e-14 kg m2)',()=>{
+ for(const p of model.presets){const i=model.create(p.values),s=i.sample(),g=i.geometry();for(let n=1;n<=3;n++){assert.ok(Math.abs(s['I'+n]-g.principalMoments[n-1])<1e-14);assert.equal(model.observables.find(d=>d.key==='I'+n).unit,'kg m\u00b2');}}
+ const p={...model.presets.find(p=>p.id==='slow').values,I1:99,I2:99,I3:99};
+ assert.notEqual(model.create(p).sample().I1,99);
+});
+
+test('only custom mass distributions expose editable principal moments (exact)',()=>{
+ for(const shape of ['custom','box','corner-masses','plate','rod','symmetric-top'])for(const spec of model.params){assert.equal(view.paramVisible(spec,{shape}),!/^I[123]$/.test(spec.key)||shape==='custom');}
 });
