@@ -2,7 +2,7 @@ import {model,G} from './model.js';
 import {C,fmt,tex,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label} from './scene.js';
 export const graphs=[
  {id:'radius',label:'Separation',unit:'m',series:[{key:'r',label:'r',color:C.blue}]},
- {id:'energy',label:'Energy · K, U, E (J)',unit:'J',kind:'custom',series:[{key:'energy',label:'E',color:C.amber},{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.green}]},
+ {id:'energy',label:'Energy · K, U, E',unit:'J',kind:'custom',series:[{key:'energy',label:'E',color:C.amber},{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.green}]},
  {id:'area',label:'Swept area',unit:'m²',series:[{key:'sweptArea',label:'A',color:C.blue}]},
  {id:'phase',label:'Radial phase space',unit:'m · m/s',kind:'phase',series:[{key:'r',label:'r'},{key:'radialSpeed',label:'dr/dt'}]},
  {id:'sightline',label:'Apparent angular velocity',unit:'rad/s',series:[{key:'lineOfSightRate',label:'dφ/dt',color:C.blue}]},
@@ -132,11 +132,17 @@ export const view={graphs,closeups,
   s.line(map.x(a.x)-3,map.y(a.y)+3,map.x(a.x)+3,map.y(a.y)-3,'#141a24');
   if(f.breakdown){
    sectors(s,f,data,map);const x=map.x(b.x),y=map.y(b.y),r=g.relative,mag=q.r;
-   s.line(map.x(a.x),map.y(a.y),x,y,C.muted,1);label(s,'r',map.x((a.x+b.x)/2),map.y((a.y+b.y)/2)-12,C.muted);
+   s.line(map.x(a.x),map.y(a.y),x,y,C.muted,1);label(s,'r',map.x((a.x+b.x)/2)+24*r.y/mag,map.y((a.y+b.y)/2)+24*r.x/mag,C.muted);
    const factor=Math.min(25,s.w*.16/Math.max(q.speed,1)),v=values(f),nx=r.x/mag,ny=r.y/mag;
    const velocity=f.params.frame==='rotating'?{vx:v.vr,vy:v.vt}:r;
-   if(v.force>0)vector(s,x,y,-nx*45,ny*45,C.green,'Fᵣ');vector(s,x,y,velocity.vx*factor,-velocity.vy*factor,C.blue,'v');
-   if(s.w>460){vector(s,x,y,v.vr*nx*factor,-v.vr*ny*factor,C.amber,'vᵣ');vector(s,x,y,-v.vt*ny*factor,-v.vt*nx*factor,C.purple,'vₜ');}
+   if(v.force>0){s.arrow(x,y,x-nx*45,y+ny*45,C.green,2);label(s,'Fᵣ',x-nx*45-ny*20,y+ny*45-nx*20,C.green);}
+   const vx=x+velocity.vx*factor,vy=y-velocity.vy*factor;
+   s.arrow(x,y,vx,vy,C.blue,2);label(s,'v',vx+18,vy-22,C.blue);
+   if(s.w>460){
+    const rx=x+v.vr*nx*factor,ry=y-v.vr*ny*factor,tx=x-v.vt*ny*factor,ty=y-v.vt*nx*factor;
+    s.arrow(x,y,rx,ry,C.amber,2);label(s,'vᵣ',rx-ny*22,ry-nx*22,C.amber);
+    s.arrow(x,y,tx,ty,C.purple,2);label(s,'vₜ',tx-22,ty+18,C.purple);
+   }
   }
   caption(s,q.status!=='running'?'Close encounter · point-mass limit':data.done?'60 s forecast · brighter trail = elapsed':'Preparing paths · fixed full-orbit envelope');
  },

@@ -44,6 +44,12 @@ export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',
  let xmin=Math.min(...values.map(p=>p[xkey])),xmax=Math.max(...values.map(p=>p[xkey])),lo=Math.min(...values.map(p=>p[ykey])),hi=Math.max(...values.map(p=>p[ykey]));
  if(zero){lo=Math.min(0,lo);hi=Math.max(0,hi);}
  if(Number.isFinite(energy)){lo=Math.min(lo,energy);hi=Math.max(hi,energy);}
+ // A lone section crossing needs a visible neighbourhood, not a zero-width axis.
+ if(scatter){
+  const minX=Math.max(.1,Math.abs((xmin+xmax)/2)*.1),minY=Math.max(.1,Math.abs((lo+hi)/2)*.1);
+  if(xmax-xmin<minX){const centre=(xmin+xmax)/2;xmin=centre-minX/2;xmax=centre+minX/2;}
+  if(hi-lo<minY){const centre=(lo+hi)/2;lo=centre-minY/2;hi=centre+minY/2;}
+ }
  const span=Math.max(1e-9,hi-lo),xspan=Math.max(.01,xmax-xmin);lo-=span*.12;hi+=span*.12;
  const x=v=>left+(v-xmin)/xspan*(right-left),y=v=>bottom-(v-lo)/(hi-lo)*(bottom-top);
  s.line(left,top,left,bottom,C.grid);s.line(left,bottom,right,bottom,C.grid);

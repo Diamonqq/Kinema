@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {model} from '../../static/js/experiments/orbits/model.js';
 import {view,orbitBounds,equalTimeSectors,values} from '../../static/js/experiments/orbits/view.js';
-import {motionBatches,camera,tex,fmt} from '../../static/js/experiments/orbits/scene.js';
+import {motionBatches,camera,tex,fmt,plot} from '../../static/js/experiments/orbits/scene.js';
 const params=Object.fromEntries(model.params.map(p=>[p.key,p.value]));
 test('orbit manifest exactly matches physics descriptors, presets and every authored view target',()=>{
  const m=JSON.parse(fs.readFileSync(new URL('../../static/js/experiments/orbits/manifest.json',import.meta.url)));
@@ -40,4 +40,12 @@ test('rotating-frame Breakdown retains inertial velocity and swept-area physics 
  const sim=model.create({system:'lagrange',frame:'rotating'}),f={geometry:sim.geometry(),sample:sim.sample(),params:{...params,system:'lagrange',frame:'rotating'}};
  const v=values(f);assert.ok(v.vt>2);assert.ok(Math.hypot(f.geometry.relative.vx,f.geometry.relative.vy)<1e-10);
  assert.ok(Math.abs(f.sample.r*v.vt/2-f.sample.areaRate)<1e-12);
+});
+
+test('one Poincare crossing has centred axes with a visible minimum span (1e-10)',()=>{
+ const noop=()=>{},s={w:320,h:340,text:noop,line:noop,circle:noop};
+ const p={x:23.70,y:-1.35},b=plot(s,[p],{scatter:true});
+ assert.ok(b.xmax-b.xmin>=2.36);assert.ok(b.hi-b.lo>=.16);
+ assert.ok(Math.abs((b.xmin+b.xmax)/2-p.x)<1e-10);
+ assert.ok(Math.abs((b.lo+b.hi)/2-p.y)<1e-10);
 });

@@ -32,8 +32,17 @@ function curveFor(params){let state=curves.get(params);if(state)return state;
   state.points.push(...scatteringCurve(params,[grid[i]],{duration:60,dt:.2}));if(++i<grid.length)setTimeout(next,0);else state.done=true;
  }catch(e){state.error=e.message;state.done=true;}};setTimeout(next,0);return state;
 }
-function panel(s,rect,bounds){const [xmin,xmax,ymin,ymax]=bounds,pad=20,scale=Math.min((rect.w-2*pad)/Math.max(.01,xmax-xmin),(rect.h-2*pad)/Math.max(.01,ymax-ymin));
- return {x:v=>rect.x+rect.w/2+(v-(xmin+xmax)/2)*scale,y:v=>rect.y+rect.h/2-(v-(ymin+ymax)/2)*scale,scale};}
+export function comparisonPanels(s,rows){
+ const narrow=s.w<460,top=narrow?140:112,height=s.h-top-65,gap=38;
+ const rects=narrow?
+  [{x:5,y:top,w:s.w-10,h:(height-gap)/2},{x:5,y:top+(height+gap)/2,w:s.w-10,h:(height-gap)/2}]:
+  [{x:5,y:top,w:s.w/2-12,h:height},{x:s.w/2+7,y:top,w:s.w/2-12,h:height}];
+ const bounds=['lab','cm'].map(frame=>boundsFor(rows,frame));
+ const scale=Math.min(...rects.map((r,i)=>Math.min((r.w-40)/Math.max(.01,bounds[i][1]-bounds[i][0]),(r.h-40)/Math.max(.01,bounds[i][3]-bounds[i][2]))));
+ return rects.map((rect,i)=>{const [xmin,xmax,ymin,ymax]=bounds[i];return {rect,map:{
+  x:v=>rect.x+rect.w/2+(v-(xmin+xmax)/2)*scale,
+  y:v=>rect.y+rect.h/2-(v-(ymin+ymax)/2)*scale,scale}};});
+}
 function momentum(s,f,data){
  title(s,'Momentum adds head to tail');if(!data.done){s.text('Preparing the comparison…',s.w/2,s.h/2,C.muted,12);return;}
  const before=data.rows[0],after=data.rows.find(p=>p.sample.contactCount>0&&p.sample.separation>f.params.radius*1.15)||data.rows.find(p=>p.t>1&&p.sample.separation>=before.sample.separation)||data.rows.at(-1);
@@ -92,7 +101,7 @@ export const view={graphs,closeups,closeupAnchors:s=>chipAnchors(s,closeups.map(
   plot(s,points,{zero:cross,cursor:cross?null:{x:Math.abs(f.params.b),y:Math.abs(f.sample.scatteringAngle)}});
  },
  key:f=>f.closeup==='momentum'?'Blue p₁ · amber p₂ · green total P':f.closeup==='potential'?'Blue Ueff · amber relative E · white r':
-  f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?'Blue projectile · amber target · green force':'Blue projectile · amber target · dotted initial aim',
+  f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?'Blue projectile · amber target · green force':'Blue projectile · amber target · + CM',
  draw(s,f){
   if(s.h<200){const b=f.geometry.frames.lab,bounds=boundsFor([{geometry:f.geometry}],'lab'),map=camera(s,bounds,12,12);
    s.ctx.setLineDash([3,5]);s.line(map.x(b[0].x),map.y(b[0].y),map.x(b[1].x),map.y(b[0].y),C.muted);s.ctx.setLineDash([]);
@@ -110,11 +119,9 @@ export const view={graphs,closeups,closeupAnchors:s=>chipAnchors(s,closeups.map(
    if(!curve.done)s.text('Computing '+curve.points.length+' / '+curve.total,s.w/2,70,C.muted,11);return;
   }
   if(!data.done){s.text(data.error||'Preparing the fixed 60 s motion window…',s.w/2,s.h*.55,C.muted,s.w<380?11:13);return;}
-  const narrow=s.w<460,top=narrow?120:92,height=s.h-top-65,panes=narrow?
-   [{x:5,y:top,w:s.w-10,h:height/2-8},{x:5,y:top+height/2+8,w:s.w-10,h:height/2-8}]:
-   [{x:5,y:top,w:s.w/2-12,h:height},{x:s.w/2+7,y:top,w:s.w/2-12,h:height}];
+  const panes=comparisonPanels(s,data.rows);
   for(const [i,frame] of ['lab','cm'].entries()){
-   data.bounds??={};const rect=panes[i],bounds=data.bounds[frame]??=boundsFor(data.rows,frame),map=panel(s,rect,bounds),b=g.frames[frame];
+   const {rect,map}=panes[i],b=g.frames[frame];
    s.text(frame==='lab'?'Laboratory':'Centre of mass',rect.x+rect.w/2,rect.y-8,C.pale,12);
    const initial=data.rows[0].geometry.frames[frame],last=data.rows.at(-1).geometry.frames[frame];
    s.ctx.setLineDash([3,5]);s.line(map.x(initial[0].x),map.y(initial[0].y),map.x(initial[1].x),map.y(initial[0].y),C.grid);s.ctx.setLineDash([]);
@@ -126,7 +133,7 @@ export const view={graphs,closeups,closeupAnchors:s=>chipAnchors(s,closeups.map(
     const q=b[j],contact=['hard','soft'].includes(f.params.interaction)||['hard','soft'].includes(f.params.secondInteraction);
     s.circle(map.x(q.x),map.y(q.y),contact?Math.max(2,q.radius*map.scale):4,j?C.amber:C.blue);
    }
-   const cm=frame==='cm'?{x:0,y:0}:g.centreOfMass;s.line(map.x(cm.x)-3,map.y(cm.y),map.x(cm.x)+3,map.y(cm.y),C.green);
+   const cm=frame==='cm'?{x:0,y:0}:g.centreOfMass;s.line(map.x(cm.x)-3,map.y(cm.y),map.x(cm.x)+3,map.y(cm.y),C.green);s.line(map.x(cm.x),map.y(cm.y)-3,map.x(cm.x),map.y(cm.y)+3,C.green);
    if(f.breakdown){
     const q=b[0],z=b[1],scale=Math.min(30,rect.w*.18/Math.max(q.mass*Math.hypot(q.vx,q.vy),z.mass*Math.hypot(z.vx,z.vy),1));
     vector(s,map.x(q.x),map.y(q.y),q.mass*q.vx*scale,-q.mass*q.vy*scale,C.blue,'p₁');

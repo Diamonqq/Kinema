@@ -224,3 +224,7 @@ cached within that browser context. Use UTF-8 patch/file writes for scientific
 symbols; piping Unicode through a legacy PowerShell/Python stdin encoding can
 silently turn expected symbols into question marks. The parent browser runner is
 required here because Edge spawn is denied in this worker sandbox.
+
+A Poincare section with one crossing uses minimum centred axis spans rather than
+duplicate endpoint ticks. Breakdown labels occupy separate sides of the radial
+and tangential arrows; energy units appear once in the graph header.

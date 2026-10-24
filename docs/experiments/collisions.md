@@ -242,5 +242,9 @@ remain incomplete; the scattering helpers retain their separate bounded horizon.
 
 The rendered hard-sphere cross section uses a resolved 0.1R..0.9R impact band
 with 0.01R spacing and numerical encounters. A view-specific analytic check
-requires the plateau to match R?/4 within 0.001 m?; under-resolved grazing
+requires the plateau to match R²/4 within 0.001 m²; under-resolved grazing
 endpoints are excluded instead of displaying spurious curvature.
+
+Final visual polish uses one shared metres-to-pixels scale for both lab and CM
+frames, separate fixed header rows, and a green + CM marker explained in the key.
+The whole-motion bounds remain fixed during replay.

@@ -1300,7 +1300,7 @@
     },
     {
       "id": "energy",
-      "label": "Energy · K, U, E (J)",
+      "label": "Energy · K, U, E",
       "unit": "J",
       "kind": "custom",
       "series": [

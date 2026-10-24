@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {model,scatteringCurve} from '../../static/js/experiments/collisions/model.js';
-import {view,durationFor,scatteringGrid,sectionPoints} from '../../static/js/experiments/collisions/view.js';
+import {view,durationFor,scatteringGrid,sectionPoints,comparisonPanels} from '../../static/js/experiments/collisions/view.js';
 import {motionBatches,boundsFor,plot} from '../../static/js/experiments/orbits/scene.js';
 test('collision manifest matches every descriptor, preset, close-up and graph',()=>{
  const m=JSON.parse(fs.readFileSync(new URL('../../static/js/experiments/collisions/manifest.json',import.meta.url)));
@@ -41,4 +41,19 @@ test('displayed hard-sphere cross section is the numerical R2/4 plateau within 0
 test('cross-section axes include zero so sub-percent differentiation noise is not magnified into apparent physics',()=>{
  const noop=()=>{},s={w:320,h:170,text:noop,line:noop,ctx:{beginPath:noop,moveTo:noop,lineTo:noop,stroke:noop}};
  const b=plot(s,[{x:1,y:.2499},{x:2,y:.25}],{zero:true});assert.ok(b.lo<=0);assert.ok(b.hi-b.lo>=.25);
+});
+
+test('Lab and CM share one physical pixel scale and separate header rows at desktop and narrow widths (1e-10 px)',()=>{
+ let result;const p=model.presets.find(p=>p.id==='glancing').values;
+ for(const batch of motionBatches(model,p,{duration:durationFor(p)}))result=batch;
+ for(const w of [1280,320]){
+  const panels=comparisonPanels({w,h:460},result.rows);
+  assert.equal(panels[0].map.scale,panels[1].map.scale);assert.ok(panels[0].map.scale>0);
+  for(const [i,frame] of ['lab','cm'].entries())for(const row of result.rows)for(const b of row.geometry.frames[frame]){
+   const {rect,map}=panels[i];assert.ok(map.x(b.x)>=rect.x-1e-10&&map.x(b.x)<=rect.x+rect.w+1e-10);
+   assert.ok(map.y(b.y)>=rect.y-1e-10&&map.y(b.y)<=rect.y+rect.h+1e-10);
+  }
+  assert.ok(panels[0].rect.y>=112);
+  if(w===320)assert.ok(panels[1].rect.y-(panels[0].rect.y+panels[0].rect.h)>=38);
+ }
 });
