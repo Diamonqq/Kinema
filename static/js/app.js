@@ -157,7 +157,7 @@ function onKey(ev) {
   if (VIEW === 'skill') { if (!['TEXTAREA', 'INPUT'].includes(tag) && skillp.key(ev)) ev.preventDefault(); return; }
   if (ev.key === 'Escape') { $('#zoom').hidden = true; clearSelection(); }
   if (['TEXTAREA', 'INPUT', 'SELECT'].includes(tag)) return;
-  if (VIEW === 'teacher' && teacher?.thread?.mode==='simulation') return;
+  if (VIEW === 'teacher' && ['simulation','experiment'].includes(teacher?.thread?.mode)) return;
   if (VIEW === 'teacher') { if (artifact?.opened && document.activeElement?.closest('#problem-artifact') && tag !== 'BUTTON') stageKeys(ev); return; }
   if (VIEW !== 'problem') return;
   if (!$('#pane').inert && !document.activeElement?.closest('#problem-artifact')) {

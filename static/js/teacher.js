@@ -17,6 +17,7 @@ import { BookWorkspace } from './book_workspace.js';
 import { StudyWorkspace, studyChrome } from './study_workspace.js';
 import { mountLibraryGraphs } from './library_graphs.js';
 import { ChatStudyPane } from './chat_study_pane.js';
+import { Experiments } from './experiments/experiments.js';
 /* Kinema 1.11 — the continuing tutor: one conversation per course, Panel's chat and composer, the course/session
    sidebar and the tutor's own visual. The visual is the app's native stage (app.js stageHost), shown in the same
    artifact pane homework uses; it opens when the tutor shows something new and stays closed once you close it.
@@ -39,6 +40,7 @@ const ICON = {
   down: svg('0 0 24 24', '<path d="M12 5v14m-6-6 6 6 6-6"/>'),
   copy: svg('0 0 16 16', '<rect x="5.5" y="5.5" width="8" height="9" rx="1.5"/><path d="M3.5 11V3.5A1.5 1.5 0 0 1 5 2h6"/>'),
   plus: svg('0 0 20 20', '<path d="M10 4.5v11M4.5 10h11"/>'),
+  experiment: svg('0 0 20 20', '<path d="M7 2h6M8 2v5l-5 8a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-8V2M6 12h8"/><circle cx="9" cy="14" r=".6"/>'),
   bolt: svg('0 0 20 20', '<path d="M11.5 2 4.5 11h5l-1 7 7-10h-5Z"/>'),
   route: svg('0 0 20 20', '<circle cx="5" cy="15" r="1.8"/><circle cx="15" cy="5" r="1.8"/><path d="M6.8 15H12a2.5 2.5 0 0 0 0-5H8a2.5 2.5 0 0 1 0-5h5"/>'),
   book: svg('0 0 20 20', '<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H16v12H5.5A1.5 1.5 0 0 0 4 16.5Z"/><path d="M4 16.5A1.5 1.5 0 0 0 5.5 18H16"/>'),
@@ -57,7 +59,7 @@ const applyRead = v => { document.documentElement.style.setProperty('--read', St
 try { applyRead(readSize()); } catch { /* no storage: the default size */ }
 const PHASE = { starting: 'Starting', connecting: 'Connecting', thinking: 'Thinking', writing: 'Writing' };
 const OVERLAY = matchMedia('(max-width:900px)');   // the visual pane covers the chat (teacher.css)
-const PAGE_TITLE = { 'sim-lab': 'Simulation lab', daily: 'Daily problem', library: 'Library', path: 'Chapters', settings: 'Settings' };
+const PAGE_TITLE = { experiments:'Experiments', 'sim-lab': 'Simulation lab', daily: 'Daily problem', library: 'Library', path: 'Chapters', settings: 'Settings' };
 const day = ts => new Date(ts * 1000).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
 const inline = html => html.replace(/^<p>|<\/p>$/g, '');
 /* model replies: Kinema's mdlite plus the common markdown it lacks — a rule line (---, ***, ___) becomes a real <hr> and
@@ -112,6 +114,7 @@ export class Teacher {
           <button type="button" class="tv-row" data-act="path">${ICON.route}<span>Chapters</span></button>
           <button type="button" class="tv-row" data-act="library">${ICON.book}<span>Library</span></button>
           <button type="button" class="tv-row" data-act="sim-lab">${ICON.route}<span>Simulation lab</span></button>
+          <button type="button" class="tv-row" data-act="experiments">${ICON.experiment}<span>Experiments</span></button>
         </nav>
         <div class="tv-chat-heading"><span>Chats</span></div><label class="tv-chat-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="tv-search" placeholder="Search chats" aria-label="Search chats"></label>
         <nav class="tv-threads" id="tv-threads" aria-label="Chats"></nav>
@@ -164,6 +167,7 @@ export class Teacher {
       attach: $('#tv-attach'), send: $('#tv-send'), note: $('#tv-note'), dialog: $('#tv-dialog'), main: $('#tv-main'), page: $('#tv-page'), gallery: $('#tv-gallery'),
       study: $('#tv-study'), sp: $('#tv-study .tv-sp'), ask: $('#tv-ask'), fresh: $('#tv-new'), read: $('#tv-read'), readpop: $('#tv-readpop'), nav: $('#tv-nav'), tochat: $('#tv-tochat'), lesson: $('#tv-lesson'), about: $('#tv-about'), cm: $('#tv-cm'), toast: $('#tv-toast'), pathpage: $('#tv-pathpage'), composer: $('.tv-composer') };
     this.labSplitter=new LessonSplitter(this.host,$('#tv-visual'),{key:'kinema.simulationPaneRatio.v1',variable:'--sl-width',label:'Resize simulation pane',className:'sl-divider',breakpoint:900,defaultRatio:.4,enabled:()=>this.active&&!this.page&&!this.browsing&&this.thread?.mode==='simulation'&&this.artifact.opened&&!this.artifact.expanded&&!this.artifact.inline});
+    this.experiments=new Experiments(this);
     this.host.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b && this.host.contains(b)) this.act(b.dataset.act, b, e); });
     this.el.send.addEventListener('click', () => this.primary());
     $('#tv-search').addEventListener('input', e => {this.chatSearch=e.target.value;this.renderThreads();});
@@ -279,7 +283,7 @@ export class Teacher {
     if (name === 'retry-upload') { const f = this.pendingFiles.find(x => x.key === button.dataset.key); if (f?.file) { f.error = null; this.renderFiles(); this.syncSend(); this.uploadOne(f); } return; }
     if (name === 'unattach') { this.pendingFiles.filter(f => f.key === button.dataset.key).forEach(f => f.abort?.abort()); this.pendingFiles = this.pendingFiles.filter(f => f.key !== button.dataset.key); this.renderFiles(); this.saveDraft(); return this.syncSend(); }
     if (name === 'retry') return this.retry();
-    if (name === 'visual') { e?.preventDefault(); if(this.thread?.mode==='simulation'&&!this.artifact.sceneHost)return this.syncVisual(true); return this.artifact.open(!this.artifact.opened); }
+    if (name === 'visual') { e?.preventDefault(); if(['simulation','experiment'].includes(this.thread?.mode)&&!this.artifact.sceneHost)return this.syncVisual(true); return this.artifact.open(!this.artifact.opened); }
     if (name === 'visual-at') {
       this.visualAnchor = { thread: this.thread.id, artifact: this.thread.artifact?.id, mid: button.dataset.mid };
       this.renderMessages(false); this.artifact.open(true, false);
@@ -291,6 +295,7 @@ export class Teacher {
     if (name === 'lesson') return this.showLesson();
     if (name === 'about-clear') { this.attachStudy(false); this.renderAbout(); return this.el.input.focus(); }
     if (name === 'sim-lab') { this.closeDrawer(); return this.openSimulation(); }
+    if (name === 'experiments') { this.closeDrawer(); return this.openPage('experiments'); }
     if (name === 'daily' || name === 'library') { this.closeDrawer(); if (name === 'daily') this.saveDraft(); return this.openPage(name); }
     if (name === 'dialog-close') return this.el.dialog.close();
   }
@@ -303,6 +308,7 @@ export class Teacher {
     back.hidden = !problem;
     if (problem) back.innerHTML = this.book?.returnHTML(problem) || '';
     else back.innerHTML = '';
+    if(!this.page&&!this.studyShown&&t?.mode==='experiment'){back.hidden=false;back.innerHTML='<button type="button" class="exp-back" data-act="experiments" aria-label="Back to Experiments">←<span> Experiments</span></button>';}
     this.el.crumb.textContent = this.page ? (this.page==='path'?'':PAGE_TITLE[this.page]) : this.studyShown ? 'Chapters' : this.workspace?.manages(t) ? 'Chat' : t ? (t.label || t.title || 'Chat') : 'Chat';
     math(this.el.crumb);
   }
@@ -320,6 +326,7 @@ export class Teacher {
     this.el.page.querySelectorAll('[data-page]').forEach(p => { p.hidden = p.dataset.page !== name; });
     this.setCrumb(); this.renderStatus(); this.readMenu(false);
     if (name === 'path') this.renderPathPage(true);
+    if (name === 'experiments') this.experiments.paintGallery();
     this.d.onPage?.(name, true);
   }
   closePage(restore = true) {
@@ -466,7 +473,9 @@ export class Teacher {
     const row = t.topic_companion ? this.workspace.selected(t.topic_companion) : null;
     const topic = String(row?.title || t.lesson_entry?.title || '').trim();
     const line = (tag, key, text) => `<${tag}${key ? ` data-i18n="${key}"` : ''} dir="auto">${esc(text)}</${tag}>`;
-    const body = t.mode==='simulation'
+    const body = t.mode==='experiment'
+      ? line('h1','',t.experiment?.title||'Experiment')+line('p','','Change the setup, watch what happens, or ask about a step.')
+      : t.mode==='simulation'
       ? line('h1','','What would you like to simulate?')
       : t.book_problem
       ? line('h1', 'greet_problem_title', 'Where would you like to start?') + line('p', 'greet_problem_sub', 'Ask about the problem, or share your first step.')
@@ -509,7 +518,8 @@ export class Teacher {
     this.host.classList.remove('tv-is-empty');
     this.host.classList.toggle('tv-book-thread', !!t.book_problem);
     this.host.classList.toggle('tv-simulation-thread', t.mode==='simulation');
-    if(changed&&was?.mode==='simulation')this.quietly(()=>this.artifact.open(false,false));
+    this.host.classList.toggle('tv-experiment-thread', t.mode==='experiment');
+    if(changed&&['simulation','experiment'].includes(was?.mode))this.quietly(()=>this.artifact.open(false,false));
     if (changed) { this.partial = ''; this.phase = ''; this.pendingModel = null; this.restoreDraft(); this.aboutOff = store.get('ask') !== t.id; }
     const sig = x => x && JSON.stringify([x.revision, x.messages?.length, x.pending, x.status, x.error, x.artifact?.status, x.artifact?.revision, x.book_problem?.source_revision]);
     if (restore || changed || sig(t) !== sig(was)) this.renderMessages(restore || changed);
@@ -564,7 +574,7 @@ export class Teacher {
     this.el.read.title = `Reading size: ${Math.round(v * 100)}%`;
   }
   syncSection() {
-    const on = this.page || (this.studyShown ? 'path' : this.thread?.mode==='simulation'?'sim-lab':'chat');
+    const on = this.page || (this.studyShown ? 'path' : this.thread?.mode==='experiment'?'experiments':this.thread?.mode==='simulation'?'sim-lab':'chat');
     this.renderThreads();
     this.el.nav.querySelectorAll('[data-act]').forEach(b => { const sel = b.dataset.act === on; b.classList.toggle('on', sel); if (sel) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   }
@@ -579,8 +589,10 @@ export class Teacher {
     if (t.pending) parts.push(`<div class="amsg tv-pending" aria-live="polite"><div class="ahead">${byline(t.pending_choice || {}, true)}</div><div class="mdb">${this.pendingBody()}</div></div>`);
     if (t.error && !t.pending) parts.push(`<div class="tv-error" role="alert"><p>${esc(t.error)}</p>${this.canRetry() ? '<button type="button" class="tv-btn" data-act="retry">Try again</button>' : ''}</div>`);
     if (!msgs.length && !t.pending && !t.error) parts.push(this.greetingHTML());
+    if(t.mode==='experiment')parts.push('<button type="button" class="exp-reopen" data-act="visual" data-visual>Open experiment ↗</button>');
     this.artifact.parkInline(); this.book?.parkScene();
     this.el.stream.innerHTML = (this.libraryFolders?.returnHTML(t) || '') + this.workspace.html(t) + parts.join('');
+    this.experiments.updateReopen();
     this.book.syncScene();
     this.settleNew(t, msgs, restore);
     this.renderVisualCard();
@@ -640,7 +652,7 @@ export class Teacher {
     const src = (m.sources || []).filter(s => s && s.title && s.id !== 'morin' && !/\/api\/teacher\/sources\/morin(?:[?/]|$)/.test(String(s.url || '')));
     let text = m.text || '', more = typeof m.details === 'string' ? m.details.trim() : '', plan = m.reply_kind === 'plan';
     if (more) { text = `${text.trimEnd()}${String.fromCharCode(10, 10)}${more}`; more = ''; }
-    const details = '';
+    const details = m.experiment_chip&&!this.experiments.rejected.has(m.id) ? `<span class="exp-action-chip">${esc(m.experiment_chip)}</span>` : '';
     return `<div class="amsg" data-mid="${esc(m.id)}"><div class="ahead">${byline(m)}</div><div class="mdb">${reply(text)}</div>${details}${m.visual_note ? `<p class="tv-vnote">${esc(m.visual_note)}</p>` : ''}${src.length ? `<div class="srcrow">${src.map(s => this.sourceChip(s.url, s.title + (s.page != null ? ' · p. ' + s.page : ''))).join('')}</div>` : ''}${text ? this.copyButton(m) : ''}</div>`;
   }
   copyButton(m) { return `<button type="button" class="tv-copy" data-act="copy" data-id="${esc(m.id)}" aria-label="Copy message" title="Copy message">${ICON.copy}</button>`; }
@@ -745,7 +757,7 @@ export class Teacher {
       const study_context = this.takeScope(text) || this.messageContext() || undefined;   // omitted keeps the thread's chapter scope; only an explicit null would clear it
       const lesson_reference_id = readingReference || (this.thread.topic_companion ? this.workspace.selected(this.thread.topic_companion)?.id : undefined);
       const book_solution_message_id = this.companion.solutionMessageId?.();
-      const t = await this.post(this.actPath(), { action: 'message', revision: this.thread.revision, request_id, text, attachment_ids: files.map(f => f.id), visual_state: readingVisual, book_visual_state: readingBookVisual, lesson_reference_id, book_solution_message_id, study_context, ...this.screenContext(), ...(readingContext ? { visible_step: readingContext } : {}) });
+      const t = await this.post(this.actPath(), { action: 'message', revision: this.thread.revision, request_id, text, attachment_ids: files.map(f => f.id), visual_state: readingVisual, experiment_state:this.experiments.snapshot(), book_visual_state: readingBookVisual, lesson_reference_id, book_solution_message_id, study_context, ...this.screenContext(), ...(readingContext ? { visible_step: readingContext } : {}) });
       store.set(draftKey, null); if(stillHere()){this.stepReference=null;this.refs?.render();} this.draftFiles?.delete(draftKey); this.upsertSummary(t); this.busy = false;
       if(readingDraftKey&&readingDraftKey!==draftKey){store.set(readingDraftKey,null);this.draftFiles?.delete(readingDraftKey);}
       if (!stillHere()) {
@@ -889,6 +901,7 @@ export class Teacher {
      not acted on) opens the pane unless the server says the student closed this same revision; otherwise the student's
      own open/closed choice and time are kept. */
   async syncVisual(reentered = false) {
+    if(this.thread?.mode==='experiment')return this.experiments.sync(this.thread,reentered);
     if (this.workspace?.active()) {this.workspace.sync();return;}
     if(this.thread?.mode==='simulation'&&!this.page&&!this.previewing){this.renderVisualCard();return this.d.syncLab?.(this.thread,reentered);}
     if (this.previewing) return this.renderVisualCard();   // the library preview holds the stage until the gallery closes
@@ -948,6 +961,8 @@ export class Teacher {
   /* ProblemArtifact.onChange: remember the student's own open/close (and where the motion was) and tell the server */
   visualChanged(open) {
     this.labSplitter?.queue();
+    this.experiments?.visualChanged(open);
+    if(this.thread?.mode==='experiment')return;
     if(this.thread?.mode==='simulation'){this.markCard(open);return;}
     if (this.active && this.companion?.expanded) this.el.main.inert = true;
     if(this.workspace?.active())return;
@@ -1003,6 +1018,7 @@ export class Teacher {
     this.el.stream.querySelectorAll('.tv-card-slot .tv-inline-reopen').forEach(b => b.hidden = open);
   }
   renderVisualCard() {
+    if(this.thread?.mode==='experiment'){this.experiments.updateReopen();return;}
     if(this.workspace?.active()) return;
     if(this.thread?.mode==='simulation'){
       if(this.page||this.browsing||this.previewing)return;

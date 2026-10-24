@@ -1,0 +1,994 @@
+{
+  "id": "coupled-oscillators",
+  "title": "Coupled oscillators",
+  "group": "Mechanics",
+  "description": "Two masses, three springs. Watch energy trade places, isolate a mode, or drive a resonance.",
+  "params": [
+    {
+      "key": "n",
+      "label": "Masses",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "value": 2,
+      "unit": "",
+      "group": "Chain"
+    },
+    {
+      "key": "ends",
+      "label": "Ends",
+      "value": "walls",
+      "options": [
+        {
+          "value": "walls",
+          "label": "Two walls"
+        },
+        {
+          "value": "free",
+          "label": "Free ends"
+        },
+        {
+          "value": "left",
+          "label": "Left wall"
+        },
+        {
+          "value": "right",
+          "label": "Right wall"
+        }
+      ],
+      "group": "Chain"
+    },
+    {
+      "key": "method",
+      "label": "Solution",
+      "value": "modes",
+      "options": [
+        {
+          "value": "modes",
+          "label": "Normal modes"
+        },
+        {
+          "value": "numerical",
+          "label": "Numerical"
+        }
+      ],
+      "group": "Chain"
+    },
+    {
+      "key": "m1",
+      "label": "Mass 1",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m2",
+      "label": "Mass 2",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m3",
+      "label": "Mass 3",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m4",
+      "label": "Mass 4",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m5",
+      "label": "Mass 5",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m6",
+      "label": "Mass 6",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m7",
+      "label": "Mass 7",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m8",
+      "label": "Mass 8",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m9",
+      "label": "Mass 9",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "m10",
+      "label": "Mass 10",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "unit": "kg",
+      "group": "Masses"
+    },
+    {
+      "key": "k1",
+      "label": "Spring 1",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k2",
+      "label": "Spring 2",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 2,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k3",
+      "label": "Spring 3",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k4",
+      "label": "Spring 4",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k5",
+      "label": "Spring 5",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k6",
+      "label": "Spring 6",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k7",
+      "label": "Spring 7",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k8",
+      "label": "Spring 8",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k9",
+      "label": "Spring 9",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k10",
+      "label": "Spring 10",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "k11",
+      "label": "Spring 11",
+      "min": 0.1,
+      "max": 100,
+      "step": 0.1,
+      "value": 20,
+      "unit": "N/m",
+      "group": "Springs"
+    },
+    {
+      "key": "gamma",
+      "label": "Damping rate",
+      "min": 0,
+      "max": 2,
+      "step": 0.01,
+      "value": 0,
+      "unit": "s⁻¹",
+      "group": "Damping & drive"
+    },
+    {
+      "key": "force",
+      "label": "Drive amplitude",
+      "min": 0,
+      "max": 5,
+      "step": 0.01,
+      "value": 0,
+      "unit": "N",
+      "group": "Damping & drive"
+    },
+    {
+      "key": "frequency",
+      "label": "Drive frequency",
+      "min": 0.1,
+      "max": 20,
+      "step": 0.01,
+      "value": 4.47,
+      "unit": "rad/s",
+      "group": "Damping & drive"
+    },
+    {
+      "key": "modeA",
+      "label": "First mode",
+      "value": 0,
+      "options": [
+        {
+          "value": 0,
+          "label": "Manual"
+        },
+        {
+          "value": 1,
+          "label": "Mode 1"
+        },
+        {
+          "value": 2,
+          "label": "Mode 2"
+        },
+        {
+          "value": 3,
+          "label": "Mode 3"
+        },
+        {
+          "value": 4,
+          "label": "Mode 4"
+        },
+        {
+          "value": 5,
+          "label": "Mode 5"
+        },
+        {
+          "value": 6,
+          "label": "Mode 6"
+        },
+        {
+          "value": 7,
+          "label": "Mode 7"
+        },
+        {
+          "value": 8,
+          "label": "Mode 8"
+        },
+        {
+          "value": 9,
+          "label": "Mode 9"
+        },
+        {
+          "value": 10,
+          "label": "Mode 10"
+        }
+      ],
+      "group": "Modes"
+    },
+    {
+      "key": "amplitudeA",
+      "label": "First amplitude",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0.15,
+      "unit": "m",
+      "group": "Modes"
+    },
+    {
+      "key": "modeB",
+      "label": "Second mode",
+      "value": 0,
+      "options": [
+        {
+          "value": 0,
+          "label": "None"
+        },
+        {
+          "value": 1,
+          "label": "Mode 1"
+        },
+        {
+          "value": 2,
+          "label": "Mode 2"
+        },
+        {
+          "value": 3,
+          "label": "Mode 3"
+        },
+        {
+          "value": 4,
+          "label": "Mode 4"
+        },
+        {
+          "value": 5,
+          "label": "Mode 5"
+        },
+        {
+          "value": 6,
+          "label": "Mode 6"
+        },
+        {
+          "value": 7,
+          "label": "Mode 7"
+        },
+        {
+          "value": 8,
+          "label": "Mode 8"
+        },
+        {
+          "value": 9,
+          "label": "Mode 9"
+        },
+        {
+          "value": 10,
+          "label": "Mode 10"
+        }
+      ],
+      "group": "Modes"
+    },
+    {
+      "key": "amplitudeB",
+      "label": "Second amplitude",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0.15,
+      "unit": "m",
+      "group": "Modes"
+    },
+    {
+      "key": "x1",
+      "label": "Displacement 1",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0.2,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x2",
+      "label": "Displacement 2",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x3",
+      "label": "Displacement 3",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x4",
+      "label": "Displacement 4",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x5",
+      "label": "Displacement 5",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x6",
+      "label": "Displacement 6",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x7",
+      "label": "Displacement 7",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x8",
+      "label": "Displacement 8",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x9",
+      "label": "Displacement 9",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "x10",
+      "label": "Displacement 10",
+      "min": -0.3,
+      "max": 0.3,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m",
+      "group": "Initial state"
+    },
+    {
+      "key": "v1",
+      "label": "Velocity 1",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v2",
+      "label": "Velocity 2",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v3",
+      "label": "Velocity 3",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v4",
+      "label": "Velocity 4",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v5",
+      "label": "Velocity 5",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v6",
+      "label": "Velocity 6",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v7",
+      "label": "Velocity 7",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v8",
+      "label": "Velocity 8",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v9",
+      "label": "Velocity 9",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    },
+    {
+      "key": "v10",
+      "label": "Velocity 10",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "value": 0,
+      "unit": "m/s",
+      "group": "Initial state"
+    }
+  ],
+  "presets": [
+    {
+      "id": "mode1",
+      "label": "Mode 1",
+      "values": {
+        "n": 2,
+        "ends": "walls",
+        "method": "modes",
+        "m1": 1,
+        "m2": 1,
+        "m3": 1,
+        "m4": 1,
+        "m5": 1,
+        "m6": 1,
+        "m7": 1,
+        "m8": 1,
+        "m9": 1,
+        "m10": 1,
+        "k1": 20,
+        "k2": 2,
+        "k3": 20,
+        "k4": 20,
+        "k5": 20,
+        "k6": 20,
+        "k7": 20,
+        "k8": 20,
+        "k9": 20,
+        "k10": 20,
+        "k11": 20,
+        "gamma": 0,
+        "force": 0,
+        "frequency": 4.47,
+        "modeA": 1,
+        "amplitudeA": 0.2,
+        "modeB": 0,
+        "amplitudeB": 0.15,
+        "x1": 0.2,
+        "x2": 0,
+        "x3": 0,
+        "x4": 0,
+        "x5": 0,
+        "x6": 0,
+        "x7": 0,
+        "x8": 0,
+        "x9": 0,
+        "x10": 0,
+        "v1": 0,
+        "v2": 0,
+        "v3": 0,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v7": 0,
+        "v8": 0,
+        "v9": 0,
+        "v10": 0
+      },
+      "note": "Together: the middle spring keeps its length."
+    },
+    {
+      "id": "mode2",
+      "label": "Mode 2",
+      "values": {
+        "n": 2,
+        "ends": "walls",
+        "method": "modes",
+        "m1": 1,
+        "m2": 1,
+        "m3": 1,
+        "m4": 1,
+        "m5": 1,
+        "m6": 1,
+        "m7": 1,
+        "m8": 1,
+        "m9": 1,
+        "m10": 1,
+        "k1": 20,
+        "k2": 2,
+        "k3": 20,
+        "k4": 20,
+        "k5": 20,
+        "k6": 20,
+        "k7": 20,
+        "k8": 20,
+        "k9": 20,
+        "k10": 20,
+        "k11": 20,
+        "gamma": 0,
+        "force": 0,
+        "frequency": 4.47,
+        "modeA": 2,
+        "amplitudeA": 0.2,
+        "modeB": 0,
+        "amplitudeB": 0.15,
+        "x1": 0.2,
+        "x2": 0,
+        "x3": 0,
+        "x4": 0,
+        "x5": 0,
+        "x6": 0,
+        "x7": 0,
+        "x8": 0,
+        "x9": 0,
+        "x10": 0,
+        "v1": 0,
+        "v2": 0,
+        "v3": 0,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v7": 0,
+        "v8": 0,
+        "v9": 0,
+        "v10": 0
+      },
+      "note": "Opposite motion stretches the middle spring."
+    },
+    {
+      "id": "beats",
+      "label": "Beats",
+      "values": {
+        "n": 2,
+        "ends": "walls",
+        "method": "modes",
+        "m1": 1,
+        "m2": 1,
+        "m3": 1,
+        "m4": 1,
+        "m5": 1,
+        "m6": 1,
+        "m7": 1,
+        "m8": 1,
+        "m9": 1,
+        "m10": 1,
+        "k1": 20,
+        "k2": 2,
+        "k3": 20,
+        "k4": 20,
+        "k5": 20,
+        "k6": 20,
+        "k7": 20,
+        "k8": 20,
+        "k9": 20,
+        "k10": 20,
+        "k11": 20,
+        "gamma": 0,
+        "force": 0,
+        "frequency": 4.47,
+        "modeA": 0,
+        "amplitudeA": 0.15,
+        "modeB": 0,
+        "amplitudeB": 0.15,
+        "x1": 0.24,
+        "x2": 0,
+        "x3": 0,
+        "x4": 0,
+        "x5": 0,
+        "x6": 0,
+        "x7": 0,
+        "x8": 0,
+        "x9": 0,
+        "x10": 0,
+        "v1": 0,
+        "v2": 0,
+        "v3": 0,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v7": 0,
+        "v8": 0,
+        "v9": 0,
+        "v10": 0
+      },
+      "note": "Energy passes between two nearly equal-frequency modes."
+    },
+    {
+      "id": "driven",
+      "label": "Driven resonance",
+      "values": {
+        "n": 2,
+        "ends": "walls",
+        "method": "modes",
+        "m1": 1,
+        "m2": 1,
+        "m3": 1,
+        "m4": 1,
+        "m5": 1,
+        "m6": 1,
+        "m7": 1,
+        "m8": 1,
+        "m9": 1,
+        "m10": 1,
+        "k1": 20,
+        "k2": 2,
+        "k3": 20,
+        "k4": 20,
+        "k5": 20,
+        "k6": 20,
+        "k7": 20,
+        "k8": 20,
+        "k9": 20,
+        "k10": 20,
+        "k11": 20,
+        "gamma": 0.2,
+        "force": 0.12,
+        "frequency": 4.47,
+        "modeA": 0,
+        "amplitudeA": 0.15,
+        "modeB": 0,
+        "amplitudeB": 0.15,
+        "x1": 0,
+        "x2": 0,
+        "x3": 0,
+        "x4": 0,
+        "x5": 0,
+        "x6": 0,
+        "x7": 0,
+        "x8": 0,
+        "x9": 0,
+        "x10": 0,
+        "v1": 0,
+        "v2": 0,
+        "v3": 0,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v7": 0,
+        "v8": 0,
+        "v9": 0,
+        "v10": 0
+      },
+      "note": "A periodic push near the lower natural frequency."
+    },
+    {
+      "id": "damped",
+      "label": "Damped",
+      "values": {
+        "n": 2,
+        "ends": "walls",
+        "method": "modes",
+        "m1": 1,
+        "m2": 1,
+        "m3": 1,
+        "m4": 1,
+        "m5": 1,
+        "m6": 1,
+        "m7": 1,
+        "m8": 1,
+        "m9": 1,
+        "m10": 1,
+        "k1": 20,
+        "k2": 2,
+        "k3": 20,
+        "k4": 20,
+        "k5": 20,
+        "k6": 20,
+        "k7": 20,
+        "k8": 20,
+        "k9": 20,
+        "k10": 20,
+        "k11": 20,
+        "gamma": 0.25,
+        "force": 0,
+        "frequency": 4.47,
+        "modeA": 0,
+        "amplitudeA": 0.15,
+        "modeB": 0,
+        "amplitudeB": 0.15,
+        "x1": 0.24,
+        "x2": 0,
+        "x3": 0,
+        "x4": 0,
+        "x5": 0,
+        "x6": 0,
+        "x7": 0,
+        "x8": 0,
+        "x9": 0,
+        "x10": 0,
+        "v1": 0,
+        "v2": 0,
+        "v3": 0,
+        "v4": 0,
+        "v5": 0,
+        "v6": 0,
+        "v7": 0,
+        "v8": 0,
+        "v9": 0,
+        "v10": 0
+      },
+      "note": "Damping removes mechanical energy."
+    }
+  ],
+  "closeups": [
+    {
+      "id": "spring",
+      "label": "Zoom · middle spring"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "motion",
+      "label": "Displacements",
+      "unit": "m",
+      "series": [
+        {
+          "key": "x1",
+          "label": "x₁",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "x2",
+          "label": "x₂",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "modes",
+      "label": "Mode amplitudes",
+      "unit": "√kg m",
+      "series": [
+        {
+          "key": "q1",
+          "label": "q₁",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "q2",
+          "label": "q₂",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy",
+      "unit": "J",
+      "series": [
+        {
+          "key": "energy",
+          "label": "Total",
+          "color": "#b0c9ad"
+        },
+        {
+          "key": "kinetic",
+          "label": "Kinetic",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "potential",
+          "label": "Spring",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "phase",
+      "label": "Phase space",
+      "unit": "m, m/s",
+      "kind": "phase",
+      "series": [
+        {
+          "key": "x1",
+          "label": "x₁"
+        },
+        {
+          "key": "v1",
+          "label": "v₁"
+        }
+      ]
+    }
+  ]
+}

@@ -24,7 +24,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, JSONResponse
 
 from . import (chapter_scope, curriculum, jobs, learn_api, learner, model_choices, providers, study_guides, teacher_content as content,
-               teacher_visuals as visuals, topic_companion, tutor, visual_controls, visual_library)
+               teacher_visuals as visuals, topic_companion, tutor, visual_controls, visual_library, experiments)
 
 router = APIRouter()
 CONTEXT_VERSION = 5
@@ -169,7 +169,7 @@ def _view(tid: str, course_id: str, t: dict) -> dict:
     if artifact and artifact["status"] == "preparing" and not _job_running(build.get("job")):
         artifact.update(status="error", error="Preparing this view was interrupted. Ask again to rebuild it.")
     return {"id": tid, "course_id": course_id, "title": t["title"], "label": _label(t), "revision": t["revision"], "status": t["status"],
-            "mode": t.get('mode'), "lab_legacy": t.get('lab_legacy'),
+            "mode": t.get('mode'), "lab_legacy": t.get('lab_legacy'), "experiment": t.get('experiment'),
             "pinned": bool(t.get("pinned")), "notify": bool(t.get("notify")),
             "fresh_start": bool(t.get("fresh_start") and not any(m.get("role") == "user" for m in t["messages"])),
             "session": t["session"], "messages": t["messages"], "pending": pending, "error": error,
@@ -192,6 +192,8 @@ def _label(t: dict) -> str:
     """The chat's name in the sidebar: its first question, else a neutral name; never a session number."""
     if (t.get("name") or "").strip():
         return t["name"].strip()
+    if t.get('mode') == 'experiment':
+        return t['title']
     if t.get('book_problem_id') or (t.get("scoped_entry") and chapter_scope.canonical(t.get("study_context"))):
         return t["title"]
     first = next((m["text"] for m in t["messages"] if m["role"] == "user" and (m.get("text") or "").strip()), "")
@@ -1376,6 +1378,8 @@ def _reply(tid: str, token: str, choice: dict, reason: str = "message"):
                     return {"thread_id": tid, "dropped": "stale"}
                 if t.get('mode') == 'simulation':
                     return _lab_reply(conn, tid, course_id, t, token, choice, job)
+                if t.get('mode') == 'experiment':
+                    return _experiment_reply(conn, tid, course_id, t, token, choice, job)
                 c = content.course(course_id)
                 ctx, images = _context(conn, tid, course_id, t, reason)
             job.phase = "thinking"
@@ -1863,6 +1867,8 @@ async def create_thread(request: Request):
                 raise ValueError("A fresh conversation starts without a problem. Use fresh: true or false.")
             if body.get('mode') == 'simulation':
                 return _create_lab_thread(conn, body, rid, c)
+            if body.get('mode') == 'experiment':
+                return _create_experiment_thread(conn, body, rid, c)
             raw_scope = body.get("study_context")
             scope = None
             book_id=body.get('book_problem_id')
@@ -2127,6 +2133,13 @@ async def act(tid: str, request: Request):
                 state = visuals.sanitize_state(body.get("visual_state"), t.get("artifact"))
                 if state:
                     t["visual_state"] = state
+                if t.get('mode') == 'experiment':
+                    if body.get('study_context') or body.get('lesson_reference_id'):
+                        raise ValueError('Experiment questions stay in this experiment.')
+                    manifest = experiments.get(t['experiment']['id'])
+                    if not manifest:
+                        raise ValueError('This experiment is unavailable. Return to Experiments.')
+                    t['experiment']['state'] = experiments.snapshot(manifest, body.get('experiment_state'), t['experiment']['state'])
                 if t.get('book_problem_id'):
                     from . import book_catalog
                     t['book_visual_state']=book_catalog.visual_state(t['book_problem_id'],body.get('book_visual_state'))
@@ -2165,7 +2178,7 @@ async def act(tid: str, request: Request):
                     _sync_guide(conn, t, ref, um)
                 elif ref and ref["kind"] == "chapter":
                     _sync_topic(t, ref, um)
-                if t.get('mode') != 'simulation':
+                if t.get('mode') not in ('simulation', 'experiment'):
                     _mark_assisted(conn, t, ref, f"teacher:{tid}:{um['id']}")
                 _begin_reply(t, tid, token, "message")
             elif action == "study_context":
@@ -2217,6 +2230,93 @@ async def act(tid: str, request: Request):
         except (ValueError, KeyError, TypeError) as e:
             conn.rollback()
             return _bad(str(e))
+
+
+@router.get('/api/experiments')
+def experiment_catalog():
+    return {'experiments': experiments.catalog()}
+
+
+@router.put('/api/teacher/threads/{tid}/experiment')
+async def save_experiment(tid: str, request: Request):
+    body = await request.json()
+    with closing(learn_api._db()) as conn:
+        conn.execute('BEGIN IMMEDIATE')
+        loaded = _load(conn, tid)
+        if not loaded or loaded[1].get('mode') != 'experiment':
+            return _bad('This experiment conversation is unavailable.', 404)
+        course_id, t = loaded
+        if body.get('revision') != t['revision'] or _job_running(t.get('pending')):
+            return _conflict(tid, course_id, t)
+        try:
+            manifest = experiments.get(t['experiment']['id'])
+            if not manifest:
+                raise ValueError('This experiment is unavailable.')
+            t['experiment']['state'] = experiments.snapshot(manifest, body.get('state'), t['experiment']['state'])
+        except (ValueError, KeyError, TypeError) as exc:
+            return _bad(str(exc))
+        _save(conn, tid, t, bump=False)
+        conn.commit()
+        return {'ok': True}
+
+
+def _create_experiment_thread(conn, body, request_id, course):
+    manifest = experiments.get(body.get('experiment_id'))
+    if not manifest or body.get('problem_id') or body.get('study_context') or body.get('book_problem_id'):
+        raise ValueError('Choose an available experiment without a lesson or problem scope.')
+    chosen = None
+    if body.get('resume') is True:
+        for tid, raw in conn.execute('SELECT id,state FROM teacher_threads WHERE course_id=? ORDER BY opened_ts DESC', (course['id'],)):
+            t = json.loads(raw)
+            if t.get('mode') == 'experiment' and (t.get('experiment') or {}).get('id') == manifest['id']:
+                chosen = tid, t
+                break
+    if chosen:
+        tid, t = chosen
+    else:
+        tid = 't' + uuid.uuid4().hex[:11]
+        t = _new_state(manifest['title'])
+        t.update(mode='experiment', fresh_start=False, artifact=None, revision=1,
+                 experiment={'id': manifest['id'], 'title': manifest['title'], 'state': experiments.initial(manifest)})
+        now = time.time()
+        conn.execute('INSERT INTO teacher_threads VALUES(?,?,?,?,?,?)', (tid, course['id'], json.dumps(t), now, now, now))
+    conn.execute('UPDATE teacher_threads SET opened_ts=? WHERE id=?', (time.time(), tid))
+    conn.execute('INSERT INTO teacher_requests VALUES(?,?)', (request_id, tid))
+    conn.commit()
+    return _view(tid, course['id'], t)
+
+
+def _experiment_reply(conn, tid, course_id, t, token, choice, job):
+    manifest = experiments.get(t['experiment']['id'])
+    if not manifest:
+        raise providers.ProviderError('This experiment is unavailable. Return to Experiments.')
+    messages = t['messages'][-HISTORY:]
+    latest = next(m for m in reversed(messages) if m['role'] == 'user')
+    attached, images = [], []
+    for aid in latest.get('attachment_ids', [])[:content.MAX_FILES]:
+        a = content.attachment(conn, aid)
+        if a:
+            attached.append({'name': a['name'], 'kind': a['kind'], 'text': (a.get('text') or '')[:content.ATTACH_TEXT_LIMIT]})
+            if a['kind'] == 'image':
+                images.append(str(content.attachment_file(learn_api._data, a)))
+    result, meta = experiments.run_reply(choice, manifest, t['experiment']['state'],
+        [{'role': m['role'], 'text': m['text']} for m in messages], job, images, attached)
+    conn.execute('BEGIN IMMEDIATE')
+    loaded = _load(conn, tid)
+    if job.cancel.is_set() or not loaded or loaded[1].get('reply_token') != token or loaded[1].get('pending') != job.id:
+        conn.rollback()
+        return {'thread_id': tid, 'dropped': 'cancelled' if job.cancel.is_set() else 'stale'}
+    current = loaded[1]
+    action = result.get('action')
+    if action:
+        current['experiment']['state'] = experiments.apply(manifest, current['experiment']['state'], action)
+    _msg(current, 'assistant', result['reply'], 'chat', model=choice['model'], effort=choice['effort'], speed=choice['speed'],
+         context_usage=model_choices.context_usage(choice, meta), experiment_action=action,
+         experiment_chip=experiments.chip(manifest, action) if action else None)
+    current.update(pending=None, reply_token=None, error=None, fresh_start=False)
+    _save(conn, tid, current)
+    conn.commit()
+    return {'thread_id': tid}
 
 
 def _create_lab_thread(conn, body, request_id, course):

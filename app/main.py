@@ -37,7 +37,7 @@ from fastapi.staticfiles import StaticFiles
 from . import chapter_map, library_problems, course_cards, curriculum, daily, daily_visuals, dictation, jobs, learn_api, learner, notes, providers, registry, reminder, scenes, session, study, study_guides, tasks, teacher, tutor, visual_library, workspace
 from . import library_folders, screenshots_api, sim_lab
 
-VERSION = "1.49.0"
+VERSION = "1.50.0"
 # Windows registry associations can override WebP with text/plain. These are images.
 mimetypes.add_type('image/webp', '.webp')
 ROOT = Path(__file__).resolve().parents[1]

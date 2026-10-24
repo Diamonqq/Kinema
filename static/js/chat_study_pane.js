@@ -4,7 +4,7 @@ import {LessonSplitter} from './lesson_splitter.js';
 
 const read=id=>{try{return JSON.parse(localStorage.getItem('kinema.chatStudy.'+id))||{}}catch{return {}}};
 const rows=sheet=>(sheet?.sections||[]).flatMap(s=>[s,...(s.subsections||[])]);
-export const plainChat=t=>!!t&&!t.study_context&&!t.book_problem&&!t.topic_companion&&t.mode!=='simulation';
+export const plainChat=t=>!!t&&!t.study_context&&!t.book_problem&&!t.topic_companion&&!['simulation','experiment'].includes(t.mode);
 export const formulaParts=row=>{
  const explicit=(row?.lesson?.parts||[]).filter(p=>['relations','symbols'].includes(p.id));
  if(explicit.length)return explicit;
