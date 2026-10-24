@@ -77,3 +77,13 @@ test('f label sits past its own tip away from N, and the grip zoom names only wh
  const banked=model.presets.find(p=>p.id==='banked').values,bi=model.create(banked),g={params:banked,instance:bi,sample:bi.sample(),geometry:bi.geometry(),t:0,closeup:'grip',breakdown:false};
  tips.length=0;view.draw(s,g);assert.equal(tips.length,0);assert.equal(view.key(g),'Radius: μN');
 });
+
+test('Breakdown panel titles say which state each shows, at 1280 and 320 widths',()=>{
+ const params=Object.fromEntries(model.params.map(p=>[p.key,p.value])),instance=model.create(params);
+ const ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})});
+ for(const w of [1000,320]){
+  const texts=[],s={w,h:w<440?685:440,ctx,labels:[],line(){},circle(){},arrow(){},text(t){texts.push(t);}};
+  view.draw(s,{params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:true});
+  assert.ok(texts.includes('In the corner')&&texts.includes('Now'),w);assert.ok(!texts.includes('Corner cross-section')&&!texts.includes('Friction circle'),w);
+ }
+});

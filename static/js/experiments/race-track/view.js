@@ -97,10 +97,10 @@ export const view={graphs,closeups,
    }else if(f.closeup==='corner'){
     s.text('Bank cross-section · looking forward',s.w/2,49,muted,narrow?10:12);bank(s,f,{x:18,y:65,w:s.w-36,h:s.h-130},true);
    }else if(narrow){
-    s.text('Corner cross-section',s.w/2,26,muted,11);bank(s,f,{x:6,y:38,w:s.w-12,h:160},true);
-    s.text('Friction circle',s.w/2,226,muted,11);grip(s,f,{x:35,y:251,w:s.w-70,h:90});
+    s.text('In the corner',s.w/2,26,muted,11);bank(s,f,{x:6,y:38,w:s.w-12,h:160},true);
+    s.text('Now',s.w/2,226,muted,11);grip(s,f,{x:35,y:251,w:s.w-70,h:90});
    }else{
-    s.text('Corner cross-section',s.w*.27,36,muted,12);s.text('Friction circle',s.w*.76,36,muted,12);
+    s.text('In the corner',s.w*.27,36,muted,12);s.text('Now',s.w*.76,36,muted,12);
     bank(s,f,{x:10,y:54,w:s.w*.52,h:s.h-184},true);grip(s,f,{x:s.w*.54,y:54,w:s.w*.42,h:s.h-184});
    }
    return;

@@ -111,3 +111,22 @@ test('narrow launch title sits below the button row, and mg takes the spot besid
  view.draw(s(320),f('angle'));assert.ok(labels.find(l=>l.text==='Launch components').y>=60);
  labels.length=0;view.draw(s(1000),f('angle'));assert.ok(labels.find(l=>l.text==='Launch components').y<=45);
 });
+
+test('apex zoom draws F_D at the mg scale, labels it at its tip, names drag in the caption, and omits it in vacuum',()=>{
+ const run=values=>{
+  const instance=model.create(values),labels=[],arrows=[],ctx=new Proxy({measureText(t){return {width:t.length*6};}}, {get:(o,k)=>k in o?o[k]:(()=>{})});
+  const s={w:1000,h:600,ctx,labels,line(){},circle(){},arrow(x,y,tx,ty){arrows.push([x,y,tx,ty]);},text(t,x,y){labels.push({text:t,x,y});}};
+  view.draw(s,{params:values,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'apex',breakdown:false});
+  return {labels,arrows};
+ };
+ const p=preview(params),ratio=Math.abs(p.apexDrag)/p.apexWeight,r=run(params);
+ const len=a=>Math.hypot(a[2]-a[0],a[3]-a[1]),fd=r.labels.find(l=>l.text==='F_D');
+ assert.ok(fd,'F_D label');assert.ok(ratio>.1);
+ const arrows=r.arrows.filter(a=>Math.abs(a[3]-a[1])<1e-9),mg=r.arrows.find(a=>Math.abs(a[2]-a[0])<1e-9);
+ const drag=arrows.find(a=>a[2]<a[0]);assert.ok(drag&&mg);
+ assert.ok(Math.abs(len(drag)/len(mg)-ratio)<1e-6,`${len(drag)/len(mg)} vs ${ratio}`);
+ assert.ok(Math.hypot(fd.x+fd.width/2-drag[2],fd.y+fd.height/2-drag[3])<30);
+ assert.ok(r.labels.some(l=>/drag remain/.test(l.text)));
+ const v=run({...params,drag:'vacuum'});
+console.log(v.labels.map(l=>l.text)); assert.ok(!v.labels.some(l=>l.text==='F_D')&&!v.labels.some(l=>/drag/.test(l.text))&&v.labels.some(l=>/gravity remains/.test(l.text)));
+});

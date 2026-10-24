@@ -24,7 +24,7 @@ export function preview(p){
  for(let j=0;j<=120;j++){const t=Math.min(60,flight)*j/120;ghost.push({x:vx*t,y:Math.max(0,p.height+vy*t-.5*p.gravity*t*t)});}
  const xs=[0,...path.map(q=>q.x),...ghost.map(q=>q.x)],ys=[0,...path.map(q=>q.y),...ghost.map(q=>q.y)];
  const xmin=Math.min(...xs),xmax=Math.max(1,...xs),ymax=Math.max(1,...ys),span=Math.max(xmax-xmin,ymax),pad=span*.06;
- const result={path,ghost,apex,bounds:[xmin-pad,xmax+pad,-pad,ymax+pad]};
+ const probe=model.create(p);probe.step(apex.t);const fa=probe.geometry().forces,result={path,ghost,apex,apexDrag:fa.drag.x,apexWeight:-fa.gravity.y,bounds:[xmin-pad,xmax+pad,-pad,ymax+pad]};
  if(cache.size>30)cache.delete(cache.keys().next().value);cache.set(key,result);return result;
 }
 export function mapWorld(stage,bounds,top=50,bottom=stage.h-150,padding=stage.w<440?{left:54,right:22}:72){
@@ -47,8 +47,8 @@ export function segmentHitsRect(x0,y0,x1,y1,r){
 const MIN_ARROW=14;let drawn=new Set();
 // Registers every shaft of a diagram first so no label lands on another vector.
 function plan(s,list){s.shafts=list.filter(([,,dx,dy,k=1])=>Math.hypot(dx,dy)*k>=MIN_ARROW).map(([x,y,dx,dy,k=1])=>({x0:x,y0:y,x1:x+dx*k,y1:y-dy*k}));}
-function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset,place){
- if(Math.hypot(dx,dy)*scale<MIN_ARROW)return;drawn.add(term);
+function vector(s,x,y,dx,dy,term,color,scale=1,labelOffset,place,min=MIN_ARROW){
+ if(Math.hypot(dx,dy)*scale<min)return;drawn.add(term);
  const tx=x+dx*scale,ty=y-dy*scale;s.arrow(x,y,tx,ty,color,2);
  const c=s.ctx;c.font='12px system-ui,sans-serif';const width=labelWidth(c,term);
  const baseX=tx+(dx>0?12:dx<0?-12:0),baseY=ty+(labelOffset??(dy>=0?-15:16));
@@ -122,7 +122,7 @@ export const view={graphs,closeups,
    if(f.closeup!=='apex')mapWorld(s,[-1,1,-1,1],45,s.h-65);
    if(f.closeup==='angle')triangle(s,f);
    else if(f.closeup==='air-force')forceBall(s,f);
-   else{const apex=data.apex,map=mapWorld(s,[apex.x-10,apex.x+10,apex.y-4,apex.y+4],65,s.h-75);path(s,data.path,map,blue);s.circle(map.x(apex.x),map.y(apex.y),5,blue);const ak=Math.min(70,s.w*.22)/Math.max(1,Math.abs(apex.vx));plan(s,[[map.x(apex.x),map.y(apex.y),apex.vx,0,ak],[map.x(apex.x),map.y(apex.y),0,-1,38]]);vector(s,map.x(apex.x),map.y(apex.y),apex.vx,0,'v_x',blue,Math.min(70,s.w*.22)/Math.max(1,Math.abs(apex.vx)));vector(s,map.x(apex.x),map.y(apex.y),0,-1,'mg',orange,38);label(s,'At the top: v_y = 0, but gravity remains',s.w/2,48,muted,s.w<340?10:12);}
+   else{const apex=data.apex,map=mapWorld(s,[apex.x-10,apex.x+10,apex.y-4,apex.y+4],65,s.h-75);path(s,data.path,map,blue);s.circle(map.x(apex.x),map.y(apex.y),5,blue);const ak=Math.min(70,s.w*.22)/Math.max(1,Math.abs(apex.vx));const dl=38*Math.abs(data.apexDrag)/data.apexWeight,hasDrag=dl>=4,ax=map.x(apex.x),ay=map.y(apex.y);plan(s,[[ax,ay,apex.vx,0,ak],[ax,ay,0,-1,38]]);if(hasDrag)s.shafts.push({x0:ax,y0:ay,x1:ax-Math.sign(apex.vx||1)*dl,y1:ay});vector(s,ax,ay,apex.vx,0,'v_x',blue,ak);vector(s,ax,ay,0,-1,'mg',orange,38);if(hasDrag)vector(s,ax,ay,-Math.sign(apex.vx||1),0,'F_D',green,dl,undefined,undefined,4);label(s,hasDrag?'At the top: v_y = 0, gravity and drag remain':'At the top: v_y = 0, but gravity remains',s.w/2,48,muted,s.w<340?10:12);}
    return;
   }
   const m=mapWorld(s,data.bounds,f.thumbnail?12:50,f.thumbnail?s.h-12:s.h-150,f.thumbnail?22:(s.w<440?{left:54,right:22}:72)),p=f.geometry.position;
