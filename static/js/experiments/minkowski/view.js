@@ -38,12 +38,13 @@ function eventLetter(s,f,p,m,key,record,extra=[],soft=[]){
   const segments=f.geometry[key].worldlines.flatMap(l=>l.points.slice(1).map((b,i)=>{const a=l.points[i];return [m.x(a.x/f.params.length),m.y(C*a.t/f.params.length),m.x(b.x/f.params.length),m.y(C*b.t/f.params.length)];}));
   segments.push(...extra);
   // Nearest clear spot beside the event: off the worldlines, the dashed axes and the cone lines too.
-  const spots=[];for(let dx=-40;dx<=40;dx+=4)for(let dy=-40;dy<=40;dy+=4){const d=Math.hypot(dx+width/2,dy);if(d>=11)spots.push([dx,dy,d]);}
+  const spots=[];for(let dx=-40;dx<=40;dx+=4)for(let dy=-40;dy<=40;dy+=4){const d=Math.hypot(dx+width/2,dy);if(d>=15)spots.push([dx,dy,d+(record.name==='B'&&!(dx>0&&dy<0)?14:0)]);}
   spots.sort((u,v)=>u[2]-v[2]);
   for(const lines of [[...segments,...soft],segments])for(const [dx,dy] of spots){
-    const box={left:px+dx-3,top:py+dy-9,width:width+6,height:18};
+    const box={left:px+dx-5,top:py+dy-10,width:width+10,height:20};
     if(box.left<p.left||box.top<p.top||box.left+box.width>p.left+p.width||box.top+box.height>p.top+p.height)continue;
-    if(s.labels.some(l=>box.left<l.x+l.width&&box.left+box.width>l.x&&box.top<l.y+l.height&&box.top+box.height>l.y))continue;
+    if(s.labels.some(l=>box.left-4<l.x+l.width&&box.left+box.width+4>l.x&&box.top-4<l.y+l.height&&box.top+box.height+4>l.y))continue;
+    if((s.diag?.[key]?.letters||[]).some(l=>box.left-4<l.left+l.width&&box.left+box.width+4>l.left&&box.top-4<l.top+l.height&&box.top+box.height+4>l.top))continue;
     if(lines.some(a=>clipLine(...a,box)))continue;
     s.text(record.name,px+dx,py+dy,'#e8f2ff',12,'left');((s.diag||(s.diag={}))[key].letters||(s.diag[key].letters=[])).push(Object.assign(box,{relaxed:lines===segments&&soft.length>0}));return;
   }
@@ -62,6 +63,7 @@ function intervalCaption(s,f,p,m,key,curve,avoid=[],soft=[]){
     const box={left:c.x-w/2,top:c.y-h/2,width:w,height:h},hit={left:box.left-pad,top:box.top-pad,width:w+2*pad,height:h+2*pad};
     if(box.left<p.left||box.top<p.top||box.left+w>p.left+p.width||box.top+h>p.top+p.height)continue;
     if(s.labels.some(l=>hit.left<l.x+l.width&&hit.left+hit.width>l.x&&hit.top<l.y+l.height&&hit.top+hit.height>l.y))continue;
+    if((s.diag?.[key]?.letters||[]).some(l=>hit.left<l.left+l.width&&hit.left+hit.width>l.left&&hit.top<l.top+l.height&&hit.top+hit.height>l.top))continue;
     if(lines.some(v=>clipLine(...v,hit)))continue;
     richText(s,text,box.left+3,c.y,colors[2],11,'left');return Object.assign(box,{relaxed:lines===hard&&soft.length>0});
   }

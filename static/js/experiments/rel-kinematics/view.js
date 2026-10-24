@@ -98,7 +98,7 @@ function budget(f){const e=data(f).e,cm=f.params.frame==='cm',a=sumMomentum(cm?e
 function drawBudget(s,f){
   // The title, both bars and Q form one block centered in the stage; the larger bar spans the whole centered track.
   const {e}=data(f),max=Math.max(.001,e.W,e.requiredMass),width=Math.min(s.w-64,520),left=(s.w-width)/2;
-  const H=Math.min(Math.max(226,s.h*.6),380),k=(H-80)/146,top=Math.max(30,(s.h-H)/2+s.h*.03),y1=top+62*k,y2=top+146*k,bar=Math.round(Math.min(30,18+(k-1)*10));
+  const avail=s.h-92,H=Math.min(avail,Math.max(226,s.h*.6),380),k=(H-80)/146,top=48+(avail-H)/2,y1=top+62*k,y2=top+146*k,bar=Math.round(Math.min(30,18+(k-1)*10));
   s.text('Center-of-momentum energy budget',s.w/2,top+8*k,'#c7d9ee',s.w<470?12:15);
   for(const [i,[label,value,color]] of [[0,['√s · available',e.W,colors[0]]],[1,['Σmc² · required',e.requiredMass,e.allowed?colors[2]:'#e4a9bd']]]){
     const y=i?y2:y1;s.text(label,left,y-24,color,12,'left');s.ctx.fillStyle=color+'a0';s.ctx.fillRect(left,y,width*value/max,bar);if(value===0)s.line(left,y-4,left,y+bar+4,color,2);
@@ -131,7 +131,7 @@ export const view={closeups,graphs,paramVisible,
   },
   closeupAnchors:(s,f)=>{const {ps,chipTop}=layoutFor(s,f),xs=s.w<470?[s.w*.26,s.w*.74]:ps.map(a=>a.left+a.width/2);return {balance:{x:xs[0],y:chipTop},budget:{x:xs[1],y:chipTop}};},
   draw(s,f){if(f.thumbnail||s.h<180){f={...f,thumbnail:true,breakdown:false};momentum(s,f,{left:28,top:28,width:s.w-48,height:s.h-58},'lab');return;}
-    const compact=s.w<470,{ps,chipTop,need,cap,paneBottom,paneHeight}=layoutFor(s,f);fitScene(s,need,550,f.breakdown?cap:0);s.paneBottom=paneBottom;s.paneHeight=paneHeight;
+    const compact=s.w<470,{ps,chipTop,need,cap,paneBottom,paneHeight}=layoutFor(s,f);if(f.closeup==='budget')fitScene(s,380,550,380);else fitScene(s,need,550,f.breakdown?cap:0);s.paneBottom=paneBottom;s.paneHeight=paneHeight;
     if(f.closeup==='budget')drawBudget(s,f);else for(const [i,k] of ['lab','cm'].entries())momentum(s,f,ps[i],k,f.closeup==='balance');
     const {e}=data(f),caption=f.closeup==='budget'?`√s = ${fmt(e.W)} MeV · final rest energy ${fmt(e.requiredMass)} MeV`:`√s = ${fmt(e.W)} MeV · reaction at t = 0`;
     if(f.closeup!=='budget'&&s.w>260&&s.h>200)s.text(compact?`√s = ${fmt(e.W)} MeV`:caption,s.w/2,chipTop+46,'#bccde3',compact?11:12);
