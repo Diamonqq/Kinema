@@ -1,4 +1,4 @@
-import {C,fmt,tex,texU,withUnit,label,tip,bead,fixedMap,linePlot} from './view-tools.js';
+import {C,fmt,tex,texU,pane,wrapTex,withUnit,label,tip,bead,fixedMap,linePlot} from './view-tools.js';
 const graphs=[
  {id:'motion',label:'Position',unit:'m',series:[{key:'x',label:'x',color:C.blue},{key:'y',label:'y',color:C.gold},{key:'z',label:'z',color:C.violet}]},
  {id:'velocity',label:'Velocity',unit:'m/s',series:[{key:'vx',label:'vx',color:C.blue},{key:'vy',label:'vy',color:C.gold},{key:'vz',label:'vz',color:C.violet}]},
@@ -48,10 +48,10 @@ export function motionBounds(p,T=60){
 function project(p,q){return p.dimensions==='1d'&&p.gravity?[0,q[0]]:[q[0]+(p.dimensions==='3d'?.45*q[2]:0),q[1]+(p.dimensions==='3d'?.25*q[2]:0)];}
 export function forceEquations(f){
  const p=f.params,q=f.sample,forces=f.geometry.forces,lines=[];
- if(p.spring||p.cubic){const symbolic=[],numeric=[];if(p.spring){symbolic.push('-kx');numeric.push(String.raw`-(${texU(p.spring,'N/m')})(${texU(q.x,'m')})`);}if(p.cubic){symbolic.push(String.raw`-\beta x^3`);numeric.push(String.raw`-(${texU(p.cubic,'N/m^3')})(${texU(q.x,'m')})^3`);}lines.push('F_{s,x}='+symbolic.join(''),'='+numeric[0],...numeric.slice(1),String.raw`=${tex(forces.spring[0])}\,\mathrm N`);}
+ if(p.spring||p.cubic){const symbolic=[],numeric=[];if(p.spring){symbolic.push('-kx');numeric.push(String.raw`-(${texU(p.spring,'N/m')})(${texU(q.x,'m')})`);}if(p.cubic){symbolic.push(String.raw`-\beta x^3`);numeric.push(String.raw`-(${texU(p.cubic,'N/m^3')})(${texU(q.x,'m')})^3`);}lines.push('F_{s,x}='+symbolic.join(''),...wrapTex(['='+numeric[0],...numeric.slice(1)]),String.raw`=${tex(forces.spring[0])}\,\mathrm N`);}
  if(p.constantRestoring)lines.push(String.raw`F_{c,x}=-s\operatorname{sgn}x=${tex(forces.constantRestoring[0])}\,\mathrm N`);
  if(p.gravity)lines.push(String.raw`(mg)_{${p.dimensions==='1d'?'x':'y'}}=-mg`,String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})`,String.raw`=${tex(-p.mass*p.gravity)}\,\mathrm N`);
- if(p.linearDrag||p.quadraticDrag){const symbolic=[...(p.linearDrag?['b']:[]),...(p.quadraticDrag?['c|v|']:[])].join('+'),numeric=[...(p.linearDrag?[texU(p.linearDrag,'kg/s')]:[]),...(p.quadraticDrag?[`${texU(p.quadraticDrag,'kg/m')}(${texU(q.speed,'m/s')})`]:[])].join('+');lines.push(`F_{D,x}=-(${symbolic})v_x`,`=-(${numeric})`,`(${texU(q.vx,'m/s')})`,String.raw`=${tex(forces.drag[0])}\,\mathrm N`);}
+ if(p.linearDrag||p.quadraticDrag){const symbolic=[...(p.linearDrag?['b']:[]),...(p.quadraticDrag?['c|v|']:[])].join('+'),numeric=[...(p.linearDrag?[texU(p.linearDrag,'kg/s')]:[]),...(p.quadraticDrag?[`${texU(p.quadraticDrag,'kg/m')}(${texU(q.speed,'m/s')})`]:[])].join('+');lines.push(`F_{D,x}=-(${symbolic})v_x`,...wrapTex([`=-(${numeric})`,`\times(${texU(q.vx,'m/s')})`]),String.raw`=${tex(forces.drag[0])}\,\mathrm N`);}
  if(p.inverseSquare)lines.push(String.raw`r_\epsilon=\sqrt{r^2+\epsilon^2}`,String.raw`F_{g,x}=-m\mu x/r_\epsilon^3`,String.raw`=${tex(forces.attraction[0])}\,\mathrm N`);
  if(p.magnetic&&p.dimensions!=='1d')lines.push(String.raw`F_{B,x}=qBv_y=${tex(forces.magnetic[0])}\,\mathrm N`,String.raw`F_{B,y}=-qBv_x=${tex(forces.magnetic[1])}\,\mathrm N`);
  if(p.forceX||p.ramp||p.drive){const terms=[...(p.forceX?['F_x']:[]),...(p.ramp?['at']:[]),...(p.drive?[String.raw`F_d\cos\Omega t`]:[])];lines.push('F_{{app},x}='+terms.join('+'),String.raw`=${tex(forces.applied[0])}\,\mathrm N`);}
@@ -62,7 +62,7 @@ export const view={graphs,closeups,
  closeupAnchors:s=>({force:s.zoomAnchor||{x:s.w/2,y:40}}),
  graphDescriptors(p){const w=Math.sqrt(Math.max(0,p.spring+3*p.cubic*p.x0*p.x0)/p.mass),window=Math.min(60,Math.max(.2,10*Math.PI/(p.drive?p.driveOmega:w||1))),n=p.dimensions==='1d'?1:p.dimensions==='2d'?2:3;return graphs.filter(g=>g.id!=='balance'||p.drive||p.ramp||p.forceX||p.forceY||p.forceZ||p.linearDrag||p.quadraticDrag).map(g=>({...g,...(!g.kind?{window}:{}),...(g.id==='motion'||g.id==='velocity'?{series:g.series.slice(0,n)}:{})}));},
  draw(s,f){
-  const p=f.params,g=f.geometry,zoom=!!f.closeup;
+  const p=f.params,g=f.geometry,zoom=!!f.closeup;if(!f.thumbnail)pane.width=s.w;
   if(f.thumbnail){
    const bounds=motionBounds(p),wall=bounds[0]-(bounds[1]-bounds[0])*.22;bounds[0]=wall-.1;
    const m=fixedMap(s,bounds,{top:18,bottom:18,padding:18}),[x,y]=project(p,g.position),px=m.x(x),py=m.y(y);

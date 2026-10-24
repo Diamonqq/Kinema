@@ -1,6 +1,7 @@
 import {palette} from '../kit/stage.js';
 import {create} from './model.js';
 import {label,tex,texU} from '../motion-generator/view-tools.js';
+import {num} from '../kit/format.js';
 const envelopes=new WeakMap(),drag=new WeakMap(),sub=n=>String(n).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
 const fmt=x=>(Math.abs(x)<.0005?0:x).toFixed(3);
 const signed=x=>fmt(x).replace('-','−'),windows=new WeakMap();
@@ -60,16 +61,16 @@ export const view={
   const {ctx,w,h}=s,{map,n,length,zoom,a,b}=setup(s,f),{x,y,scale}=map,cy=y(0),massW=Math.max(13,Math.min(76,.48*scale)),massH=massW*.8;
   s.line(x(-.05),cy+massH*.58,x(length+.05),cy+massH*.58,'#2c3744',1);
   if(zoom){
-   // Actual geometry enlarged; fixed captions, magnified spring and moving ends.
-   const mw=Math.min(120,.48*scale),mh=mw*.8;
-   s.line(x(a.equilibrium),cy+mh*.7,x(b.equilibrium),cy+mh*.7,'#516071',1);
-   s.text('equilibrium spacing',w/2,cy+mh*.7+18,'#8292a7',12);
-   s.spring(x(a.x)+mw/2,cy,x(b.x)-mw/2,cy,'#a1c4f4',Math.min(18,scale*.08));
-   block(s,x(a.x),cy,mw,mh,palette[0]);block(s,x(b.x),cy,mw,mh,palette[1]);
-   s.text('m₁',Math.max(36,x(1.3)),h-35,palette[0],13);s.text('m₂',Math.min(w-36,x(2.6)),h-35,palette[1],13);
-   const force=-f.params.k2*(b.displacement-a.displacement),anchor=x(b.x),fy=cy,dir=Math.sign(force),end=Math.max(14,Math.min(w-14,anchor+dir*Math.min(w*.18,25+Math.abs(force)*18)));
-   if(Math.abs(force)>.002)s.arrow(anchor,fy,end,fy,'#b8d6a5',2.5);
-   s.text('F₂,₂ '+forceValue(force)+' N',w/2,Math.max(46,cy-mh/2-35),'#b8d6a5',12);
+   // Actual geometry enlarged, centered in the pane. Each caption sits beside its own block; the force label sits at its arrow tip.
+   const mw=Math.min(150,.5*scale),mh=mw*.9,fs=w<400?12:14,cz=cy-9,barY=cz+mh/2+44;
+   s.line(x(a.equilibrium),barY,x(b.equilibrium),barY,'#516071',1);
+   s.text('equilibrium spacing',w/2,barY+18,'#8292a7',fs-1);
+   s.spring(x(a.x)+mw/2,cz,x(b.x)-mw/2,cz,'#a1c4f4',Math.min(22,scale*.1));
+   block(s,x(a.x),cz,mw,mh,palette[0]);block(s,x(b.x),cz,mw,mh,palette[1]);
+   s.zoomParts={blocks:[{x:x(a.x)-mw/2,y:cz-mh/2,width:mw,height:mh},{x:x(b.x)-mw/2,y:cz-mh/2,width:mw,height:mh}]};
+   label(s,'m₁',x(a.x),cz+mh/2+17,palette[0],fs);label(s,'m₂',x(b.x),cz+mh/2+17,palette[1],fs);
+   const force=-f.params.k2*(b.displacement-a.displacement),anchor=x(b.x),fy=cz-mh/2-26,dir=Math.sign(force),end=Math.max(14,Math.min(w-14,anchor+dir*Math.min(w*.18,25+Math.abs(force)*18)));
+   if(Math.abs(force)>.002){s.arrow(anchor,fy,end,fy,'#b8d6a5',2.5);s.zoomParts.tip={x:end,y:fy};const text='F₂,₂ = '+num(force,3)+' N';ctx.font=fs+'px system-ui,sans-serif';const half=ctx.measureText(text).width/2;label(s,text,Math.max(half+8,Math.min(w-half-8,end)),fy-16,'#b8d6a5',fs);}
    return;
   }
   if(f.geometry.springs[0])wall(s,x(0),cy,massH*.9);

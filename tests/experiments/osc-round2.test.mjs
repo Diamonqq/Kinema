@@ -71,3 +71,13 @@ test('substituted equations show units in every factor', async () => {
   const co = await labFrame('coupled-oscillators');
   assert.ok(co.view.closeupEquation(co.frame).join('\n').includes(String.raw`\mathrm{N/m}`));
 });
+
+test('a substituted line stays whole when it fits and wraps at an operator when it does not', async () => {
+  const {wrapTex} = await import('../../static/js/experiments/motion-generator/view-tools.js');
+  const pieces = [String.raw`=-(1.00\,\mathrm{kg})(9.81\,\mathrm{m/s^2})(1.00\,\mathrm{m})`, String.raw`\times \sin(1.00\,\mathrm{rad})`];
+  assert.equal(wrapTex(pieces, 570).length, 1);
+  assert.ok(!wrapTex(pieces, 570)[0].includes('times'));
+  const narrow = wrapTex(pieces, 290);
+  assert.equal(narrow.length, 2);
+  assert.ok(narrow[1].startsWith(String.raw`\times`));
+});

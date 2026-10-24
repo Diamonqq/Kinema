@@ -1,5 +1,5 @@
 import {model,exactPeriod} from './model.js';
-import {C,fmt,tex,texU,withUnit,label,bead,angle,fixedMap,chipBox,drawAnalysis,linePlot} from '../motion-generator/view-tools.js';
+import {C,fmt,tex,texU,pane,wrapTex,withUnit,label,bead,angle,fixedMap,chipBox,drawAnalysis,linePlot} from '../motion-generator/view-tools.js';
 const closeups=[{id:'gravity',label:'Zoom \u00b7 gravity components'}];
 const graphs=[
  {id:'motion',label:'Angle',unit:'rad',series:[{key:'thetaWrapped',label:'\u03b8',color:C.blue}]},
@@ -43,7 +43,7 @@ const sineTex=mode=>mode==='linear'?String.raw`\theta`:mode==='cubic'?String.raw
 const sineNumeric=(mode,t)=>{const a=texU(t,'rad');return mode==='linear'?`(${a})`:mode==='cubic'?String.raw`\left(${a}-\frac{(${a})^3}{6}\right)`:String.raw`\sin(${a})`;};
 function tensionEnd(ax,ay,d,scale,reach){const len=Math.abs(d.tension)*scale,k=len>reach&&len>0?reach/len:1,sign=d.tension<0?-1:1;return {x:ax-sign*Math.abs(d.tension)*d.er[0]*scale*k,y:ay+sign*Math.abs(d.tension)*d.er[1]*scale*k};}
 function diagram(s,f,zoom){
- s.forceArrows=[];const {params:p,sample:q}=f,t=q.theta,L=p.length,theta=Math.atan2(Math.sin(t),Math.cos(t));
+ if(!f.thumbnail)pane.width=s.w;s.forceArrows=[];const {params:p,sample:q}=f,t=q.theta,L=p.length,theta=Math.atan2(Math.sin(t),Math.cos(t));
  const focus=zoom||f.breakdown,m=fixedMap(s,pendulumBounds(p,focus),{top:f.thumbnail?18:focus?66:76,bottom:f.thumbnail?18:focus?106:145,padding:f.thumbnail?22:focus?Math.min(100,s.w*.22):35}),px=m.x(0),py=m.y(0),bx=m.x(L*Math.sin(t)),by=m.y(-L*Math.cos(t));
  const radius=Math.max(8,Math.min(focus?11:16,m.scale*L*(focus?.06:.09))),rod=m.scale*L,body={x:bx-radius-4,y:by-radius-4,width:2*radius+8,height:2*radius+8};s.bobRadius=radius;s.zoomAnchor={x:px,y:Math.max(6,py-20-(s.w<=440?24:32))};s.chipTarget={x:px,y:py-8};s.avoid=[body,chipBox(s,closeups[0].label,s.zoomAnchor),{x:0,y:s.h-(focus?62:123),width:s.w,height:focus?62:123}];
  s.ctx.setLineDash([3,5]);s.line(px,py,px,m.y(-L*1.17),C.grid,1);s.ctx.setLineDash([]);
@@ -72,10 +72,10 @@ export const view={graphs,closeups,
  drawGraph(s,d,f){if(d.id==='phase'){linePlot(s,{title:'Phase space',points:f.samples,xkey:'theta',ykey:'omega',cursor:f.sample,xlabel:'\u03b8 (unwrapped) / rad',ylabel:'\u03c9 / (rad/s)',color:C.blue});return;}drawAnalysis(s,d,f,{position:'theta',velocity:'omega',periodPoint(frame,i){const x=.02+(Math.PI-.12)*i/31,instance=model.create({...frame.params,theta0:x,omega0:0,drive:0,damping:0});return {x,y:instance.period()};}});},
  equations(f){
   const p=f.params,q=f.sample,d=decomposition(p,q),I=p.mass*p.length*p.length,td=p.drive*Math.cos(p.driveOmega*f.t+p.drivePhase),m=sineTex(p.linear),n=sineNumeric(p.linear,q.theta),tau=String.raw`-mgL${m}`;
-  const lines=[String.raw`T=mg\cos\theta+m\omega^2L`,String.raw`=(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})\cos(${texU(q.theta,'rad')})`,String.raw`+(${texU(p.mass,'kg')})(${texU(q.omega,'rad/s')})^2(${texU(p.length,'m')})`,String.raw`=${tex(d.tension)}\,\mathrm N`,String.raw`F_t=-mg${m}`,...(p.linear==='cubic'?[String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})`,n]:[String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})${n}`]),String.raw`=${tex(d.tangential)}\,\mathrm N`,String.raw`F_{g,r}=mg\cos\theta=${tex(d.radial)}\,\mathrm N`,String.raw`\tau_g=-mgL${m}`,String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})(${texU(p.length,'m')})`,n,String.raw`=${tex(d.torque)}\,\mathrm{N\,m}`];
+  const lines=[String.raw`T=mg\cos\theta+m\omega^2L`,...wrapTex([String.raw`=(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})\cos(${texU(q.theta,'rad')})`,String.raw`+(${texU(p.mass,'kg')})(${texU(q.omega,'rad/s')})^2(${texU(p.length,'m')})`]),String.raw`=${tex(d.tension)}\,\mathrm N`,String.raw`F_t=-mg${m}`,...wrapTex([String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})`,String.raw`\times ${n}`]),String.raw`=${tex(d.tangential)}\,\mathrm N`,String.raw`F_{g,r}=mg\cos\theta=${tex(d.radial)}\,\mathrm N`,String.raw`\tau_g=-mgL${m}`,...wrapTex([String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})(${texU(p.length,'m')})`,String.raw`\times ${n}`]),String.raw`=${tex(d.torque)}\,\mathrm{N\,m}`];
   if(p.damping)lines.push(String.raw`\tau_b=-b\omega`,String.raw`=-(${texU(p.damping,'N\,m\,s/rad')})(${texU(q.omega,'rad/s')})`,String.raw`=${tex(-p.damping*q.omega)}\,\mathrm{N\,m}`);
   if(p.drive)lines.push(String.raw`\tau_d=\tau_0\cos(\Omega t+\phi)`,String.raw`=${texU(p.drive,'N\,m')}\cos(${texU(p.driveOmega*f.t+p.drivePhase,'rad')})`,String.raw`=${tex(td)}\,\mathrm{N\,m}`);
   lines.push(String.raw`mL^2\ddot\theta=${tau}`+(p.damping?String.raw`-b\omega`:'')+(p.drive?String.raw`+\tau_d`:''),String.raw`=(${texU(p.mass,'kg')})(${texU(p.length,'m')})^2(${texU(q.alpha,'rad/s^2')})`,String.raw`=${tex(I*q.alpha)}\,\mathrm{N\,m}`);return lines;
  },
- closeupEquation(f){const p=f.params,q=f.sample,d=decomposition(p,q);return [String.raw`T=mg\cos\theta+m\omega^2L=${tex(d.tension)}\,\mathrm N`,String.raw`\tau_g=-mgL${sineTex(p.linear)}`,String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})(${texU(p.length,'m')})`,sineNumeric(p.linear,q.theta),String.raw`=${tex(d.torque)}\,\mathrm{N\,m}`];},
+ closeupEquation(f){const p=f.params,q=f.sample,d=decomposition(p,q);return [String.raw`T=mg\cos\theta+m\omega^2L=${tex(d.tension)}\,\mathrm N`,String.raw`\tau_g=-mgL${sineTex(p.linear)}`,...wrapTex([String.raw`=-(${texU(p.mass,'kg')})(${texU(p.gravity,'m/s^2')})(${texU(p.length,'m')})`,String.raw`\times ${sineNumeric(p.linear,q.theta)}`]),String.raw`=${tex(d.torque)}\,\mathrm{N\,m}`];},
 };

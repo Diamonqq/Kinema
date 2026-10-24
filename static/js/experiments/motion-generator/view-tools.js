@@ -14,6 +14,14 @@ export function chipBox(s,text,anchor){
  const width=s.ctx.measureText(text).width+(narrow?18:24)+10,height=(narrow?24:32),x=Math.max(width/2+4,Math.min(s.w-width/2-4,anchor.x));
  return {x:x-width/2,y:anchor.y-3,width,height:height+6,chipHeight:height};
 }
+// Width of the pane the equations are shown in; each lab's draw() records it so equations() can keep a line whole when it fits.
+export const pane={width:0};
+const texChars=t=>{const s=t.replace(/\\,/g,' ').replace(/\\(mathrm|left|right|operatorname)/g,'').replace(/\\(sin|cos|tan)/g,'sin').replace(/\\times/g,'×').replace(/\\[a-zA-Z]+/g,'x').replace(/[{}^_]/g,'');return s.length-.6*(s.match(/ /g)||[]).length;};
+// A substituted line given as pieces (later pieces start with their operator, e.g. '\\times ...'): one line when it fits the pane, otherwise one piece per line.
+export function wrapTex(pieces,width=pane.width){
+ const whole=pieces.join('').replace(/\\times\s*/g,'');
+ return !width||texChars(whole)*8.2<=width-32?[whole]:pieces;
+}
 export function label(s,text,x,y,color=C.ink,size=12,align='center'){
  const c=s.ctx,parts=String(text).split(/(_\{[^}]+\})/).filter(Boolean).map(t=>({text:t.startsWith('_{')?t.slice(2,-1):t,sub:t.startsWith('_{')}));
  const widths=parts.map(p=>{c.font=`${size*(p.sub?.8:1)}px system-ui,sans-serif`;return c.measureText(p.text).width;}),width=widths.reduce((a,b)=>a+b,0),left=align==='left'?x:align==='right'?x-width:x-width/2;
