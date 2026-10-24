@@ -15,7 +15,21 @@ const curves=new WeakMap();
 const shells=new WeakMap();
 export const durationFor=p=>Math.round(Math.min(60,Math.max(8,2.4*p.distance/Math.max(.1,Math.abs(p.speed-p.targetSpeed))))*100)/100;
 const trajectory=p=>forecast(model,p,{duration:durationFor(p)});
-function transportWindow(shell){const duration=durationFor(shell.params);if(shell.duration!==duration){shell.duration=duration;shell.q('.exp-time').max=duration;shell.startForecast();}}
+const windows=new WeakMap();
+// Only the shell's presentation model ends at the encounter window. The
+// exported physics core remains available for arbitrarily long analytic tests.
+export const timelineModel={...model,create(values){
+ const sim=model.create(values),end=durationFor({...Object.fromEntries(model.params.map(p=>[p.key,p.value])),...values});
+ return {...sim,get t(){return sim.t;},step(dt){sim.step(Math.max(0,Math.min(dt,end-sim.t)));},
+  sample(){return {...sim.sample(),ended:sim.t>=end-1e-9};}};
+}};
+export function transportWindow(shell){
+ const duration=durationFor(shell.params),previous=windows.get(shell);
+ if(previous?.params===shell.params){shell.duration=duration;shell.q('.exp-time').max=duration;return;}
+ windows.set(shell,{params:shell.params,duration});
+ shell.startForecast(); // The kit resets duration here; apply ours afterwards.
+ shell.duration=duration;shell.q('.exp-time').max=duration;
+}
 export function scatteringGrid(p){
  const max=Math.min(9.96,Math.max(p.radius*1.4,Math.abs(p.b)*2,p.range*3));
  if(p.interaction==='hard')return [...Array.from({length:83},(_,i)=>p.radius*(.09+i*.01)),
@@ -111,16 +125,19 @@ function encounter(s,f,data){
  active.forEach((q,i)=>s.circle(map.x(q.x),map.y(q.y),['hard','soft'].includes(f.params.interaction)||['hard','soft'].includes(f.params.secondInteraction)?Math.max(2,q.radius*map.scale):5,i?C.amber:C.blue));
  const [a,z]=active,dx=z.x-a.x,dy=z.y-a.y,r=Math.hypot(dx,dy),F=interactionAt(f.params,r).force;
  s.line(map.x(a.x),map.y(a.y),map.x(z.x),map.y(z.y),C.muted,1);
- if(Math.abs(F)>1e-7)vector(s,map.x(a.x),map.y(a.y),-dx/r*Math.min(55,s.w*.16)*Math.sign(F),dy/r*Math.min(55,s.w*.16)*Math.sign(F),C.green,'F');
+ f.contactForceDrawn=Math.abs(F)>1e-7;
+ if(f.contactForceDrawn)vector(s,map.x(a.x),map.y(a.y),-dx/r*Math.min(55,s.w*.16)*Math.sign(F),dy/r*Math.min(55,s.w*.16)*Math.sign(F),C.green,'F');
  const shown=visible?f.sample:nearest.sample,theta=shown.scatteringAngle,px=map.x(a.x),py=map.y(a.y),ray=Math.min(62,s.w*.2),sign=Math.sign(f.params.speed-f.params.targetSpeed)||1,start=sign>0?0:Math.PI;
  s.ctx.setLineDash([3,4]);s.line(px,py,px+sign*ray,py,C.muted,1);s.ctx.setLineDash([]);
- vector(s,px,py,sign*ray*Math.cos(theta),-sign*ray*Math.sin(theta),C.blue,'u');
+ const disc=['hard','soft'].includes(f.params.interaction)||['hard','soft'].includes(f.params.secondInteraction)?Math.max(2,a.radius*map.scale):5;
+ const ux=sign*Math.cos(theta),uy=-sign*Math.sin(theta);
+ vector(s,px+ux*(disc+5),py+uy*(disc+5),ux*Math.min(ray,42),uy*Math.min(ray,42),C.blue,'u');
  if(Math.abs(theta)>.015){s.ctx.beginPath();s.ctx.arc(px,py,23,start,start-theta,theta>0);s.ctx.strokeStyle=C.purple;s.ctx.stroke();label(s,'θ',px+sign*34*Math.cos(theta/2),py-sign*34*Math.sin(theta/2),C.purple);}
  const spring=f.params.interaction==='soft'||f.params.secondInteraction==='soft';
  s.text(spring?'Spring contact \u00b7 discs show compression':visible?'Live \u00b7 t = '+fmt(f.t)+' s':(nearest.impact?'Contact preview \u00b7 ':'Closest approach \u00b7 ')+fmt(nearest.t)+' s',s.w/2,s.h-43,C.muted,12);
 }
 export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
- mount(shell){shells.set(shell.stage,shell);transportWindow(shell);},
+ mount(shell){shells.set(shell.stage,shell);shell.model=timelineModel;transportWindow(shell);},
  graphDescriptors:p=>graphs.map(g=>({...g,window:durationFor(p)})),
  paramVisible(d,p){const k=d.key,kind=p.interaction,second=p.secondInteraction;
   if(k==='secondInteraction')return kind==='coulomb';if(k.startsWith('second')){
@@ -136,7 +153,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   plot(s,points,{zero:cross,cursor:cross?null:{x:Math.abs(f.params.b),y:Math.abs(f.sample.scatteringAngle)}});
  },
  key:f=>f.closeup==='momentum'?'Blue p₁ · amber p₂ · green total P':f.closeup==='potential'?'Blue Ueff · amber relative E · white r':
-  f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?'Blue projectile · amber target · green force':'Blue projectile · amber target · + CM',
+  f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?('Blue projectile \u00b7 amber target \u00b7 '+(f.contactForceDrawn?'green F':'blue u')):'Blue projectile · amber target · + CM',
  draw(s,f){
   const owner=shells.get(s);if(owner)sceneHeight(owner,620,!!f.closeup);s.chipRects=[];
   if(s.h<200){const b=f.geometry.frames.lab,bounds=boundsFor([{geometry:f.geometry}],'lab'),map=camera(s,bounds,12,12);

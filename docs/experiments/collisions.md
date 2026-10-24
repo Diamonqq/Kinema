@@ -274,3 +274,9 @@ the nearest sampled velocity after the impulse. The preview freezes at that
 same event time; approaching u_n is negative and outgoing u_n = -e u_n.
 The browser check compares the caption and equations at both widths using
 identical parameters, and tests cover elastic, partially inelastic and e=0.
+
+Forecast duration is applied once per parameter object after the kit initializes
+its forecast. A shell-only timeline adapter marks the exact encounter-window
+endpoint as ended, including fractional frame times; the headless model remains
+unrestricted. Reset and repeated draws do not restart the forecast. Contact keys
+mention a green force only when its arrow is drawn, and u starts outside the disc.

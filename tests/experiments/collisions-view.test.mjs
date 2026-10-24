@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {model,scatteringCurve} from '../../static/js/experiments/collisions/model.js';
-import {view,durationFor,scatteringGrid,sectionPoints,comparisonPanels,encounterPreview,forecastObstacles} from '../../static/js/experiments/collisions/view.js';
+import {view,durationFor,scatteringGrid,sectionPoints,comparisonPanels,encounterPreview,forecastObstacles,transportWindow,timelineModel} from '../../static/js/experiments/collisions/view.js';
 import {motionBatches,boundsFor,plot,targetChips} from '../../static/js/experiments/orbits/scene.js';
 test('collision manifest matches every descriptor, preset, close-up and graph',()=>{
  const m=JSON.parse(fs.readFileSync(new URL('../../static/js/experiments/collisions/manifest.json',import.meta.url)));
@@ -90,4 +90,22 @@ test('exact impulse displays approaching u_n and restitution-consistent outgoing
   });
   assert.deepEqual(results[0],results[1]);
  }
+});
+
+test('600 repeated draws do not restart the kit forecast; duration is applied after the kit reset',()=>{
+ const p={...model.presets.find(p=>p.id==='glancing').values},slider={max:60};let starts=0;
+ const shell={params:p,duration:60,q:()=>slider,startForecast(){starts++;this.duration=60;slider.max=60;}};
+ for(let i=0;i<600;i++)transportWindow(shell);
+ assert.equal(starts,1);assert.equal(shell.duration,durationFor(p));assert.equal(slider.max,durationFor(p));
+ shell.params={...p,speed:3};for(let i=0;i<600;i++)transportWindow(shell);
+ assert.equal(starts,2);assert.equal(shell.duration,durationFor(shell.params));assert.equal(slider.max,shell.duration);
+});
+test('kit forecast iterator ends exactly at the collision window rather than the captured 60 s cap (1e-9 s)',async()=>{
+ const {timelineBatches}=await import('../../static/js/experiments/kit/state.js');
+ for(const speed of [2,3]){
+  const p={...model.presets.find(p=>p.id==='glancing').values,speed};let last,count=0;
+  for(const rows of timelineBatches(timelineModel,p,{duration:60,batchSize:8})){last=rows.at(-1);count+=rows.length;}
+  assert.ok(last.ended);assert.ok(Math.abs(last.t-durationFor(p))<1e-9);assert.ok(count<600);
+ }
+ assert.ok(!('ended' in model.create().sample()),'the headless core retains unrestricted integration');
 });
