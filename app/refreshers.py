@@ -29,11 +29,19 @@ WEAK = {"not_checked", "seen", "gap"}
 MAX_TEXT = 4000
 
 
+def _content() -> dict:
+    """The authored cards; a package without them (the public source zip) has no refreshers rather than an error."""
+    try:
+        return json.loads(CONTENT.read_text(encoding="utf8"))
+    except FileNotFoundError:
+        return {}
+
+
 @lru_cache(maxsize=1)
 def load() -> list[dict]:
-    data = json.loads(CONTENT.read_text(encoding="utf8"))
+    data = _content()
     out = []
-    for r in data["refreshers"]:
+    for r in data.get("refreshers", []):
         r = dict(r)
         r["_patterns"] = [re.compile(p, re.I) for p in r["match"]]
         out.append(r)
@@ -43,7 +51,7 @@ def load() -> list[dict]:
 @lru_cache(maxsize=1)
 def load_context() -> list[dict]:
     """Server-authored variants for one book problem each: the setup in the problem's own words and geometry."""
-    data = json.loads(CONTENT.read_text(encoding="utf8"))
+    data = _content()
     out = []
     for r in data.get("contextual", []):
         r = dict(r)

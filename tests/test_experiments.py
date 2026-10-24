@@ -182,3 +182,29 @@ def test_experiment_rejects_lesson_scope_without_writing(fixture, monkeypatch):
         'experiment_state': t['experiment']['state'], 'study_context': {'kind': 'guide', 'session_id': 'fake'}})
     assert result.status_code == 400
     assert client.get('/api/teacher/threads/' + t['id']).json()['messages'] == []
+
+
+def test_chip_formats_numbers_and_option_labels():
+    orbits = experiments.get('orbits')
+    assert experiments.chip(orbits, {'type': 'set_params', 'values': {'m2': 2e12, 'launch': 'circular'}}) == 'm₂ → 2×10¹² kg · launch → Circular'
+    projectile = experiments.get('projectile-air')
+    assert experiments.chip(projectile, {'type': 'set_params', 'values': {'angle': 60, 'speed': 40.0}}) == 'angle → 60° · speed → 40 m/s'
+
+
+def test_reply_instructions_limit_actions_and_length(monkeypatch):
+    import threading
+    from types import SimpleNamespace
+    seen = {}
+
+    def fake_run(choice, prompt, system='', **kwargs):
+        seen['system'] = system
+        return '{"reply": "A short answer.", "action": null}', {}
+    monkeypatch.setattr(model_choices, 'run', fake_run)
+    job = SimpleNamespace(on_event=None, cancel=threading.Event())
+    manifest = experiments.get('coupled-oscillators')
+    result, _ = experiments.run_reply({'model': 'claude:haiku'}, manifest, experiments.initial(manifest), [], job)
+    assert result == {'reply': 'A short answer.', 'action': None}
+    system = seen['system']
+    for rule in ('about 80 words', 'a question gets an explanation with action=null', 'use the preset action',
+                 'Never clamp or substitute a value silently', 'never mention JSON', 'what to look for'):
+        assert rule.lower() in system.lower(), rule
