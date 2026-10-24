@@ -1,12 +1,14 @@
-import {prepareCandidate,timelineBatches,SeekController} from './state.js';
+import {prepareCandidate,timelineBatches,SeekController,yieldTask} from './state.js';
 import {VectorStage} from './stage.js';
 import {LinkedGraph,CustomGraph} from './graphs.js';
 import {controlIcon} from '../../icons.js';
 import {esc,math} from '../../md.js';
 
+export const equationDue=(playing,last,now)=>!playing||last===undefined||now-last>=250;
+
 export class ExperimentShell {
  constructor(host,{model,view,manifest={},values={},onChange=()=>{},onBack=null}){
-  Object.assign(this,{host,model,view,manifest,onChange});this.seeker=new SeekController();this.params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),...values};this.playing=false;this.speed=1;this.duration=60;this.closeup='';this.breakdown=false;this.enabledGraphs=new Set();this.samples=[];this.last=0;
+  Object.assign(this,{host,model,view,manifest,onChange});this.seeker=new SeekController();this.params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),...values};this.playing=false;this.speed=1;this.duration=60;this.closeup='';this.breakdown=false;this.enabledGraphs=new Set();this.samples=[];this.last=0;this.dirty=true;this.lifecycle=new AbortController();
   host.classList.add('exp-shell');host.innerHTML=`<div class="exp-tools"><button data-exp="setup" aria-expanded="false">Setup</button><button data-exp="graphs" aria-expanded="false">Graphs</button><button data-exp="breakdown" aria-pressed="false">Breakdown</button></div><div class="exp-setup" hidden></div><div class="exp-scene"><canvas aria-label="${esc(model.title)} interactive apparatus"></canvas><div class="exp-closeups"></div><button class="exp-zoom-back" data-exp="scene" hidden>← Full scene</button><div class="exp-key"></div></div><div class="exp-equation exp-closeup-equation" hidden></div><div class="exp-equations" hidden></div><div class="exp-graph-panel" hidden><p class="exp-graph-status" role="status"></p><div class="exp-graph-choices"></div><div class="exp-graphs"></div></div><p class="exp-note" role="status"></p><div class="exp-transport"><button data-exp="play" aria-label="Play" title="Play">${controlIcon('play')}</button><button data-exp="reset" aria-label="Reset" title="Reset">${controlIcon('reset')}</button><input class="exp-time" type="range" min="0" max="60" step="0.01" value="0" aria-label="Time"><output class="exp-clock">0.00 s</output><select class="exp-speed" aria-label="Playback speed"><option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option></select></div>`;
   const q=s=>host.querySelector(s);this.q=q;this.stage=new VectorStage(q('canvas'));this.setup=q('.exp-setup');this.scene=q('.exp-scene');this.equations=q('.exp-equations');this.graphs=[];
   if(onBack){const back=document.createElement('button');back.className='exp-gallery-back';back.textContent='←';back.setAttribute('aria-label','Back to Experiments');back.title='Back to Experiments';back.onclick=onBack;q('.exp-tools').prepend(back);}
@@ -23,12 +25,15 @@ export class ExperimentShell {
    if(a==='preset'){const p=model.presets.find(p=>p.id===b.dataset.id);if(p&&this.setParams(p.values))q('.exp-note').textContent=p.note||'';}
    if(a==='closeup')this.setCloseup(b.dataset.id);if(a==='scene')this.setCloseup('');
    if(a==='graph'){const id=b.dataset.id;this.enabledGraphs.has(id)?this.enabledGraphs.delete(id):this.enabledGraphs.add(id);this.syncGraphVisibility();this.changed();}
-  });
-  host.addEventListener('change',this.change=e=>{const key=e.target.dataset.param;if(key){const p=model.params.find(p=>p.key===key);this.setParams({[key]:p.options?p.options.find(o=>String(o.value)===e.target.value)?.value:Number(e.target.value)});}if(e.target.matches('.exp-speed'))this.speed=Number(e.target.value);});
-  q('.exp-time').addEventListener('input',()=>{this.setPlaying(false);this.seek(Number(q('.exp-time').value));});
+  },{signal:this.lifecycle.signal});
+  host.addEventListener('change',this.change=e=>{const key=e.target.dataset.param;if(key){const p=model.params.find(p=>p.key===key);this.setParams({[key]:p.options?p.options.find(o=>String(o.value)===e.target.value)?.value:Number(e.target.value)});}if(e.target.matches('.exp-speed'))this.speed=Number(e.target.value);this.invalidate();},{signal:this.lifecycle.signal});
+  q('.exp-time').addEventListener('input',()=>{this.setPlaying(false);this.seek(Number(q('.exp-time').value));},{signal:this.lifecycle.signal});
   const canvas=q('canvas');const pointer=e=>{const r=canvas.getBoundingClientRect(),type=e.type.replace('pointer',''),pt={type,x:e.clientX-r.left,y:e.clientY-r.top};if(view.pointer?.(this.stage,this.frame(),pt)){e.preventDefault();if(type==='down')canvas.setPointerCapture(e.pointerId);}if(type==='up'||type==='cancel')if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);};
-  for(const event of ['pointerdown','pointermove','pointerup','pointercancel'])canvas.addEventListener(event,pointer);
-  this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(host);this.observer.observe(this.scene);this.tick=this.tick.bind(this);this.raf=requestAnimationFrame(this.tick);this.draw();
+  for(const event of ['pointerdown','pointermove','pointerup','pointercancel'])canvas.addEventListener(event,pointer,{signal:this.lifecycle.signal});
+  // Also wake custom stages (e.g. OrbitControls) without an always-running idle loop.
+  for(const event of ['pointerdown','pointermove','pointerup','wheel'])host.addEventListener(event,()=>{this.interactionUntil=performance.now()+500;this.invalidate();},{passive:true,signal:this.lifecycle.signal});
+  document.addEventListener('visibilitychange',()=>{this.last=0;if(document.hidden){cancelAnimationFrame(this.raf);this.raf=0;}else this.invalidate();},{signal:this.lifecycle.signal});
+  this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(host);this.observer.observe(this.scene);this.tick=this.tick.bind(this);this.tickReady=true;this.draw();this.wake();
  }
  setupHTML(){
   const group=new Map();for(const p of this.model.params){if(!group.has(p.group||'Setup'))group.set(p.group||'Setup',[]);group.get(p.group||'Setup').push(p);}
@@ -44,20 +49,23 @@ export class ExperimentShell {
  }
  resetModel(){this.cancelSeek();this.instance=prepareCandidate(this.model,{},this.params).instance;this.startForecast();this.stage.snap=true;this.q('.exp-note').textContent='';}
  startForecast(){
+  this.workController?.abort();this.workController=new AbortController();this.signal=this.workController.signal;this.forecastResume=null;
   const generation=this.forecastGeneration=(this.forecastGeneration||0)+1;clearTimeout(this.forecastTimer);cancelAnimationFrame(this.forecastFrame);
   this.duration=60;this.endTime=null;this.q('.exp-time').max=this.duration;
   this.samples=[this.instance.sample()];this.forecastComplete=false;this.forecastError='';
   this.observeEnd(this.samples[0]);
-  const iterator=timelineBatches(this.model,{...this.params},{duration:this.duration,batchSize:8});
+  const iterator=timelineBatches(this.model,{...this.params},{duration:this.duration,batchSize:1});
   const batch=()=>{
    if(this.destroyed||generation!==this.forecastGeneration)return;
-   try{const result=iterator.next();if(result.done){this.forecastComplete=true;this.graphStatus();return;}
-    for(const sample of result.value){if(this.samples.at(-1)?.t!==sample.t&&this.samples.length<3601)this.samples.push(sample);if(sample.ended===true){this.observeEnd(sample);this.forecastComplete=true;this.graphStatus();return;}}
-    this.graphStatus();this.forecastTimer=setTimeout(batch,0);
+   if(!this.visible()){this.forecastResume=batch;return;}
+   try{const deadline=performance.now()+(this.playing?8:14);do{const result=iterator.next();if(result.done){this.forecastComplete=true;this.graphStatus();this.invalidate();return;}
+    for(const sample of result.value){if(this.samples.at(-1)?.t!==sample.t&&this.samples.length<3601)this.samples.push(sample);if(sample.ended===true){this.observeEnd(sample);this.forecastComplete=true;this.graphStatus();this.invalidate();return;}}
+    }while(performance.now()<deadline);
+    this.graphStatus();this.invalidate();yieldTask().then(batch);
    }catch(error){this.forecastError=error.message||'The trajectory stopped.';this.graphStatus();}
   };
   // A first paint is guaranteed before any forecast integration starts.
-  this.forecastFrame=requestAnimationFrame(()=>{this.forecastTimer=setTimeout(batch,0);});this.graphStatus();
+  this.forecastFrame=requestAnimationFrame(()=>{yieldTask().then(batch);});this.graphStatus();
  }
  observeEnd(sample){
   if(sample?.ended!==true||!Number.isFinite(sample.t)||sample.t<0||sample.t>60||this.endTime!==null&&sample.t>=this.endTime)return;
@@ -70,7 +78,11 @@ export class ExperimentShell {
  }
  graphStatus(){const end=this.samples.at(-1)?.t||0;this.q('.exp-graph-status').textContent=this.forecastError?'Graph available through '+end.toFixed(2)+' s · '+this.forecastError:this.forecastComplete?'':'Computing graphs · '+end.toFixed(1)+' / '+this.duration+' s';}
 
- frame(){return {instance:this.instance,params:this.params,sample:this.instance.sample(),geometry:this.instance.geometry(),t:this.instance.t,breakdown:this.breakdown,closeup:this.closeup,samples:this.samples,setParams:p=>this.setParams(p),setCloseup:id=>this.setCloseup(id)};}
+ frame(){return {instance:this.instance,params:this.params,sample:this.instance.sample(),geometry:this.instance.geometry(),t:this.instance.t,breakdown:this.breakdown,closeup:this.closeup,samples:this.samples,signal:this.signal,invalidate:()=>this.invalidate(),setParams:p=>this.setParams(p),setCloseup:id=>this.setCloseup(id)};}
+ onCleanup(cleanup){const signal=this.signal;if(signal.aborted){cleanup();return ()=>{};}signal.addEventListener('abort',cleanup,{once:true});return ()=>signal.removeEventListener('abort',cleanup);}
+ visible(){return !document.hidden&&this.host.isConnected&&this.host.getClientRects().length>0;}
+ wake(){if(this.destroyed||!this.tickReady||!this.visible())return;if(this.forecastResume){const resume=this.forecastResume;this.forecastResume=null;yieldTask().then(resume);}if(!this.raf)this.raf=requestAnimationFrame(this.tick);}
+ invalidate(){if(this.destroyed)return;this.dirty=true;this.wake();}
  graphDescriptors(){return this.view.graphDescriptors?.(this.params)||this.view.graphs||[];}
  makeGraphs(){this.q('.exp-graphs').replaceChildren();this.graphs=this.graphDescriptors().map(d=>{const host=document.createElement('section');host.dataset.graph=d.id;this.q('.exp-graphs').append(host);return {id:d.id,host,plot:d.kind==='custom'?new CustomGraph(host,d,(stage,descriptor,frame)=>this.view.drawGraph?.(stage,descriptor,frame)):new LinkedGraph(host,d)};});this.q('.exp-graph-choices').innerHTML=this.graphs.map(g=>`<button data-exp="graph" data-id="${esc(g.id)}">${esc(this.graphDescriptors().find(d=>d.id===g.id).label)}</button>`).join('');this.syncGraphVisibility();}
  syncGraphVisibility(){this.host.classList.toggle('is-graphs-open',!this.q('.exp-graph-panel').hidden);for(const g of this.graphs)g.host.hidden=!this.enabledGraphs.has(g.id);for(const b of this.q('.exp-graph-choices').children)b.setAttribute('aria-pressed',String(this.enabledGraphs.has(b.dataset.id)));this.draw();}
@@ -98,22 +110,39 @@ export class ExperimentShell {
   return this.seeker.run(this.model,this.params,this.seekTarget,{immediate,onComplete:candidate=>{if(this.destroyed)return;this.instance=candidate;this.observeEnd(candidate.sample());this.q('.exp-note').textContent='';this.draw();this.changed();},onError:error=>{this.q('.exp-note').textContent=error.message||'This time could not be reached.';this.draw();}});
  }
 
- setPlaying(value){if(value){this.cancelSeek();if(this.instance.t>=this.duration-1e-8||this.instance.sample().ended===true)this.instance.reset();}this.playing=!!value;const b=this.q('[data-exp=play]');b.innerHTML=controlIcon(this.playing?'pause':'play');b.setAttribute('aria-label',this.playing?'Pause':'Play');b.title=this.playing?'Pause':'Play';this.changed();}
+ setPlaying(value){const wasPlaying=this.playing;if(value){this.cancelSeek();if(this.instance.t>=this.duration-1e-8||this.instance.sample().ended===true)this.instance.reset();}this.playing=!!value;const b=this.q('[data-exp=play]');b.innerHTML=controlIcon(this.playing?'pause':'play');b.setAttribute('aria-label',this.playing?'Pause':'Play');b.title=this.playing?'Pause':'Play';if(wasPlaying&&!this.playing)this.draw?.();if(this.playing)this.wake?.();this.changed();}
  reset(){this.cancelSeek();this.setPlaying(false);this.instance.reset();this.closeup='';this.scene.classList.remove('is-closeup');this.stage.snap=true;this.q('.exp-zoom-back').hidden=true;this.draw();this.changed();}
  setCloseup(id){if(id&&!(this.view.closeups||this.manifest.closeups||[]).some(c=>c.id===id))return;this.closeup=id;this.q('.exp-zoom-back').hidden=!id;this.scene.classList.toggle('is-closeup',!!id);this.draw();this.changed();}
  setBreakdown(value){this.breakdown=!!value;this.q('[data-exp=breakdown]').setAttribute('aria-pressed',String(this.breakdown));this.equations.hidden=!this.breakdown;this.draw();this.changed();}
- equation(el,lines){const signature=JSON.stringify(lines);if(el.dataset.signature===signature)return;el.dataset.signature=signature;el.innerHTML=lines.map(s=>`<div class="exp-equation">\\[${esc(s)}\\]</div>`).join('');math(el);}
- draw(){if(this.destroyed||!this.instance)return;const frame=this.frame();this.stage.resize();this.stage.begin();if(this.custom)this.custom.draw(frame);else this.view.draw(this.stage,frame);this.q('.exp-clock').textContent=frame.t.toFixed(2)+' s';this.q('.exp-time').value=this.seeker.pending?Math.min(this.duration,this.seekTarget):frame.t;
-  this.equations.hidden=!this.breakdown;if(this.breakdown)this.equation(this.equations,this.view.equations?.(frame)||[]);
-  const zoom=this.q('.exp-closeup-equation');zoom.hidden=!this.closeup;if(this.closeup){const lines=this.view.closeupEquation?.(frame)||'';this.equation(zoom,Array.isArray(lines)?lines:[lines]);}
+ equation(el,lines){
+  const pending=this.playing&&el.equationPending;lines=pending?.lines||lines;const signature=pending?.signature||JSON.stringify(lines);
+  if(el.dataset.signature===signature){el.equationAt=performance.now();return;}
+  // Keep unchanged blocks and their layout. During playback, split changed blocks
+  // across frames; pausing always flushes the exact current strings synchronously.
+  if(!el.children){el.innerHTML=lines.map(s=>`<div class="exp-equation">\\[${esc(s)}\\]</div>`).join('');math(el);}
+  else {
+   while(el.children.length>lines.length)el.lastElementChild.remove();let rendered=0;
+   for(let i=0;i<lines.length;i++){
+    let row=el.children[i];if(!row){row=document.createElement('div');row.className='exp-equation';el.append(row);}
+    if(row.dataset.tex===lines[i])continue;
+    if(this.playing&&rendered){el.equationPending={lines,signature};this.invalidate();return;}
+    row.dataset.tex=lines[i];row.innerHTML=`\\[${esc(lines[i])}\\]`;math(row);rendered++;
+   }
+  }
+  el.equationPending=null;el.equationAt=performance.now();el.dataset.signature=signature;
+ }
+ draw(){if(this.destroyed||!this.instance)return;if(!this.visible()){this.dirty=true;return;}this.dirty=false;const camera=this.stage.camera?{...this.stage.camera}:null,frame=this.frame();this.stage.resize();this.stage.begin();if(this.custom)this.custom.draw(frame);else this.view.draw(this.stage,frame);this.q('.exp-clock').textContent=frame.t.toFixed(2)+' s';this.q('.exp-time').value=this.seeker.pending?Math.min(this.duration,this.seekTarget):frame.t;
+  const now=performance.now();this.equations.hidden=!this.breakdown;if(this.breakdown&&(this.equations.equationPending||equationDue(this.playing,this.equations.equationAt,now)))this.equation(this.equations,this.view.equations?.(frame)||[]);
+  const zoom=this.q('.exp-closeup-equation');zoom.hidden=!this.closeup;if(this.closeup&&(zoom.equationPending||equationDue(this.playing,zoom.equationAt,now))){const lines=this.view.closeupEquation?.(frame)||'';this.equation(zoom,Array.isArray(lines)?lines:[lines]);}
   const anchors=this.view.closeupAnchors?.(this.stage,frame);this.q('.exp-closeups').classList.toggle('has-anchors',!!anchors);if(anchors)for(const button of this.q('.exp-closeups').children){const a=anchors[button.dataset.id];if(a){button.style.left=Math.max(button.offsetWidth/2+8,Math.min(this.stage.w-button.offsetWidth/2-8,a.x))+'px';button.style.top=Math.min(this.stage.h-40,a.y)+'px';}}
   if(this.view.key)this.q('.exp-key').textContent=this.view.key(frame);
   if(!this.q('.exp-graph-panel').hidden)for(const g of this.graphs)if(!g.host.hidden)g.plot.draw(this.samples,this.instance.t,frame);
+  this.cameraMoving=!!camera&&Object.keys(camera).some(key=>Math.abs(camera[key]-this.stage.camera[key])>.001);if(this.dirty||this.cameraMoving||this.playing)this.wake();
  }
- tick(now){if(this.destroyed)return;const elapsed=this.last?Math.min(.06,(now-this.last)/1000):0;this.last=now;if(this.playing&&this.host.isConnected&&this.host.getClientRects().length){try{this.instance.step(Math.max(0,Math.min(elapsed*this.speed,this.duration-this.instance.t)));this.observeEnd(this.instance.sample());if(this.playing&&this.instance.t>=this.duration-1e-8)this.setPlaying(false);}catch(error){this.setPlaying(false);this.q('.exp-note').textContent=error.message||'Motion stopped at this state.';}}this.draw();this.raf=requestAnimationFrame(this.tick);}
+ tick(now){this.raf=0;if(this.destroyed)return;if(!this.visible()){this.last=0;return;}const elapsed=this.last?Math.min(.06,(now-this.last)/1000):0;this.last=now;if(this.playing){try{this.instance.step(Math.max(0,Math.min(elapsed*this.speed,this.duration-this.instance.t)));this.observeEnd(this.instance.sample());if(this.playing&&this.instance.t>=this.duration-1e-8)this.setPlaying(false);}catch(error){this.setPlaying(false);this.q('.exp-note').textContent=error.message||'Motion stopped at this state.';}}if(this.playing||this.dirty||this.cameraMoving||now<(this.interactionUntil||0))this.draw();if(this.playing||this.dirty||this.cameraMoving||now<(this.interactionUntil||0))this.wake();else this.last=0;}
  snapshot(){return {params:{...this.params},t:this.instance.t,observables:this.instance.sample(),playing:this.playing,closeup:this.closeup,breakdown:this.breakdown,graphs:[...this.enabledGraphs]};}
  changed(){this.onChange(this.snapshot());}
  apply(a){if(!a)return;if(a.type==='set_params')return this.setParams(a.values);if(a.type==='preset'){const p=this.model.presets.find(p=>p.id===a.id);return p?this.setParams(p.values):false;}if(a.type==='play')this.setPlaying(true);if(a.type==='pause')this.setPlaying(false);if(a.type==='reset')this.reset();if(a.type==='closeup')this.setCloseup(a.id);if(a.type==='breakdown')this.setBreakdown(a.enabled);if(a.type==='graph'){a.enabled?this.enabledGraphs.add(a.id):this.enabledGraphs.delete(a.id);this.setGraphsOpen(true);this.changed();}}
- resize(){this.stage.resize();this.custom?.resize?.();this.draw();}
- destroy(){this.destroyed=true;this.cancelSeek();cancelAnimationFrame(this.graphRevealFrame);this.forecastGeneration++;clearTimeout(this.forecastTimer);cancelAnimationFrame(this.forecastFrame);cancelAnimationFrame(this.raf);this.observer.disconnect();this.custom?.destroy?.();this.host.removeEventListener('click',this.click);this.host.removeEventListener('change',this.change);this.host.replaceChildren();}
+ resize(){if(this.destroyed)return;if(!this.visible()){cancelAnimationFrame(this.raf);this.raf=0;this.last=0;this.dirty=true;return;}this.stage.resize();this.custom?.resize?.();this.draw();}
+ destroy(){if(this.destroyed)return;this.destroyed=true;this.workController?.abort();this.lifecycle.abort();this.cancelSeek();cancelAnimationFrame(this.graphRevealFrame);this.forecastGeneration++;this.forecastResume=null;clearTimeout(this.forecastTimer);cancelAnimationFrame(this.forecastFrame);cancelAnimationFrame(this.raf);this.observer.disconnect();this.custom?.destroy?.();this.host.replaceChildren();this.graphs=[];this.samples=[];this.onChange=()=>{};}
 }

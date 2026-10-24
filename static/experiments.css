@@ -26,4 +26,7 @@
  .teacher.tv-experiment-thread:not(.tv-paged).visual-open:not(.visual-expanded),.teacher.tv-experiment-thread.tv-side-open:not(.tv-paged).visual-open:not(.visual-expanded){grid-template-columns:0 minmax(0,1fr) 0}
  .exp-gallery{padding:25px 18px 50px}.exp-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}.exp-gallery-head{margin-bottom:30px}.exp-method{display:none}.exp-tools{padding:8px;gap:4px}.exp-tools button{padding:6px 9px;font-size:12px}.exp-scene{flex-basis:340px}.exp-shell.is-graphs-open .exp-scene{flex:0 0 280px;min-height:280px}.exp-params{grid-template-columns:1fr}.exp-shell .exp-scene.is-closeup{min-height:280px}.exp-closeup-equation{font-size:11px}.exp-back span{display:none}.exp-back{padding:7px 10px;white-space:nowrap}
 }
+/* Contain live math reflow within the artifact, preserving its intrinsic height. */
+.exp-equations,.exp-closeup-equation{contain:layout style}
+.exp-equation{contain:layout style paint}
 @media(prefers-reduced-motion:reduce){.exp-card{transition:none}}
