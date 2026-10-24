@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const source=await readFile(new URL('../../static/js/experiments/minkowski/model.js',import.meta.url),'utf8');
-const {model,C,gamma,boost,interval,addVelocity}=await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+const {model,C,gamma,boost,interval,addVelocity,transformFourVector,transformTensor,symmetrizeTensor,lightWavefront}=await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
 // Every analytic assertion supplies an absolute tolerance in the quantity's units.
 function near(actual,expected,tolerance,message='') {
   assert.ok(Math.abs(actual-expected)<=tolerance,`${message}: ${actual} vs ${expected}; absolute tolerance ${tolerance}`);
@@ -101,4 +101,75 @@ test('exact step/reset, reject invalid inputs, geometry snapshots isolated (abso
   assert.equal(m.geometry().ground.worldlines[0].points[0].x,0);
   for(const values of [{beta:1},{beta:NaN},{length:-1},{frame:'oops'},{scenario:'oops'}])assert.throws(()=>model.create(values),RangeError);
   for(const dt of [-1,Infinity,NaN])assert.throws(()=>m.step(dt),RangeError);
+});
+test('arbitrary-direction boost preserves interval and reverses: 2e-13 s², 2e-6 m',()=>{
+  const b={x:.3,y:-.4,z:.2},a={t:2,x:.7*C,y:.2*C,z:-.4*C};
+  const v=boost(a,b),back=boost(v,{x:-.3,y:.4,z:-.2});
+  near(interval(v)/C**2,interval(a)/C**2,2e-13);
+  near(back.t,a.t,2e-13);for(const axis of ['x','y','z'])near(back[axis],a[axis],2e-6);
+  assert.throws(()=>model.create({beta:.8,betaY:.8}),RangeError);
+});
+test('each original body type: simultaneous contracted outlines, transverse width unchanged (2e-6 m, 1e-13 s)',()=>{
+  for(const objectType of ['rod','rocket','rectangle','barn','ball']){
+    const m=model.create({scenario:'objects',objectType,length:C,objectBetaX:.6,beta:.6});m.step(1);
+    const {ground,moving}=m.geometry().solids[0];
+    for(const a of [...ground,...moving])near(a.t,1,1e-13);
+    const extent=(a,k)=>Math.max(...a.map(v=>v[k]))-Math.min(...a.map(v=>v[k]));
+    near(extent(ground,'x'),extent(moving,'x')*.8,2e-6);
+    near(extent(ground,'y'),extent(moving,'y'),2e-6);
+    if(objectType==='rod')near(extent(moving,'x'),C,2e-6);
+    if(objectType==='rectangle')near(extent(moving,'y'),.3*C,2e-6);
+    if(objectType==='ball')assert.equal(ground.length,1);
+  }
+});
+test('oblique object outlines satisfy inverse simultaneous-slice contraction (3e-6 m, 1e-13 s)',()=>{
+  const m=model.create({scenario:'objects',objectType:'rectangle',objectBetaX:.3,objectBetaY:.4,objectBetaZ:.2,beta:.3,betaY:.4,betaZ:.2,length:C});m.step(.7);
+  const a=m.geometry().solids[0].moving;
+  near(Math.abs(a[1].x-a[0].x),C,3e-6);near(Math.abs(a[3].y-a[0].y),.3*C,3e-6);
+  for(const p of a){near(p.t,.7,1e-13);near(p.z,0,3e-6);}
+});
+test('flash fronts are spherical null sections in both frames; no pre-emission front (2e-13 s², 2e-6 m)',()=>{
+  const emission={t:.5,x:.2*C,y:-.3*C,z:.1*C};
+  for(const beta of [0,{x:.3,y:.4,z:.2}]){
+    const e=boost(emission,beta);assert.equal(lightWavefront(emission,e.t-.1,beta).visible,false);
+    const f=lightWavefront(emission,e.t+1,beta);near(f.radius,C,2e-6);
+    for(const ring of f.rings)for(const p of ring)near(interval(p,e)/C**2,0,2e-13);
+  }
+  const m=model.create({scenario:'flashes',frame:'moving'});assert.equal(m.geometry().wavefronts.filter(f=>f.visible).length,1);
+});
+test('four-vector and rank-two transforms invert and preserve metric/symmetry (2e-12 dimensionless)',()=>{
+  const b={x:.3,y:.4,z:-.2},inv={x:-.3,y:-.4,z:.2},v=[2,1,.2,-.4];
+  const norm=a=>a[0]**2-a.slice(1).reduce((s,v)=>s+v*v,0),vp=transformFourVector(v,b);
+  near(norm(vp),norm(v),2e-12);
+  transformFourVector(vp,inv).forEach((x,i)=>near(x,v[i],2e-12));
+  const a=Array.from({length:4},(_,i)=>Array.from({length:4},(_,j)=>i*4+j-5));
+  for(const mode of ['none','symmetric','antisymmetric']){
+    const t=symmetrizeTensor(a,mode),tp=transformTensor(t,b),back=transformTensor(tp,inv);
+    for(let i=0;i<4;i++)for(let j=0;j<4;j++){
+      near(back[i][j],t[i][j],2e-12);
+      if(mode!=='none')near(tp[i][j],(mode==='symmetric'?1:-1)*tp[j][i],2e-12);
+    }
+  }
+  const metric=[[1,0,0,0],[0,-1,0,0],[0,0,-1,0],[0,0,0,-1]],transformed=transformTensor(metric,b);
+  transformed.forEach((row,i)=>row.forEach((x,j)=>near(x,metric[i][j],2e-12)));
+  const f=[[0,1,0,0],[-1,0,0,0],[0,0,0,0],[0,0,0,0]],fp=transformTensor(f,{x:0,y:.6,z:0});
+  near(fp[1][0],-1.25,2e-12);near(fp[2][1],-.75,2e-12);
+  const contraction=t=>t.reduce((s,row,i)=>s+row.reduce((a,x,j)=>a+(i===0?1:-1)*(j===0?1:-1)*x*x,0),0);
+  near(contraction(fp),-2,2e-12);
+  const m=model.create({scenario:'tensor'}),snapshot=m.geometry();snapshot.calculator.tensor.ground[0][1]=99;snapshot.calculator.vector.ground[0]=99;
+  assert.equal(m.geometry().calculator.tensor.ground[0][1],1);assert.equal(m.geometry().calculator.vector.ground[0],0);
+});
+test('six independent original object types coexist with distinct motion and flashes (3e-6 m, 1e-13 s)',()=>{
+  const p={scenario:'objects',bodyCount:6,objectType:'rod',objectBetaX:.1,
+    body2Type:'rocket',body2BetaX:-.2,body3Type:'rectangle',body3BetaY:.3,
+    body4Type:'barn',body4BetaZ:-.4,body5Type:'ball',body5BetaX:.5,
+    body6Type:'flash',body6EmissionTime:.1,beta:.3,betaY:.2,betaZ:.1};
+  const m=model.create(p),before=m.geometry();assert.equal(before.solids.length,5);assert.equal(before.wavefronts[0].visible,false);
+  m.step(.2);const after=m.geometry(),velocities=[[.1,0,0],[-.2,0,0],[0,.3,0],[0,0,-.4],[.5,0,0]];
+  for(let i=0;i<5;i++)for(let axis=0;axis<3;axis++){
+    const k=['x','y','z'][axis];near(after.solids[i].ground[0][k]-before.solids[i].ground[0][k],C*.2*velocities[i][axis],3e-6);
+    for(const vertex of after.solids[i].moving)near(vertex.t,.2,1e-13);
+  }
+  assert.equal(after.wavefronts[0].visible,true);near(after.wavefronts[0].radius,.1*C,3e-6);
+  for(const v of [{bodyCount:1.5},{bodyCount:7},{bodyCount:2,body2BetaX:.8,body2BetaY:.8}])assert.throws(()=>model.create(v),RangeError);
 });

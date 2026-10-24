@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const source=await readFile(new URL('../../static/js/experiments/rel-kinematics/model.js',import.meta.url),'utf8');
-const {model,C,H_C,masses,boostMomentum,sumMomentum,massSquared,invariantMass,twoBodyMomentum,thresholdKinetic,comptonEnergy}=await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+const {model,C,H_C,masses,boostMomentum,sumMomentum,massSquared,invariantMass,twoBodyMomentum,thresholdKinetic,comptonEnergy,histogram,plotVariables}=await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
 function near(a,b,tol,label=''){assert.ok(Math.abs(a-b)<=tol,`${label}: ${a} vs ${b}; absolute tolerance ${tol}`);}
 function conserve(m,tol=1e-8) {
   for(const f of ['lab','cm']) {
@@ -105,6 +105,48 @@ test('all presets finite, SI straight-line playback, step/reset and validation (
     m.reset();assert.equal(m.t,0);
     const snapshot=m.geometry();snapshot.lab.initial[0].E=-1;assert.ok(m.geometry().lab.initial[0].E>0);
   }
-  for(const v of [{beta:1},{kinetic:NaN},{mass2:0},{reaction:'oops'},{frame:'oops'}])assert.throws(()=>model.create(v),RangeError);
+  for(const v of [{beta:1},{kinetic:NaN},{reaction:'elastic',mass2:0},{reaction:'oops'},{frame:'oops'}])assert.throws(()=>model.create(v),RangeError);
   const m=model.create();for(const dt of [-1,Infinity,NaN])assert.throws(()=>m.step(dt),RangeError);
+});
+test('CUPS default pion/proton event and momentum input conserve four-momentum (1e-8 MeV, MeV/c)',()=>{
+  const m=model.create({reaction:'pion-proton',inputMode:'momentum',beamMomentum:100,angle:30});conserve(m);
+  near(m.geometry().lab.initial[0].px,100,1e-8);
+  near(m.geometry().lab.initial[0].E,Math.hypot(masses.pion,100),1e-8);
+  const decay=model.create({reaction:'pion-decay',inputMode:'momentum',beamMomentum:100});conserve(decay);
+  near(sumMomentum(decay.geometry().lab.final).px,100,1e-8);
+  const zero=model.create({reaction:'elastic',kinetic:0});conserve(zero);
+});
+test('all nine original plot quantities plus transfers are selectable in either frame/daughter (finite; invariant mass 1e-8 MeV/c²)',()=>{
+  for(const {value} of plotVariables)for(const xFrame of ['cm','lab'])for(const xParticle of [1,2]){
+    const m=model.create({reaction:'pion-proton',inputMode:'momentum',beamMomentum:100,xVariable:value,xFrame,xParticle});
+    const s=m.geometry().scatter;assert.equal(s.points.length,100);assert.equal(s.histogram.counts.reduce((a,b)=>a+b,0),100);
+    assert.ok(s.points.every(a=>Number.isFinite(a.x)&&Number.isFinite(a.y)));
+    if(value==='invariantMass')for(const a of s.points)near(a.x,m.sample().invariantMass,1e-8);
+  }
+  const absent=model.create({xParticle:3}).geometry().scatter;assert.equal(absent.available,false);assert.deepEqual(absent.points,[]);
+});
+test('plot angles and energy obey CM-to-lab boost; transfer is invariant (1e-8 MeV / MeV², 1e-10 degrees)',()=>{
+  const p={reaction:'pion-decay',beta:.8,eventCount:5,xVariable:'cosTheta',xFrame:'cm',yVariable:'energy',yFrame:'lab',yParticle:1};
+  const s=model.create(p).geometry().scatter,g=1/Math.sqrt(1-.8**2),E=masses.pion0/2;
+  for(const a of s.points)near(a.y,g*E*(1+.8*a.x),1e-8);
+  const cm=model.create({...p,xVariable:'transferSquared',xFrame:'cm'}).geometry().scatter;
+  const lab=model.create({...p,xVariable:'transferSquared',xFrame:'lab'}).geometry().scatter;
+  cm.points.forEach((a,i)=>near(a.x,lab.points[i].x,1e-8));
+  const opening=model.create({...p,xVariable:'openingAngle',xFrame:'cm'}).geometry().scatter;
+  for(const a of opening.points)near(a.x,180,1e-10);
+});
+test('seeded isotropic CM sampling is reproducible, balanced and Compton uses CM cosine (0.04 cosine mean; 1e-10 cosine)',()=>{
+  const p={reaction:'compton',distribution:'isotropic',eventCount:2048,seed:42,xVariable:'cosTheta',xFrame:'cm',xParticle:1};
+  const m=model.create(p),a=m.geometry().scatter,b=model.create(p).geometry().scatter;
+  assert.deepEqual(a,b);near(a.points.reduce((s,v)=>s+v.x,0)/a.points.length,0,.04);
+  for(const v of a.points)near(v.x,v.cosine,1e-10);
+  assert.notDeepEqual(a.points,model.create({...p,seed:43}).geometry().scatter.points);
+  a.points[0].x=99;assert.notEqual(m.geometry().scatter.points[0].x,99);
+});
+test('histogram includes upper edge and reports manual-range clipping (exact integer counts)',()=>{
+  const h=histogram([-1,0,.5,1,1.5,2,3],2,0,2);
+  assert.deepEqual(h.counts,[2,3]);assert.equal(h.underflow,1);assert.equal(h.overflow,1);
+  const s=model.create({xVariable:'theta',xFrame:'cm',eventCount:5,plotRange:'manual',xMin:45,xMax:135,yMin:0,yMax:180,bins:2}).geometry().scatter;
+  assert.equal(s.histogram.counts.reduce((a,b)=>a+b,0)+s.histogram.underflow+s.histogram.overflow,5);
+  for(const p of [{eventCount:5.5},{bins:2.5},{seed:0},{plotRange:'manual',xMin:2,xMax:1}])assert.throws(()=>model.create(p),RangeError);
 });
