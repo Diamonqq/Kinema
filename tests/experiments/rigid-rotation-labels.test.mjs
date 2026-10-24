@@ -27,3 +27,12 @@ test('arrow labels are placed along the arrow direction with a sticky choice and
  assert.match(text,/LABEL_TURNS/);assert.match(text,/entry\.choice/);assert.ok(!/previous\.x\+\(target\.x-previous\.x\)/.test(text));
  assert.match(text,/textAt\('e'\+\['₁','₂','₃'\]\[i\]/);
 });
+test('labels avoid every recorded arrow, chips use one rule, and Scene and Breakdown share one camera scale',async()=>{
+ const text=await readFile(new URL('view.js',dir),'utf8');
+ assert.match(text,/hitsArrow=a=>/);assert.match(text,/const A=\(o,vec,len,color,role,order\)=>/);assert.match(text,/shell\.rotationArrows=/);
+ assert.match(text,/LABEL_SIDE=/);assert.match(text,/later\(0,\(\)=>textAt\(label/);
+ assert.ok(!/f\.breakdown&&!f\.closeup\?\.7/.test(text),'Breakdown no longer has its own camera factor');
+ assert.ok(!/rr-breakdown \.exp-scene\{min-height:520px/.test(text),'Breakdown no longer has a taller scene');
+ assert.equal((text.match(/function chipLayout\(/g)||[]).length,1);assert.ok(!/SQRT1_2/.test(text),'no diagonal chip branch');
+ assert.match(text,/refH=Math\.min\(height,width<=500\?465:470\)/);
+});

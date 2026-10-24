@@ -134,7 +134,7 @@ export const view={graphs,closeups,
  },
  mount(shell){
   const host=shell.scene,root=document.createElement('div');root.className='rr-view';root.innerHTML='<div class="rr-captions"><span class="rr-title"></span><span class="rr-readout"></span></div><svg class="rr-leaders" aria-hidden="true"></svg><div class="rr-vector-labels"></div><div class="rr-frame-captions"></div>';
-  const style=document.createElement('style');style.textContent=`.rr-experiment .exp-scene{min-height:470px;flex-basis:470px}.rr-experiment .exp-scene.is-closeup{min-height:450px}.rr-experiment.is-graphs-open .exp-scene{min-height:280px;flex:0 0 280px}.rr-view{position:absolute;inset:0;pointer-events:none}.rr-experiment.rr-breakdown .exp-scene{min-height:520px;flex:1 0 520px}.rr-compact .rr-readout{font-size:10px}.rr-compact .rr-captions{font-size:11px}.rr-experiment .exp-note{padding-bottom:14px}.rr-experiment .exp-transport{background:#191e26;z-index:5;margin-top:auto}.rr-experiment .exp-tools{background:#191e26;z-index:5}.rr-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.rr-view canvas{position:absolute;inset:0;width:100%;height:100%}.rr-captions{position:absolute;left:12px;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:12px;z-index:1}.rr-title{color:#d5e0ed}.rr-readout{color:#8d9db2;font-size:11px;font-variant-numeric:tabular-nums}.is-closeup .rr-captions{top:45px}.rr-vector-labels{position:absolute;inset:0;z-index:1}.rr-vector-labels span{position:absolute;font-size:12px;padding:2px 5px;white-space:nowrap}.rr-frame-captions{position:absolute;inset:0;display:flex;justify-content:space-around;color:#8d9db2;font-size:11px}.rr-experiment .exp-closeups,.rr-experiment .exp-key{z-index:2}.rr-experiment .exp-key{font-size:10px;line-height:1.4}.rr-experiment .exp-equation{min-width:0;overflow:auto}.rr-experiment .exp-equation .katex{font-size:1em}@media(max-width:500px){.rr-experiment .exp-scene{min-height:465px}.rr-experiment .exp-scene.is-closeup{min-height:510px}.rr-experiment .exp-key{left:14px;right:14px}.rr-captions{font-size:11px}.rr-readout{font-size:10px}}`;
+  const style=document.createElement('style');style.textContent=`.rr-experiment .exp-scene{min-height:470px;flex-basis:470px}.rr-experiment .exp-scene.is-closeup{min-height:450px}.rr-experiment.is-graphs-open .exp-scene{min-height:280px;flex:0 0 280px}.rr-view{position:absolute;inset:0;pointer-events:none}.rr-compact .rr-readout{font-size:10px}.rr-compact .rr-captions{font-size:11px}.rr-experiment .exp-note{padding-bottom:14px}.rr-experiment .exp-transport{background:#191e26;z-index:5;margin-top:auto}.rr-experiment .exp-tools{background:#191e26;z-index:5}.rr-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.rr-view canvas{position:absolute;inset:0;width:100%;height:100%}.rr-captions{position:absolute;left:12px;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:12px;z-index:1}.rr-title{color:#d5e0ed}.rr-readout{color:#8d9db2;font-size:11px;font-variant-numeric:tabular-nums}.is-closeup .rr-captions{top:45px}.rr-vector-labels{position:absolute;inset:0;z-index:1}.rr-vector-labels span{position:absolute;font-size:12px;padding:2px 5px;white-space:nowrap}.rr-frame-captions{position:absolute;inset:0;display:flex;justify-content:space-around;color:#8d9db2;font-size:11px}.rr-experiment .exp-closeups,.rr-experiment .exp-key{z-index:2}.rr-experiment .exp-key{font-size:10px;line-height:1.4}.rr-experiment .exp-equation{min-width:0;overflow:auto}.rr-experiment .exp-equation .katex{font-size:1em}@media(max-width:500px){.rr-experiment .exp-scene{min-height:465px}.rr-experiment .exp-scene.is-closeup{min-height:510px}.rr-experiment .exp-key{left:14px;right:14px}.rr-captions{font-size:11px}.rr-readout{font-size:10px}}`;
   shell.host.classList.add('rr-experiment');shell.host.append(style);host.append(root);
   const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);root.prepend(renderer.domElement);renderer.domElement.setAttribute('aria-label','3D rigid body, angular velocity, angular momentum and torque');
   const scene=new THREE.Scene(),content=new THREE.Group();scene.add(content);scene.add(new THREE.HemisphereLight(0xdcecff,0x192131,2.4));const light=new THREE.DirectionalLight(0xffffff,3);light.position.set(3,-4,6);scene.add(light);
@@ -148,28 +148,31 @@ export const view={graphs,closeups,
    instance=probe;traceBody=[];traceSpace=[];lastTrace=-1;
   }
   function cameraFor(width,height,extent){const aspect=width/Math.max(1,height);const halfHeight=extent/Math.min(1,aspect);camera.left=-halfHeight*aspect;camera.right=halfHeight*aspect;camera.top=halfHeight;camera.bottom=-halfHeight;camera.near=.01;camera.far=100;camera.updateProjectionMatrix();camera.updateMatrixWorld(true);}
-  const origin3=new THREE.Vector3(),labelNodes=new Map(),leaderNodes=new Map(),panelLabels=[];let currentPanel=0,topMargin=3,area3={x:0,y:0,w:0,h:0},leaderLengths=[],tips=[];
+  const origin3=new THREE.Vector3(),labelNodes=new Map(),leaderNodes=new Map(),panelLabels=[];let currentPanel=0,currentObstacles=[],arrowBoxes=[],topMargin=3,area3={x:0,y:0,w:0,h:0},leaderLengths=[],tips=[];
   function cachedText(el,text){if(el.textContent!==text)el.textContent=text;}
   function cachedAttribute(el,name,value){if(el.getAttribute(name)!==value)el.setAttribute(name,value);}
 
   // A label stays on the line of its arrow just beyond the tip. Candidates are fixed
   // (angle then gap tier) relative to that direction; the previous choice is kept while
   // it stays valid, so a label never flips between frames and always follows its tip.
-  const LABEL_TURNS=[0,22.5,-22.5,45,-45,67.5,-67.5,90,-90,112.5,-112.5,135,-135,157.5,-157.5,180].map(a=>a*Math.PI/180),LABEL_TIERS=[0,10,20],LABEL_LEASH=30;
+  const LABEL_TURNS=Array.from({length:32},(_,i)=>(i%2?1:-1)*Math.ceil(i/2)*11.25*Math.PI/180),LABEL_TIERS=[0,8,16,24],LABEL_LEASH=30,LABEL_SIDE={'ω':1,'L':-1,'τ':1,'e₁':1,'e₂':-1,'e₃':1};
   function textAt(text,point,color,rect,placed){
    const projected=point.clone().project(camera),x=rect.x+(projected.x+1)*rect.w/2,y=rect.y+(1-projected.y)*rect.h/2;
    const centre=origin3.set(0,0,0).project(camera),ox=rect.x+(centre.x+1)*rect.w/2,oy=rect.y+(1-centre.y)*rect.h/2;
    const nodeKey=currentPanel+':'+text;let entry=labelNodes.get(nodeKey);
    if(!entry){const el=document.createElement('span');el.textContent=text;el.style.color=color;labels.append(el);entry={el,width:el.offsetWidth,height:el.offsetHeight,choice:-1};labelNodes.set(nodeKey,entry);retained.allocations.labels++;}
-   const el=entry.el;entry.used=true;el.hidden=false;tips.push({text,x,y,box:null});if(entry.color!==color){el.style.color=color;entry.color=color;}
+   const el=entry.el;entry.used=true;el.hidden=false;tips.push({text,x,y,box:null,panel:currentPanel});if(entry.color!==color){el.style.color=color;entry.color=color;}
    const width=entry.width,height=entry.height;
    let dx=x-ox,dy=y-oy;const len=Math.hypot(dx,dy);if(len<1e-6){dx=1;dy=0;}else{dx/=len;dy/=len;}
    const intersects=a=>placed.some(b=>a.x<b.x+b.width+3&&a.x+width+3>b.x&&a.y<b.y+b.height+3&&a.y+height+3>b.y);
+   // Clear of every recorded shaft and head (plus a pixel or two); the label's own tip keeps its 3 px gap.
+   const hitsArrow=a=>{for(const o of currentObstacles){const dx=o.x1-o.x0,dy=o.y1-o.y0,len=Math.hypot(dx,dy),n=Math.max(1,Math.ceil(len/1.5));for(let i=0;i<=n;i++){const t=i/n,px=o.x0+dx*t,py=o.y0+dy*t,back=len*(1-t),clear=Math.max(1.5,back<o.hl?o.hr*back/Math.max(1e-6,o.hl):0)+2;if(Math.hypot(Math.max(a.x-px,0,px-a.x-width),Math.max(a.y-py,0,py-a.y-height))<clear-.01)return true;}}return false;};
+   const side=LABEL_SIDE[text]??1;
    const leaderLength=a=>Math.hypot(Math.max(a.x,Math.min(a.x+width,x))-x,Math.max(a.y,Math.min(a.y+height,y))-y);
    // A panel edge may be crossed only as a last resort (stacked comparison panels in a short scene); the scene itself is never left.
-   let bounds=rect;const valid=a=>a.x>=bounds.x+3&&a.y>=bounds.y+topMargin&&a.x+width<=bounds.x+bounds.w-3&&a.y+height<=bounds.y+bounds.h-3&&!intersects(a)&&leaderLength(a)<=LABEL_LEASH;
+   let bounds=rect;const valid=a=>a.x>=bounds.x+3&&a.y>=bounds.y+topMargin&&a.x+width<=bounds.x+bounds.w-3&&a.y+height<=bounds.y+bounds.h-3&&!intersects(a)&&!hitsArrow(a)&&leaderLength(a)<=LABEL_LEASH;
    let squeeze=false;
-   const candidate=n=>{const tier=LABEL_TIERS[Math.floor(n/LABEL_TURNS.length)],turn=LABEL_TURNS[n%LABEL_TURNS.length],c=Math.cos(turn),s=Math.sin(turn),ux=dx*c-dy*s,uy=dx*s+dy*c,reachOut=Math.abs(ux)*width/2+Math.abs(uy)*height/2+3+tier;const c0={x:x+ux*reachOut-width/2,y:y+uy*reachOut-height/2};return squeeze?{x:Math.max(bounds.x+3,Math.min(bounds.x+bounds.w-3-width,c0.x)),y:Math.max(bounds.y+topMargin,Math.min(bounds.y+bounds.h-3-height,c0.y))}:c0;};
+   const candidate=n=>{const tier=LABEL_TIERS[Math.floor(n/LABEL_TURNS.length)],turn=LABEL_TURNS[n%LABEL_TURNS.length]*side,c=Math.cos(turn),s=Math.sin(turn),ux=dx*c-dy*s,uy=dx*s+dy*c,reachOut=Math.abs(ux)*width/2+Math.abs(uy)*height/2+3+tier;const c0={x:x+ux*reachOut-width/2,y:y+uy*reachOut-height/2};return squeeze?{x:Math.max(bounds.x+3,Math.min(bounds.x+bounds.w-3-width,c0.x)),y:Math.max(bounds.y+topMargin,Math.min(bounds.y+bounds.h-3-height,c0.y))}:c0;};
    let first=-1,position=null;const count=LABEL_TURNS.length*LABEL_TIERS.length;
    for(let n=0;n<count;n++)if(valid(candidate(n))){first=n;break;}
    if(first<0){squeeze=true;bounds={x:0,y:area3.y,w:area3.w,h:area3.h};for(let n=0;n<count;n++)if(valid(candidate(n))){first=n;break;}}
@@ -185,28 +188,28 @@ export const view={graphs,closeups,
     let record=leaderNodes.get(nodeKey);if(!record){const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('fill','none');el.setAttribute('stroke-opacity','.5');el.setAttribute('stroke-width','1');leaders.append(el);record={el};leaderNodes.set(nodeKey,record);retained.allocations.leaders++;}record.used=true;record.el.style.display='';cachedAttribute(record.el,'d',`M${x},${y} L${tx},${ty}`);cachedAttribute(record.el,'stroke',color);
    }
   }
-  function extentFor(f,zm,width,height){const p=f.params,factor=f.breakdown&&!f.closeup?.7:cameraExtentFactor(width,height,f.closeup),pad=factor<1&&p.shape==='corner-masses'?.11*Math.min(p.a,p.b,p.c):0;return bounds/zm*factor+pad;}
-  // Chips sit at fixed points just outside the apparatus keep-out circle (the motion sphere
-  // plus the longest arrow and its label), so rotation never reaches them. Wide panes use
-  // the upper-left, upper-right and lower-right corners of that circle; phones stack rows below it.
+  function chipSizes_(ids){return ids.map(id=>{const button=shell.q(`.exp-closeups [data-id="${id}"]`);let size=button&&chipSizes.get(button);if(!size||!size.w){size={w:button?.offsetWidth||0,h:button?.offsetHeight||0};if(button&&size.w)chipSizes.set(button,size);}return size.w?size:{w:130,h:32};});}
+  // Chips wrap into centred rows; Scene, Breakdown and Graphs all use this one arrangement.
+  function chipRows(ids,width){const sizes=chipSizes_(ids),rows=[[]],gap=8;let used=0;sizes.forEach((z,i)=>{if(rows.at(-1).length&&used+gap+z.w>width-16){rows.push([]);used=0;}used+=(rows.at(-1).length?gap:0)+z.w;rows.at(-1).push(i);});return {sizes,rows,rowH:36,gap};}
+  const reachOf=f=>{const p=f.params;return Math.max(norm(f.geometry.centreOfMass)+Math.hypot(p.a,p.shape==='rod'||p.shape==='symmetric-top'?p.a:p.b,p.c)/2,.78*bounds);};
+  // The camera extent never depends on Breakdown. It only grows when the chip rows below the
+  // apparatus would not fit, so Scene and Breakdown at one size show the apparatus at one scale.
+  function extentFor(f,zm,width,height){const p=f.params,pad=(factor)=>factor<1&&p.shape==='corner-masses'?.11*Math.min(p.a,p.b,p.c):0;
+   if(f.closeup){const factor=cameraExtentFactor(width,height,f.closeup);return bounds/zm*factor+pad(factor);}
+   // Pixels per world unit come from a reference height (the smaller of this scene and the 470/465 px minimum), so a taller
+   // Scene and a minimum-height Breakdown show the apparatus at one scale; extra height only adds centred room.
+   const refH=Math.min(height,width<=500?465:470),factor=cameraExtentFactor(width,refH,''),extent=bounds/zm*factor+pad(factor),ref=sceneLayout(width,refH,'').area,aspect=Math.min(1,ref.w/Math.max(1,ref.h)),
+    {rows,rowH}=chipRows(visibleTargets(f),width),ppu=(ref.h/2)/(extent/aspect),cy=ref.y+ref.h/2,allow=Math.max(40,refH-68-(rows.length-1)*rowH-4-cy-10),want=reachOf(f)*ppu,
+    ppuRef=want>allow?ppu*allow/want:ppu,area=sceneLayout(width,height,'').area;
+   return (area.h/2)*Math.min(1,area.w/Math.max(1,area.h))/ppuRef;}
+  // Chips sit in rows just below the apparatus keep-out circle (motion sphere or longest arrow and its label):
+  // a constant offset from the apparatus, so they move only when it does.
   function chipLayout(f,ids,width,height,area){
-   const p=f.params,g=f.geometry,narrow=width<430,dual=f.closeup==='frames'||f.closeup==='energy';
-   const pane=dual?(narrow?{w:area.w,h:area.h/2}:{w:area.w/2,h:area.h}):area;
-   const ext=extentFor(f,f.closeup?1.18:1,width,height),ppu=(pane.h/2)/(ext/Math.min(1,pane.w/Math.max(1,pane.h)));
-   const sphere=norm(g.centreOfMass)+Math.hypot(p.a,p.shape==='rod'||p.shape==='symmetric-top'?p.a:p.b,p.c)/2;
-   const keep=Math.max(sphere,.78*bounds)*ppu+10,cx=area.x+area.w/2,cy=area.y+area.h/2;
-   const sizes=ids.map(id=>{const button=shell.q(`.exp-closeups [data-id="${id}"]`);let size=button&&chipSizes.get(button);if(!size||!size.w){size={w:button?.offsetWidth||0,h:button?.offsetHeight||0};if(button&&size.w)chipSizes.set(button,size);}return size.w?size:{w:130,h:32};});
-   const anchors={};
-   const rowW=sizes.reduce((a,z)=>a+z.w,0)+8*(ids.length-1),rowY=cy-keep-Math.max(...sizes.map(z=>z.h),0)-6;
-   if(!narrow&&!dual&&rowY>=(f.closeup?88:60)&&rowW<=width-16){let x=(width-rowW)/2;ids.forEach((id,i)=>{anchors[id]={x:x+sizes[i].w/2,y:rowY};x+=sizes[i].w+8;});}
-   else if(!narrow&&!dual){ids.forEach((id,i)=>{const {w,h}=sizes[i],sx=i===1?1:-1,sy=i===2?1:-1,d=(keep+6)*Math.SQRT1_2;
-    anchors[id]={x:Math.max(w/2+8,Math.min(width-w/2-8,cx+sx*(d+w/2))),y:Math.max(area.y,Math.min(height-40,sy<0?cy-d-h:cy+d))};});}
-   else {
-    // Rows below the circle, centred, wrapping when a row would exceed the pane.
-    const rows=[[]],gap=8;let used=0;ids.forEach((id,i)=>{const w=sizes[i].w;if(rows.at(-1).length&&used+gap+w>width-16){rows.push([]);used=0;}used+=(rows.at(-1).length?gap:0)+w;rows.at(-1).push(i);});
-    const rowH=36,y0=Math.max(area.y,Math.min(height-64-(rows.length-1)*rowH,dual?area.y+area.h:cy+keep+4));
-    rows.forEach((row,r)=>{const total=row.reduce((a,i)=>a+sizes[i].w,0)+gap*(row.length-1);let x=(width-total)/2;for(const i of row){anchors[ids[i]]={x:x+sizes[i].w/2,y:y0+r*rowH};x+=sizes[i].w+gap;}});
-   }
+   const {sizes,rows,rowH,gap}=chipRows(ids,width),dual=f.closeup==='frames'||f.closeup==='energy';
+   const ext=extentFor(f,f.closeup?1.18:1,width,height),ppu=(area.h/2)/(ext/Math.min(1,area.w/Math.max(1,area.h)));
+   const keep=reachOf(f)*ppu+10,cx=area.x+area.w/2,cy=area.y+area.h/2,anchors={};
+   const y0=Math.max(area.y,Math.min(height-64-(rows.length-1)*rowH,dual?area.y+area.h:cy+keep+4));
+   rows.forEach((row,r)=>{const total=row.reduce((t,i)=>t+sizes[i].w,0)+gap*(row.length-1);let x=(width-total)/2;for(const i of row){anchors[ids[i]]={x:x+sizes[i].w/2,y:y0+r*rowH};x+=sizes[i].w+gap;}});
    return {anchors,sizes,keep:{x:cx,y:cy,r:keep}};
   }
   function draw(f){
@@ -227,7 +230,7 @@ export const view={graphs,closeups,
    cachedText(caption,f.closeup?closeups.find(c=>c.id===f.closeup)?.label.replace('Zoom · ',''):'Space frame · '+(p.shape==='custom'?'independent inertia':p.shape.replaceAll('-',' ')));
    let readoutText=energy?'Body ellipsoid / space tangent plane':f.closeup==='inertia'?`a ${num(p.a)} m · b ${num(p.b)} m · c ${num(p.c)} m`:`θ ${num(f.sample.theta)} rad · T ${num(f.sample.kinetic)} J`;
    if(norm(g.torqueSpace)<1e-10&&!energy)readoutText+=' · τ 0 N m';cachedText(readout,readoutText);
-   leaderLengths=[];tips=[];for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
+   leaderLengths=[];tips=[];arrowBoxes=[];for(const entry of labelNodes.values())entry.used=false;for(const entry of leaderNodes.values())entry.used=false;for(const label of panelLabels)label.hidden=true;cachedAttribute(leaders,'viewBox',`0 0 ${width} ${height}`);
    if(f.t-lastTrace>.025){traceBody.push([...g.omegaBody]);traceSpace.push([...g.omegaSpace]);if(traceBody.length>800){traceBody.shift();traceSpace.shift();}lastTrace=f.t;}
    const target=f.closeup?1.18:1,dt=Math.min(.1,(performance.now()-(draw.last||performance.now()))/1000);draw.last=performance.now();zoom+= (target-zoom)*(1-Math.exp(-dt*10));if(shell.stage.snap){zoom=target;shell.stage.snap=false;}
    const narrow=width<430,{top,area}=layout,showAxes=!layout.compact||f.closeup==='axis';
@@ -240,35 +243,44 @@ export const view={graphs,closeups,
     retained.begin();currentPanel=index;topMargin=3;area3=area;if(dual)placed.push({x:r.x+8,y:r.y+3,width:96,height:14});const bodyFrame=energy?index===0:compare?index===1:isBody;
     content.quaternion.copy(bodyFrame?q(g.quaternion).invert():new THREE.Quaternion());body.position.copy(v(g.centreOfMass));body.quaternion.copy(q(g.quaternion));body.visible=!energy;
     const extent=extentFor(f,zoom,width,height);cameraFor(r.w,r.h,extent);renderer.setViewport(r.x,height-r.y-r.h,r.w,r.h);renderer.setScissor(r.x,height-r.y-r.h,r.w,r.h);
+    const queue=[],later=(pri,fn)=>queue.push({pri,fn}),obstacles=[],pxPerUnit=(r.h/2)/camera.top;currentObstacles=obstacles;
+    // Every arrow is recorded in pixels (shaft and head) so labels keep clear of all of them; longer arrows draw first, shorter ones on top.
+    const A=(o,vec,len,color,role,order)=>{const ar=arrow(vectorLayer,o,vec,len,color,role);if(!ar)return ar;const rank=order??30+Math.round(40*(1-Math.min(1,len/bounds)));ar.traverse(x=>{x.renderOrder=rank;});
+     const dir=v(vec).normalize(),p0=v(o).applyQuaternion(content.quaternion).project(camera),p1=v(o).add(dir.clone().multiplyScalar(len)).applyQuaternion(content.quaternion).project(camera);
+     const box={x0:r.x+(p0.x+1)*r.w/2,y0:r.y+(1-p0.y)*r.h/2,x1:r.x+(p1.x+1)*r.w/2,y1:r.y+(1-p1.y)*r.h/2,hl:Math.min(.09,len*.22)*pxPerUnit,hr:Math.min(.05,len*.12)/2*pxPerUnit,panel:index};obstacles.push(box);arrowBoxes.push(box);return ar;};
     const origin=[0,0,0],basis=bodyFrame?[[1,0,0],[0,1,0],[0,0,1]]:g.principalAxes;
     if(energy){
      content.quaternion.identity();const scale=bounds*.65/Math.max(...g.inertiaEllipsoidRadii,1);const point=(bodyFrame?g.omegaBody:g.omegaSpace).map(x=>x*scale);
      if(bodyFrame){const ell=retained.mesh('ellipsoid',()=>new THREE.Mesh(new THREE.SphereGeometry(1,36,24),new THREE.MeshBasicMaterial({color:C.omega,wireframe:true,transparent:true,opacity:.18})));ell.scale.set(...g.inertiaEllipsoidRadii.map(x=>x*scale));}
      else {const size=bounds*.9,plane=retained.mesh('tangent',()=>new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshBasicMaterial({color:C.L,side:THREE.DoubleSide,transparent:true,opacity:.12})));const L=v(g.angularMomentumSpace);plane.quaternion.setFromUnitVectors(v([0,0,1]),L.clone().normalize());plane.position.copy(L.clone().multiplyScalar(2*f.sample.kinetic/(L.lengthSq()||1)*scale));const center=plane.position.clone().project(camera),corners=[];for(const x of [-size/2,size/2])for(const y of [-size/2,size/2])corners.push(v([x,y,0]).applyQuaternion(plane.quaternion).add(plane.position).project(camera));plane.scale.setScalar(finitePatchScale(center,corners));}
-     const trace=bodyFrame?traceBody:traceSpace;if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),bodyFrame?C.omega:C.L);arrow(vectorLayer,origin,point,norm(point),C.omega,'energy-angular-velocity');
+     const trace=bodyFrame?traceBody:traceSpace;if(trace.length>1)line(vectorLayer,trace.map(a=>a.map(x=>x*scale)),bodyFrame?C.omega:C.L);A(origin,point,norm(point),C.omega,'energy-angular-velocity');
      textAt(bodyFrame?'ω body':'ω space',v(point),C.omega,r,placed);
     }else {
-     const axisTips=[];for(let i=0;i<3&&showAxes;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));arrow(vectorLayer,origin,axis.toArray(),bounds*.57,C.axes[i],'axis-'+i);axisTips.push(axis.multiplyScalar(bounds*.57).applyQuaternion(content.quaternion));}
+     const axisTips=[];for(let i=0;i<3&&showAxes;i++){const axis=v(basis[i]).applyQuaternion(q(g.quaternion));A(origin,axis.toArray(),bounds*.46,C.axes[i],'axis-'+i,20);axisTips.push(axis.multiplyScalar(bounds*.46).applyQuaternion(content.quaternion));}
      const vectors=[['ω',g.omegaSpace,C.omega,scales.omega],['L',g.angularMomentumSpace,C.L,scales.L],['τ',g.torqueSpace,C.torque,scales.torque]];
-     for(const [label,a,color,scale] of vectors){const length=Math.min(bounds*.93,norm(a)*scale);arrow(vectorLayer,origin,a,length,color,label);if(norm(a)>1e-10)textAt(label,v(a).normalize().multiplyScalar(length).applyQuaternion(content.quaternion),color,r,placed);}
-     axisTips.forEach((tip,i)=>textAt('e'+['₁','₂','₃'][i],tip,C.axes[i],r,placed));
+     for(const [label,a,color,scale] of vectors){const length=Math.min(bounds*.93,norm(a)*scale);A(origin,a,length,color,label);if(norm(a)>1e-10)later(0,()=>textAt(label,v(a).normalize().multiplyScalar(length).applyQuaternion(content.quaternion),color,r,placed));}
+     axisTips.forEach((tip,i)=>later(2,()=>textAt('e'+['₁','₂','₃'][i],tip,C.axes[i],r,placed)));
      if(p.mode==='heavy-top'){
       line(vectorLayer,[origin,g.centreOfMass],C.torque);retained.mesh('pivot',()=>new THREE.Mesh(new THREE.SphereGeometry(bounds*.025,12,10),new THREE.MeshBasicMaterial({color:'#d2d9e3'})));
       if(f.breakdown||['gravity','precession'].includes(f.closeup)){
-       const arm=g.centreOfMass,forceLength=bounds*.48;arrow(vectorLayer,arm,g.gravityForce,forceLength,C.torque,'gravity');textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed);if(!narrow)textAt('r',v(arm).multiplyScalar(.5).applyQuaternion(content.quaternion),'#d6bd82',r,placed);
+       const arm=g.centreOfMass,forceLength=bounds*.48;A(arm,g.gravityForce,forceLength,C.torque,'gravity');later(1,()=>textAt('mg',v(arm).add(v([0,0,-forceLength])).applyQuaternion(content.quaternion),C.torque,r,placed));if(!narrow)later(3,()=>textAt('r',v(arm).multiplyScalar(.5).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
        line(vectorLayer,[origin,[0,0,p.distance]],'#8a99ad',true);line(vectorLayer,[arm,[0,0,arm[2]]],'#d6bd82',true);
        const az=Math.atan2(arm[1],arm[0]),arc=Array.from({length:33},(_,i)=>{const t=f.sample.theta*i/32;return [Math.cos(az)*Math.sin(t)*p.distance*.45,Math.sin(az)*Math.sin(t)*p.distance*.45,Math.cos(t)*p.distance*.45];});line(vectorLayer,arc,'#d6bd82');
-       if(!narrow)textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#d6bd82',r,placed);
+       if(!narrow)later(3,()=>textAt('θ',v(arc[16]).applyQuaternion(content.quaternion),'#d6bd82',r,placed));
       }
      }
      if(f.closeup==='precession'){const radius=Math.sin(f.sample.theta)*bounds*.65,z=Math.cos(f.sample.theta)*bounds*.65;line(vectorLayer,Array.from({length:81},(_,i)=>[radius*Math.cos(i*Math.PI/40),radius*Math.sin(i*Math.PI/40),z]),'#6f8296',true);}
-     if(f.closeup==='tilt'){line(vectorLayer,[origin,[0,0,bounds*.7]],'#9ba8b9',true);textAt('z space',v([0,0,bounds*.7]).applyQuaternion(content.quaternion),'#9ba8b9',r,placed);}
+     if(f.closeup==='tilt'){line(vectorLayer,[origin,[0,0,bounds*.7]],'#9ba8b9',true);later(3,()=>textAt('z space',v([0,0,bounds*.7]).applyQuaternion(content.quaternion),'#9ba8b9',r,placed));}
      if(f.closeup==='inertia'&&['box','corner-masses'].includes(p.shape)){
       const local=[[-p.a/2,-p.b/2,-p.c/2],[p.a/2,-p.b/2,-p.c/2],[-p.a/2,p.b/2,-p.c/2],[-p.a/2,-p.b/2,p.c/2]];
       const points=local.map(a=>v(a).applyQuaternion(q(g.quaternion)).add(v(g.centreOfMass)));
-      for(let i=1;i<4;i++){line(vectorLayer,[points[0].toArray(),points[i].toArray()],C.axes[i-1]);textAt(['a','b','c'][i-1],points[i].clone().applyQuaternion(content.quaternion),C.axes[i-1],r,placed);}
+      for(let i=1;i<4;i++){line(vectorLayer,[points[0].toArray(),points[i].toArray()],C.axes[i-1]);later(3,()=>textAt(['a','b','c'][i-1],points[i].clone().applyQuaternion(content.quaternion),C.axes[i-1],r,placed));}
      }
      if(bodyFrame){for(let i=0;i<3;i++){const a=[0,0,0];a[i]=bounds*.8;line(vectorLayer,[origin,a],'#536279',true);}}
+     // Place labels in priority order; a label that finds no clear spot is promoted and the whole panel is placed again (a few rounds at most).
+     {const base={placed:placed.length,tips:tips.length,leaders:leaderLengths.length};let order=queue.slice().sort((x,y)=>x.pri-y.pri);
+      for(let round=0;round<4;round++){placed.length=base.placed;tips.length=base.tips;leaderLengths.length=base.leaders;for(const [key,rec] of leaderNodes)if(key.startsWith(index+':'))rec.used=false;order.forEach(item=>item.fn());
+       const failed=order.filter((item,i)=>tips[base.tips+i]&&!tips[base.tips+i].box);if(!failed.length)break;failed.forEach(item=>{item.pri=-1-round;});order=order.slice().sort((x,y)=>x.pri-y.pri);}}
     }
     // Inspect actual rendered body geometry, including its corner marker. Keep
     // the camera fixed to the full-motion sphere; these bounds are evidence only.
@@ -284,7 +296,7 @@ export const view={graphs,closeups,
    for(const entry of leaderNodes.values())if(!entry.used)entry.el.style.display='none';
    const hr=host.getBoundingClientRect();shell.stage.labels=[caption,readout,...panelLabels].filter(el=>!el.hidden&&el.textContent).map(el=>{const r=el.getBoundingClientRect();return {text:el.textContent,x:r.x-hr.x,y:r.y-hr.y,width:r.width,height:r.height};});
    for(const entry of labelNodes.values())if(entry.used&&!entry.el.hidden)shell.stage.labels.push(entry.bounds);
-   shell.rotationLeaderLengths=[...leaderLengths];shell.rotationTips=tips.map(t=>({...t}));shell.rotationBodyBounds={scene:{width,height},compact:layout.compact,panels:projectedBodies};shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
+   shell.rotationLeaderLengths=[...leaderLengths];shell.rotationTips=tips.map(t=>({...t}));shell.rotationArrows=arrowBoxes.map(o=>({...o}));shell.rotationBodyBounds={scene:{width,height},compact:layout.compact,panels:projectedBodies};shell.rotationCamera={bounds,zoom,position:camera.position.toArray(),target:[0,0,0],fixed:true};
   }
   return {draw,resize(){},destroy(){dispose(content);renderer.dispose();renderer.forceContextLoss();root.remove();style.remove();shell.host.classList.remove('rr-experiment');}};
  }
