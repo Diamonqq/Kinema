@@ -90,7 +90,7 @@ export const view={graphs,closeups,
    const len=Math.min(48,s.w*.11),v=f.geometry.velocity,vscale=len/Math.max(1,Math.hypot(v.x,v.y));
    vector(s,m.x(p.x),m.y(p.y),v.x,0,'vx',blue,vscale);vector(s,m.x(p.x),m.y(p.y),0,v.y,'vy',green,vscale);
    const a=f.params.angle*rad,l=Math.min(34,s.w*.09),lx=m.x(0),ly=m.y(f.params.height);s.arrow(lx,ly,lx+l*Math.cos(a),ly-l*Math.sin(a),purple,1.5);
-   if(f.t>.2){vector(s,lx,ly,l*Math.cos(a),0,'v₀x',blue,1,17);vector(s,lx,ly,0,l*Math.sin(a),'v₀y',green);}
+   if(f.t>.2){vector(s,lx,ly,l*Math.cos(a),0,'v₀x',blue,1,36);vector(s,lx,ly,0,l*Math.sin(a),'v₀y',green);}
    // Force vectors on the moving ball; labels use fixed caption rows below.
    const fs=f.geometry.forces,max=Math.max(.001,...Object.values(fs).map(q=>Math.hypot(q.x,q.y))),k=34/max;
    for(const [name,c,term] of [['gravity',orange,'mg'],['drag',green,'Fᴅ'],['lift',purple,'Fʟ']]){const q=fs[name];vector(s,m.x(p.x),m.y(p.y),q.x,q.y,term,c,k);}
