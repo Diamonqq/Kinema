@@ -231,7 +231,7 @@
     },
     {
       "key": "distance",
-      "label": "Pivot to centre of mass",
+      "label": "Pivot to center of mass",
       "symbol": "d",
       "unit": "m",
       "min": 0,
@@ -672,7 +672,7 @@
         "torquey": 0,
         "torquez": 0
       },
-      "note": "A nearly horizontal axis precesses under a tilt-dependent torque about the centre of mass."
+      "note": "A nearly horizontal axis precesses under a tilt-dependent torque about the center of mass."
     },
     {
       "id": "asymmetric-top",
