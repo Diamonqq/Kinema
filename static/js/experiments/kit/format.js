@@ -27,9 +27,11 @@ export const withUnit=(value,unit,sig=3)=>num(value,sig)+(unit?' '+unit:'');
 export function niceTicks(lo,hi,count=5){
  if(!Number.isFinite(lo)||!Number.isFinite(hi))return {step:0,ticks:[]};
  if(hi<lo)[lo,hi]=[hi,lo];
- const span=hi-lo||Math.abs(hi)||1,rough=span/Math.max(1,count),power=10**Math.floor(Math.log10(rough)),unit=rough/power;
+ // A range that is only rounding noise (a constant series such as β = 1) counts as one value.
+ const mag=Math.max(Math.abs(lo),Math.abs(hi)),span=(hi-lo>mag*1e-9?hi-lo:0)||mag||1;
+ const rough=span/Math.max(1,count),power=10**Math.floor(Math.log10(rough)),unit=rough/power;
  const step=(unit<1.5?1:unit<3.5?2:unit<7.5?5:10)*power,ticks=[];
- for(let k=Math.ceil(lo/step-1e-9);k*step<=hi+step*1e-9;k++)ticks.push(Math.abs(k)<1e-12?0:+(k*step).toPrecision(12));
+ for(let k=Math.ceil(lo/step-1e-9);k*step<=hi+step*1e-9&&ticks.length<200;k++)ticks.push(Math.abs(k)<1e-12?0:+(k*step).toPrecision(12));
  return {step,ticks};
 }
 // Tick text with only the digits the step needs: tickLabel(1.5, 0.5) → "1.5", tickLabel(-2, 2) → "−2".

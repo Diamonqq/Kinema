@@ -36,6 +36,8 @@ test('niceTicks picks round steps and includes zero in range', async () => {
   assert.deepEqual(niceTicks(0, 1e-4, 4).ticks, [0, 2e-5, 4e-5, 6e-5, 8e-5, 1e-4]);
   assert.ok(niceTicks(2, 2).ticks.length >= 1);
   assert.deepEqual(niceTicks(NaN, 1).ticks, []);
+  assert.deepEqual(niceTicks(1, 1 + 2.2e-16).ticks, [1]);
+  assert.ok(niceTicks(0, 1, 1e6).ticks.length <= 200);
 });
 
 test('tickLabel shows only the digits the step needs', async () => {
