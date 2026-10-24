@@ -1,3 +1,4 @@
+import {runBatches} from './work.js';
 // Shared by these two experiments only. Coordinates are SI; plot pixels are uniform.
 export const C={blue:'#8ab9ff',pale:'#e1e5ed',green:'#b0d8ad',amber:'#e9bb88',purple:'#bcabef',muted:'#8496ae',grid:'#334256'};
 const scientific=n=>Math.abs(n)>=1e5||Math.abs(n)>0&&Math.abs(n)<.001;
@@ -13,7 +14,16 @@ export function sceneHeight(shell,narrowHeight,closeup){
 }
 // Target chips use fixed forecast landmarks, not the moving body. Nonphysical
 // views share a measured wrapping row. Sizes remain entirely kit controlled.
-export function targetChips(s,targets,rowIds,shell,obstacles=[]){
+const chipLayouts=new WeakMap(),noObstacles=Object.freeze([]);
+export function targetChips(s,targets,rowIds,shell,obstacles=noObstacles){
+ const signature=JSON.stringify([s.w,s.h,targets,rowIds]),cached=chipLayouts.get(s);
+ const draw=layout=>{
+  s.chipRects=layout.boxes;s.targetAnchors=layout.anchors;
+  for(const [id,p] of Object.entries(targets)){const a=layout.anchors[id],b=layout.targetBoxes[id];s.line(p.x,p.y,a.x,b.y+(p.y>b.y?b.height:0),C.grid,1);}
+  return layout.anchors;
+ };
+ if(cached&&cached.signature===signature&&cached.params===shell?.params&&cached.obstacles===obstacles)return draw(cached);
+ const targetBoxes={};
  const sizes=id=>{const b=shell?.q('[data-exp="closeup"][data-id="'+id+'"]');return {w:b?.offsetWidth||112,h:b?.offsetHeight||32};};
  const anchors={},boxes=[];let row=[],width=0,y=12;
  const flush=()=>{let x=(s.w-width)/2;for(const id of row){const b=sizes(id);anchors[id]={x:x+b.w/2,y};boxes.push({x,y,width:b.w,height:b.h});x+=b.w+6;}row=[];width=0;y+=38;};
@@ -30,9 +40,9 @@ export function targetChips(s,targets,rowIds,shell,obstacles=[]){
   }
   if(!box)box={x:8,y:y+Object.keys(anchors).length*38,width:b.w,height:b.h};
   anchors[id]={x:box.x+b.w/2,y:box.y};boxes.push(box);
-  s.line(p.x,p.y,box.x+b.w/2,box.y+(p.y>box.y?b.h:0),C.grid,1);
+  targetBoxes[id]=box;
  }
- s.chipRects=boxes;s.targetAnchors=anchors;return anchors;
+ const layout={signature,params:shell?.params,obstacles,anchors,boxes,targetBoxes};chipLayouts.set(s,layout);return draw(layout);
 }
 export function camera(s,bounds,top=100,bottom=58){
  const [a,b,c,d]=bounds,scale=Math.min((s.w-40)/Math.max(.01,b-a),(s.h-top-bottom)/Math.max(.01,d-c));
@@ -53,11 +63,14 @@ export function* motionBatches(model,params,{duration=60,interval=.1}={}){
 }
 const forecasts=new WeakMap();
 export function forecast(model,params,options={}){
- let state=forecasts.get(params);if(state)return state;
- state={rows:[],done:false,error:''};forecasts.set(params,state);const iterator=motionBatches(model,params,options);
- const next=()=>{try{const result=iterator.next();if(result.done)return;Object.assign(state,result.value);if(!state.done)setTimeout(next,0);}catch(e){state.error=e.message;state.done=true;}};
- next();return state;
+ let state=forecasts.get(params);
+ if(state&&!state.cancelled&&state.signal===options.signal)return state;
+ state?.cancel?.();
+ state={rows:[],done:false,error:''};forecasts.set(params,state);
+ function* batches(){for(const batch of motionBatches(model,params,options))yield {...batch,rows:batch.rows.slice()};}
+ return runBatches(batches(),state,{...options,immediate:true});
 }
+
 export function chipAnchors(s,ids){const cols=s.w<460?2:3,rows=Math.ceil(ids.length/cols);return Object.fromEntries(ids.map((id,i)=>[id,{x:s.w*((i%cols)+.5)/cols,y:12+Math.floor(i/cols)*30}]));}
 export function title(s,text){s.text(text,s.w/2,48,C.pale,s.w<380?12:14);}
 export function label(s,text,x,y,color=C.pale){

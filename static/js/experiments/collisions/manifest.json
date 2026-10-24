@@ -2,7 +2,7 @@
   "id": "collisions",
   "title": "Two-body collisions",
   "group": "Mechanics",
-  "description": "Compare laboratory and centre-of-mass collisions.",
+  "description": "Compare laboratory and center-of-mass collisions.",
   "params": [
     {
       "key": "m1",

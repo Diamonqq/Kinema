@@ -18,8 +18,9 @@ const sectionWanted=s=>s.closeup==='poincare'||(!s.q('.exp-graph-panel').hidden&
 function longSection(params){
  const shell=parameterShells.get(params);
  let state=sections.get(params);
- if(!state||state.cancelled){
-  state=startSection(params,{active:()=>!!shell&&!shell.destroyed&&shell.params===params&&sectionWanted(shell)});
+ if(!state||state.cancelled||state.signal!==shell?.signal){
+  state?.cancel?.();
+  state=startSection(params,{signal:shell?.signal,invalidate:()=>shell?.invalidate(),onCleanup:shell?.onCleanup?.bind(shell),active:()=>!!shell&&!shell.destroyed&&shell.params===params&&sectionWanted(shell)});
   sections.set(params,state);
  }
  return state;
@@ -92,7 +93,7 @@ export const view={graphs,closeups,
  drawGraph(s,d,f){
   s.chipRects=[];
   if(d.id==='energy'){
-   const data=forecast(model,f.params);if(!data.done){s.text('Preparing the energy range',s.w/2,s.h/2,C.muted,11);return;}
+   const data=forecast(model,f.params,{signal:f.signal,invalidate:f.invalidate});if(!data.done){s.text('Preparing the energy range',s.w/2,s.h/2,C.muted,11);return;}
    const all=data.rows.map(row=>row.sample),values=all.flatMap(p=>[p.energy/ENERGY_UNIT,p.kinetic/ENERGY_UNIT,p.potential/ENERGY_UNIT]),lo=Math.min(0,...values),hi=Math.max(1e-9,...values),span=hi-lo,left=76,right=s.w-28,top=32,bottom=s.h-32,
     window=Math.min(60,d.window||60),start=Math.max(0,Math.min(60-window,f.t-window*.75)),end=start+window,
     rows=all.filter(p=>p.t>=start&&p.t<=end),map={x:t=>left+(right-left)*(t-start)/window,y:e=>bottom-(bottom-top)*(e-lo)/span};
@@ -120,7 +121,7 @@ export const view={graphs,closeups,
    if(a>0&&e<1)linePath(s,Array.from({length:181},(_,i)=>{const v=2*Math.PI*i/180,radius=a*(1-e*e)/(1+e*Math.cos(v));return {x:radius*Math.cos(v+angle),y:radius*Math.sin(v+angle)};}),map,C.blue+'70');
    s.circle(map.x(0),map.y(0),5,C.pale);s.circle(map.x(r.x),map.y(r.y),3,C.blue);return;
   }
-  const data=forecast(model,f.params),{geometry:g,sample:q}=f;
+  const data=forecast(model,f.params,{signal:f.signal,invalidate:f.invalidate}),{geometry:g,sample:q}=f;
   if(f.closeup==='periapsis'){decomposition(s,f);return;}
   if(f.closeup==='potential'){
    title(s,'Energy sets the allowed radii');const p=g.effectivePotential;
