@@ -1,13 +1,16 @@
 export const palette=['#8ab9ff','#e9bb88','#b0c9ad','#bcabef','#79cacc','#e4a9bd','#c5cb7d','#a6b6cc'];
+// Eases a camera (object or array) toward its target by .22 per frame and snaps exactly once the remaining
+// gap is negligible, so a settled view redraws byte-identically. Returns true while it is still moving.
+export function easeCamera(camera,target){let moving=false;for(const k of Object.keys(target)){const d=target[k]-camera[k];if(Math.abs(d)>1e-6*Math.max(1,Math.abs(target[k]))){camera[k]+=d*.22;moving=true;}else camera[k]=target[k];}return moving;}
 export class VectorStage {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.resize();}
  resize(){const r=this.canvas.getBoundingClientRect(),w=Math.max(1,r.width),h=Math.max(1,r.height);if(w!==this.w||h!==this.h)this.snap=true;this.w=w;this.h=h;const d=Math.min(3,devicePixelRatio||1);if(this.canvas.width!==Math.round(this.w*d)||this.canvas.height!==Math.round(this.h*d)){this.canvas.width=Math.round(this.w*d);this.canvas.height=Math.round(this.h*d);}this.dpr=d;}
- begin(){this.labels=[];this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);this.ctx.clearRect(0,0,this.w,this.h);this.ctx.lineCap='round';this.ctx.lineJoin='round';}
+ begin(){this.labels=[];this.animating=false;this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);this.ctx.clearRect(0,0,this.w,this.h);this.ctx.lineCap='round';this.ctx.lineJoin='round';}
  world(bounds,padding=36){
   const [xmin,xmax,ymin,ymax]=bounds,scale=Math.min((this.w-2*padding)/Math.max(.01,xmax-xmin),(this.h-2*padding)/Math.max(.01,ymax-ymin));
   const target={cx:(xmin+xmax)/2,cy:(ymin+ymax)/2,scale:Math.max(1,scale)};
   if(!this.camera||this.snap)this.camera=target;
-  else for(const key of ['cx','cy','scale'])this.camera[key]+=(target[key]-this.camera[key])*.22;
+  else if(easeCamera(this.camera,target))this.animating=true;
   this.snap=false;const c=this.camera;
   return {x:x=>this.w/2+(x-c.cx)*c.scale,y:y=>this.h/2-(y-c.cy)*c.scale,scale:c.scale};
  }

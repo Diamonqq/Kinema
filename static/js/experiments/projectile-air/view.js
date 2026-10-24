@@ -1,4 +1,5 @@
 import {model} from './model.js';
+import {easeCamera} from '../kit/stage.js';
 import {num,texNum} from '../kit/format.js';
 import {label,labelWidth} from './labels.js';
 const blue='#8ab9ff',green='#b0c9ad',orange='#e9bb88',purple='#bcabef',muted='#8c9cb2';
@@ -28,7 +29,7 @@ export function preview(p){
 }
 export function mapWorld(stage,bounds,top=50,bottom=stage.h-150,padding=stage.w<440?{left:64,right:48}:72){
  const [a,b,c,d]=bounds,w=stage.w,h=Math.max(30,bottom-top),left=typeof padding==='number'?padding:padding.left,right=typeof padding==='number'?padding:padding.right,target={cx:(a+b)/2,cy:(c+d)/2,scale:Math.min((w-left-right)/(b-a),h/(d-c))};
- if(!stage.camera||stage.snap)stage.camera={...target};else for(const k of ['cx','cy','scale'])stage.camera[k]+=(target[k]-stage.camera[k])*.22;
+ if(!stage.camera||stage.snap)stage.camera={...target};else if(easeCamera(stage.camera,target))stage.animating=true;
  stage.snap=false;const cam=stage.camera;
  return {x:q=>left+(w-left-right)/2+(q-cam.cx)*cam.scale,y:q=>(top+bottom)/2-(q-cam.cy)*cam.scale,scale:cam.scale};
 }

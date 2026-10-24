@@ -1,5 +1,6 @@
 export const colors=['#8ab9ff','#e9bb88','#b0c9ad','#bcabef','#79cacc','#e4a9bd'];
 export const fmt=(v,d=4)=>!Number.isFinite(v)?'\u2014':Math.abs(v)<1e-8?'0':Number(v.toPrecision(Math.max(2,Math.min(4,d)))).toString().replaceAll('-', '\u2212');
+import {easeCamera} from '../kit/stage.js';
 const cameras=new WeakMap();
 export function panels(s,{bottom=92,top=44}={}) {
   const stacked=s.w<470,gap=stacked?40:28,left=34,right=18;
@@ -10,7 +11,7 @@ export function mapPanel(s,p,bounds,id='main',animate=true) {
   let cache=cameras.get(s);if(!cache){cache=new Map();cameras.set(s,cache);}
   let current=cache.get(id);
   if(!current||s.snap||!animate)current=[...bounds];
-  else current=current.map((v,i)=>v+(bounds[i]-v)*.22);
+  else if(easeCamera(current,bounds))s.animating=true;
   cache.set(id,current);
   const [xmin,xmax,ymin,ymax]=current,scale=Math.min(p.width/(xmax-xmin||1),p.height/(ymax-ymin||1));
   const cx=(xmin+xmax)/2,cy=(ymin+ymax)/2;

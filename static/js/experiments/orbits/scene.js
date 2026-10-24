@@ -1,4 +1,5 @@
 import {runBatches} from './work.js';
+import {easeCamera} from '../kit/stage.js';
 // Shared by these two experiments only. Coordinates are SI; plot pixels are uniform.
 export const C={blue:'#8ab9ff',pale:'#e1e5ed',green:'#b0d8ad',amber:'#e9bb88',purple:'#bcabef',muted:'#8496ae',grid:'#334256'};
 const scientific=n=>Math.abs(n)>=1e5||Math.abs(n)>0&&Math.abs(n)<.001;
@@ -48,7 +49,7 @@ export function targetChips(s,targets,rowIds,shell,obstacles=noObstacles){
 export function camera(s,bounds,top=100,bottom=58){
  const [a,b,c,d]=bounds,scale=Math.min((s.w-40)/Math.max(.01,b-a),(s.h-top-bottom)/Math.max(.01,d-c));
  const target={cx:(a+b)/2,cy:(c+d)/2,scale};
- if(!s.camera||s.snap)s.camera=target;else for(const k of ['cx','cy','scale'])s.camera[k]+=(target[k]-s.camera[k])*.22;
+ if(!s.camera||s.snap)s.camera=target;else if(easeCamera(s.camera,target))s.animating=true;
  s.snap=false;const q=s.camera,cy=top+(s.h-top-bottom)/2;
  return {x:v=>s.w/2+(v-q.cx)*q.scale,y:v=>cy-(v-q.cy)*q.scale,scale:q.scale};
 }

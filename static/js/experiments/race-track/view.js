@@ -1,4 +1,5 @@
 import {curveForces,speedLimits,trackPoint} from './model.js';
+import {easeCamera} from '../kit/stage.js';
 import {num,texNum} from '../kit/format.js';
 const blue='#8ab9ff',green='#b0c9ad',orange='#e9bb88',purple='#bcabef',muted='#8c9cb2',rad=Math.PI/180;
 
@@ -12,7 +13,7 @@ export const graphs=[
 ];
 function world(s,bounds,top,bottom){
  const [a,b,c,d]=bounds,target={cx:(a+b)/2,cy:(c+d)/2,scale:Math.min((s.w-42)/(b-a),Math.max(30,bottom-top)/(d-c))};
- if(!s.camera||s.snap)s.camera={...target};else for(const k of ['cx','cy','scale'])s.camera[k]+=(target[k]-s.camera[k])*.22;s.snap=false;
+ if(!s.camera||s.snap)s.camera={...target};else if(easeCamera(s.camera,target))s.animating=true;s.snap=false;
  const v=s.camera;return {x:q=>s.w/2+(q-v.cx)*v.scale,y:q=>(top+bottom)/2-(q-v.cy)*v.scale,scale:v.scale};
 }
 function car(s,x,y,heading,scale,color=blue){

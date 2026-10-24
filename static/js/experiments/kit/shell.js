@@ -6,6 +6,8 @@ import {esc,math} from '../../md.js';
 
 export const equationDue=(playing,last,now)=>!playing||last===undefined||now-last>=250;
 
+// A camera step counts as motion until it is below one part in a million (numbers or arrays of numbers).
+const cameraMoved=(a,b)=>typeof a==='number'?Math.abs(a-b)>1e-6*Math.max(1,Math.abs(b)):Array.isArray(a)&&a.some((v,i)=>cameraMoved(v,b?.[i]));
 export class ExperimentShell {
  constructor(host,{model,view,manifest={},values={},onChange=()=>{},onBack=null}){
   Object.assign(this,{host,model,view,manifest,onChange});this.seeker=new SeekController();this.params={...Object.fromEntries(model.params.map(p=>[p.key,p.value])),...values};this.playing=false;this.speed=1;this.duration=60;this.closeup='';this.breakdown=false;this.enabledGraphs=new Set();this.samples=[];this.last=0;this.dirty=true;this.lifecycle=new AbortController();
@@ -136,8 +138,9 @@ export class ExperimentShell {
   const zoom=this.q('.exp-closeup-equation');zoom.hidden=!this.closeup;if(this.closeup&&(zoom.equationPending||equationDue(this.playing,zoom.equationAt,now))){const lines=this.view.closeupEquation?.(frame)||'';this.equation(zoom,Array.isArray(lines)?lines:[lines]);}
   const anchors=this.view.closeupAnchors?.(this.stage,frame);this.q('.exp-closeups').classList.toggle('has-anchors',!!anchors);if(anchors)for(const button of this.q('.exp-closeups').children){const a=anchors[button.dataset.id];if(a){button.style.left=Math.max(button.offsetWidth/2+8,Math.min(this.stage.w-button.offsetWidth/2-8,a.x))+'px';button.style.top=Math.min(this.stage.h-40,a.y)+'px';}}
   if(this.view.key)this.q('.exp-key').textContent=this.view.key(frame);
-  if(!this.q('.exp-graph-panel').hidden)for(const g of this.graphs)if(!g.host.hidden){g.plot.draw(this.samples,this.instance.t,frame);if(g.plot.stage.pending)this.dirty=true;}
-  this.cameraMoving=!!camera&&Object.keys(camera).some(key=>Math.abs(camera[key]-this.stage.camera[key])>.001);if(this.dirty||this.cameraMoving||this.playing)this.wake();
+  if(!this.q('.exp-graph-panel').hidden)for(const g of this.graphs)if(!g.host.hidden){g.plot.draw(this.samples,this.instance.t,frame);if(g.plot.stage.pending||g.plot.stage.animating)this.dirty=true;}
+  // Keep drawing until every ease has settled, so a paused view never stops partway or shifts on the next redraw.
+  this.cameraMoving=!!this.stage.animating||!!camera&&Object.keys(camera).some(key=>cameraMoved(camera[key],this.stage.camera[key]));if(this.dirty||this.cameraMoving||this.playing)this.wake();
  }
  tick(now){this.raf=0;if(this.destroyed)return;if(!this.visible()){this.last=0;return;}const elapsed=this.last?Math.min(.06,(now-this.last)/1000):0;this.last=now;if(this.playing){try{this.instance.step(Math.max(0,Math.min(elapsed*this.speed,this.duration-this.instance.t)));this.observeEnd(this.instance.sample());if(this.playing&&this.instance.t>=this.duration-1e-8)this.setPlaying(false);}catch(error){this.setPlaying(false);this.q('.exp-note').textContent=error.message||'Motion stopped at this state.';}}if(this.playing||this.dirty||this.cameraMoving||now<(this.interactionUntil||0))this.draw();if(this.playing||this.dirty||this.cameraMoving||now<(this.interactionUntil||0))this.wake();else this.last=0;}
  snapshot(){return {params:{...this.params},t:this.instance.t,observables:this.instance.sample(),playing:this.playing,closeup:this.closeup,breakdown:this.breakdown,graphs:[...this.enabledGraphs]};}

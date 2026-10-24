@@ -1,5 +1,6 @@
 // View utilities owned by the oscillator lane. SI geometry stays in each core.
 import {num,texNum,withUnit} from '../kit/format.js';
+import {easeCamera} from '../kit/stage.js';
 export {withUnit};
 import {spectrum} from '../anharmonic/analysis.js';
 export const C={blue:'#8ab9ff',gold:'#e9bb88',green:'#b0c9ad',violet:'#bcabef',dim:'#71839b',ink:'#cbd8e9',grid:'#344355'};
@@ -32,7 +33,7 @@ export function fixedMap(s,bounds,{bottom=100,top=35,padding=30}={}){
  const available=Math.max(80,s.h-top-bottom),cx=(bounds[0]+bounds[1])/2,cy=(bounds[2]+bounds[3])/2;
  const sc=Math.min((s.w-2*padding)/(bounds[1]-bounds[0]),available/(bounds[3]-bounds[2]));
  const target={cx,cy:cy-(bottom-top)/(2*sc),scale:sc};
- if(!s.camera||s.snap)s.camera=target;else for(const k of ['cx','cy','scale'])s.camera[k]+=(target[k]-s.camera[k])*.22;
+ if(!s.camera||s.snap)s.camera=target;else if(easeCamera(s.camera,target))s.animating=true;
  s.snap=false;const c=s.camera;return {x:x=>s.w/2+(x-c.cx)*c.scale,y:y=>s.h/2-(y-c.cy)*c.scale,scale:c.scale};
 }
 export function linePlot(s,{title,points=[],xkey='x',ykey='y',cursor,color=C.blue,xlabel='',ylabel='',scatter=false,yFloor}){

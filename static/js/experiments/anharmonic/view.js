@@ -1,4 +1,5 @@
 import {model} from './model.js';
+import {easeCamera} from '../kit/stage.js';
 import {C,fmt,tex,withUnit,label,tip,bead,drawAnalysis,linePlot} from '../motion-generator/view-tools.js';
 const graphs=[
  {id:'motion',label:'Displacement',unit:'m',series:[{key:'x',label:'x',color:C.blue}]},
@@ -22,7 +23,7 @@ export function wellBounds(f){
 function apparatus(s,f,{top,bottom,zoom=false}){
  const p=f.params,q=f.sample,range=wellBounds(f),left=p.potential==='lennard-jones'?0:range[0],right=range[1],walls=p.potential.startsWith('walls'),molecular=['morse','lennard-jones'].includes(p.potential),d=walls?p.halfSeparation:.45;
  const targetScale=Math.min((s.w-65)/(right-left),(bottom-top)/(walls?2*d+.4:.22)),target={cx:(left+right)/2,cy:((top+bottom)/2-s.h/2)/targetScale,scale:targetScale};
- if(!s.camera||s.snap)s.camera=target;else for(const k of ['cx','cy','scale'])s.camera[k]+=(target[k]-s.camera[k])*.22;
+ if(!s.camera||s.snap)s.camera=target;else if(easeCamera(s.camera,target))s.animating=true;
  s.snap=false;const scale=s.camera.scale,cx=s.w/2-s.camera.cx*scale,cy=s.h/2+s.camera.cy*scale,xx=x=>cx+x*scale,yy=y=>cy-y*scale,px=xx(q.x);
  s.zoomAnchor={x:xx(molecular?p.equilibrium:(left+0)/2),y:Math.max(35,Math.min(s.h-100,cy+48))};s.avoid=[...(!f.closeup?[{x:s.zoomAnchor.x-100,y:s.zoomAnchor.y-18,width:200,height:36}]:[]),{x:0,y:s.h-72,width:s.w,height:36}];
  s.line(26,cy+13,s.w-26,cy+13,C.grid,1);
