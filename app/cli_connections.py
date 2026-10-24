@@ -453,7 +453,18 @@ class Manager:
             if active and active.state in ACTIVE: return self.snapshot(pid)
             observed_login = active
         from . import cli_runners
-        cli_runners.check_installation(pid)
+        try:
+            cli_runners.check_installation(pid)
+        except (OSError, ValueError, ProviderError):
+            # Installation probes also create/clean temporary folders. A local
+            # permission failure must not become an HTTP 500 or retain Ready.
+            with self.lock:
+                if self.logins.get(pid) is observed_login:
+                    self.states[pid] = {'checked_at': time.time(), 'state': 'check_failed',
+                        'error': 'Could not check the CLI installation. Check local file permissions and try again.',
+                        'detail': 'No account status was confirmed.'}
+                    self._save()
+            return self.snapshot(pid)
         argv, caps = _runtime(pid)
         if not argv: return self.snapshot(pid)
         if not caps.get('supported'): return self.snapshot(pid)

@@ -194,6 +194,42 @@ class CLIConnections(Base):
         self.post('codex','check')
         self.assertEqual(self.row('codex')['state'],'signed_out')
 
+    def test_installation_probe_failure_is_safe_retryable_and_clears_ready(self):
+        from app import cli_runners
+        from app.providers import ProviderError
+        for pid in ('claude', 'codex'):
+            for error in (PermissionError(SECRET), ProviderError(SECRET), ValueError(SECRET)):
+                with self.subTest(provider=pid, error=type(error).__name__):
+                    self.manager.states[pid] = {'state': 'signed_in'}
+                    with mock.patch.object(cli_runners, 'check_installation', side_effect=error):
+                        result = self.post(pid, 'check')
+                    row = next(r for r in result['cli']['providers'] if r['id'] == pid)
+                    self.assertEqual(row['state'], 'check_failed')
+                    self.assertFalse(row['connected'])
+                    self.assertIn('check', row['allowed_actions'])
+                    self.assertIn('permissions', row['error'])
+                    self.assertNotIn(SECRET, self.manager._status_path().read_text())
+        self.assertEqual(self.spawned, [])
+        self.assertFalse(main.SETTINGS_PATH.exists())
+
+    def test_late_installation_failure_preserves_newer_account_check(self):
+        from app import cli_runners
+        entered, release = threading.Event(), threading.Event()
+        def denied(pid):
+            entered.set()
+            release.wait(3)
+            raise PermissionError(SECRET)
+        with mock.patch.object(cli_runners, 'check_installation', side_effect=denied):
+            checking = threading.Thread(target=lambda: self.manager.check('claude'))
+            checking.start()
+            self.assertTrue(entered.wait(2))
+            self.manager.logins['claude'] = cli.Login()
+            self.manager.states['claude'] = {'state': 'signed_in'}
+            release.set()
+            checking.join(3)
+            self.assertFalse(checking.is_alive())
+        self.assertTrue(self.row('claude')['connected'])
+
     def test_late_status_cannot_restore_previous_account_after_new_login_failure(self):
         entered, release = threading.Event(), threading.Event()
         def status(*args):
