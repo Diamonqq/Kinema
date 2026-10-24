@@ -38,3 +38,14 @@ test('motion: contract, validation, exact dt and reset; time tolerance 1e-14',()
   assert.throws(()=>model.create({mass:0}));assert.throws(()=>model.create({dimensions:1.5}));assert.throws(()=>model.create({x0:NaN}));assert.throws(()=>model.create({bad:1}));
   for(const preset of model.presets){const a=model.create(preset.values),start=a.sample();a.step(.137);near(a.t,.137,1e-14);for(const o of model.observables)assert.ok(Number.isFinite(a.sample()[o.key]),o.key);assert.ok(a.geometry().position.every(Number.isFinite));a.reset();assert.deepEqual(a.sample(),start);assert.throws(()=>a.step(-1));assert.throws(()=>a.step(Infinity));}
 });
+test('motion coverage: 3D oscillator solution and angular momentum vector; tolerances 5e-6 m, 2e-10 SI',()=>{
+  const a=model.create({dimensions:'3d',y0:.5,z0:.3,vy0:.4,vz0:.7}),L=a.invariants().angularMomentumVector;a.step(20);const s=a.sample();near(s.z,.3*Math.cos(20)+.7*Math.sin(20),5e-6);near(s.y,.5*Math.cos(20)+.4*Math.sin(20),5e-6);a.invariants().angularMomentumVector.forEach((v,i)=>near(v,L[i],2e-10));
+});
+test('motion coverage: ramp, cusp and destabilizing spring analytic examples; tolerances 1e-6 / 8e-4 / 2e-6 m',()=>{
+  const ramp=model.create({spring:0,x0:0,ramp:1});ramp.step(2);near(ramp.sample().x,8/6,1e-6);
+  const cusp=model.create({spring:0,constantRestoring:1});cusp.step(1.6);const u=1.6-Math.sqrt(2);near(cusp.sample().x,-Math.sqrt(2)*u+u*u/2,8e-4);
+  const outward=model.create({spring:-1});outward.step(1);near(outward.sample().x,Math.cosh(1),2e-6);
+});
+test('motion coverage: Euler/RK2/RK4 errors converge in expected order; RK4 absolute error < 2e-6 m',()=>{
+  const errors=['euler','rk2','rk4'].map(method=>{const a=model.create({method,timeStep:.05});a.step(2);return Math.abs(a.sample().x-Math.cos(2));});assert.ok(errors[0]>10*errors[1]);assert.ok(errors[1]>100*errors[2]);assert.ok(errors[2]<2e-6);
+});

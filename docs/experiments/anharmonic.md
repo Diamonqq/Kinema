@@ -5,24 +5,50 @@ owns shared UI/registry/version changes. See motion-generator.md for runner fric
 
 ## Original and improvements
 
-Inspected original [ANHARM help](https://github.com/palazzol/cups/blob/master/DOS/CUPS/CUPSCM/ANHARM/ANHARM.HLP),
-[ANHPHY source/interfaces](https://github.com/palazzol/cups/blob/master/DOS/CUPS/CUPSCM/ANHARM/ANHPHY.PAS),
-and [ANHTUTOR](https://github.com/palazzol/cups/blob/master/DOS/CUPS/CUPSCM/ANHARM/ANHTUTOR.PAS).
-The reader truncates each file to 6000 characters; later implementation bodies
-were not inspected. No source code, tutorial prose or images were copied.
+Read the complete local ANHARM.HLP and ANHPHY.PAS copies (including all physics,
+FFT, resonance, parameter-search and period-table routines), alongside GENMOT
+and GMPEND. Earlier capped excerpts are superseded. No code or prose is copied.
+Coverage statuses below describe headless physics/data; graph rendering is pending.
 
-CUPS had asymmetric and Duffing force laws, harmonic and pendulum comparisons,
-exact/approximate two-wall springs, Van der Pol, damping/driving, phase portraits,
-energy selection by clicking a plot, Poincaré maps/movies and saved maps, period
-and resonance tables, and Fourier analysis interfaces. Its tutorial developed
-spring buckling, two minima and symmetry breaking by moving the walls.
+## CUPS coverage
 
-The new core offers selectable polynomial coefficients, exact two-wall springs,
-Van der Pol, new Morse/Lennard–Jones potentials, connected-well turning points,
-period quadrature, exact-cycle Poincaré samples and explicit work/reservoir balance.
-FFT/resonance-table UI, map movies, approximate-wall comparison and click-to-set
-energy are not implemented here. Do not describe the full CUPS feature set as
-already rebuilt. The renderer can use the period API for an amplitude graph.
+| Original capability/example/plot | Kinema status and evidence |
+|---|---|
+| Asymmetric quadratic/cubic/quartic potential and editable coefficients | Improved: signed bounded polynomial coefficients, Asymmetric example and DC-offset spectrum test. |
+| Duffing signed cubic restoring term, hardening and softening | Improved: both signs supported; Hardening/Softening/Driven Duffing/Hysteresis examples. |
+| Simple harmonic reference | Yes: Harmonic example and analytic trajectories/periods/driven response tests. |
+| Two exact wall springs, variable separation/rest length/stiffness | Improved: exact geometric energy/force and Buckling springs example. |
+| Quartic approximation to wall springs | Improved: walls-series selector and wallApproximation() exact/series comparison; coefficient and sixth-order remainder tests. |
+| Pendulum exact and approximate sine | Routed to pendulum experiment: exact/linear/cubic comparisons, corrected negative cubic sine correction, exact libration/rotation periods. No duplicate pendulum model here. |
+| Van der Pol self-excitation, damping, drive and amplitude limit scale | Improved: active reservoir separate from ordinary damping; energy transfer and Self-sustained example. |
+| Ordinary damping and periodic drive with phase | Yes: all appropriate force laws; explicit work/heat balance and signed reservoir transfer. |
+| Pick energy or x/v starting point; either direction or either well | Improved: energyState(E,x,direction) returns a validated initial-state patch; connected-well roots tested. |
+| Potential with horizontal energy line/current point | Yes (data): potential(), sample energies, turningPoints(); graph pending. |
+| Buckling, symmetry breaking, two minima and critical wall spacing tutorial | Improved: equilibria(), Buckling/At the threshold/Both wells examples, both-well and stability tests. |
+| Motion below/equal/above barrier, trapped-well versus crossing motion | Improved: connected allowed interval, exact saddle Infinity detection and Both wells example. |
+| Displacement/time and velocity/time plots; linked phase portrait | Yes (data): shared t/x/v observables; renderer pending. |
+| Energy diagram selection / linked familiar x(t) and phase-space demonstration | Yes (data): energyState and timestamped samples; interaction/rendering pending. |
+| Multiple saved maps / two-map comparison | Yes (data): independent instances plus serializable section points; comparison drawing pending. |
+| Poincare maps at up to 32 drive phases | Improved: exact event times, phaseCount and sections() frames; tested phase timestamps. |
+| Poincare phase movies, transient trimming and marked phase-plot samples | Yes (data): phase-indexed frames and timestamps; caller filters transients and animates. |
+| Velocity return v_n versus v_(n-1), phase movies | Yes (data): returnMap(phase); tested adjacent-cycle pairs. |
+| Conservative period versus energy; up to multiple coefficient curves | Improved: periodCurve / periodTable (up to 8 parameter sets and 64 energies); independent quadrature/analytic checks. |
+| Period dependence on wall spacing, stiffness, cubic/asymmetric coefficients | Yes: parameterSets vary these coefficients; equilibria choose an allowed well rather than blindly using an inaccessible x0. |
+| Pendulum period versus energy and g/L | Routed to pendulum exactPeriod/period/rotationPeriod; explicit exact elliptic-integral tests. |
+| Van der Pol period versus active damping/limit scale | Yes: periodTable selects active axis and measures post-transient periods/spread; weak-active analytic-limit test. |
+| Resonance amplitude versus drive frequency, multiple damping curves | Improved: resonanceSweep per parameter set; fitted fundamental amplitude/phase and peak amplitude, with convergence flag; three-frequency analytic test. |
+| Up/down frequency continuation and hysteresis | Improved: integer-cycle state continuation; Hysteresis example and settled up/down branch separation regression. |
+| Unstable middle resonance branch (rough line or basin-boundary search) | Deliberately omitted: a guessed line is misleading; rigorous unstable periodic-orbit continuation needs a separate shooting/Floquet solver. Never present the stable sweep as the missing branch. |
+| Fourier transform of x; omega for rotating pendulum | Improved: frequencyAnalysis defaults x here, omega in pendulum. |
+| Spectrum magnitude/phase or real/imaginary components | Yes: all four plus calibrated one-sided amplitude; DC/amplitude/phase/complex regressions. |
+| Flat, sine, sine-squared and triangular windows | Yes: four windows; leakage and normalization tests. |
+| Variable sample count, power-of-two padded analysis | Improved: 2..4096 samples, radix-2 zero padding, explicit sample interval and optional mean removal. |
+| Sine/square/triangle test signals and phase shifts | Yes: testSignal(); fundamental/odd-harmonic ratio tests. |
+| Parameter-space exploration with 30-point post-transient strobe sets | Improved: parameterSearch bounded to 16 patches, configurable transients and 1..64 cycles; 30-point regression. |
+| Interesting Parameters menu's external numerical preset catalog | Deliberately not claimed: the actual external parameter files are absent from these six sources. Independent complete-value teaching presets cover the available force laws and phenomena. |
+
+The new Morse and Lennard-Jones potentials additionally teach dissociation and
+repulsive/attractive competition. Double pendulum is outside this experiment.
 
 ## Equations and numerics
 
@@ -91,8 +117,40 @@ cycles (up to 4096 points), and is empty without a drive. Momentum is instantane
 
 Tests cover harmonic motion, amplitude-dependent quadrature vs measured periods,
 pure-quartic inverse-amplitude scaling, analytic Morse period/dissociation,
-all five force/potential gradients, conservative energy across presets,
+all six force/potential gradients (wall series covered in the coverage suite), conservative energy across presets,
 well-specific turning roots, separatrix/equilibrium periods, driven linear
 amplitude and phase, active reservoir balance, Poincaré timing, and schema/reset.
 Every numeric tolerance is stated in the test name. No double pendulum or
 asymptotic chaos classification is claimed.
+
+## Analysis APIs and renderer additions
+
+All analysis is explicitly requested, synchronous and bounded; create/step/sample
+do not launch background work. Exported resonanceSweep(values, frequencies,
+options) accepts 1..64 frequencies and at most 256 settling/64 measurement cycles.
+Continuation carries state at an integer drive cycle. periodOneSettled compares
+last-cycle state/amplitude with a 0.1% threshold; it is a finite observation,
+not proof of an asymptotic attractor. Display unsettled/period-multiple/chaotic
+responses honestly, without joining them into a supposedly stable curve.
+parameterSearch supports 1..16 patches, up to 256 transient cycles and 64 recorded
+cycles. periodTable accepts 1..8 parameter sets and 1..64 energies; for Van der Pol
+its horizontal axis is active coefficient, not conservative energy, and it reports
+measured period, spread and cycle count. Frequency analysis accepts 2..4096 finite
+uniformly spaced samples, zero pads to a power of two and reports frequency in Hz.
+Complex coefficients use negative-exponent Fourier convention, normalized by window
+sum; amplitude doubles positive bins except DC/Nyquist. Mean removal is explicit.
+
+Add Softening, Wall series, Both wells, At the threshold and Hysteresis chips.
+Graphs adds energy/phase launch, exact-vs-series wall comparison, phase-frame
+movies, return maps, period tables, resonance up/down overlays and spectra.
+Each is opt-in; first view remains the quiet apparatus. Wall close-up compares
+U_exact=k(sqrt(x^2+d^2)-l0)^2 with its quartic expansion; show the approximation
+breaking down at large x/d. Hysteresis shows A(Omega) with up/down arrows and
+unsettled points visibly marked. Spectra show |X(f)|/arg(X) or Re/Im, window and
+sampling rate; use omega for rotating pendulum and explain why wrapping theta
+would inject artificial jumps. Time cursor and phase marks link back to motion.
+
+Full local source availability removes the earlier 6000-character reader limit.
+Future coverage passes should retain a byte/hash inventory and read complete
+source chunks before deciding a capability is absent. No original bodies are
+included in this repository.

@@ -29,3 +29,14 @@ test('pendulum: all presets satisfy contract, rigid-rod geometry and exact reset
   for(const preset of model.presets){const a=model.create(preset.values),initial=a.sample();a.step(.137);near(a.t,.137,1e-14);for(const o of model.observables)assert.ok(Number.isFinite(a.sample()[o.key]),o.key);near(Math.hypot(...a.geometry().bob),preset.values.length,1e-12);a.reset();assert.deepEqual(a.sample(),initial);}
   assert.throws(()=>model.create({length:0}));assert.throws(()=>model.create({linear:.5}));
 });
+test('pendulum coverage: rotation period in either direction, interpolated trajectory tolerance 1e-5 s',()=>{
+  for(const sign of [1,-1]){const a=model.create({theta0:0,omega0:sign*7}),T=a.rotationPeriod();let prev=a.sample();while(sign*a.sample().theta<2*Math.PI){prev=a.sample();a.step(.002);}const s=a.sample(),measured=prev.t+.002*(sign*2*Math.PI-prev.theta)/(s.theta-prev.theta);near(measured,T,1e-5);assert.equal(a.period(),Infinity);}
+});
+test('pendulum coverage: cubic sine series has correct sign/order and energy gradient; tolerance 1e-8 torque / 1e-5 J',()=>{
+  const a=model.create({linear:'cubic',theta0:.5}),c=a.comparison(.5),dx=1e-6;
+  near(c.cubicTorque,-9.81*(.5-.5**3/6),1e-12);assert.ok(Math.abs(c.cubicTorque-c.exactTorque)<Math.abs(c.linearTorque-c.exactTorque));
+  near(-(a.comparison(.5+dx).cubicPotential-a.comparison(.5-dx).cubicPotential)/(2*dx),c.cubicTorque,1e-8);const E=a.sample().energy;a.step(20);near(a.sample().energy,E,1e-5);assert.equal(a.period(),null);
+});
+test('pendulum coverage: phase frames and return map use one exact drive-period lag, tolerance 1e-10 s',()=>{
+  const a=model.create({drive:.1,driveOmega:2,phaseCount:4});a.step(15);const frames=a.sections();assert.equal(frames.length,4);frames.forEach((f,i)=>{near(f.phase,2*Math.PI*i/4,1e-12);f.points.slice(1).forEach((p,j)=>near(p.t-f.points[j].t,Math.PI,1e-10));});const map=a.returnMap(1);near(map[0].previous,frames[1].points[0].omega,1e-12);near(map[0].current,frames[1].points[1].omega,1e-12);assert.throws(()=>a.returnMap(4));assert.throws(()=>model.create({phaseCount:1.5}));
+});

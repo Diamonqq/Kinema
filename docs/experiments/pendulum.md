@@ -5,14 +5,36 @@ for shared integration boundaries and the sandbox test-runner workaround.
 
 ## Original and improvements
 
-Inspected the original [GMPEND force/energy source](https://github.com/palazzol/cups/blob/master/DOS/CUPS/CUPSCM/GENMOT/GMPEND.PAS)
-and GENMOT help/interfaces. Panel's reader caps each excerpt at 6000 characters;
-later source sections were unavailable in that read. CUPS already had the exact
-sine restoring torque, adjustable mass/gravity/length, linear damping torque,
-periodic torque, and kinetic/total energy and bob coordinates, using GENMOT's
-configurable graph/initial-condition infrastructure. ANHARM additionally offered
-pendulum phase/Poincaré tools. These are existing CUPS capabilities, not claimed
-as new inventions.
+Read the complete local GMPEND.PAS and GENMOT.HLP, plus all ANHARM.HLP and
+ANHPHY.PAS sections relevant to pendulum comparisons and analysis. No original
+code or prose is incorporated. Coverage means physics/data, not completed views.
+
+## CUPS coverage
+
+| Original capability/example/plot | Kinema status and evidence |
+|---|---|
+| Exact sine restoring torque, adjustable mass/length/gravity | Improved: unit/range schema, exact large-angle period via elliptic integral, independent quadrature checks. |
+| Editable angle/angular velocity, librations and either rotation direction | Improved: Over the top/Reverse rotation presets and measured exact rotation-period checks. |
+| Linear damping torque | Improved: Damped example, heat accounting and analytic small-angle decay test. |
+| Periodic cosine torque with editable amplitude/frequency | Improved: drive phase, driven resonance, analytic linear amplitude AND phase checks. |
+| Kinetic, potential and total energy | Improved: bottom-zero potential differs by harmless constant from GMPEND; drive work, dissipated heat and balance residual added. |
+| Angle, angular velocity, acceleration, time and numerical readout | Yes (data): sample observables support arbitrary paired graphs. |
+| Bob Cartesian coordinates and animated pendulum | Yes (geometry data): physically proportioned bob/pivot; rendering pending. |
+| Moving driven actuator illustration | Yes (data): actual signed drive torque and phase; actuator rendering pending. |
+| SHO / exact pendulum comparison in ANHARM | Improved: exact/linear restoring selector and comparison() energies/torques. |
+| Higher-order sine/potential approximation in ANHARM | Improved: cubic restoring approximation uses theta - theta^3/6 and negative quartic potential correction. CUPS source has a positive correction; intentionally corrected, with gradient/conservation tests. |
+| ANHARM energy-selected starts and well/direction choice | Yes via initial theta/omega and energy readout; rotation examples cover both signs. Energy-click UI awaits the kit. |
+| Energy/period dependence on angle, energy, g/L | Improved: exactPeriod(amplitude,L,g), period() for libration, rotationPeriod() separately above barrier. |
+| Phase portrait and linked position/time graphs | Yes (data): unwrapped theta/omega plus shared sample time; rendering pending. |
+| Driven Poincare maps with up to 32 drive phases, transient removal and movies | Improved (data): phaseCount, exact-event sections() grouped by phase and timestamps for caller filtering/animation. |
+| Compare retained phase maps / mark section points on phase plot | Yes (data): independent instances and timestamped section points; plots pending. |
+| One-drive-period velocity return map and phase movie | Yes (data): returnMap(phase), tested adjacency and timestamps. |
+| Fourier analysis using angular velocity for full rotations | Improved: frequencyAnalysis defaults to omega, with complex/amplitude/phase output and four windows; shared analysis tests. |
+| Nonlinear resonance sweeps / parameter-space search | Supplied for ANHARM force laws in the anharmonic experiment; deliberately not duplicated as pendulum-specific sweep APIs in this pass. The exact pendulum driven core and raw samples are available; adapting continuation to unwrapped rotations needs an explicit response convention. |
+| Euler/RK2/RK4 comparison from GENMOT | Deliberately provided in motion-generator instead: pendulum keeps automatic Verlet/RK4 to keep its energy/period reference reliable. |
+| Live coefficient edits without reset | Deliberately omitted: reproducible reset semantics and quench-work accounting required before mid-run parameter changes. |
+| Retained trajectories, numeric sample export, parameter examples | Yes (data): caller-owned serializable histories/complete preset values. No DOS storage format needed. |
+| External GMPEND parameter files / ANHARM Interesting Parameters catalog | Exact external values were not in the six supplied files. Independent documented Small/Large/Damped/Driven/Period doubling/Sensitivity/Rotation examples replace them; no claim to clone unseen values. |
 
 New core provides unit-checked schema, named teaching presets, exact large-angle
 period evaluation, a selectable small-angle comparison model, two genuinely
@@ -31,11 +53,14 @@ and U becomes `mgL θ²/2`. Physical bob geometry still uses the true angle.
 
 `T=4 sqrt(L/g) K(sin(θmax/2))`, with complete elliptic integral K evaluated
 by the arithmetic-geometric mean. `exactPeriod(amplitude,L,g)` is exported.
-The `linear` enum is `exact` or `linear`. The near-resonance preset uses 3.13 rad/s;
+The `linear` enum is `exact`, `linear` or `cubic`. Cubic uses the correct
+local series and is not valid for full rotations. The near-resonance preset uses 3.13 rad/s;
 drive-frequency controls use a 1/300 rad/s grid so the exact 2/3 chaos drive is
 representable. Instance `period()` computes the libration period from current energy only when
 undamped/undriven; it returns Infinity at/above the separatrix and null for driven
-or damped runs. Above-separatrix rotation periods are not offered as librations.
+or damped runs. rotationPeriod() separately gives the exact conservative full-turn period above
+the barrier; it returns Infinity at/below the barrier and null for non-exact,
+driven or damped models. Cubic period() is null.
 
 Verlet for conservative motion; RK4 for driven/damped motion; maximum internal
 step 1 ms, reduced for high frequency or damping. Nearby starts use identical
@@ -80,3 +105,12 @@ exact Poincaré timestamps, 60 s positive nearby-state divergence, and a 700 s
 period-two attractor check. Tolerances are explicit in each test name.
 Driven analytic tests intentionally enable the linear comparison model; they do
 not falsely claim nonlinear resonance has the linear analytic amplitude.
+
+## Additional renderer requirements from full coverage
+
+Add Sine series, Over the top and Reverse rotation chips. The comparison close-up
+shows sin(theta), theta and theta-theta^3/6 with their matching potentials, not the
+incorrect original positive correction. Graphs adds phase selection (1..32),
+one-period omega return maps and angular-velocity spectra; phase movies and
+retained-run overlays remain opt-in. Keep rotations unwrapped on theta(t), wrapped
+only on phase plots. Mark the barrier and label libration versus rotation periods.

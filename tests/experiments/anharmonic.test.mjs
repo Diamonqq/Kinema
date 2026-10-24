@@ -13,7 +13,7 @@ test('anharmonic: all potential forces equal -dU/dx; tolerance 3e-6 N',()=>{
   for(const potential of ['polynomial','morse','lennard-jones','walls','van-der-pol']){const a=model.create({potential,x0:1.25,cubic:.2}),x=1.25,dx=1e-6;near(a.restoringForce(x),-(a.potential(x+dx)-a.potential(x-dx))/(2*dx),3e-6);}
 });
 test('anharmonic: conservative energy across polynomial, Morse, LJ, walls; tolerance 2e-5 J',()=>{
-  for(const preset of model.presets.filter(p=>!['duffing','limit-cycle'].includes(p.id))){const a=model.create(preset.values),E=a.sample().energy;a.step(30);near(a.sample().energy,E,2e-5);}
+  for(const preset of model.presets.filter(p=>!p.values.drive&&!p.values.damping&&p.values.potential!=='van-der-pol')){const a=model.create(preset.values),E=a.sample().energy;a.step(30);near(a.sample().energy,E,2e-5);}
 });
 test('anharmonic: repulsive LJ core stays positive, energy drift < 2e-7 J; singular refusal preserves state exactly',()=>{
   const a=model.create({potential:'lennard-jones',x0:.9}),E=a.sample().energy;a.step(10);assert.ok(a.sample().x>0);near(a.sample().energy,E,2e-7);

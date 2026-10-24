@@ -15,6 +15,11 @@ export function rk4(y,t,h,f) {
   const c=f(t+h/2,y.map((v,i)=>v+h*b[i]/2)), d=f(t+h,y.map((v,i)=>v+h*c[i]));
   return y.map((v,i)=>v+h*(a[i]+2*b[i]+2*c[i]+d[i])/6);
 }
+export function explicitStep(y,t,h,f,method){
+  if(method==='euler'){const d=f(t,y);return y.map((v,i)=>v+h*d[i]);}
+  if(method==='rk2'){const d=f(t,y),mid=f(t+h/2,y.map((v,i)=>v+h*d[i]/2));return y.map((v,i)=>v+h*mid[i]);}
+  return rk4(y,t,h,f);
+}
 // Coordinates and velocities alternate; trailing work/heat entries stay constant.
 export function verlet(y,t,h,acceleration,n) {
   const next=[...y], a=acceleration(t,y);
@@ -43,7 +48,7 @@ export function engine(initial, evolve, maxStep, eventPeriod = 0, eventSample = 
         const next=evolve(s,clock,h);
         if(next.some(v=>!Number.isFinite(v)||Math.abs(v)>1e100)) throw new RangeError('Trajectory left the numerical domain');
         s=next;clock=end;
-        if(clock===mark){added.push({t:clock,...eventSample(s)});index++;}
+        if(clock===mark){added.push({t:clock,...eventSample(s,index)});index++;}
       }
       y=s;t=target;event=index;points=points.concat(added).slice(-4096);
     },
