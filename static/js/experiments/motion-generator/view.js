@@ -82,13 +82,15 @@ export const view={graphs,closeups,
   const bounds=motionBounds(p),spring=p.dimensions==='1d'&&!p.gravity&&p.spring,wall=spring?bounds[0]-(bounds[1]-bounds[0])*.22:0;
   if(spring)bounds[0]=wall-(bounds[1]-wall)*.05;
   const m=fixedMap(s,bounds,{bottom:108,top:45,padding:28}),[qx,qy]=project(p,g.position),px=m.x(qx),py=m.y(qy),o=project(p,[0,0,0]);
-  const rest=project(p,[p.spring?p.forceX/p.spring:p.x0,p.y0,p.z0]);s.zoomAnchor={x:spring?(m.x(wall)+m.x(rest[0]))/2:m.x(rest[0]),y:Math.max(32,m.y(rest[1])-50)};s.avoid=[{x:s.zoomAnchor.x-85,y:s.zoomAnchor.y-18,width:170,height:36}];
+  const rest=project(p,[p.spring?p.forceX/p.spring:p.x0,p.y0,p.z0]);s.zoomAnchor={x:spring?(m.x(wall)+m.x(rest[0]))/2:m.x(rest[0]),y:Math.max(32,m.y(rest[1])-50)};const narrow=s.w<=440;s.ctx.font=(narrow?10:11)+'px system-ui,sans-serif';const chipW=s.ctx.measureText(closeups[0].label).width+(narrow?18:24)+10,chipX=Math.max(chipW/2+4,Math.min(s.w-chipW/2-4,s.zoomAnchor.x));// Chip box as the shell places it: centered on x, top edge at y.
+  s.avoid=[{x:chipX-chipW/2,y:s.zoomAnchor.y-3,width:chipW,height:(narrow?24:32)+6}];
   s.ctx.setLineDash([3,5]);s.line(m.x(o[0]),m.y(o[1])-34,m.x(o[0]),m.y(o[1])+35,C.grid,1);s.ctx.setLineDash([]);
   if(p.dimensions==='1d'&&!p.gravity){s.line(22,m.y(0)+16,s.w-22,m.y(0)+16,C.grid,1);if(spring){s.line(m.x(wall),m.y(0)-20,m.x(wall),m.y(0)+16,C.dim,3);for(let i=-18;i<15;i+=8)s.line(m.x(wall)-7,m.y(0)+i+6,m.x(wall),m.y(0)+i,C.grid,1);s.spring(m.x(wall),m.y(0),px-9,py,C.dim,6);}label(s,'x = 0',m.x(0),m.y(0)+45,C.dim,10);}
   const history=f.samples.filter(v=>v.t<=f.t+1e-8).slice(-360);if(history.length>1){s.ctx.beginPath();for(const [i,v] of history.entries()){const q=project(p,[v.x,v.y,v.z]);i?s.ctx.lineTo(m.x(q[0]),m.y(q[1])):s.ctx.moveTo(m.x(q[0]),m.y(q[1]));}s.ctx.strokeStyle='#8ab9ff55';s.ctx.lineWidth=1.8;s.ctx.stroke();}
   if(f.breakdown){
    // Same camera and ball as the scene: arrows only add to it, stacked when they share a line.
    const forces=Object.entries(g.forces).filter(([,v])=>Math.hypot(...v)>1e-9),max=Math.max(1,...forces.map(([,v])=>Math.hypot(...v))),extent=Math.min(s.w*.2,92),stack=p.dimensions==='1d'&&!p.gravity;
+   if(stack)s.avoid.push({x:0,y:py-11,width:s.w,height:22}); // tip labels never sit on the spring or ball
    forces.forEach(([name,v],i)=>{const q=project(p,v),sy=py-(stack?18+i*16:0),tipX=Math.max(14,Math.min(s.w-14,px+q[0]/max*extent)),tipY=sy-q[1]/max*extent,color=[C.blue,C.gold,C.green,C.violet][i%4];s.arrow(px,sy,tipX,tipY,color,2.5);tip(s,forceSymbols[name]+' = '+withUnit(p.dimensions==='1d'?v[0]:Math.hypot(...v),'N'),tipX,tipY,color);});
    if(!forces.length)label(s,'F = 0',px,py-40,C.dim,12);
   }
