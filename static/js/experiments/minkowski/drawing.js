@@ -4,10 +4,31 @@ import {easeCamera} from '../kit/stage.js';
 import {niceTicks,tickLabel} from '../kit/format.js';
 const cameras=new WeakMap();
 // Side-by-side panes cap at maxHeight so they do not resize when the stage height changes with the breakdown.
-export function panels(s,{bottom=92,top=44,maxHeight=Infinity,maxStacked=Infinity}={}) {
+// center: the content block (22px of heading, panes, tail = what hangs under them) is centered in the stage; bottom stays the clearance for the key. Pane size never depends on s.h once capped.
+export function panels(s,{bottom=92,top=44,maxHeight=Infinity,maxStacked=Infinity,center=false,square=false,tail=bottom}={}) {
   const stacked=s.w<470,gap=stacked?40:28,left=34,right=18;
-  const width=stacked?s.w-left-right:(s.w-left-right-gap)/2,height=stacked?Math.min((s.h-top-bottom-gap)/2,maxStacked):Math.min(s.h-top-bottom,maxHeight);
-  return [0,1].map(i=>({left:left+(stacked?0:i*(width+gap)),top:top+(stacked?i*(height+gap):0),width,height}));
+  const width=stacked?s.w-left-right:(s.w-left-right-gap)/2,height=stacked?Math.min((s.h-top-bottom-gap)/2,maxStacked):Math.min(s.h-top-bottom,maxHeight,square?width:Infinity);
+  const oy=center?Math.max(0,(s.h-22-(stacked?2*height+gap:height)-tail)/2+22-top):0;
+  return [0,1].map(i=>({left:left+(stacked?0:i*(width+gap)),top:top+oy+(stacked?i*(height+gap):0),width,height}));
+}
+// Height a wide block needs regardless of the stage: the scene shrinks to this while Graphs is open.
+export function blockHeight(s,{bottom=92,top=44,maxHeight=Infinity,square=false}={}) {
+  const width=(s.w-80)/2;
+  return top+Math.min(maxHeight,square?width:Infinity)+bottom;
+}
+// Fit the scene to the block while Graphs is open on a wide screen so the first graph clears the transport.
+const shells=new WeakMap();
+export function holdShell(shell){shells.set(shell.stage,shell);}
+export const graphsOpen=s=>!!shells.get(s)?.host.classList.contains('is-graphs-open')&&innerWidth>900;
+// cap: on a wide screen the scene also stops growing at cap so the block never floats in a tall empty stage.
+export function fitScene(s,need,rest,cap=0){
+  const shell=shells.get(s);if(!shell)return;
+  const wide=innerWidth>900,st=shell.scene.style,max=cap&&wide?Math.ceil(Math.max(cap,need))+'px':'',h=(cap&&wide||graphsOpen(s)?Math.ceil(need):rest)+'px';
+  if(st.minHeight!==h||st.maxHeight!==max){
+    st.minHeight=h;st.flexBasis=h;st.maxHeight=max;
+    if(max)st.setProperty('flex-grow','0','important');else st.removeProperty('flex-grow');
+    shell.stage.resize();
+  }
 }
 export function mapPanel(s,p,bounds,id='main',animate=true) {
   let cache=cameras.get(s);if(!cache){cache=new Map();cameras.set(s,cache);}
@@ -15,7 +36,7 @@ export function mapPanel(s,p,bounds,id='main',animate=true) {
   if(!current||s.snap||!animate)current=[...bounds];
   else if(easeCamera(current,bounds))s.animating=true;
   cache.set(id,current);
-  const [xmin,xmax,ymin,ymax]=current,scale=Math.min(p.width/(xmax-xmin||1),p.height/(ymax-ymin||1));
+  const [xmin,xmax,ymin,ymax]=current,scale=Math.min(p.width/(xmax-xmin||1),p.height/(ymax-ymin||1));(s.mapScales||(s.mapScales={}))[id]=scale;
   const cx=(xmin+xmax)/2,cy=(ymin+ymax)/2;
   return {x:v=>p.left+p.width/2+(v-cx)*scale,y:v=>p.top+p.height/2-(v-cy)*scale,scale,bounds:current};
 }

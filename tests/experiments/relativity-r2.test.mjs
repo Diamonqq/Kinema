@@ -22,7 +22,7 @@ test('zoom chips sit just under their panes and ignore the stage height that Bre
     const gap=a[id].y-lowest(tall);
     assert.ok(gap>=-1&&gap<=(name==='minkowski'?14:150),`${name} ${preset.id} ${w} chip ${id} gap ${gap}`);
     // Panes wider than the stage is tall (expanded view) legitimately grow with it.
-    if(w<=650){assert.equal(a[id].y,b[id].y,`${name} ${preset.id} ${w} chip ${id} stays put when the stage is shorter`);assert.equal(a[id].x,b[id].x);}
+    if(w<=650){assert.ok(Math.abs(gap-(b[id].y-lowest(short)))<1e-6,`${name} ${preset.id} ${w} chip ${id} keeps its offset from the pane when the stage is shorter`);assert.equal(a[id].x,b[id].x);}
    }
   }
  }

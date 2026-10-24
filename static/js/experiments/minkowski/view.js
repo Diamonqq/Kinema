@@ -1,6 +1,6 @@
 import {C,boost,interval,gamma,addVelocity} from './model.js';
 import {num} from '../kit/format.js';
-import {colors,fmt,panels,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth} from './drawing.js';
+import {colors,fmt,panels,blockHeight,holdShell,fitScene,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth} from './drawing.js';
 const cache=new WeakMap();
 export const closeups=[{id:'event',label:'Zoom · events'},{id:'transform',label:'Zoom · transform'}];
 export const graphs=[
@@ -138,17 +138,17 @@ export function paramVisible(spec,p){const k=spec.key,sc=p.scenario;
 // Pane geometry shared by drawing and the zoom chips, which sit just under the panes.
 function layoutFor(s,f){
   const calc=['four-vector','tensor'].includes(f.params.scenario),spatialZoom=f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario);
-  const hasEvents=!calc&&!spatialZoom&&namedEvents(f).length>0,ps=panels(s,{bottom:hasEvents?204:130,top:f.closeup?78:44,maxHeight:280,maxStacked:160}),last=ps[s.w<470?1:0],calcTop=f.closeup?85:55,calcHeight=Math.min(s.h-calcTop-105,300);
-  return {calc,spatialZoom,hasEvents,ps,calcTop,calcHeight,chipTop:(calc?calcTop+calcHeight:last.top+last.height)+4};
+  const hasEvents=!calc&&!spatialZoom&&namedEvents(f).length>0,tail=f.closeup==='transform'?142:hasEvents?108:46,maxHeight=hasEvents?262:320,opts=s.w<470?{tail,bottom:hasEvents?204:130,top:f.closeup?78:44,maxHeight,maxStacked:160}:{tail,bottom:tail+56,top:f.closeup?78:30,maxHeight,maxStacked:160},ps=panels(s,{...opts,center:true}),last=ps[s.w<470?1:0],calcBase=f.closeup?85:40,ct=tail===142?142:46,calcHeight=Math.min(s.h-calcBase-ct-30,330),calcTop=calcBase+Math.max(0,(s.h-22-calcHeight-ct)/2+22-calcBase);
+  return {calc,spatialZoom,hasEvents,ps,calcTop,calcHeight,need:calc?calcBase+330+ct+30:blockHeight(s,opts),cap:(22+(calc?calcHeight:ps[0].height)+(calc?ct:tail))/.72,paneBottom:calc?calcTop+calcHeight:last.top+last.height,paneHeight:calc?calcHeight:ps[0].height,chipTop:(calc?calcTop+calcHeight:last.top+last.height)+4};
 }
 export const view={closeups,graphs,paramVisible,
-  mount(shell){shell.scene.style.minHeight='620px';shell.scene.style.flexBasis='620px';},
+  mount(shell){holdShell(shell);shell.scene.style.minHeight='620px';shell.scene.style.flexBasis='620px';},
   graphDescriptors:p=>graphs.filter(g=>g.id==='four-vector'?p.scenario==='four-vector':g.id==='tensor'?p.scenario==='tensor':true).map(g=>g.id==='clocks'?{...g,window:10*gamma(p.beta)*p.length/C}:g),
   key:f=>['four-vector','tensor'].includes(f.params.scenario)?'Blue: S \u00b7 warm: S\u2032':f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario)?'Spatial slice'+(f.geometry.wavefronts.some(a=>a.visible)||f.geometry.ground.worldlines.some(a=>a.kind==='light')?' \u00b7 warm: light':''):'Worldlines'+(f.geometry.ground.worldlines.some(a=>a.kind==='light')?' \u00b7 warm: light':'')+' \u00b7 dashed: other-frame axes'+(f.breakdown?' \u00b7 green: c\u00b2t\u00b2 \u2212 x\u00b2 = L\u00b2':''),
   closeupAnchors:(s,f)=>{const l=layoutFor(s,f),xs=s.w<470||l.calc?[s.w*.27,s.w*.73]:l.ps.map(a=>a.left+a.width/2);return {event:{x:xs[0],y:l.chipTop},transform:{x:xs[1],y:l.chipTop}};},
   draw(s,f){
     if(f.thumbnail||s.w<200||s.h<180){f={...f,thumbnail:true,breakdown:false};drawDiagram(s,f,{left:28,top:28,width:s.w-45,height:s.h-58},'ground',{cone:true});return;}
-    const layout=layoutFor(s,f),{hasEvents,ps}=layout;
+    const layout=layoutFor(s,f),{hasEvents,ps}=layout;fitScene(s,layout.need,620,layout.cap);s.paneBottom=layout.paneBottom;s.paneHeight=layout.paneHeight;
     if(['four-vector','tensor'].includes(f.params.scenario))calculator(s,f,{left:40,top:layout.calcTop,width:s.w-65,height:layout.calcHeight});
     else if(f.closeup==='event'&&['objects','flashes','light-clock'].includes(f.params.scenario))spatial(s,f,{left:40,top:85,width:s.w-65,height:s.h-190});
     else for(const [i,k] of ['ground','moving'].entries())drawDiagram(s,f,ps[i],k,{cone:true,calibration:f.breakdown,zoom:!!f.closeup});

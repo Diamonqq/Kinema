@@ -1,5 +1,5 @@
 import {eventFor,sumMomentum,invariantMass,comptonEnergy,H_C,masses,plotVariables} from './model.js';
-import {colors,fmt,panels,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth} from '../minkowski/drawing.js';
+import {colors,fmt,panels,blockHeight,holdShell,fitScene,mapPanel,line,inside,axes,plot,clipPanel,clipLine,richText,richWidth} from '../minkowski/drawing.js';
 const caches=new WeakMap();
 export const closeups=[{id:'balance',label:'Zoom · momentum'},{id:'budget',label:'Zoom · energy'}];
 export const graphs=[['flight','Free flight'],['ellipse','Momentum ellipse'],['energy-angle','Energy vs angle'],['threshold','Threshold'],['invariant','Invariant mass'],['compton','Compton shift'],['scatter','Scatter plot'],['histogram','Histogram']].map(([id,label])=>({id,label,kind:'custom',unit:({flight:'s, light-s',ellipse:'MeV/c','energy-angle':'\u00b0, MeV',threshold:'MeV',invariant:'MeV/c^2',compton:'\u00b0, MeV'})[id]||''}));
@@ -84,12 +84,12 @@ function drawBudget(s,f){
 }
 // Pane geometry shared by drawing and the zoom chips, which sit just under the (square) momentum panes.
 function layoutFor(s,f){
-  const ps=panels(s,{top:s.w>=470?78:f.closeup?78:44,bottom:s.w>=470?100:130,maxStacked:150});let bottom;
+  const opts={top:f.closeup?78:s.w>=470?34:44,bottom:s.w>=470?100:130,maxStacked:150,square:true,tail:64},ps=panels(s,{...opts,center:true});let bottom;
   if(s.w>=470){const size=Math.min(ps[0].width,ps[0].height);bottom=ps[0].top+size;}else bottom=ps[1].top+ps[1].height;
-  return {ps,chipTop:bottom+6};
+  return {ps,need:blockHeight(s,opts),cap:(22+ps[0].height+opts.tail)/.72,paneBottom:bottom,paneHeight:ps[0].height,chipTop:bottom+6};
 }
 export const view={closeups,graphs,paramVisible,
-  mount(shell){shell.scene.style.minHeight='550px';shell.scene.style.flexBasis='550px';},
+  mount(shell){holdShell(shell);shell.scene.style.minHeight='550px';shell.scene.style.flexBasis='550px';},
   graphDescriptors:p=>graphs.filter(g=>g.id==='compton'?p.reaction==='compton':g.id==='threshold'?!['pion-decay','decay','muon'].includes(p.reaction):true).map(g=>['scatter','histogram'].includes(g.id)?{...g,unit:p.distribution==='isotropic'?'isotropic toy sample':'allowed locus'}:g),
   key:f=>{
     const e=data(f).e,incoming=e.initial.some(a=>Math.hypot(a.px,a.py)>1e-9)||e.cmInitial.some(a=>Math.hypot(a.px,a.py)>1e-9);
@@ -101,7 +101,7 @@ export const view={closeups,graphs,paramVisible,
   },
   closeupAnchors:(s,f)=>{const {ps,chipTop}=layoutFor(s,f),xs=s.w<470?[s.w*.26,s.w*.74]:ps.map(a=>a.left+a.width/2);return {balance:{x:xs[0],y:chipTop},budget:{x:xs[1],y:chipTop}};},
   draw(s,f){if(f.thumbnail||s.h<180){f={...f,thumbnail:true,breakdown:false};momentum(s,f,{left:28,top:28,width:s.w-48,height:s.h-58},'lab');return;}
-    const compact=s.w<470,{ps,chipTop}=layoutFor(s,f);
+    const compact=s.w<470,{ps,chipTop,need,cap,paneBottom,paneHeight}=layoutFor(s,f);fitScene(s,need,550,cap);s.paneBottom=paneBottom;s.paneHeight=paneHeight;
     if(f.closeup==='budget')drawBudget(s,f);else for(const [i,k] of ['lab','cm'].entries())momentum(s,f,ps[i],k,f.closeup==='balance');
     const {e}=data(f),caption=f.closeup==='budget'?`√s = ${fmt(e.W)} MeV · final rest energy ${fmt(e.requiredMass)} MeV`:`√s = ${fmt(e.W)} MeV · reaction at t = 0`;
     if(f.closeup!=='budget'&&s.w>260&&s.h>200)s.text(compact?`√s = ${fmt(e.W)} MeV`:caption,s.w/2,chipTop+46,'#bccde3',compact?11:12);
