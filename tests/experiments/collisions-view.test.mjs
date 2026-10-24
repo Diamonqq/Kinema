@@ -40,7 +40,7 @@ test('displayed hard-sphere cross section is the numerical R2/4 plateau within 0
 
 test('cross-section axes include zero so sub-percent differentiation noise is not magnified into apparent physics',()=>{
  const noop=()=>{},s={w:320,h:170,text:noop,line:noop,ctx:{beginPath:noop,moveTo:noop,lineTo:noop,stroke:noop}};
- const b=plot(s,[{x:1,y:.2499},{x:2,y:.25}],{zero:true});assert.ok(b.lo<=0);assert.ok(b.hi-b.lo>=.25);
+ const b=plot(s,[{x:1,y:.2499},{x:2,y:.25}],{zero:true});assert.equal(b.lo,0);assert.ok(b.hi-b.lo>=.25);
 });
 
 test('Lab and CM share one physical pixel scale and separate header rows at desktop and narrow widths (1e-10 px)',()=>{

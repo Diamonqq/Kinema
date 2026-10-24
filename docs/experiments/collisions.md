@@ -248,3 +248,6 @@ endpoints are excluded instead of displaying spurious curvature.
 Final visual polish uses one shared metres-to-pixels scale for both lab and CM
 frames, separate fixed header rows, and a green + CM marker explained in the key.
 The whole-motion bounds remain fixed during replay.
+
+Both cross-section views clamp the nonnegative vertical axis at exactly zero;
+positive-range padding is applied only at the top.

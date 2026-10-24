@@ -228,3 +228,19 @@ required here because Edge spawn is denied in this worker sandbox.
 A Poincare section with one crossing uses minimum centred axis spans rather than
 duplicate endpoint ticks. Breakdown labels occupy separate sides of the radial
 and tangential arrows; energy units appear once in the graph header.
+
+Long Poincare sections now have a separate, cancellable 320-crossing trajectory
+(up to 100000 s). Each timer turn advances at most 64 short steps, yielding after
+roughly 6 ms; it preserves the chosen physics step. Close, changed parameters,
+and destroyed shells cancel further work. Two-body cases retain the Comet
+setup guidance. A time/encounter limit is reported rather than inventing points.
+The calculation displays its crossing count while preparing, then draws final
+fixed axes and all points dim, brightening only crossings before the scene cursor.
+It never advances the visible model. Point clouds alone do not establish chaos;
+resolution, conservation and sensitivity must be assessed separately.
+
+The caption reports the actual crossing count and integrated time, including
+bounded runs that stop before the target. Highlighting uses elapsed crossing
+time in both forward and reverse replay. Browser coverage accepts the honest
+time-capped result (at least 100 crossings), rather than raising the work limit
+just to force 320 in a changed setup.

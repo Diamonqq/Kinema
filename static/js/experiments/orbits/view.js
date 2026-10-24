@@ -1,4 +1,5 @@
 import {model,G} from './model.js';
+import {startSection,crossingElapsed} from './section.js';
 import {C,fmt,tex,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label} from './scene.js';
 export const graphs=[
  {id:'radius',label:'Separation',unit:'m',series:[{key:'r',label:'r',color:C.blue}]},
@@ -11,6 +12,33 @@ export const graphs=[
 ];
 export const closeups=[{id:'periapsis',label:'Zoom · r & v'},{id:'area',label:'Zoom · areas'},
  {id:'barycentre',label:'Zoom · CM'},{id:'potential',label:'Zoom · potential'},{id:'poincare',label:'Zoom · Poincaré'}];
+const shells=new WeakMap(),parameterShells=new WeakMap(),sections=new WeakMap();
+const sectionWanted=s=>s.closeup==='poincare'||(!s.q('.exp-graph-panel').hidden&&s.enabledGraphs.has('poincare'));
+function longSection(params){
+ const shell=parameterShells.get(params);
+ let state=sections.get(params);
+ if(!state||state.cancelled){
+  state=startSection(params,{active:()=>!!shell&&!shell.destroyed&&shell.params===params&&sectionWanted(shell)});
+  sections.set(params,state);
+ }
+ return state;
+}
+function drawSection(s,f,compact=false){
+ if(!compact)title(s,'A slice through the rotating motion');
+ if(f.sample.bodyCount<3){s.text('Choose Comet encounter in Setup',s.w/2,s.h/2,C.muted,12);return;}
+ const state=longSection(f.params),count=state.points.length;
+ if(!state.done){
+  s.text('Preparing the long section…',s.w/2,s.h/2,C.muted,compact?11:13);
+  if(!compact)caption(s,count+' crossings · integrating to 320 (bounded)');
+  return;
+ }
+ if(state.error){s.text('Section stopped: '+state.error,s.w/2,s.h/2,C.muted,11);return;}
+ // Wait for the bounded integration before drawing axes: their final bounds
+ // stay fixed while playback moves the bright time selection through the cloud.
+ plot(s,state.points,{xkey:'x',ykey:'vx',scatter:true,
+  pointColor:p=>crossingElapsed(p)<=f.t?C.blue:C.blue+'45',
+  label:count+' crossings · '+Math.round(state.time)+' s integrated'});
+}
 export function values(f){const r=f.geometry.relativeInertial||f.geometry.relative,q=f.sample,vr=(r.x*r.vx+r.y*r.vy)/q.r,vt=(r.x*r.vy-r.y*r.vx)/q.r;
  return {vr,vt,force:Math.hypot(f.geometry.force.x,f.geometry.force.y),mu:G*f.params.gravityScale*(f.params.m1+f.params.m2)};}
 function caption(s,text){s.text(text,s.w/2,s.h-43,C.muted,12);}
@@ -51,6 +79,8 @@ function sectors(s,f,data,map){
  }
 }
 export const view={graphs,closeups,
+ mount(shell){shells.set(shell.stage,shell);},
+ sectionStatus(params){const s=sections.get(params);return s?{done:s.done,cancelled:s.cancelled,count:s.points.length,time:s.time,error:s.error}:null;},
  paramVisible(d,p){const k=d.key,custom=p.system==='custom-nbody',binary=p.system==='two-body'||custom;
   const extra=k.match(/^(m|x|y|vx|vy)([3-5])$/);if(extra)return custom&&Number(extra[2])<=p.bodyCount;
   if(k==='bodyCount')return custom;if(['m1','m2','r0','launch'].includes(k))return binary;
@@ -67,15 +97,16 @@ export const view={graphs,closeups,
    if(f.t<=end)s.line(map.x(f.t),top,map.x(f.t),bottom,C.pale,1);
    s.text('0 s',left,bottom+16,C.muted,10);s.text(fmt(end)+' s',right,bottom+16,C.muted,10,'right');return;
   }
-  if(d.id==='poincare'){plot(s,f.geometry.poincare||[],{xkey:'x',ykey:'vx',scatter:true});return;}
+  if(d.id==='poincare'){drawSection(s,f,true);return;}
   const p=f.geometry.effectivePotential;if(p.available===false){s.text('No exact N-body radial reduction',s.w/2,s.h/2,C.muted,11);return;}
   plot(s,p.points,{xkey:'r',ykey:'potential',energy:p.energy,cursor:{x:p.r}});
  },
  closeupAnchors:s=>chipAnchors(s,closeups.map(c=>c.id)),
- key:f=>f.closeup==='poincare'?'Rotating frame · upward y = 0 crossings':f.closeup==='potential'?'Radial potential · amber E · white current radius':
+ key:f=>f.closeup==='poincare'?'Rotating frame · dim future · bright past':f.closeup==='potential'?'Radial potential · amber E · white current radius':
   f.closeup==='area'?'Relative orbit · equal time intervals':f.closeup==='periapsis'?'Blue v · amber radial · violet tangent · green gravity':
   f.closeup==='barycentre'?'Distances and motion share one physical scale':f.params.frame==='primary'&&f.sample.bodyCount===2?'× primary focus · blue companion · + CM':'Pale primary · blue companion · + CM',
  draw(s,f){
+  const shell=shells.get(s);if(shell)parameterShells.set(f.params,shell);
   if(s.h<200){
    const q=f.sample,r=f.geometry.relative,e=q.eccentricity,a=q.semiMajorAxis,mu=G*(f.params.m1+f.params.m2),h=r.x*r.vy-r.y*r.vx,
     ex=r.vy*h/mu-r.x/q.r,ey=-r.vx*h/mu-r.y/q.r,angle=Math.atan2(ey,ex),R=q.apoapsis||q.r*2,
@@ -91,9 +122,7 @@ export const view={graphs,closeups,
    plot(s,p.points,{xkey:'r',ykey:'potential',energy:p.energy,cursor:{x:p.r},label:'r (m) · Ueff (J)'});return;
   }
   if(f.closeup==='poincare'){
-   title(s,'A slice through the rotating motion');const pts=g.poincare||[];
-   if(!pts.length){s.text(f.params.system==='two-body'?'Choose Comet encounter in Setup':'Play until an upward crossing',s.w/2,s.h/2,C.muted,12);caption(s,'Only actual crossings at or before the cursor');}
-   else plot(s,pts,{xkey:'x',ykey:'vx',scatter:true,label:'x* (m) · vx* (m/s)'});return;
+   drawSection(s,f);return;
   }
   const analyticEnvelope=q.bodyCount===2&&q.bound&&!f.params.thrustAlong&&!f.params.thrustNormal&&['cm','primary'].includes(f.params.frame);
   if(!data.done&&!analyticEnvelope){s.text(data.error||'Preparing the fixed 60 s motion window…',s.w/2,s.h*.56,C.muted,s.w<380?11:13);return;}

@@ -38,7 +38,7 @@ export function label(s,text,x,y,color=C.pale){
  return false;
 }
 export function vector(s,x,y,dx,dy,color,text){if(Math.hypot(dx,dy)<.05)return;s.arrow(x,y,x+dx,y+dy,color,2);if(text)label(s,text,x+dx+Math.sign(dx||1)*12,y+dy-10,color);}
-export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',scatter=false,zero=false}={}){
+export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',scatter=false,zero=false,pointColor=()=>C.blue}={}){
  const compact=s.h<220,left=76,right=s.w-28,top=compact?32:90,bottom=s.h-(compact?32:68),values=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
  if(!values.length){s.text('No completed points yet',s.w/2,s.h/2,C.muted,13);return;}
  let xmin=Math.min(...values.map(p=>p[xkey])),xmax=Math.max(...values.map(p=>p[xkey])),lo=Math.min(...values.map(p=>p[ykey])),hi=Math.max(...values.map(p=>p[ykey]));
@@ -51,11 +51,12 @@ export function plot(s,points,{xkey='x',ykey='y',energy,cursor,label:caption='',
   if(hi-lo<minY){const centre=(lo+hi)/2;lo=centre-minY/2;hi=centre+minY/2;}
  }
  const span=Math.max(1e-9,hi-lo),xspan=Math.max(.01,xmax-xmin);lo-=span*.12;hi+=span*.12;
+ if(zero&&values.every(p=>p[ykey]>=0)&&!(energy<0))lo=0;
  const x=v=>left+(v-xmin)/xspan*(right-left),y=v=>bottom-(v-lo)/(hi-lo)*(bottom-top);
  s.line(left,top,left,bottom,C.grid);s.line(left,bottom,right,bottom,C.grid);
  s.text(fmt(xmin),left,bottom+17,C.muted,10);s.text(fmt(xmax),right,bottom+17,C.muted,10);
  s.text(fmt(hi),left-5,top,C.muted,10,'right');s.text(fmt(lo),left-5,bottom,C.muted,10,'right');
- if(scatter)values.forEach(p=>s.circle(x(p[xkey]),y(p[ykey]),2.5,C.blue));else linePath(s,values.map(p=>({x:p[xkey],y:p[ykey]})),{x,y},C.blue,2);
+ if(scatter)values.forEach(p=>s.circle(x(p[xkey]),y(p[ykey]),2.5,pointColor(p)));else linePath(s,values.map(p=>({x:p[xkey],y:p[ykey]})),{x,y},C.blue,2);
  if(Number.isFinite(energy)){s.line(left,y(energy),right,y(energy),C.amber,1.5);s.text('E',right-5,y(energy)-10,C.amber,12);}
  if(cursor&&cursor.x>=xmin&&cursor.x<=xmax){s.line(x(cursor.x),top,x(cursor.x),bottom,C.pale,1);if(Number.isFinite(cursor.y)&&cursor.y>=lo&&cursor.y<=hi)s.circle(x(cursor.x),y(cursor.y),4,C.pale);}
  if(!compact)s.text(caption,s.w/2,s.h-40,C.muted,12);
