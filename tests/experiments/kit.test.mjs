@@ -53,3 +53,17 @@ test('analytic coupled seek remains immediate and rejected candidates never comm
  assert.equal((await seeker.run(model,{...params,modeA:8},1,{onComplete:instance=>committed=instance,onError:e=>error=e})).ok,false);
  assert.ok(error);assert.equal(committed,before);
 });
+
+test('graph ranges keep zero and never pad into the wrong sign', async () => {
+  const {valueRange, axisLabel} = await import('../../static/js/experiments/kit/graphs.js');
+  const [lo, hi] = valueRange([0.5, 3, 14.49]);
+  assert.equal(lo, 0);
+  assert.ok(hi > 14.49);
+  const [nlo, nhi] = valueRange([-2, -0.5]);
+  assert.equal(nhi, 0);
+  assert.ok(nlo < -2);
+  assert.deepEqual(valueRange([0, 0]), [0, 1.12]);
+  assert.equal(axisLabel(6.28e11), '6.3e11');
+  assert.equal(axisLabel(2443.84), '2444');
+  assert.equal(axisLabel(-1.554), '-1.55');
+});

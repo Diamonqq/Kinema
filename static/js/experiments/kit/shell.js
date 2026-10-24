@@ -88,7 +88,7 @@ export class ExperimentShell {
  }
 
  setPlaying(value){if(value){this.cancelSeek();if(this.instance.t>=this.duration)this.instance.reset();}this.playing=!!value;const b=this.q('[data-exp=play]');b.innerHTML=controlIcon(this.playing?'pause':'play');b.setAttribute('aria-label',this.playing?'Pause':'Play');b.title=this.playing?'Pause':'Play';this.changed();}
- reset(){this.cancelSeek();this.setPlaying(false);this.instance.reset();this.closeup='';this.stage.snap=true;this.q('.exp-zoom-back').hidden=true;this.draw();this.changed();}
+ reset(){this.cancelSeek();this.setPlaying(false);this.instance.reset();this.closeup='';this.scene.classList.remove('is-closeup');this.stage.snap=true;this.q('.exp-zoom-back').hidden=true;this.draw();this.changed();}
  setCloseup(id){if(id&&!(this.view.closeups||this.manifest.closeups||[]).some(c=>c.id===id))return;this.closeup=id;this.q('.exp-zoom-back').hidden=!id;this.scene.classList.toggle('is-closeup',!!id);this.draw();this.changed();}
  setBreakdown(value){this.breakdown=!!value;this.q('[data-exp=breakdown]').setAttribute('aria-pressed',String(this.breakdown));this.equations.hidden=!this.breakdown;this.draw();this.changed();}
  equation(el,lines){const signature=JSON.stringify(lines);if(el.dataset.signature===signature)return;el.dataset.signature=signature;el.innerHTML=lines.map(s=>`<div class="exp-equation">\\[${esc(s)}\\]</div>`).join('');math(el);}

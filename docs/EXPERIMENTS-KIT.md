@@ -70,6 +70,11 @@ no applied chip; the retained snapshot is saved back.
 selects an authored close-up. Transport uses icon play/pause and reset, a scrubber
 and speed. No provider runs on entry. No learner evidence is written.
 
+The gallery card calls `view.draw` once at t=0 on a small canvas with
+`frame.thumbnail===true`; draw only the apparatus there (no readouts, captions or
+chips). Ordinary time-series axes always include zero and pad only on the side that
+has data, so nonnegative quantities never show a negative lower tick.
+
 Optional `view.graphDescriptors(params)` replaces the static graph descriptors
 when the series count depends on setup. `view.closeupAnchors(stage,frame)` returns
 stable CSS-pixel anchors by close-up ID; reserve separate rows for captions,
