@@ -116,7 +116,11 @@ by the current values is *inert*. The tutor context (`app/experiments.py` `compa
 `inert:true` and tells the tutor never to suggest or change it on its own; a `set_params` that touches an
 inert param is dropped unless the same action also sets the controlling param, so "custom decay with
 M = 500 MeV" works. The UI is free to dim or hide inert controls. The tutor receives a compact manifest
-(param limits and options, preset id/label/note, close-up and graph id/label, observables), not preset values.
+(param limits and options, preset id/label/note plus `sets`, close-up and graph id/label, observables). A preset's `sets`
+lists only the params it changes from the defaults, by symbol or label. Every observable needs a `label`: replies name readouts by
+label and never quote an internal key. Each recorded assistant turn that applied an action carries `applied` in the conversation
+(preset label, or the chip text), and the tutor is told that `current_state` is authoritative, so it does not "correct" earlier
+numbers that an applied action has since changed. Action chips show a param's symbol (plain text) or else its label, never its key.
 
 Choose integrators per physics (symplectic for conservative, RK4/adaptive RK45 for
 damped/driven, quaternions for rotation). Tests in `tests/experiments/<id>.test.mjs`

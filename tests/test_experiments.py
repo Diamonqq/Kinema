@@ -170,7 +170,7 @@ def test_enum_and_numeric_option_actions():
         assert experiments.validate_action(manifest, action) == action
     for values in ({'method': 'unknown'}, {'modeA': '2'}, {'modeA': True}):
         assert experiments.validate_action(manifest, {'type': 'set_params', 'values': values}) is None
-    assert experiments.chip(manifest, {'type': 'set_params', 'values': {'k2': 40}}) == 'k₂ → 40 N/m'
+    assert experiments.chip(manifest, {'type': 'set_params', 'values': {'k2': 40}}) == 'Spring 2 → 40 N/m'      # no symbol: the label, never the key
 
 
 def test_experiment_rejects_lesson_scope_without_writing(fixture, monkeypatch):
@@ -186,9 +186,9 @@ def test_experiment_rejects_lesson_scope_without_writing(fixture, monkeypatch):
 
 def test_chip_formats_numbers_and_option_labels():
     orbits = experiments.get('orbits')
-    assert experiments.chip(orbits, {'type': 'set_params', 'values': {'m2': 2e12, 'launch': 'circular'}}) == 'm₂ → 2×10¹² kg · launch → Circular'
+    assert experiments.chip(orbits, {'type': 'set_params', 'values': {'m2': 2e12, 'launch': 'circular'}}) == 'm₂ → 2×10¹² kg · Launch → Circular'
     projectile = experiments.get('projectile-air')
-    assert experiments.chip(projectile, {'type': 'set_params', 'values': {'angle': 60, 'speed': 40.0}}) == 'angle → 60° · speed → 40 m/s'
+    assert experiments.chip(projectile, {'type': 'set_params', 'values': {'angle': 60, 'speed': 40.0}}) == 'α → 60° · v₀ → 40 m/s'
 
 
 def test_reply_instructions_limit_actions_and_length(monkeypatch):

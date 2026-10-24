@@ -2301,7 +2301,9 @@ def _experiment_reply(conn, tid, course_id, t, token, choice, job):
             if a['kind'] == 'image':
                 images.append(str(content.attachment_file(learn_api._data, a)))
     result, meta = experiments.run_reply(choice, manifest, t['experiment']['state'],
-        [{'role': m['role'], 'text': m['text']} for m in messages], job, images, attached)
+        [{'role': m['role'], 'text': m['text'],
+          **({'applied': experiments.applied_text(manifest, m['experiment_action'])} if m.get('experiment_action') else {})} for m in messages],
+        job, images, attached)
     conn.execute('BEGIN IMMEDIATE')
     loaded = _load(conn, tid)
     if job.cancel.is_set() or not loaded or loaded[1].get('reply_token') != token or loaded[1].get('pending') != job.id:

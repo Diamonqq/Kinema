@@ -3,6 +3,7 @@ import json
 import os
 import tempfile
 import threading
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -60,7 +61,7 @@ def test_compact_context_is_small_and_marks_inert_params():
     assert by['reaction']['options'] == [{'value': 'decay', 'label': 'Decay'}, {'value': 'collision', 'label': 'Collision'}, 'plain']
     assert by['parentMass'] == {'key': 'parentMass', 'label': 'Parent mass', 'symbol': 'M', 'unit': 'MeV', 'min': 1, 'max': 1000, 'step': 1,
                                 'appliesWhen': {'reaction': ['decay']}, 'inert': True}
-    assert c['presets'] == [{'id': 'p1', 'label': 'Preset one', 'note': 'Why it matters.'}]
+    assert c['presets'] == [{'id': 'p1', 'label': 'Preset one', 'note': 'Why it matters.', 'sets': {'Reaction': 'Collision', 'Free': '3 m'}}]
     assert c['graphs'] == [{'id': 'g1', 'label': 'Graph'}] and c['closeups'] == [{'id': 'c1', 'label': 'Zoom'}]
     assert c['observables'] == [{'key': 'x', 'label': 'Position', 'symbol': 'x', 'unit': 'm'}]
 
@@ -84,6 +85,55 @@ def test_set_params_on_an_inert_param_alone_drops_but_with_its_controller_passes
     assert experiments.validate_action(MANIFEST, alone) == alone      # no state: the old contract
 
 
+def test_plain_symbols_and_chips_never_show_raw_keys():
+    assert experiments.plain_symbol('m_2') == 'm₂' and experiments.plain_symbol('v_{3x}') == 'v₃ₓ' and experiments.plain_symbol('\\theta') == 'θ'
+    assert experiments.plain_symbol('F_d') == 'F_d' and experiments.plain_symbol('') == ''
+    chip = experiments.chip(MANIFEST, {'type': 'set_params', 'values': {'parentMass': 200, 'reaction': 'decay'}})
+    assert chip == 'M → 200 MeV · Reaction → Decay'      # symbol wins, else the label
+    assert 'parentMass' not in chip and 'reaction' not in chip
+    rel = experiments.get('rel-kinematics')
+    text = experiments.chip(rel, {'type': 'set_params', 'values': {'reaction': 'decay', 'parentMass': 200}})
+    assert 'parentMass' not in text and text.startswith('Reaction → ') and 'M → 200 MeV/c²' in text
+    for eid in [m['id'] for m in experiments.catalog()]:
+        manifest = experiments.get(eid)
+        for p in manifest['params']:
+            value = p['options'][0]['value'] if p.get('options') else p['min']
+            assert p['key'] not in experiments.chip(manifest, {'type': 'set_params', 'values': {p['key']: value}}) or p['key'] in (p.get('symbol') or '') + (p.get('label') or '')
+
+
+def test_preset_values_are_listed_only_where_they_differ_from_defaults():
+    manifest = {**MANIFEST, 'presets': [{'id': 'p2', 'label': 'Heavy', 'note': 'n', 'values': {'reaction': 'decay', 'mode': 'kinetic', 'parentMass': 500, 'free': 2}}]}
+    assert experiments.compact(manifest, params())['presets'][0]['sets'] == {'M': '500 MeV'}
+    pendulum = experiments.get('pendulum')
+    sets = {p['id']: p['sets'] for p in experiments.compact(pendulum, experiments.initial(pendulum)['params'])['presets']}
+    assert sets['rotation'] == {'ω₀': '7 rad/s', 'θ₀': '0 rad'}
+
+
+def test_experiment_observables_all_carry_labels():
+    for eid in [m['id'] for m in experiments.catalog()]:
+        compact = experiments.compact(experiments.get(eid), experiments.initial(experiments.get(eid))['params'])
+        assert all(o.get('label') for o in compact.get('observables', [])), eid
+
+
+def test_applied_actions_are_recorded_in_the_conversation_and_never_corrected(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(model_choices, 'run', lambda choice, prompt, system='', **k: (seen.update(prompt=prompt) or '{"reply": "Ok.", "action": null}', {}))
+    job = SimpleNamespace(on_event=None, cancel=threading.Event())
+    manifest = MANIFEST
+    preset = {'type': 'preset', 'id': 'p1'}
+    note = experiments.applied_text(manifest, preset)
+    assert note == 'loaded preset "Preset one"'
+    messages = [{'role': 'user', 'text': 'Show me preset one'}, {'role': 'assistant', 'text': 'Loaded.', 'applied': note}]
+    experiments.run_reply({'model': 'claude:haiku'}, manifest, experiments.initial(manifest), messages, job)
+    assert json.loads(seen['prompt'])['conversation'][1]['applied'] == 'loaded preset "Preset one"'
+
+
+def test_experiment_reply_adds_applied_to_the_conversation_from_stored_actions():
+    from app import teacher
+    source = (Path(teacher.__file__)).read_text(encoding='utf-8')
+    assert "experiments.applied_text(manifest, m['experiment_action'])" in source
+
+
 def test_run_reply_sends_the_compact_manifest_and_the_inert_rule(monkeypatch):
     seen = {}
 
@@ -98,4 +148,5 @@ def test_run_reply_sends_the_compact_manifest_and_the_inert_rule(monkeypatch):
     assert result['action'] is None                               # inert on its own: dropped, explanation kept
     context = json.loads(seen['prompt'])
     assert 'values' not in json.dumps(context['experiment']['presets'])
+    assert 'never quote an internal key or id' in seen['system'] and 'current_state is authoritative' in seen['system']
     assert 'never suggest or change it' in seen['system']

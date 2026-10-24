@@ -188,6 +188,34 @@ def _number(value):
     return f'{value:.4g}'
 
 
+_GREEK = {'alpha': 'α', 'beta': 'β', 'gamma': 'γ', 'delta': 'δ', 'Delta': 'Δ', 'epsilon': 'ε', 'eta': 'η', 'theta': 'θ', 'kappa': 'κ', 'lambda': 'λ',
+          'mu': 'μ', 'phi': 'φ', 'psi': 'ψ', 'rho': 'ρ', 'sigma': 'σ', 'tau': 'τ', 'omega': 'ω', 'Omega': 'Ω', 'ell': 'ℓ'}
+_SUB = str.maketrans('0123456789aehijklmnoprstuvx+-', '₀₁₂₃₄₅₆₇₈₉ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ₊₋')
+
+
+def plain_symbol(symbol):
+    """A manifest symbol in light LaTeX ("m_2", a Greek command) as plain text for chips and the tutor's context."""
+    if not symbol:
+        return ''
+    text = re.sub(r'\\([A-Za-z]+)', lambda m: _GREEK.get(m.group(1), m.group(1)), symbol)
+    low = '0123456789aehijklmnoprstuvx+-'
+
+    def subscript(m):
+        body = m.group(1) or m.group(2)
+        return body.translate(_SUB) if all(c in low for c in body) else '_' + body
+    return re.sub(r'_(?:\{([^}]*)\}|(.))', subscript, text).replace('{', '').replace('}', '').strip()
+
+
+def _name(p):
+    return plain_symbol(p.get('symbol')) or p.get('label') or p['key']
+
+
+def _value_text(p, value):
+    label = next((o.get('label', value) for o in p.get('options', []) if o['value'] == value), None)
+    unit = p.get('unit', '')
+    return str(label) if label is not None else _number(value) + ('' if not unit or unit == '°' else ' ') + unit
+
+
 def chip(manifest, action):
     kind = action['type']
     if kind == 'set_params':
@@ -195,10 +223,7 @@ def chip(manifest, action):
 
         def part(key, value):
             p = schema[key]
-            label = next((o.get('label', value) for o in p.get('options', []) if o['value'] == value), None)
-            unit = p.get('unit', '')
-            text = label if label is not None else _number(value) + ('' if not unit or unit == '°' else ' ') + unit
-            return f"{key.translate(str.maketrans('0123456789', '₀₁₂₃₄₅₆₇₈₉'))} → {text}"
+            return f"{_name(p)} → {_value_text(p, value)}"
         return ' · '.join(part(key, value) for key, value in list(action['values'].items())[:3])
     if kind == 'preset':
         return next(p['label'] for p in manifest['presets'] if p['id'] == action['id'])
@@ -210,8 +235,12 @@ def chip(manifest, action):
 
 
 def compact(manifest, params):
-    """What the tutor needs of a manifest: limits, labels, preset notes and ids, and which params are inert right now. Drops
-    preset values (a preset action only needs its id), groups, defaults and drawing details."""
+    """What the tutor needs of a manifest: limits, labels, which params are inert right now, and for each preset its note and
+    only the params it changes from the defaults. Drops groups, defaults and drawing details."""
+    schema = {p['key']: p for p in manifest['params']}
+
+    def sets(preset):
+        return {_name(schema[k]): _value_text(schema[k], v) for k, v in preset.get('values', {}).items() if k in schema and v != schema[k].get('value')}
     def param(p):
         out = {k: p[k] for k in ('key', 'label', 'symbol', 'unit') if p.get(k)}
         if 'options' in p:
@@ -225,12 +254,19 @@ def compact(manifest, params):
         return out
     out = {'id': manifest['id'], 'title': manifest['title'], 'description': manifest.get('description', ''),
            'params': [param(p) for p in manifest['params']],
-           'presets': [{k: r[k] for k in ('id', 'label', 'note') if r.get(k)} for r in manifest.get('presets', [])],
+           'presets': [{**{k: r[k] for k in ('id', 'label', 'note') if r.get(k)}, 'sets': sets(r)} for r in manifest.get('presets', [])],
            'closeups': [{'id': r['id'], 'label': r['label']} for r in manifest.get('closeups', [])],
            'graphs': [{'id': r['id'], 'label': r['label']} for r in manifest.get('graphs', [])]}
     if manifest.get('observables'):
         out['observables'] = [{k: r[k] for k in ('key', 'label', 'symbol', 'unit') if r.get(k)} for r in manifest['observables']]
     return out
+
+
+def applied_text(manifest, action):
+    """How the conversation records a change the app applied after a tutor reply."""
+    if action['type'] == 'preset':
+        return 'loaded preset "%s"' % chip(manifest, action)
+    return chip(manifest, action)
 
 
 def run_reply(choice, manifest, state, messages, job, images=None, attachments=None):
@@ -246,10 +282,15 @@ def run_reply(choice, manifest, state, messages, job, images=None, attachments=N
              'Actions: {type:"set_params",values:{key:value}}, {type:"preset",id}, '
              '{type:"play"}, {type:"pause"}, {type:"reset"}, {type:"closeup",id}, '
              '{type:"breakdown",enabled:boolean}, {type:"graph",id,enabled:boolean}. '
-             'Only use exact manifest keys, limits, steps and IDs. Extra fields invalidate the action. '
+             'Only use exact manifest keys, limits, steps and IDs in actions, but in replies name parameters and readouts by their label '
+             'or symbol and never quote an internal key or id. Extra fields invalidate the action. '
              'A parameter marked inert has no effect in the current setup (appliesWhen lists what enables it): never suggest or change it '
              'on your own. If the student asks for it, name the setting that enables it and offer to set both together; a request that '
              'sets the controlling parameter and the dependent one in one set_params is fine. '
+             'current_state is authoritative. Settings change between turns through applied actions: a conversation entry with "applied" '
+             'is what the app changed right after that reply, and a preset listed there is loaded (its "sets" are the params it changes from '
+             'the defaults; every other param returns to its default). Never correct an earlier reply or say a change did not take effect '
+             'because the current values differ from numbers quoted earlier. '
              'Act only on an explicit request to change or show something; a question gets an explanation with action=null. '
              'When the request matches a preset, use the preset action (it replaces every parameter, so say so briefly) '
              'instead of editing parameters by hand. '

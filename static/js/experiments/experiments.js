@@ -5,7 +5,7 @@ import {VectorStage} from './kit/stage.js';
 
 export class Experiments {
  constructor(t){
-  this.t=t;this.rejected=new Set();try{this.rejected=new Set(JSON.parse(localStorage.getItem('kinema.experimentRejectedActions')||'[]'));}catch{}this.snapshots=new Map();this.snapshotRevisions=new Map();this.seen=new Map();
+  this.t=t;this.rejected=new Set();try{this.rejected=new Set(JSON.parse(localStorage.getItem('kinema.experimentRejectedActions')||'[]'));}catch{}this.snapshots=new Map();this.snapshotRevisions=new Map();this.saveTimers=new Map();this.seen=new Map();
   this.gallery=document.createElement('section');this.gallery.className='exp-gallery';this.gallery.dataset.page='experiments';this.gallery.hidden=true;t.el.page.append(this.gallery);
   this.splitter=new LessonSplitter(t.host,t.host.querySelector('#tv-visual'),{key:'kinema.experimentPaneRatio.v1',variable:'--exp-width',label:'Resize experiment pane',className:'sl-divider exp-divider',breakpoint:900,defaultRatio:.54,enabled:()=>t.active&&!t.page&&!t.studyShown&&t.thread?.mode==='experiment'&&t.artifact.opened&&!t.artifact.expanded&&!t.artifact.inline});
   this.gallery.addEventListener('click',e=>{const b=e.target.closest('[data-experiment]');if(b)this.open(b.dataset.experiment);if(e.target.closest('[data-experiments-retry]'))this.paintGallery();});
@@ -26,8 +26,10 @@ export class Experiments {
  async open(id){const ok=await this.t.newChat({mode:'experiment',experiment_id:id,resume:true});if(ok){this.t.syncSection();await this.sync(this.t.thread,true);}}
  localKey(t){return 'kinema.experiment.'+t.id;}
  snapshot(){const t=this.t.thread;if(t?.mode!=='experiment')return undefined;return this.shell?.threadId===t.id?this.shell.snapshot():this.snapshotRevisions.get(t.id)===t.revision?this.snapshots.get(t.id):t.experiment.state;}
- remember(t,state){this.snapshots.set(t.id,state);this.snapshotRevisions.set(t.id,t.revision);try{localStorage.setItem(this.localKey(t),JSON.stringify({revision:t.revision,state}));}catch{}clearTimeout(this.saveTimer);this.saveTimer=setTimeout(()=>this.save(t,state),350);}
- async save(t,state){if(t.pending)return;try{await this.t.d.api(this.t.d.url('/api/teacher/threads/'+t.id+'/experiment'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:t.revision,state})});}catch{/* local snapshot remains recoverable; next send includes the exact current state */}}
+ remember(t,state){this.snapshots.set(t.id,state);this.snapshotRevisions.set(t.id,t.revision);try{localStorage.setItem(this.localKey(t),JSON.stringify({revision:t.revision,state}));}catch{}clearTimeout(this.saveTimers.get(t.id));this.saveTimers.set(t.id,setTimeout(()=>{this.saveTimers.delete(t.id);this.save(t,state);},350));}
+ /* The timer outlives the thread object it captured, so save against the newest copy of the thread: a stale revision or a
+    reply that started in the meantime would be refused with 409. A genuine conflict hands back the current thread; retry once with it. */
+ async save(t,state,again=true,revision){const cur=this.t.thread?.id===t.id?this.t.thread:t;if(cur.pending)return;try{await this.t.d.api(this.t.d.url('/api/teacher/threads/'+t.id+'/experiment'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:revision??cur.revision,state})});}catch(e){const fresh=e.status===409&&again&&e.body?.thread;if(fresh&&!fresh.pending&&fresh.mode==='experiment')return this.save(t,state,false,fresh.revision);/* local snapshot remains recoverable; next send includes the exact current state */}}
  async sync(t,reentered=false){
   if(!t?.experiment||this.t.page||!this.t.active||this.t.studyShown)return;
   const key=t.id+':'+t.experiment.id;
