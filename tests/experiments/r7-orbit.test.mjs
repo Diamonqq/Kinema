@@ -5,11 +5,11 @@ import {energySeries} from '../../static/js/experiments/collisions/view.js';
 import {graphLegend,title} from '../../static/js/experiments/orbits/scene.js';
 const preset=id=>model.presets.find(p=>p.id===id).values;
 test('collisions Energy legend drops hidden curves and names the identity',()=>{
- assert.deepEqual(energySeries(preset('exchange')).map(v=>v.label),['K = E + Q (U = 0, Q = 0)']);
+ assert.deepEqual(energySeries(preset('exchange')).map(v=>v.label),['K = E (U = Q = 0)']);
  const spring=energySeries(preset('spring')).map(v=>v.label);
- assert.deepEqual(spring,['K (Q = 0)','U','E + Q']);
+ assert.deepEqual(spring,['K','U','E (Q = 0)']);
  const inel=energySeries(preset('inelastic')).map(v=>v.label);
- assert.ok(inel.includes('Q')&&!inel.some(l=>l.startsWith('K =')));
+ assert.ok(inel.includes('Q')&&!inel.some(l=>l.startsWith('K =')&&!l.includes('E (')));
 });
 test('orbits Energy legend uses the kit legend geometry',()=>{
  const calls=[];const s={h:200,circle:(...a)=>calls.push(['c',...a]),text:(...a)=>calls.push(['t',...a])};

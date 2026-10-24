@@ -4,15 +4,15 @@ import {model,interactionAt,scatteringCurve,differentialCrossSection} from './mo
 import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sceneHeight,segmentHitsRect,motionBatches} from '../orbits/scene.js';
 import {placeChips} from './chips.js';
 // The Energy legend lists only curves you can see: a curve that is identically zero is dropped (named in the entry that remains),
-// and K is merged with E + Q when the two coincide for the whole run.
+// and K is merged with E when U and Q are both zero (E + Q is just E once Q = 0).
 const energyCache=new WeakMap();
 export function energySeries(p){
  if(energyCache.has(p))return energyCache.get(p);
  const base=graphs.find(g=>g.id==='energy').series;let rows=[];for(const b of motionBatches(model,p,{duration:durationFor(p)}))rows=b.rows;
  const scale=Math.max(1e-12,...rows.flatMap(r=>[Math.abs(r.sample.kinetic),Math.abs(r.sample.accountedEnergy)])),tol=1e-6*scale,zero=k=>rows.every(r=>Math.abs(r.sample[k])<=tol),
   zeroU=zero('potential'),zeroQ=zero('dissipated'),same=rows.every(r=>Math.abs(r.sample.kinetic-r.sample.accountedEnergy)<=tol);
- let series=base.filter(v=>!(v.key==='potential'&&zeroU)&&!(v.key==='dissipated'&&zeroQ)&&!(same&&v.key==='kinetic')).map(v=>v.key==='accountedEnergy'&&same?{...v,label:'K = E + Q'}:{...v});
- const notes=[zeroU&&'U = 0',zeroQ&&'Q = 0'].filter(Boolean);if(notes.length)series=series.map((v,i)=>i?v:{...v,label:v.label+' ('+notes.join(', ')+')'});
+ let series=base.filter(v=>!(v.key==='potential'&&zeroU)&&!(v.key==='dissipated'&&zeroQ)&&!(same&&v.key==='kinetic')).map(v=>v.key==='accountedEnergy'&&zeroQ?{...v,label:same?'K = E (U = Q = 0)':'E (Q = 0)'}:{...v});
+ if(!zeroQ&&zeroU)series=series.map(v=>v.key==='kinetic'?{...v,label:'K (U = 0)'}:v);
  energyCache.set(p,series);return series;
 }
 export const graphs=[
