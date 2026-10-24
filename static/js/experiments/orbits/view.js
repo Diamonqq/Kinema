@@ -1,6 +1,7 @@
+import {num as fmt,texNum as tex} from '../kit/format.js';
 import {model,G} from './model.js';
 import {startSection,crossingElapsed} from './section.js';
-import {C,fmt,tex,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sectionTick,targetChips,sceneHeight} from './scene.js';
+import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,sectionTick,targetChips,sceneHeight} from './scene.js';
 export const ENERGY_UNIT=1e12,FORCE_UNIT=1e11;
 export const graphs=[
  {id:'radius',label:'Separation',unit:'m',series:[{key:'r',label:'r',color:C.blue}]},
@@ -11,8 +12,7 @@ export const graphs=[
  {id:'potential',label:'Effective potential',unit:'r (m), U/E₀',kind:'custom'},
  {id:'poincare',label:'Poincaré',unit:'x* (m), vx* (m/s)',kind:'custom'},
 ];
-export const closeups=[{id:'periapsis',label:'Zoom · r & v'},{id:'area',label:'Zoom · areas'},
- {id:'barycentre',label:'Zoom · CM'},{id:'potential',label:'Zoom · potential'},{id:'poincare',label:'Zoom · Poincaré'}];
+export const closeups=[{id:'periapsis',label:'Zoom \u00b7 r & v'},{id:'area',label:'Zoom \u00b7 areas'},{id:'barycentre',label:'Zoom \u00b7 CM'}];
 const shells=new WeakMap(),parameterShells=new WeakMap(),sections=new WeakMap();
 const sectionWanted=s=>s.closeup==='poincare'||(!s.q('.exp-graph-panel').hidden&&s.enabledGraphs.has('poincare'));
 function longSection(params){
@@ -50,6 +50,36 @@ export function orbitBounds(rows,params,frame){
   const b=rows[0].geometry.bodies,total=b[0].mass+b[1].mass,extent=q.apoapsis*(frame==='primary'?1:Math.max(b[0].mass,b[1].mass)/total)*1.08+.5;
   bounds=[-extent,extent,-extent,extent];
  }return bounds;
+}
+// Fixed chip obstacles include the entire orbit and every Breakdown arrow,
+// so seeking or playing cannot move the apparatus underneath a chip.
+const layoutCache=new WeakMap();
+export function breakdownSegments(f,map,w){
+ const g=f.geometry,q=f.sample,a=g.bodies[0],b=g.bodies[1],r=g.relative,mag=q.r;
+ const x=map.x(b.x),y=map.y(b.y),nx=r.x/mag,ny=r.y/mag,v=values(f);
+ const factor=Math.min(25,w*.16/Math.max(q.speed,1)),velocity=f.params.frame==='rotating'?{vx:v.vr,vy:v.vt}:r;
+ const segments=[{id:'r',x:map.x(a.x),y:map.y(a.y),ex:x,ey:y},
+  {id:'F',x,y,ex:x-nx*45,ey:y+ny*45},
+  {id:'v',x,y,ex:x+velocity.vx*factor,ey:y-velocity.vy*factor}];
+ if(w>460&&Math.abs(v.vr)>1e-6&&Math.abs(v.vt)>1e-6)segments.push(
+  {id:'vr',x,y,ex:x+v.vr*nx*factor,ey:y-v.vr*ny*factor},
+  {id:'vt',x,y,ex:x-v.vt*ny*factor,ey:y-v.vt*nx*factor});
+ return segments;
+}
+export const segmentRect=(a,pad=3)=>({x:Math.min(a.x,a.ex)-pad,y:Math.min(a.y,a.ey)-pad,width:Math.abs(a.ex-a.x)+2*pad,height:Math.abs(a.ey-a.y)+2*pad});
+export function orbitChipLayout(rows,params,map,w){
+ const key=[w,map.x(0),map.y(0),map.scale].join(':'),cached=layoutCache.get(rows);
+ if(cached?.key===key&&cached.params===params)return cached;
+ const obstacles=[],first=rows[0].geometry,initial=first.frames[params.frame]||first.bodies,tip=breakdownSegments({...rows[0],params},map,w).find(v=>v.id==='v');
+ for(const row of rows){
+  for(const b of row.geometry.frames[params.frame]||row.geometry.bodies)obstacles.push({x:map.x(b.x)-8,y:map.y(b.y)-8,width:16,height:16});
+  for(const a of breakdownSegments({...row,params},map,w))obstacles.push(segmentRect(a,5));
+ }
+ const ys=obstacles.map(a=>a.y+a.height),bottom=Math.max(...ys),top=Math.min(...obstacles.map(a=>a.y));
+ const targets={periapsis:{x:tip.ex,y:tip.ey,offsets:[[0,-55],[65,-55],[-65,-55],[0,40]]},
+  barycentre:{x:map.x(first.centreOfMass.x),y:map.y(first.centreOfMass.y),offsets:[[65,bottom-map.y(first.centreOfMass.y)+15],[-65,bottom-map.y(first.centreOfMass.y)+15],[-75,top-map.y(first.centreOfMass.y)-55]]},
+  area:{x:map.x(initial[0].x),y:map.y(initial[0].y),offsets:[[-65,bottom-map.y(initial[0].y)+15],[65,bottom-map.y(initial[0].y)+15],[-75,top-map.y(initial[0].y)-55]]}};
+ const layout={key,params,targets,obstacles};layoutCache.set(rows,layout);return layout;
 }
 function decomposition(s,f){
  title(s,'Gravity bends the velocity');const {vr,vt,force}=values(f),w=s.w,h=s.h;
@@ -112,8 +142,8 @@ export const view={graphs,closeups,
   f.closeup==='area'?'Relative orbit · equal time intervals':f.closeup==='periapsis'?'Blue v · amber radial · violet tangent · green gravity':
   f.closeup==='barycentre'?'Distances and motion share one physical scale':f.params.frame==='primary'&&f.sample.bodyCount===2?'× primary focus · blue companion · + CM':'Pale primary · blue companion · + CM',
  draw(s,f){
-  const shell=shells.get(s);if(shell){parameterShells.set(f.params,shell);sceneHeight(shell,520,!!f.closeup);}
-  s.chipRects=[];
+  const shell=shells.get(s);if(shell){parameterShells.set(f.params,shell);sceneHeight(shell,500,!!f.closeup,true);}
+  s.chipRects=[];s.labelObstacles=[];s.physicsSegments=[];
   if(s.h<200){
    const q=f.sample,r=f.geometry.relative,e=q.eccentricity,a=q.semiMajorAxis,mu=G*(f.params.m1+f.params.m2),h=r.x*r.vy-r.y*r.vx,
     ex=r.vy*h/mu-r.x/q.r,ey=-r.vx*h/mu-r.y/q.r,angle=Math.atan2(ey,ex),R=q.apoapsis||q.r*2,
@@ -122,6 +152,7 @@ export const view={graphs,closeups,
    s.circle(map.x(0),map.y(0),5,C.pale);s.circle(map.x(r.x),map.y(r.y),3,C.blue);return;
   }
   const data=forecast(model,f.params,{signal:f.signal,invalidate:f.invalidate}),{geometry:g,sample:q}=f;
+  if(shell)shell.q('.exp-closeups').hidden=!data.done;
   if(f.closeup==='periapsis'){decomposition(s,f);return;}
   if(f.closeup==='potential'){
    title(s,'Energy sets the allowed radii');const p=g.effectivePotential;
@@ -141,10 +172,10 @@ export const view={graphs,closeups,
   if(f.closeup==='area'){
    const radius=Math.max(...rows.map(p=>Math.hypot(p.geometry.relative.x,p.geometry.relative.y)),rows[0].sample.apoapsis||0);bounds=[-radius*1.15,radius*1.15,-radius*1.15,radius*1.15];
   }
-  const map=camera(s,bounds,f.closeup?70:85,95);
-  if(!f.closeup){
-   const first=rows[0].geometry,initial=(first.frames[frame]||first.bodies),focus=initial[0],cm=first.centreOfMass;
-   targetChips(s,{periapsis:{x:map.x(initial[1].x),y:map.y(initial[1].y)},barycentre:{x:map.x(cm.x),y:map.y(cm.y),offsets:[[65,28],[-65,-55],[65,-55],[-65,28]]},area:{x:map.x(focus.x),y:map.y(focus.y),offsets:[[-65,65],[-70,-70],[70,70],[-100,10]]}},['potential','poincare'],shell);
+  const map=camera(s,bounds,f.closeup?70:s.w<460?160:85,f.closeup?95:s.w<460?160:95);
+  if(!f.closeup&&data.done){
+   const layout=orbitChipLayout(rows,f.params,map,s.w);
+   targetChips(s,layout.targets,[],shell,layout.obstacles);s.pathObstacles=layout.obstacles;
   }
   if(f.closeup==='barycentre'){
    title(s,'Both bodies orbit their center of mass');
@@ -171,6 +202,7 @@ export const view={graphs,closeups,
   s.line(map.x(a.x)-3,map.y(a.y)-3,map.x(a.x)+3,map.y(a.y)+3,'#141a24');
   s.line(map.x(a.x)-3,map.y(a.y)+3,map.x(a.x)+3,map.y(a.y)-3,'#141a24');
   if(f.breakdown){
+   s.physicsSegments=breakdownSegments(f,map,s.w);s.labelObstacles=s.physicsSegments.flatMap(a=>{const count=Math.max(1,Math.ceil(Math.hypot(a.ex-a.x,a.ey-a.y)/6));return Array.from({length:count+1},(_,i)=>({x:a.x+(a.ex-a.x)*i/count-3,y:a.y+(a.ey-a.y)*i/count-3,width:6,height:6}));});
    sectors(s,f,data,map);const x=map.x(b.x),y=map.y(b.y),r=g.relative,mag=q.r;
    s.line(map.x(a.x),map.y(a.y),x,y,C.muted,1);label(s,'r',map.x((a.x+b.x)/2)+24*r.y/mag,map.y((a.y+b.y)/2)+24*r.x/mag,C.muted);
    const factor=Math.min(25,s.w*.16/Math.max(q.speed,1)),v=values(f),nx=r.x/mag,ny=r.y/mag;
@@ -189,11 +221,10 @@ export const view={graphs,closeups,
  },
  equations(f){const v=values(f),q=f.sample;return [
   String.raw`F_r=-\frac{Gm_1m_2}{r^2}\left(1+\frac{\alpha}{r}\right)`,
-  String.raw`F_r=${tex(-v.force/FORCE_UNIT)}\,F_0`,
-  String.raw`F_0=10^{11}\;\mathrm N`,
+  String.raw`F_r=${tex(-v.force)}\;\mathrm N`,
   String.raw`v_r=\mathbf v\cdot\hat{\mathbf r}=${tex(v.vr)}\;\mathrm{m/s}`,
-  String.raw`v_t=\frac{\mathbf r\times\mathbf v}{r}=${tex(v.vt)}\;\mathrm{m/s}`,
-  String.raw`\dot A=\frac{rv_t}{2}=${tex(q.areaRate)}\;\mathrm{m^2/s}`];},
+  String.raw`v_t=\frac{|\mathbf r\times\mathbf v|}{r}=${tex(Math.abs(v.vt))}\;\mathrm{m/s}`,
+  String.raw`|\dot A|=\frac{rv_t}{2}=${tex(Math.abs(q.areaRate))}\;\mathrm{m^2/s}`];},
  closeupEquation(f){const v=values(f),q=f.sample;
   if(f.closeup==='potential')return f.geometry.effectivePotential.available===false?[String.raw`E=\sum_i K_i+\sum_{i<j}U_{ij}`]:[
    String.raw`U_{\rm eff}=U(r)+\frac{L^2}{2\mu_r r^2}`,String.raw`E=${tex(q.energy/ENERGY_UNIT)}\,E_0`,String.raw`E_0=10^{12}\;\mathrm J`,

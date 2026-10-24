@@ -1275,14 +1275,6 @@
     {
       "id": "barycentre",
       "label": "Zoom · CM"
-    },
-    {
-      "id": "potential",
-      "label": "Zoom · potential"
-    },
-    {
-      "id": "poincare",
-      "label": "Zoom · Poincaré"
     }
   ],
   "graphs": [

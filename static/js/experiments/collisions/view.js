@@ -1,6 +1,7 @@
+import {num as fmt,texNum as tex} from '../kit/format.js';
 import {runBatches} from '../orbits/work.js';
 import {model,interactionAt,scatteringCurve,differentialCrossSection} from './model.js';
-import {C,fmt,tex,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,targetChips,sceneHeight} from '../orbits/scene.js';
+import {C,camera,linePath,boundsFor,forecast,chipAnchors,title,vector,plot,label,targetChips,sceneHeight} from '../orbits/scene.js';
 export const graphs=[
  {id:'motion',label:'Separation',unit:'m',series:[{key:'separation',label:'r',color:C.blue}]},
  {id:'energy',label:'Energy',unit:'J',series:[{key:'kinetic',label:'K',color:C.blue},{key:'potential',label:'U',color:C.green},{key:'dissipated',label:'Q',color:C.purple},{key:'accountedEnergy',label:'E + Q',color:C.amber}]},
@@ -57,6 +58,11 @@ export function curveFor(params,lifecycle={}){
 }
 const panelCache=new WeakMap(),obstacleCache=new WeakMap();
 
+export function impactCaption(panel,initial,b){
+ const {rect,map}=panel,text='b = '+fmt(b)+' m',width=text.length*6.5;
+ const bar={x:Math.max(rect.x+12,map.x(initial[0].x)-9),y:Math.min(map.y(initial[0].y),map.y(initial[1].y)),bottom:Math.max(map.y(initial[0].y),map.y(initial[1].y))};
+ return {text,x:Math.max(rect.x+width/2+6,Math.min(rect.x+rect.w-width/2-6,bar.x)),y:Math.max(rect.y+12,bar.y-18),width,bar};
+}
 export function comparisonPanels(s,rows){
  const key=s.w+':'+s.h,cached=panelCache.get(rows);if(cached?.key===key)return cached.panes;
  const narrow=s.w<460,top=150,height=s.h-top-90,gap=52;
@@ -125,6 +131,8 @@ export function forecastObstacles(panes,rows){
    obstacles.push({x:map.x(q.x)-radius,y:map.y(q.y)-radius,width:2*radius,height:2*radius});
   }
  }
+ const impact=impactCaption(panes[0],rows[0].geometry.frames.lab,rows[0].geometry.impactParameter);
+ obstacles.push({x:impact.x-impact.width/2,y:impact.y-8,width:impact.width,height:16});
  obstacleCache.set(panes,{rows,obstacles});return obstacles;
 }
 function encounter(s,f,data){
@@ -169,7 +177,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
  key:f=>f.closeup==='momentum'?'Blue p₁ · amber p₂ · green total P':f.closeup==='potential'?'Blue Ueff · amber relative E · white r':
   f.closeup==='scattering'?'Finite-start scattering · only completed encounters':f.closeup==='contact'?('Blue projectile \u00b7 amber target \u00b7 '+(f.contactForceDrawn?'green F':'blue u')):'Blue projectile · amber target · + CM',
  draw(s,f){
-  const owner=shells.get(s);if(owner){parameterShells.set(f.params,owner);sceneHeight(owner,620,!!f.closeup);}s.chipRects=[];
+  const owner=shells.get(s);if(owner){parameterShells.set(f.params,owner);sceneHeight(owner,620,!!f.closeup);}s.chipRects=[];s.pathObstacles=[];s.physicsSegments=[];s.labelObstacles=[];
   if(s.h<200){const b=f.geometry.frames.lab,bounds=boundsFor([{geometry:f.geometry}],'lab'),map=camera(s,bounds,12,12);
    s.ctx.setLineDash([3,5]);s.line(map.x(b[0].x),map.y(b[0].y),map.x(b[1].x),map.y(b[0].y),C.muted);s.line(map.x(b[0].x),map.y(b[1].y),map.x(b[1].x),map.y(b[1].y),C.amber);s.ctx.setLineDash([]);
    b.forEach((q,i)=>s.circle(map.x(q.x),map.y(q.y),Math.max(3,q.radius*map.scale),i?C.amber:C.blue));return;
@@ -187,15 +195,19 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
   }
   if(!data.done){s.text(data.error||'Preparing the fixed 60 s motion window…',s.w/2,s.h*.55,C.muted,s.w<380?11:13);return;}
   const panes=comparisonPanels(s,data.rows),first=data.rows[0].geometry.frames.lab,nearest=data.rows.reduce((a,b)=>a.sample.separation<b.sample.separation?a:b).geometry.frames.lab;
+  const impact=impactCaption(panes[0],first,f.params.b);
   const start=first[0],encounterPoint={x:(nearest[0].x+nearest[1].x)/2,y:(nearest[0].y+nearest[1].y)/2},lab=panes[0].map;
+  s.pathObstacles=forecastObstacles(panes,data.rows);
   targetChips(s,{contact:{x:lab.x(encounterPoint.x),y:lab.y(encounterPoint.y),offsets:[[45,-65],[70,35],[-65,35],[0,55]]},momentum:{x:lab.x(start.x),y:lab.y(start.y),offsets:[[0,-65],[30,40],[100,-45],[100,35]]}},['potential','scattering','cross-section'],owner,forecastObstacles(panes,data.rows));
   for(const [i,frame] of ['lab','cm'].entries()){
    const {rect,map}=panes[i],b=g.frames[frame];
    s.text(frame==='lab'?'Laboratory':'Center of mass',rect.x+rect.w/2,rect.y-8,C.pale,12);
    const initial=data.rows[0].geometry.frames[frame],last=data.rows.at(-1).geometry.frames[frame];
    s.ctx.setLineDash([3,5]);s.line(map.x(initial[0].x),map.y(initial[0].y),map.x(initial[1].x),map.y(initial[0].y),C.grid);s.ctx.setLineDash([]);
-   if(i===0&&Math.abs(f.params.b)>.001){const x=map.x(initial[0].x)-9;
-    s.line(x,map.y(initial[0].y),x,map.y(initial[1].y),C.muted);if(s.w<460)s.text('b = '+fmt(f.params.b)+' m',rect.x+48,rect.y+12,C.muted,11);else label(s,'b',x-9,(map.y(initial[0].y)+map.y(initial[1].y))/2,C.muted);}
+   if(i===0&&Math.abs(f.params.b)>.001){
+    s.line(impact.bar.x,impact.bar.y,impact.bar.x,impact.bar.bottom,C.muted);
+    s.text(impact.text,impact.x,impact.y,C.muted,11);s.impactPanel=rect;
+   }
    for(let j=0;j<2;j++){
     linePath(s,data.rows.map(r=>r.geometry.frames[frame][j]),map,(j?C.amber:C.blue)+'30');
     linePath(s,data.rows.filter(r=>r.t<=f.t).map(r=>r.geometry.frames[frame][j]),map,j?C.amber:C.blue,1.5);
@@ -205,6 +217,7 @@ export const view={graphs,closeups,closeupAnchors:s=>s.targetAnchors||{},
    const cm=frame==='cm'?{x:0,y:0}:g.centreOfMass;s.line(map.x(cm.x)-3,map.y(cm.y),map.x(cm.x)+3,map.y(cm.y),C.green);s.line(map.x(cm.x),map.y(cm.y)-3,map.x(cm.x),map.y(cm.y)+3,C.green);
    if(f.breakdown){
     const q=b[0],z=b[1],scale=Math.min(30,rect.w*.18/Math.max(q.mass*Math.hypot(q.vx,q.vy),z.mass*Math.hypot(z.vx,z.vy),1));
+    s.physicsSegments.push({id:'p1',x:map.x(q.x),y:map.y(q.y),ex:map.x(q.x)+q.mass*q.vx*scale,ey:map.y(q.y)-q.mass*q.vy*scale},{id:'p2',x:map.x(z.x),y:map.y(z.y),ex:map.x(z.x)+z.mass*z.vx*scale,ey:map.y(z.y)-z.mass*z.vy*scale});
     vector(s,map.x(q.x),map.y(q.y),q.mass*q.vx*scale,-q.mass*q.vy*scale,C.blue,'p₁');
     vector(s,map.x(z.x),map.y(z.y),z.mass*z.vx*scale,-z.mass*z.vy*scale,C.amber,'p₂');
    }

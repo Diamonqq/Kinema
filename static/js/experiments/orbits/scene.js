@@ -5,9 +5,10 @@ const scientific=n=>Math.abs(n)>=1e5||Math.abs(n)>0&&Math.abs(n)<.001;
 export const fmt=n=>(scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>'×10'+(sign==='-'?'⁻':'')+String(Number(power)).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d])):String(Number(n.toPrecision(3)))).replace(/^-/, '−');
 export const tex=n=>scientific(n)?n.toExponential(2).replace(/e([+-]?)(\d+)/,(_,sign,power)=>String.raw`\times10^{${sign==='-'?'-':''}${Number(power)}}`):fmt(n).replace('−','-');
 export const sectionTick=n=>String(Number(n.toPrecision(2))).replace(/^-/, '−');
-export function sceneHeight(shell,narrowHeight,closeup){
+export function sceneHeight(shell,narrowHeight,closeup,cap=false){
  if(!shell?.scene)return;
  const height=closeup?360:shell.stage.w<460?narrowHeight:420;
+ if(cap){shell.scene.style.flexGrow='0';shell.scene.style.maxHeight=height+'px';}
  if(shell.scene.style.minHeight!==height+'px'){
   shell.scene.style.minHeight=height+'px';shell.scene.style.flexBasis=height+'px';shell.stage.resize();
  }
@@ -78,7 +79,7 @@ export function label(s,text,x,y,color=C.pale){
  x=Math.max(width/2+8,Math.min(s.w-width/2-8,x));
  for(const delta of [0,16,-16,32,-32]){const box={x:x-width/2,y:yy+delta-7,width,height:14};
   if(box.y<35||box.y+14>s.h-35)continue;
-  if([...s.labels,...(s.chipRects||[])].every(a=>!(a.x<box.x+width+3&&a.x+a.width+3>box.x&&a.y<box.y+14+3&&a.y+a.height+3>box.y))){s.text(text,x,yy+delta,color,12);return true;}}
+  if([...s.labels,...(s.chipRects||[]),...(s.labelObstacles||[])].every(a=>!(a.x<box.x+width+3&&a.x+a.width+3>box.x&&a.y<box.y+14+3&&a.y+a.height+3>box.y))){s.text(text,x,yy+delta,color,12);return true;}}
  return false;
 }
 export function vector(s,x,y,dx,dy,color,text){if(Math.hypot(dx,dy)<.05)return;s.arrow(x,y,x+dx,y+dy,color,2);if(text)label(s,text,x+dx+Math.sign(dx||1)*12,y+dy-10,color);}
