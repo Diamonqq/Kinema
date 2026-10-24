@@ -1,6 +1,6 @@
 # Motion generator: physics core and renderer plan
 
-Headless implementation only. No rendered UI, installed build or real-device check
+Physics core and kit-based canvas view. No installed-build or real-device check
 is claimed. The kit author owns registry/version/UI integration.
 
 ## Original and new scope
@@ -112,3 +112,41 @@ extra. Label deliberate Euler drift. The quiet default uses automatic integratio
 against time and arbitrary observable pairs. Add preset chips: Spatial motion,
 Constant restoring, Force ramp, Softening and Driven spring. Keep retained-run
 comparison, numerical tables and export behind Graphs rather than crowding entry.
+
+## Kit renderer (wave-one implementation)
+
+The manifest is generated from the core's exact parameter/preset descriptors.
+The quiet scene shows a force-law caption, fixed bounds over the 60-second
+transport, signed velocity and a physically anchored spring with nonzero natural
+length. 3D uses a clearly labelled oblique projection. Breakdown/force close-up
+show per-force components and symbolic plus substituted equations. The camera
+never follows the moving body. Phase/trajectory plots have position and velocity
+units and numeric ticks; the white point follows the scene time. Other graph
+chips expose coordinate histories, energy and work/heat.
+
+Finite envelopes are tested against all shipped presets for the full 60 seconds.
+They are not a proof of bounded motion for every possible unstable user force
+combination; numerical escape is reported by the core rather than hidden.
+
+## View-check workflow notes
+
+The normal shell's numerical seek is asynchronous. Browser checks wait until
+seeker.pending is false before checking time or capturing graphs; input fill
+alone does not establish that physics reached the selected time. Playwright
+range values use their normalized string (1.5, not 1.50). The kit's custom graph
+API owns panel lifecycle and canvases; these views use drawGraph rather than
+replacing shared plot behavior. Explicit top/bottom camera reservations need
+the inverted canvas-y offset, now checked numerically at both screen sizes.
+The worker sandbox blocks Edge child creation; the parent executes the same
+checked-in-lane harness, which restricts network requests to 127.0.0.1.
+
+## Delivered view verification
+
+The owned Node suite passed 56/56. The parent ran the isolated hidden-Edge
+harness on the final source: 327/327 browser checks, no browser exceptions,
+110 captures at 1280 and 320 pixels, browser context closed. This covered gallery
+entry, every preset, a setup edit, play/pause, numerical seek completion, fixed
+camera/reset, every close-up and return, Breakdown equations/overlap checks,
+every graph, and narrow fitting. Updated scene/close-up/Breakdown/graph captures
+were inspected; no installed-build or real-device claim is made.
+Evidence: round-156/osc-views/{browser.json,node.tap,verification.json,cleanup.json}.

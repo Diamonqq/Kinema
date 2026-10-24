@@ -1,0 +1,876 @@
+{
+  "id": "motion-generator",
+  "title": "Motion generator",
+  "group": "Mechanics",
+  "description": "Choose a force law. Follow the trajectory and the work it does.",
+  "params": [
+    {
+      "key": "dimensions",
+      "label": "Dimensions",
+      "symbol": "d",
+      "unit": "",
+      "value": "1d",
+      "options": [
+        {
+          "value": "1d",
+          "label": "1D"
+        },
+        {
+          "value": "2d",
+          "label": "2D"
+        },
+        {
+          "value": "3d",
+          "label": "3D"
+        }
+      ]
+    },
+    {
+      "key": "mass",
+      "label": "Mass",
+      "symbol": "m",
+      "unit": "kg",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "group": "Setup"
+    },
+    {
+      "key": "x0",
+      "label": "Initial x",
+      "symbol": "x_0",
+      "unit": "m",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 1,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "vx0",
+      "label": "Initial x velocity",
+      "symbol": "v_{x0}",
+      "unit": "m/s",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "y0",
+      "label": "Initial y",
+      "symbol": "y_0",
+      "unit": "m",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "vy0",
+      "label": "Initial y velocity",
+      "symbol": "v_{y0}",
+      "unit": "m/s",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "z0",
+      "label": "Initial z",
+      "symbol": "z_0",
+      "unit": "m",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "vz0",
+      "label": "Initial z velocity",
+      "symbol": "v_{z0}",
+      "unit": "m/s",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "method",
+      "label": "Integration method",
+      "unit": "",
+      "symbol": "method",
+      "value": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Automatic"
+        },
+        {
+          "value": "euler",
+          "label": "Euler (teaching)"
+        },
+        {
+          "value": "rk2",
+          "label": "Midpoint RK2 (teaching)"
+        },
+        {
+          "value": "rk4",
+          "label": "RK4"
+        }
+      ]
+    },
+    {
+      "key": "timeStep",
+      "label": "Internal time step",
+      "symbol": "h",
+      "unit": "s",
+      "min": 0.0001,
+      "max": 0.1,
+      "step": 0.0001,
+      "value": 0.001,
+      "group": "Numerics"
+    },
+    {
+      "key": "gravity",
+      "label": "Gravity",
+      "symbol": "g",
+      "unit": "m/s²",
+      "min": 0,
+      "max": 20,
+      "step": 0.01,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "linearDrag",
+      "label": "Linear drag",
+      "symbol": "b",
+      "unit": "kg/s",
+      "min": 0,
+      "max": 10,
+      "step": 0.05,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "quadraticDrag",
+      "label": "Quadratic drag",
+      "symbol": "c",
+      "unit": "kg/m",
+      "min": 0,
+      "max": 5,
+      "step": 0.05,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "spring",
+      "label": "Spring stiffness",
+      "symbol": "k",
+      "unit": "N/m",
+      "min": -100,
+      "max": 100,
+      "step": 0.1,
+      "value": 1,
+      "group": "Forces"
+    },
+    {
+      "key": "cubic",
+      "label": "Cubic restoring",
+      "symbol": "α",
+      "unit": "N/m³",
+      "min": -10,
+      "max": 10,
+      "step": 0.1,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "constantRestoring",
+      "label": "Constant restoring force",
+      "symbol": "s",
+      "unit": "N",
+      "min": -10,
+      "max": 10,
+      "step": 0.1,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "inverseSquare",
+      "label": "Attraction strength",
+      "symbol": "μ",
+      "unit": "m³/s²",
+      "min": 0,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "softening",
+      "label": "Attraction core radius",
+      "symbol": "ε",
+      "unit": "m",
+      "min": 0.01,
+      "max": 2,
+      "step": 0.01,
+      "value": 0.1,
+      "group": "Forces"
+    },
+    {
+      "key": "magnetic",
+      "label": "Magnetic rotation coefficient",
+      "symbol": "qB",
+      "unit": "kg/s",
+      "min": -10,
+      "max": 10,
+      "step": 0.1,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "forceX",
+      "label": "Constant x force",
+      "symbol": "F_x",
+      "unit": "N",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "forceY",
+      "label": "Constant y force",
+      "symbol": "F_y",
+      "unit": "N",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "forceZ",
+      "label": "Constant z force",
+      "symbol": "F_z",
+      "unit": "N",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Forces"
+    },
+    {
+      "key": "ramp",
+      "label": "Force ramp in x",
+      "symbol": "a",
+      "unit": "N/s",
+      "min": -5,
+      "max": 5,
+      "step": 0.1,
+      "value": 0,
+      "group": "Drive"
+    },
+    {
+      "key": "drive",
+      "label": "Drive force in x",
+      "symbol": "F_d",
+      "unit": "N",
+      "min": 0,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Drive"
+    },
+    {
+      "key": "driveOmega",
+      "label": "Drive frequency",
+      "symbol": "Ω",
+      "unit": "rad/s",
+      "min": 0.05,
+      "max": 20,
+      "step": 0.05,
+      "value": 1,
+      "group": "Drive"
+    }
+  ],
+  "presets": [
+    {
+      "id": "spatial",
+      "label": "Spatial spring",
+      "values": {
+        "dimensions": "3d",
+        "mass": 1,
+        "x0": 1,
+        "vx0": 0,
+        "y0": 0.5,
+        "vy0": 0.5,
+        "z0": 0.5,
+        "vz0": 1,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 0,
+        "linearDrag": 0,
+        "quadraticDrag": 0,
+        "spring": 1,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "Three coordinates evolve in the same force field."
+    },
+    {
+      "id": "constant",
+      "label": "Constant restoring",
+      "values": {
+        "dimensions": "1d",
+        "mass": 1,
+        "x0": 1,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 0,
+        "linearDrag": 0,
+        "quadraticDrag": 0,
+        "spring": 0,
+        "cubic": 0,
+        "constantRestoring": 1,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "Each half of the trajectory has constant acceleration."
+    },
+    {
+      "id": "ramp",
+      "label": "Force ramp",
+      "values": {
+        "dimensions": "1d",
+        "mass": 1,
+        "x0": 0,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 0,
+        "linearDrag": 0,
+        "quadraticDrag": 0,
+        "spring": 0,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 1,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "A linearly growing force produces cubic position."
+    },
+    {
+      "id": "softening",
+      "label": "Softening spring",
+      "values": {
+        "dimensions": "1d",
+        "mass": 1,
+        "x0": 0.5,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 0,
+        "linearDrag": 0,
+        "quadraticDrag": 0,
+        "spring": 1,
+        "cubic": -0.2,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "A negative cubic term weakens the restoring force."
+    },
+    {
+      "id": "resonance",
+      "label": "Driven spring",
+      "values": {
+        "dimensions": "1d",
+        "mass": 1,
+        "x0": 0,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 0,
+        "linearDrag": 0.4,
+        "quadraticDrag": 0,
+        "spring": 1,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0.2,
+        "driveOmega": 1
+      },
+      "note": "The drive replaces energy lost to damping."
+    },
+    {
+      "id": "spring",
+      "label": "Hooke’s law",
+      "values": {
+        "dimensions": "1d",
+        "mass": 1,
+        "x0": 1,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 0,
+        "linearDrag": 0,
+        "quadraticDrag": 0,
+        "spring": 1,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "Acceleration points back toward equilibrium."
+    },
+    {
+      "id": "fall",
+      "label": "Free fall",
+      "values": {
+        "dimensions": "1d",
+        "mass": 1,
+        "x0": 10,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 9.81,
+        "linearDrag": 0,
+        "quadraticDrag": 0,
+        "spring": 0,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "Position curves while velocity changes linearly."
+    },
+    {
+      "id": "terminal",
+      "label": "Terminal speed",
+      "values": {
+        "dimensions": "1d",
+        "mass": 1,
+        "x0": 10,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 9.81,
+        "linearDrag": 1,
+        "quadraticDrag": 0,
+        "spring": 0,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "Linear drag eventually balances weight."
+    },
+    {
+      "id": "quadratic",
+      "label": "Quadratic drag",
+      "values": {
+        "dimensions": "1d",
+        "mass": 1,
+        "x0": 10,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 9.81,
+        "linearDrag": 0,
+        "quadraticDrag": 0.5,
+        "spring": 0,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "Drag grows with speed squared."
+    },
+    {
+      "id": "magnetic",
+      "label": "Magnetic circle",
+      "values": {
+        "dimensions": "2d",
+        "mass": 1,
+        "x0": 0,
+        "vx0": 1,
+        "y0": 0,
+        "vy0": 0,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 0,
+        "linearDrag": 0,
+        "quadraticDrag": 0,
+        "spring": 0,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 0,
+        "softening": 0.1,
+        "magnetic": 1,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "A sideways force turns velocity without changing speed."
+    },
+    {
+      "id": "orbit",
+      "label": "Softened attraction",
+      "values": {
+        "dimensions": "2d",
+        "mass": 1,
+        "x0": 2,
+        "vx0": 0,
+        "y0": 0,
+        "vy0": 0.7,
+        "z0": 0,
+        "vz0": 0,
+        "method": "auto",
+        "timeStep": 0.001,
+        "gravity": 0,
+        "linearDrag": 0,
+        "quadraticDrag": 0,
+        "spring": 0,
+        "cubic": 0,
+        "constantRestoring": 0,
+        "inverseSquare": 1,
+        "softening": 0.1,
+        "magnetic": 0,
+        "forceX": 0,
+        "forceY": 0,
+        "forceZ": 0,
+        "ramp": 0,
+        "drive": 0,
+        "driveOmega": 1
+      },
+      "note": "Central attraction conserves angular momentum; the core is softened."
+    }
+  ],
+  "observables": [
+    {
+      "key": "x",
+      "label": "x position",
+      "symbol": "x",
+      "unit": "m"
+    },
+    {
+      "key": "y",
+      "label": "y position",
+      "symbol": "y",
+      "unit": "m"
+    },
+    {
+      "key": "vx",
+      "label": "x velocity",
+      "symbol": "v_x",
+      "unit": "m/s"
+    },
+    {
+      "key": "vy",
+      "label": "y velocity",
+      "symbol": "v_y",
+      "unit": "m/s"
+    },
+    {
+      "key": "ax",
+      "label": "x acceleration",
+      "symbol": "a_x",
+      "unit": "m/s²"
+    },
+    {
+      "key": "ay",
+      "label": "y acceleration",
+      "symbol": "a_y",
+      "unit": "m/s²"
+    },
+    {
+      "key": "z",
+      "label": "z position",
+      "symbol": "z",
+      "unit": "m"
+    },
+    {
+      "key": "vz",
+      "label": "z velocity",
+      "symbol": "v_z",
+      "unit": "m/s"
+    },
+    {
+      "key": "az",
+      "label": "z acceleration",
+      "symbol": "a_z",
+      "unit": "m/s2"
+    },
+    {
+      "key": "speed",
+      "label": "Speed",
+      "symbol": "v",
+      "unit": "m/s"
+    },
+    {
+      "key": "kinetic",
+      "label": "Kinetic energy",
+      "symbol": "K",
+      "unit": "J"
+    },
+    {
+      "key": "potential",
+      "label": "Potential energy",
+      "symbol": "U",
+      "unit": "J"
+    },
+    {
+      "key": "energy",
+      "label": "Mechanical energy",
+      "symbol": "E",
+      "unit": "J"
+    },
+    {
+      "key": "work",
+      "label": "Applied work",
+      "symbol": "W",
+      "unit": "J"
+    },
+    {
+      "key": "heat",
+      "label": "Dissipated energy",
+      "symbol": "Q",
+      "unit": "J"
+    }
+  ],
+  "closeups": [
+    {
+      "id": "force",
+      "label": "Zoom · force law"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "motion",
+      "label": "Position",
+      "unit": "m",
+      "series": [
+        {
+          "key": "x",
+          "label": "x",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "y",
+          "label": "y",
+          "color": "#e9bb88"
+        },
+        {
+          "key": "z",
+          "label": "z",
+          "color": "#bcabef"
+        }
+      ]
+    },
+    {
+      "id": "velocity",
+      "label": "Velocity",
+      "unit": "m/s",
+      "series": [
+        {
+          "key": "vx",
+          "label": "vx",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "vy",
+          "label": "vy",
+          "color": "#e9bb88"
+        },
+        {
+          "key": "vz",
+          "label": "vz",
+          "color": "#bcabef"
+        }
+      ]
+    },
+    {
+      "id": "phase",
+      "label": "Phase space",
+      "unit": "m, m/s",
+      "kind": "custom",
+      "series": [
+        {
+          "key": "x",
+          "label": "x"
+        },
+        {
+          "key": "vx",
+          "label": "vx"
+        }
+      ]
+    },
+    {
+      "id": "trajectory",
+      "label": "Trajectory",
+      "unit": "m",
+      "kind": "custom",
+      "series": [
+        {
+          "key": "x",
+          "label": "x"
+        },
+        {
+          "key": "y",
+          "label": "y"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy",
+      "unit": "J",
+      "series": [
+        {
+          "key": "energy",
+          "label": "E",
+          "color": "#b0c9ad"
+        },
+        {
+          "key": "kinetic",
+          "label": "K",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "potential",
+          "label": "U",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "balance",
+      "label": "Work & heat",
+      "unit": "J",
+      "series": [
+        {
+          "key": "work",
+          "label": "W",
+          "color": "#bcabef"
+        },
+        {
+          "key": "heat",
+          "label": "Q",
+          "color": "#e9bb88"
+        }
+      ]
+    }
+  ]
+}

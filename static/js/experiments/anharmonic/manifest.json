@@ -1,0 +1,781 @@
+{
+  "id": "anharmonic",
+  "title": "Anharmonic oscillator",
+  "group": "Mechanics",
+  "description": "See how the shape of a potential well shapes the motion.",
+  "params": [
+    {
+      "key": "potential",
+      "label": "Potential",
+      "symbol": "U",
+      "unit": "",
+      "value": "polynomial",
+      "options": [
+        {
+          "value": "polynomial",
+          "label": "Polynomial / Duffing"
+        },
+        {
+          "value": "morse",
+          "label": "Morse"
+        },
+        {
+          "value": "lennard-jones",
+          "label": "Lennard-Jones"
+        },
+        {
+          "value": "walls",
+          "label": "Two-wall springs"
+        },
+        {
+          "value": "van-der-pol",
+          "label": "Van der Pol"
+        },
+        {
+          "value": "walls-series",
+          "label": "Wall series (quartic)"
+        }
+      ]
+    },
+    {
+      "key": "mass",
+      "label": "Mass",
+      "symbol": "m",
+      "unit": "kg",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "group": "Setup"
+    },
+    {
+      "key": "x0",
+      "label": "Initial position",
+      "symbol": "x_0",
+      "unit": "m",
+      "min": -5,
+      "max": 5,
+      "step": 0.01,
+      "value": 1,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "v0",
+      "label": "Initial velocity",
+      "symbol": "v_0",
+      "unit": "m/s",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "k",
+      "label": "Quadratic stiffness",
+      "symbol": "k",
+      "unit": "N/m",
+      "min": -20,
+      "max": 100,
+      "step": 0.1,
+      "value": 1,
+      "group": "Potential"
+    },
+    {
+      "key": "cubic",
+      "label": "Cubic potential coefficient",
+      "symbol": "a",
+      "unit": "N/m²",
+      "min": -10,
+      "max": 10,
+      "step": 0.1,
+      "value": 0,
+      "group": "Potential"
+    },
+    {
+      "key": "quartic",
+      "label": "Quartic potential coefficient",
+      "symbol": "β",
+      "unit": "N/m³",
+      "min": -10,
+      "max": 20,
+      "step": 0.1,
+      "value": 1,
+      "group": "Potential"
+    },
+    {
+      "key": "depth",
+      "label": "Well depth",
+      "symbol": "D / ε",
+      "unit": "J",
+      "min": 0.05,
+      "max": 10,
+      "step": 0.05,
+      "value": 1,
+      "group": "Potential"
+    },
+    {
+      "key": "width",
+      "label": "Morse inverse width",
+      "symbol": "a_M",
+      "unit": "1/m",
+      "min": 0.1,
+      "max": 5,
+      "step": 0.1,
+      "value": 1,
+      "group": "Potential"
+    },
+    {
+      "key": "equilibrium",
+      "label": "Morse equilibrium",
+      "symbol": "r_e",
+      "unit": "m",
+      "min": -3,
+      "max": 3,
+      "step": 0.1,
+      "value": 0,
+      "group": "Potential"
+    },
+    {
+      "key": "sigma",
+      "label": "Lennard–Jones length",
+      "symbol": "σ",
+      "unit": "m",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "value": 1,
+      "group": "Potential"
+    },
+    {
+      "key": "halfSeparation",
+      "label": "Half wall separation",
+      "symbol": "d",
+      "unit": "m",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "value": 0.5,
+      "group": "Potential"
+    },
+    {
+      "key": "restLength",
+      "label": "Spring rest length",
+      "symbol": "ℓ_0",
+      "unit": "m",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "value": 1,
+      "group": "Potential"
+    },
+    {
+      "key": "damping",
+      "label": "Damping coefficient",
+      "symbol": "b",
+      "unit": "kg/s",
+      "min": 0,
+      "max": 10,
+      "step": 0.01,
+      "value": 0,
+      "group": "Drive"
+    },
+    {
+      "key": "drive",
+      "label": "Drive force",
+      "symbol": "F_d",
+      "unit": "N",
+      "min": 0,
+      "max": 20,
+      "step": 0.01,
+      "value": 0,
+      "group": "Drive"
+    },
+    {
+      "key": "driveOmega",
+      "label": "Drive frequency",
+      "symbol": "Ω",
+      "unit": "rad/s",
+      "min": 0.05,
+      "max": 20,
+      "step": 0.01,
+      "value": 1,
+      "group": "Drive"
+    },
+    {
+      "key": "drivePhase",
+      "label": "Drive phase",
+      "symbol": "phi",
+      "unit": "rad",
+      "min": -3.15,
+      "max": 3.15,
+      "step": 0.01,
+      "value": 0,
+      "group": "Drive"
+    },
+    {
+      "key": "phaseCount",
+      "label": "Strobe phases",
+      "symbol": "N",
+      "unit": "",
+      "min": 1,
+      "max": 32,
+      "step": 1,
+      "value": 12,
+      "group": "Analysis"
+    },
+    {
+      "key": "active",
+      "label": "Van der Pol coefficient",
+      "symbol": "μ",
+      "unit": "kg/(m²·s)",
+      "min": 0,
+      "max": 5,
+      "step": 0.05,
+      "value": 1,
+      "group": "Drive"
+    },
+    {
+      "key": "limitScale",
+      "label": "Van der Pol length scale",
+      "symbol": "A",
+      "unit": "m",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "value": 1,
+      "group": "Drive"
+    }
+  ],
+  "presets": [
+    {
+      "id": "hysteresis",
+      "label": "Resonance hysteresis",
+      "values": {
+        "potential": "polynomial",
+        "mass": 1,
+        "x0": 0,
+        "v0": 0,
+        "k": 1,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0.1,
+        "drive": 0.3,
+        "driveOmega": 1.36,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "Upward and downward frequency sweeps can settle on different amplitudes."
+    },
+    {
+      "id": "softening",
+      "label": "Softening",
+      "values": {
+        "potential": "polynomial",
+        "mass": 1,
+        "x0": 0.7,
+        "v0": 0,
+        "k": 1,
+        "cubic": 0,
+        "quartic": -0.2,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "The restoring force weakens with displacement."
+    },
+    {
+      "id": "wall-series",
+      "label": "Wall series",
+      "values": {
+        "potential": "walls-series",
+        "mass": 1,
+        "x0": 0.3,
+        "v0": 0,
+        "k": 4,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 1.2,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "Compare exact spring geometry with its quartic expansion."
+    },
+    {
+      "id": "both-wells",
+      "label": "Above the barrier",
+      "values": {
+        "potential": "polynomial",
+        "mass": 1,
+        "x0": 1.6,
+        "v0": 0,
+        "k": -1,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "Enough energy connects both wells."
+    },
+    {
+      "id": "wall-critical",
+      "label": "Buckling threshold",
+      "values": {
+        "potential": "walls",
+        "mass": 1,
+        "x0": 0.3,
+        "v0": 0,
+        "k": 4,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 1,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "At equal separation and rest length, the leading potential is quartic."
+    },
+    {
+      "id": "harmonic",
+      "label": "Harmonic",
+      "values": {
+        "potential": "polynomial",
+        "mass": 1,
+        "x0": 1,
+        "v0": 0,
+        "k": 1,
+        "cubic": 0,
+        "quartic": 0,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "The period is independent of amplitude."
+    },
+    {
+      "id": "hardening",
+      "label": "Hardening",
+      "values": {
+        "potential": "polynomial",
+        "mass": 1,
+        "x0": 1,
+        "v0": 0,
+        "k": 1,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "A positive quartic term makes larger swings faster."
+    },
+    {
+      "id": "asymmetric",
+      "label": "Asymmetric",
+      "values": {
+        "potential": "polynomial",
+        "mass": 1,
+        "x0": 0.6,
+        "v0": 0,
+        "k": 1,
+        "cubic": 0.6,
+        "quartic": 0.3,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "The average position shifts away from the minimum."
+    },
+    {
+      "id": "double-well",
+      "label": "Double well",
+      "values": {
+        "potential": "polynomial",
+        "mass": 1,
+        "x0": 1.35,
+        "v0": 0,
+        "k": -1,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "Below the barrier, motion stays in one well."
+    },
+    {
+      "id": "morse",
+      "label": "Molecular bond",
+      "values": {
+        "potential": "morse",
+        "mass": 1,
+        "x0": 1,
+        "v0": 0,
+        "k": 1,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "A Morse bond softens as its energy approaches dissociation."
+    },
+    {
+      "id": "lj",
+      "label": "Attraction & repulsion",
+      "values": {
+        "potential": "lennard-jones",
+        "mass": 1,
+        "x0": 1.3,
+        "v0": 0,
+        "k": 1,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "Repulsion rises sharply at short separation."
+    },
+    {
+      "id": "walls",
+      "label": "Buckling springs",
+      "values": {
+        "potential": "walls",
+        "mass": 1,
+        "x0": 0.6,
+        "v0": 0,
+        "k": 4,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "Compressed springs create two stable positions."
+    },
+    {
+      "id": "duffing",
+      "label": "Driven Duffing",
+      "values": {
+        "potential": "polynomial",
+        "mass": 1,
+        "x0": 1,
+        "v0": 0,
+        "k": -1,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0.2,
+        "drive": 0.3,
+        "driveOmega": 1.2,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "A periodic force can carry the mass between wells."
+    },
+    {
+      "id": "limit-cycle",
+      "label": "Self-sustained",
+      "values": {
+        "potential": "van-der-pol",
+        "mass": 1,
+        "x0": 0.1,
+        "v0": 0,
+        "k": 1,
+        "cubic": 0,
+        "quartic": 1,
+        "depth": 1,
+        "width": 1,
+        "equilibrium": 0,
+        "sigma": 1,
+        "halfSeparation": 0.5,
+        "restLength": 1,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 1,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "active": 1,
+        "limitScale": 1
+      },
+      "note": "Small motion gains energy; large motion loses it."
+    }
+  ],
+  "observables": [
+    {
+      "key": "x",
+      "label": "Position",
+      "symbol": "x",
+      "unit": "m"
+    },
+    {
+      "key": "v",
+      "label": "Velocity",
+      "symbol": "v",
+      "unit": "m/s"
+    },
+    {
+      "key": "acceleration",
+      "label": "Acceleration",
+      "symbol": "a_x",
+      "unit": "m/s²"
+    },
+    {
+      "key": "force",
+      "label": "Restoring force",
+      "symbol": "−U′",
+      "unit": "N"
+    },
+    {
+      "key": "kinetic",
+      "label": "Kinetic energy",
+      "symbol": "K",
+      "unit": "J"
+    },
+    {
+      "key": "potential",
+      "label": "Potential energy",
+      "symbol": "U",
+      "unit": "J"
+    },
+    {
+      "key": "energy",
+      "label": "Mechanical energy",
+      "symbol": "E",
+      "unit": "J"
+    },
+    {
+      "key": "work",
+      "label": "Drive work",
+      "symbol": "W",
+      "unit": "J"
+    },
+    {
+      "key": "heat",
+      "label": "Reservoir energy transfer",
+      "symbol": "Q",
+      "unit": "J"
+    }
+  ],
+  "closeups": [
+    {
+      "id": "force",
+      "label": "Zoom · restoring force"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "motion",
+      "label": "Displacement",
+      "unit": "m",
+      "series": [
+        {
+          "key": "x",
+          "label": "x",
+          "color": "#8ab9ff"
+        }
+      ]
+    },
+    {
+      "id": "phase",
+      "label": "Phase space",
+      "unit": "m, m/s",
+      "kind": "custom",
+      "series": [
+        {
+          "key": "x",
+          "label": "x"
+        },
+        {
+          "key": "v",
+          "label": "v"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy",
+      "unit": "J",
+      "series": [
+        {
+          "key": "energy",
+          "label": "E",
+          "color": "#b0c9ad"
+        },
+        {
+          "key": "kinetic",
+          "label": "K",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "potential",
+          "label": "U",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "balance",
+      "label": "Work & reservoir",
+      "unit": "J",
+      "series": [
+        {
+          "key": "work",
+          "label": "W",
+          "color": "#bcabef"
+        },
+        {
+          "key": "heat",
+          "label": "Q",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "period",
+      "label": "Period vs energy",
+      "kind": "custom"
+    },
+    {
+      "id": "strobe",
+      "label": "Poincare section",
+      "kind": "custom"
+    },
+    {
+      "id": "return",
+      "label": "Velocity return",
+      "kind": "custom"
+    },
+    {
+      "id": "spectrum",
+      "label": "Spectrum",
+      "kind": "custom"
+    }
+  ]
+}

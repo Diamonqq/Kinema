@@ -1,6 +1,6 @@
 # Anharmonic oscillator: physics core and renderer plan
 
-Headless physics and tests only; views are a later follow-up. The kit integrator
+Physics core and kit-based canvas view. The kit integrator
 owns shared UI/registry/version changes. See motion-generator.md for runner friction.
 
 ## Original and improvements
@@ -154,3 +154,36 @@ Full local source availability removes the earlier 6000-character reader limit.
 Future coverage passes should retain a byte/hash inventory and read complete
 source chunks before deciding a capability is absent. No original bodies are
 included in this repository.
+
+## Kit renderer (wave-one implementation)
+
+The first view pairs U(x), the actual energy line, position marker and connected
+turning points with the moving apparatus. It uses springs with real wall spacing
+for wall laws, a bonded pair for molecular laws and a track/spring for polynomial
+laws. The restoring-force close-up magnifies that geometry and shows -dU/dx with
+live signed values; wall-series equations use the series force rather than
+misrepresenting it as exact spring geometry. Breakdown includes driving, ordinary
+damping and the separately named active Van der Pol reservoir.
+
+Graph chips expose displacement, unit-labelled phase space, energy, work/reservoir
+transfer, conservative period vs energy, exact-event phase-zero Poincare points,
+velocity return and displacement spectrum. Period quadrature is incremental,
+one energy per visible frame. Time-dependent graphs share the shell cursor;
+strobe and spectral data stop at current scene time. The molecular repulsive
+curve is clipped at the plot boundary, not softened in the physics model.
+
+The earlier CUPS coverage table describes the complete headless APIs. This view
+does not yet expose resonance/parameter-scan controls, phase movies, arbitrary
+strobe phase selection, complex-spectrum controls or table exports. They remain
+explicit UI limits, not missing core physics or claimed rendered features.
+
+## Delivered view verification
+
+The owned Node suite passed 56/56. The parent ran the isolated hidden-Edge
+harness on the final source: 327/327 browser checks, no browser exceptions,
+110 captures at 1280 and 320 pixels, browser context closed. This covered gallery
+entry, every preset, a setup edit, play/pause, numerical seek completion, fixed
+camera/reset, every close-up and return, Breakdown equations/overlap checks,
+every graph, and narrow fitting. Updated scene/close-up/Breakdown/graph captures
+were inspected; no installed-build or real-device claim is made.
+Evidence: round-156/osc-views/{browser.json,node.tap,verification.json,cleanup.json}.

@@ -1,6 +1,6 @@
 # Pendulum: physics core and renderer plan
 
-Headless core only; no UI or device checks yet. Read the motion-generator note
+Physics core and kit-based canvas view; no device checks yet. Read the motion-generator note
 for shared integration boundaries and the sandbox test-runner workaround.
 
 ## Original and improvements
@@ -114,3 +114,33 @@ incorrect original positive correction. Graphs adds phase selection (1..32),
 one-period omega return maps and angular-velocity spectra; phase movies and
 retained-run overlays remain opt-in. Keep rotations unwrapped on theta(t), wrapped
 only on phase plots. Mark the barrier and label libration versus rotation periods.
+
+## Kit renderer (wave-one implementation)
+
+The quiet apparatus uses the actual rod length and angle, fixed full-circle world
+bounds, an angle arc and one compact angle/velocity readout. Gravity close-up
+magnifies the decomposition. Breakdown draws theta at the pivot and at the bob,
+weight vertically downward, the radial projection mg cos(theta) along the outward
+rod direction and -mg sin(theta) along the tangent. This radial gravity component
+is not string tension. Signed torque and substitutions render in KaTeX; linear
+and cubic comparison models name their approximate torque separately.
+
+Graph chips show angle, phase space with unit-labelled axes, energy, nearby-start
+separation, conservative period vs amplitude, an exact-event phase-zero Poincare
+section, one-period velocity return map and angular-velocity spectrum. The
+period curve computes one point per visible animation frame. Spectra use the
+available history only through the scene's current time, a sine-squared window
+and explicit frequency in Hz. Empty histories say to collect samples; they do
+not invent a spectrum. Phase movies/selection, complex-spectrum controls and
+nonlinear response-sweep controls remain future UI work over the available APIs.
+
+## Delivered view verification
+
+The owned Node suite passed 56/56. The parent ran the isolated hidden-Edge
+harness on the final source: 327/327 browser checks, no browser exceptions,
+110 captures at 1280 and 320 pixels, browser context closed. This covered gallery
+entry, every preset, a setup edit, play/pause, numerical seek completion, fixed
+camera/reset, every close-up and return, Breakdown equations/overlap checks,
+every graph, and narrow fitting. Updated scene/close-up/Breakdown/graph captures
+were inspected; no installed-build or real-device claim is made.
+Evidence: round-156/osc-views/{browser.json,node.tap,verification.json,cleanup.json}.

@@ -1,0 +1,488 @@
+{
+  "id": "pendulum",
+  "title": "Pendulum",
+  "group": "Mechanics",
+  "description": "From a gentle swing to driven chaos: see where gravity pulls.",
+  "params": [
+    {
+      "key": "mass",
+      "label": "Bob mass",
+      "symbol": "m",
+      "unit": "kg",
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1,
+      "value": 1,
+      "group": "Setup"
+    },
+    {
+      "key": "length",
+      "label": "Length",
+      "symbol": "L",
+      "unit": "m",
+      "min": 0.1,
+      "max": 5,
+      "step": 0.1,
+      "value": 1,
+      "group": "Setup"
+    },
+    {
+      "key": "gravity",
+      "label": "Gravity",
+      "symbol": "g",
+      "unit": "m/s²",
+      "min": 0.1,
+      "max": 20,
+      "step": 0.01,
+      "value": 9.81,
+      "group": "Setup"
+    },
+    {
+      "key": "theta0",
+      "label": "Initial angle",
+      "symbol": "θ_0",
+      "unit": "rad",
+      "min": -6.3,
+      "max": 6.3,
+      "step": 0.01,
+      "value": 0.3,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "omega0",
+      "label": "Initial angular velocity",
+      "symbol": "ω_0",
+      "unit": "rad/s",
+      "min": -20,
+      "max": 20,
+      "step": 0.1,
+      "value": 0,
+      "group": "Initial conditions"
+    },
+    {
+      "key": "damping",
+      "label": "Damping torque coefficient",
+      "symbol": "b",
+      "unit": "N·m·s/rad",
+      "min": 0,
+      "max": 10,
+      "step": 0.01,
+      "value": 0,
+      "group": "Drive"
+    },
+    {
+      "key": "drive",
+      "label": "Drive torque amplitude",
+      "symbol": "τ_d",
+      "unit": "N·m",
+      "min": 0,
+      "max": 20,
+      "step": 0.01,
+      "value": 0,
+      "group": "Drive"
+    },
+    {
+      "key": "driveOmega",
+      "label": "Drive frequency",
+      "symbol": "Ω",
+      "unit": "rad/s",
+      "min": 0.0033333333333333335,
+      "max": 20,
+      "step": 0.0033333333333333335,
+      "value": 0.6666666666666666,
+      "group": "Drive"
+    },
+    {
+      "key": "drivePhase",
+      "label": "Drive phase",
+      "symbol": "φ",
+      "unit": "rad",
+      "min": -3.15,
+      "max": 3.15,
+      "step": 0.01,
+      "value": 0,
+      "group": "Drive"
+    },
+    {
+      "key": "phaseCount",
+      "label": "Strobe phases",
+      "symbol": "N",
+      "unit": "",
+      "min": 1,
+      "max": 32,
+      "step": 1,
+      "value": 12,
+      "group": "Analysis"
+    },
+    {
+      "key": "separation",
+      "label": "Nearby initial angle offset",
+      "symbol": "δθ_0",
+      "unit": "rad",
+      "min": 1e-10,
+      "max": 0.1,
+      "step": 1e-10,
+      "value": 1e-8,
+      "group": "Comparison"
+    },
+    {
+      "key": "linear",
+      "label": "Restoring law",
+      "symbol": "linear",
+      "unit": "",
+      "group": "Comparison",
+      "value": "exact",
+      "options": [
+        {
+          "value": "exact",
+          "label": "Exact sine"
+        },
+        {
+          "value": "linear",
+          "label": "Small angle"
+        },
+        {
+          "value": "cubic",
+          "label": "Sine series (cubic)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "id": "series",
+      "label": "Sine series",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 9.81,
+        "theta0": 0.7,
+        "omega0": 0,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 0.6666666666666666,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "cubic"
+      },
+      "note": "A correct cubic sine approximation agrees locally and fails at large angles."
+    },
+    {
+      "id": "rotation",
+      "label": "Over the top",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 9.81,
+        "theta0": 0,
+        "omega0": 7,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 0.6666666666666666,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "exact"
+      },
+      "note": "Above the gravitational barrier the rod makes full rotations."
+    },
+    {
+      "id": "clockwise",
+      "label": "Reverse rotation",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 9.81,
+        "theta0": 0,
+        "omega0": -7,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 0.6666666666666666,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "exact"
+      },
+      "note": "The same energy gives the opposite direction of rotation."
+    },
+    {
+      "id": "small",
+      "label": "Small angle",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 9.81,
+        "theta0": 0.1,
+        "omega0": 0,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 0.6666666666666666,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "exact"
+      },
+      "note": "The sine and linear models nearly agree."
+    },
+    {
+      "id": "large",
+      "label": "Large angle",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 9.81,
+        "theta0": 2.6,
+        "omega0": 0,
+        "damping": 0,
+        "drive": 0,
+        "driveOmega": 0.6666666666666666,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "exact"
+      },
+      "note": "Large swings take longer; compare the exact period."
+    },
+    {
+      "id": "decay",
+      "label": "Damped",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 9.81,
+        "theta0": 0.2,
+        "omega0": 0,
+        "damping": 0.3,
+        "drive": 0,
+        "driveOmega": 0.6666666666666666,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "exact"
+      },
+      "note": "The amplitude envelope falls exponentially for small angles."
+    },
+    {
+      "id": "resonance",
+      "label": "Driven resonance",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 9.81,
+        "theta0": 0,
+        "omega0": 0,
+        "damping": 0.4,
+        "drive": 0.2,
+        "driveOmega": 3.13,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "exact"
+      },
+      "note": "At resonance the drive supplies the lost energy."
+    },
+    {
+      "id": "period-two",
+      "label": "Period doubling",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 1,
+        "theta0": 0.2,
+        "omega0": 0,
+        "damping": 0.5,
+        "drive": 1.07,
+        "driveOmega": 0.6666666666666666,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "exact"
+      },
+      "note": "After transients, two distinct stroboscopic points alternate."
+    },
+    {
+      "id": "chaos",
+      "label": "Sensitivity",
+      "values": {
+        "mass": 1,
+        "length": 1,
+        "gravity": 1,
+        "theta0": 0.2,
+        "omega0": 0,
+        "damping": 0.5,
+        "drive": 1.2,
+        "driveOmega": 0.6666666666666666,
+        "drivePhase": 0,
+        "phaseCount": 12,
+        "separation": 1e-8,
+        "linear": "exact"
+      },
+      "note": "Nearby initial angles diverge under identical forcing."
+    }
+  ],
+  "observables": [
+    {
+      "key": "theta",
+      "label": "Angle",
+      "symbol": "θ",
+      "unit": "rad"
+    },
+    {
+      "key": "omega",
+      "label": "Angular velocity",
+      "symbol": "ω",
+      "unit": "rad/s"
+    },
+    {
+      "key": "alpha",
+      "label": "Angular acceleration",
+      "symbol": "α",
+      "unit": "rad/s²"
+    },
+    {
+      "key": "x",
+      "label": "Bob x",
+      "symbol": "x",
+      "unit": "m"
+    },
+    {
+      "key": "y",
+      "label": "Bob y",
+      "symbol": "y",
+      "unit": "m"
+    },
+    {
+      "key": "kinetic",
+      "label": "Kinetic energy",
+      "symbol": "K",
+      "unit": "J"
+    },
+    {
+      "key": "potential",
+      "label": "Potential energy",
+      "symbol": "U",
+      "unit": "J"
+    },
+    {
+      "key": "energy",
+      "label": "Mechanical energy",
+      "symbol": "E",
+      "unit": "J"
+    },
+    {
+      "key": "work",
+      "label": "Drive work",
+      "symbol": "W",
+      "unit": "J"
+    },
+    {
+      "key": "heat",
+      "label": "Dissipated energy",
+      "symbol": "Q",
+      "unit": "J"
+    },
+    {
+      "key": "separation",
+      "label": "Nearby-state distance",
+      "symbol": "δ",
+      "unit": "rad"
+    },
+    {
+      "key": "drivePhase",
+      "label": "Drive phase",
+      "symbol": "φ",
+      "unit": "rad"
+    }
+  ],
+  "closeups": [
+    {
+      "id": "gravity",
+      "label": "Zoom · gravity components"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "motion",
+      "label": "Angle",
+      "unit": "rad",
+      "series": [
+        {
+          "key": "theta",
+          "label": "theta",
+          "color": "#8ab9ff"
+        }
+      ]
+    },
+    {
+      "id": "phase",
+      "label": "Phase space",
+      "unit": "rad, rad/s",
+      "kind": "custom",
+      "series": [
+        {
+          "key": "theta",
+          "label": "theta"
+        },
+        {
+          "key": "omega",
+          "label": "omega"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy",
+      "unit": "J",
+      "series": [
+        {
+          "key": "energy",
+          "label": "E",
+          "color": "#b0c9ad"
+        },
+        {
+          "key": "kinetic",
+          "label": "K",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "potential",
+          "label": "U",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "sensitivity",
+      "label": "Nearby starts",
+      "unit": "rad",
+      "series": [
+        {
+          "key": "separation",
+          "label": "separation",
+          "color": "#bcabef"
+        }
+      ]
+    },
+    {
+      "id": "period",
+      "label": "Period vs amplitude",
+      "kind": "custom"
+    },
+    {
+      "id": "strobe",
+      "label": "Poincare section",
+      "kind": "custom"
+    },
+    {
+      "id": "return",
+      "label": "Velocity return",
+      "kind": "custom"
+    },
+    {
+      "id": "spectrum",
+      "label": "Spectrum",
+      "kind": "custom"
+    }
+  ]
+}
