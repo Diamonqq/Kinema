@@ -91,7 +91,7 @@ on a separate row clear of the key.
 | close-up id | exact view and equations |
 |---|---|
 | corner | Looking forward across the configured next corner: road angle theta from horizontal, N toward center/up, mg down, signed f down/up slope; contact-rooted dashed N sin(theta), N cos(theta), f cos(theta), -f sin(theta) projections. N=m(g cos(theta)+(v^2/r)sin(theta)), f=m((v^2/r)cos(theta)-g sin(theta)), signed values and vmax |
-| grip | Friction circle radius mu N, lateral/longitudinal axes, actual force as solid dot and requested drive hollow; fparallel^2+fperp^2 <= (mu N)^2 with signed forces and capacity in N |
+| grip | Friction circle radius mu N, lateral/longitudinal axes, actual force as solid dot and requested drive hollow only when different; fparallel^2+fperp^2 <= (mu N)^2 with signed forces and capacity in N |
 
 Breakdown combines the bank cross-section and friction circle, stacked at narrow
 width. The label "Corner cross-section" explicitly previews the configured next
@@ -144,3 +144,7 @@ compact force equations use N/kN and three significant figures. A fixed corner
 chip sits above the oval, and the contact close-up magnifies the real 4.5 m car.
 The narrow Breakdown retains the Friction circle title. Time graphs use one
 initial lap as their scrolling window and the complete forecast for their range.
+
+Final quiet key says Track centerline for both stadium and circular presets.
+The friction-capacity label sits inside the circle, offset from its radius and
+circumference strokes.

@@ -68,14 +68,14 @@ function grip(s,f,box){
  const tx=cx+force.longitudinal*k,ty=cy-force.lateral*k;s.arrow(cx,cy,tx,ty,force.grip?green:'#e4a9bd',2);s.circle(tx,ty,3,green);
  if(Math.abs(f.params.drive-force.longitudinal)>1){s.ctx.strokeStyle=purple;s.ctx.beginPath();s.ctx.arc(cx+f.params.drive*k,ty,4,0,2*Math.PI);s.ctx.stroke();}
  s.text('f∥',cx+r+10,cy,muted,11,'left');s.text('f⊥',cx,cy-r-16,muted,11);
- const radius=force.capacity*k,rx=cx-radius/Math.sqrt(2),ry=cy+radius/Math.sqrt(2);s.line(cx,cy,rx,ry,orange,1.2);if(radius>2)s.text('\u03bcN',rx-13,ry-13,orange,11);
+ const radius=force.capacity*k,rx=cx-radius/Math.sqrt(2),ry=cy+radius/Math.sqrt(2);s.line(cx,cy,rx,ry,orange,1.2);if(radius>2)s.text('\u03bcN',rx+7,ry-16,orange,11);
  return force;
 }
 export const view={graphs,closeups,
  graphDescriptors:p=>graphs.map(g=>({...g,window:Math.max(5,(4*p.halfStraight+2*Math.PI*p.radius)/Math.max(1,p.speed))})),
  mount(shell){shell.q('.exp-transport').style.background='#191e26';shell.equations.style.paddingBottom='64px';shell.scene.style.minHeight='440px';},
  closeupAnchors(s,f){if(f.closeup)return {};if(f.breakdown)return {corner:{x:s.w*.28,y:s.h-82},grip:{x:s.w*.73,y:s.h-86}};const p=f.params,pad=Math.max(4,p.radius*.08),m=world(s,[-p.halfStraight-p.radius-pad,p.halfStraight+p.radius+pad,-p.radius-pad,p.radius+pad],100,s.h-132);return {corner:{x:m.x(p.halfStraight+p.radius),y:m.y(p.radius)-48},grip:{x:m.x(0),y:m.y(-p.radius)+52}};},
- key:f=>f.closeup==='grip'?(Math.abs(f.params.drive-bankSnapshot(f).longitudinal)>1?'Solid: tire force \u00b7 hollow: requested drive':'Solid: tire force \u00b7 radius: \u03bcN'):f.closeup||f.breakdown?'Blue N · amber mg · green f · right is inward':'Oval centerline · tire grip sets the corner limit',
+ key:f=>f.closeup==='grip'?(Math.abs(f.params.drive-bankSnapshot(f).longitudinal)>1?'Solid: tire force \u00b7 hollow: requested drive':'Solid: tire force \u00b7 radius: \u03bcN'):f.closeup||f.breakdown?'Blue N · amber mg · green f · right is inward':'Track centerline · tire grip sets the corner limit',
  draw(s,f){
   const p=f.params,q=f.sample,narrow=s.w<440;
   if(f.breakdown||f.closeup){

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {model} from '../../static/js/experiments/projectile-air/model.js';
-import {view,preview} from '../../static/js/experiments/projectile-air/view.js';
+import {view,preview,mapWorld} from '../../static/js/experiments/projectile-air/view.js';
 const params=Object.fromEntries(model.params.map(p=>[p.key,p.value]));
 test('projectile manifest is exactly synchronized with parameter, preset, graph and close-up descriptors',()=>{
  const m=JSON.parse(fs.readFileSync(new URL('../../static/js/experiments/projectile-air/manifest.json',import.meta.url)));
@@ -20,4 +20,12 @@ test('projectile thumbnail draws apparatus without readouts or captions',()=>{
  const instance=model.create(),ctx=new Proxy({}, {get:(o,k)=>()=>{}});let texts=0;
  const s={w:300,h:155,ctx,line(){},circle(){},text(){texts++;}};
  view.draw(s,{params,instance,sample:instance.sample(),geometry:instance.geometry(),t:0,closeup:'',breakdown:false,thumbnail:true});assert.equal(texts,0);assert.ok(s.camera.scale>0);
+});
+
+test('320 px flight framing uses at least 80% of the 300 px stage width (1e-9 px tolerance)',()=>{
+ for(const preset of model.presets){
+  const data=preview(preset.values),stage={w:300,h:440,snap:true};
+  const map=mapWorld(stage,data.bounds),xs=data.ghost.map(q=>map.x(q.x));
+  assert.ok(Math.max(...xs)-Math.min(...xs)>=.8*stage.w-1e-9,preset.id);
+ }
 });

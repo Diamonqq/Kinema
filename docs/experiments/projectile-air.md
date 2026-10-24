@@ -18,8 +18,7 @@ No source code or help prose has been reused.
 
 ## CUPS coverage
 
-“Improved” below describes implemented headless physics; views remain the brief
-below, not a claim of rendered completion. Full supplied local HLP/GMGENER/GMRACE
+“Improved” below describes implemented physics and shared-kit views. Full supplied local HLP/GMGENER/GMRACE
 copies were read, including generic configuration and graph help.
 
 | Capability | Kinema | Evidence / reason |
@@ -142,3 +141,10 @@ adds an explicit inelastic-impact ledger. Shared graphs stop at that sample.
 Main framing reserves side margins for arrows; labels clamp inside the canvas.
 Chips use launch/apex/early-flight world targets, not a diagonal caption stack.
 The complete blue forecast matches its key. Values use three significant figures.
+
+Final narrow polish: the 440 px stage gives the vacuum flight at least 80% of
+its width for every shipped preset. The launch chip is above the narrow launch
+point; the air chip is 14 px below ground at the vacuum mid-range. Breakdown
+labels avoid chip rectangles and trajectory/ground strokes, with short leaders
+where a tip needs extra clearance. Captions and component equations stay in
+separate rows.
