@@ -81,7 +81,7 @@ compact key. Physical car dimensions are 4.5 x 1.8 m, with an explicit minimum
 14 x 6 px locator glyph on large tracks to remain visible. World scale stays
 fixed while running; Reset and setup changes re-center. Speed/lap caption is
 fixed at the top. At grip failure motion freezes at the actual limit and the
-caption says ?Grip exceeded ? change setup?.
+caption says "Grip exceeded - change setup".
 
 Preset chips: Flat corner, Banked corner, Ice loses grip, Brake while turning,
 Tighter curve, Coast to a stop. Each demonstrates a physical change; no scoring.
@@ -90,13 +90,13 @@ on a separate row clear of the key.
 
 | close-up id | exact view and equations |
 |---|---|
-| corner | Looking forward across the configured next corner: road angle theta from horizontal, N toward center/up, mg down, signed f down/up slope; separate N sin(theta), N cos(theta), f cos(theta), -f sin(theta) projections. N=m(g cos(theta)+(v?/r)sin(theta)), f=m((v?/r)cos(theta)-g sin(theta)), signed values and vmax |
-| grip | Friction circle radius mu N, lateral/longitudinal axes, actual force as solid dot and requested drive hollow; fparallel?+fperp? <= (mu N)? with signed forces and capacity in N |
+| corner | Looking forward across the configured next corner: road angle theta from horizontal, N toward center/up, mg down, signed f down/up slope; separate N sin(theta), N cos(theta), f cos(theta), -f sin(theta) projections. N=m(g cos(theta)+(v^2/r)sin(theta)), f=m((v^2/r)cos(theta)-g sin(theta)), signed values and vmax |
+| grip | Friction circle radius mu N, lateral/longitudinal axes, actual force as solid dot and requested drive hollow; fparallel^2+fperp^2 <= (mu N)^2 with signed forces and capacity in N |
 
 Breakdown combines the bank cross-section and friction circle, stacked at narrow
-width. The label ?Corner cross-section? explicitly previews the configured next
+width. The label "Corner cross-section" explicitly previews the configured next
 curve even when the top-down car is on a flat straight. Blue N, amber mg, green f
-stay consistent. Equations show N sin(theta)+f cos(theta)=mv?/r and
+stay consistent. Equations show N sin(theta)+f cos(theta)=mv^2/r and
 N cos(theta)-f sin(theta)=mg, both symbolic and substituted, then the circle law.
 Negligible arrows are omitted rather than printing coincident tip labels.
 
