@@ -87,7 +87,7 @@ export const view={
    coil(s,start,cy,end,j===1?'#a0b3cc':'#718297',Math.max(4,Math.min(9,scale*.07)));
    const eq=1.3*(j+.5),labelY=Math.max(44,cy-(f.breakdown?115:massH*.5+41)),k=f.params['k'+(j+1)];
    if(scale*1.3>115)s.text('k'+sub(j+1)+' = '+withUnit(k,'N/m'),x(eq),labelY,'#93a5bd',12);
-   else {s.text('k'+sub(j+1),x(eq),labelY,'#93a5bd',n>4?10:11);if(n<=4){ctx.font='10px system-ui,sans-serif';const full=withUnit(k,'N/m');if(ctx.measureText(full).width<=scale*1.3-18)s.text(full,x(eq),labelY+15,'#93a5bd',10);else{s.text(num(k,3),x(eq),labelY+14,'#93a5bd',10);s.text('N/m',x(eq),labelY+26,'#93a5bd',9);}}}
+   else {s.text('k'+sub(j+1),x(eq),labelY,'#93a5bd',n>4?10:11);if(n<=4){ctx.font='10px system-ui,sans-serif';const full=withUnit(k,'N/m');if(ctx.measureText(full).width<=scale*1.3-18)s.text(full,x(eq),labelY+15,'#93a5bd',10);}}
   }
   const forceLabels=[];f.geometry.masses.forEach((m,i)=>{
    const px=x(m.x),ex=x(m.equilibrium),color=palette[i%palette.length];

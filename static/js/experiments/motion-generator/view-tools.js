@@ -52,16 +52,16 @@ export function fixedMap(s,bounds,{bottom=100,top=35,padding=30}={}){
  if(!s.camera||s.snap)s.camera=target;else if(easeCamera(s.camera,target))s.animating=true;
  s.snap=false;const c=s.camera;return {x:x=>s.w/2+(x-c.cx)*c.scale,y:y=>s.h/2-(y-c.cy)*c.scale,scale:c.scale};
 }
-export function linePlot(s,{title,points=[],xkey='x',ykey='y',cursor,color=C.blue,xlabel='',ylabel='',scatter=false,yFloor}){
+export function linePlot(s,{title,points=[],xkey='x',ykey='y',cursor,color=C.blue,xlabel='',ylabel='',scatter=false,yFloor,yTicks,pad=.12}){
  s.resize();s.begin();const w=s.w,h=s.h,r=w-17,t=48,b=h-34;let l=42;
  const data=points.filter(p=>Number.isFinite(p[xkey])&&Number.isFinite(p[ykey]));
  if(!data.length){s.line(l,t,l,b,C.grid,1);s.line(l,b,r,b,C.grid,1);if(ylabel)label(s,ylabel,l,33,C.dim,10,'left');s.text('Play to collect samples',(l+r)/2,(t+b)/2,C.dim,11);return;}
  let xmin=Math.min(...data.map(p=>p[xkey])),xmax=Math.max(...data.map(p=>p[xkey])),ymin=Math.min(...data.map(p=>p[ykey])),ymax=Math.max(...data.map(p=>p[ykey]));
  if(xmax-xmin<1e-9){xmin-=.5;xmax+=.5;}if(yFloor!==undefined){ymin=yFloor;ymax=Math.max(ymax,yFloor+1e-9);}else if(ymax-ymin<1e-9){ymin-=.5;ymax+=.5;}
- const dy=(ymax-ymin)*.12;ymin=yFloor??ymin-dy;ymax+=dy;
+ const dy=(ymax-ymin)*pad;ymin=yFloor??ymin-dy;ymax+=dy;
  // Round ticks (zero included when in range); the left gutter widens to fit the widest tick text.
  s.ctx.font='9px system-ui,sans-serif';
- const yt=niceTicks(ymin,ymax,Math.max(2,Math.floor((b-t)/38))),ylabels=yt.ticks.map(v=>tickLabel(v,yt.step));
+ const yt=niceTicks(ymin,ymax,yTicks??Math.max(2,Math.floor((b-t)/38))),ylabels=yt.ticks.map(v=>tickLabel(v,yt.step));
  l=Math.max(42,Math.ceil(Math.max(0,...ylabels.map(x=>s.ctx.measureText(x).width)))+11);
  const xt=niceTicks(xmin,xmax,Math.max(2,Math.floor((r-l)/64))),xlabels=xt.ticks.map(v=>tickLabel(v,xt.step));
  s.plotBounds={xmin,xmax,ymin,ymax,left:l,right:r,top:t,bottom:b};const xx=x=>l+(r-l)*(x-xmin)/(xmax-xmin),yy=y=>b-(b-t)*(y-ymin)/(ymax-ymin);
