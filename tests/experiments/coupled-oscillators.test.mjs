@@ -55,3 +55,49 @@ test('Breakdown ends with live net force in N including damping and driving',asy
   lines.forEach((line,i)=>{assert.ok(line.includes('='+geometry.forces[i].toFixed(2)+'\\,\\mathrm{N}'));assert.ok(line.includes('m_{'+(i+1)+'}\\ddot'));});
  }
 });
+
+test('spring-force names identify receiving mass and spring and match the equations',async()=>{
+ const {view,springForces}=await import('../../static/js/experiments/coupled-oscillators/view.js');
+ const s=model.create({x1:.13,x2:0,k2:40}),geometry=s.geometry();
+ assert.deepEqual(springForces(geometry,0).map(f=>[f.name,f.value]),[['F₁,₁',-2.6],['F₁,₂',-5.2]]);
+ assert.deepEqual(springForces(geometry,1).map(f=>[f.name,f.value]),[['F₂,₂',5.2],['F₂,₃',0]]);
+ const frame={instance:s,params:s.params,geometry,t:s.t,sample:s.sample(),breakdown:true};
+ const equations=view.equations(frame);
+ for(let i=0;i<2;i++)for(const force of springForces(geometry,i)){
+  assert.ok(equations[i].includes(force.tex+'='));assert.ok(equations[i].includes('='+force.value.toFixed(2)+'\\,\\mathrm{N}'));
+ }
+ assert.ok(view.closeupEquation(frame)[0].startsWith('F_{2,2}='));
+ const free=model.create({ends:'free',x1:.13,x2:0});assert.equal(springForces(free.geometry(),0).length,1);assert.equal(springForces(free.geometry(),1).length,1);
+});
+
+test('force tip labels carry signed N values at desktop and simplify before narrow overlaps',async()=>{
+ const {view}=await import('../../static/js/experiments/coupled-oscillators/view.js');
+ const {VectorStage}=await import('../../static/js/experiments/kit/stage.js');
+ const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
+ for(const width of [568,304])for(const height of [340,520])for(const x1 of [-.13,.13]){
+  const ctx=new Proxy({font:'11px system-ui',measureText(text){const size=Number.parseFloat(this.font),length=String(text).length*size*.58;return {width:length,actualBoundingBoxLeft:length/2,actualBoundingBoxRight:length/2,actualBoundingBoxAscent:size*.7,actualBoundingBoxDescent:size*.3}}},{get:(obj,key)=>obj[key]||(()=>{})});
+  const stage=Object.assign(Object.create(VectorStage.prototype),{ctx,w:width,h:height,labels:[],snap:true});
+  const instance=model.create({x1,x2:0,k2:40}),frame={instance,geometry:instance.geometry(),params:instance.params,sample:instance.sample(),t:0,breakdown:true,closeup:''};
+  view.draw(stage,frame);const forceLabels=stage.labels.filter(l=>/^F/.test(l.text));assert.equal(forceLabels.length,3);
+  if(width<400)assert.ok(forceLabels.every(l=>/^F[₀-₉]+,[₀-₉]+$/.test(l.text)));
+  else {assert.ok(forceLabels.every(l=>/^F[₀-₉]+,[₀-₉]+ (?:−)?\d+\.\d{2} N$/.test(l.text)));assert.ok(forceLabels.some(l=>l.text.includes('−')));}
+  for(const label of forceLabels){assert.ok(label.x>=0&&label.x+label.width<=width&&label.y>=0&&label.y+label.height<=stage.h);assert.ok(stage.labels.every(other=>other===label||!intersects(label,other)));}
+ }
+});
+
+test('drawn mass center remains the drag target after layout changes',async()=>{
+ const {view}=await import('../../static/js/experiments/coupled-oscillators/view.js');
+ const {VectorStage}=await import('../../static/js/experiments/kit/stage.js');
+ const ctx=new Proxy({font:'11px system-ui',measureText(text){return {width:String(text).length*6,actualBoundingBoxLeft:String(text).length*3,actualBoundingBoxRight:String(text).length*3,actualBoundingBoxAscent:8,actualBoundingBoxDescent:3}}},{get:(obj,key)=>obj[key]||(()=>{})});
+ const stage=Object.assign(Object.create(VectorStage.prototype),{ctx,w:568,h:520,labels:[],snap:true});
+ let instance=model.create(model.presets.find(p=>p.id==='beats').values);
+ const frame=()=>({instance,params:instance.params,geometry:instance.geometry(),sample:instance.sample(),t:instance.t,breakdown:false,closeup:'',setParams(values){instance=model.create({...instance.params,...values});}});
+ for(const [w,h] of [[568,520],[568,340],[304,340]]){
+  stage.w=w;stage.h=h;stage.snap=true;stage.labels=[];view.draw(stage,frame());
+  const camera=stage.camera,mass=instance.geometry().masses[0],point={x:w/2+(mass.x-camera.cx)*camera.scale,y:h/2+camera.cy*camera.scale},before=instance.params.x1;
+  assert.equal(view.pointer(stage,frame(),{...point,type:'down'}),true);
+  assert.equal(view.pointer(stage,frame(),{x:point.x-12,y:point.y,type:'move'}),true);
+  assert.equal(view.pointer(stage,frame(),{...point,type:'up'}),true);
+  assert.ok(instance.params.x1<before);
+ }
+});
