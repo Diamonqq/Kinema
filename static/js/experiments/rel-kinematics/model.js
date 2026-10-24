@@ -83,6 +83,21 @@ const params=[
   {key:'plotRange',label:'Plot range',unit:'',value:'auto',options:[{value:'auto',label:'Automatic'},{value:'manual',label:'Manual'}],group:'Plots'},
   {key:'bins',label:'Histogram bins',unit:'bins',min:2,max:100,step:1,value:20,group:'Plots'},
 ];
+// Physical/plot dependencies, independently of the compact Setup presentation.
+const appliesWhen={
+  beta:{reaction:['pion-decay','decay','muon'],inputMode:['kinetic']},
+  parentMass:{reaction:['decay']},
+  mass1:{reaction:['decay','elastic','collision']},
+  mass2:{reaction:['decay','elastic','collision']},
+  mass3:{reaction:['collision']},mass4:{reaction:['collision']},
+  kinetic:{reaction:['elastic','collision','pp-pion','compton','pion-proton'],inputMode:['kinetic']},
+  beamMomentum:{inputMode:['momentum']},
+  pairFraction:{reaction:['muon','pp-pion']},secondaryAngle:{reaction:['muon','pp-pion']},
+  seed:{distribution:['isotropic']},
+  xMin:{plotRange:['manual']},xMax:{plotRange:['manual']},
+  yMin:{plotRange:['manual']},yMax:{plotRange:['manual']},
+};
+for(const spec of params)if(appliesWhen[spec.key])spec.appliesWhen=appliesWhen[spec.key];
 const presets=[
   {id:'pion-rest',label:'Pion at rest',values:{reaction:'pion-decay',beta:0,angle:60},note:'Each photon carries half the pion rest energy.'},
   {id:'pion-flight',label:'Pion in flight',values:{reaction:'pion-decay',beta:.8,angle:60},note:'Boosting changes photon energies, not the pair invariant mass.'},

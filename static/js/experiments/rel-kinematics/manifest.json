@@ -69,7 +69,17 @@
       "max": 0.95,
       "step": 0.01,
       "value": 0.6,
-      "group": "Decay"
+      "group": "Decay",
+      "appliesWhen": {
+        "reaction": [
+          "pion-decay",
+          "decay",
+          "muon"
+        ],
+        "inputMode": [
+          "kinetic"
+        ]
+      }
     },
     {
       "key": "parentMass",
@@ -80,7 +90,12 @@
       "max": 10000,
       "step": 0.01,
       "value": 10,
-      "group": "Custom decay"
+      "group": "Custom decay",
+      "appliesWhen": {
+        "reaction": [
+          "decay"
+        ]
+      }
     },
     {
       "key": "mass1",
@@ -91,7 +106,14 @@
       "max": 5000,
       "step": 0.01,
       "value": 1,
-      "group": "Custom reaction"
+      "group": "Custom reaction",
+      "appliesWhen": {
+        "reaction": [
+          "decay",
+          "elastic",
+          "collision"
+        ]
+      }
     },
     {
       "key": "mass2",
@@ -102,7 +124,14 @@
       "max": 5000,
       "step": 0.01,
       "value": 1,
-      "group": "Custom reaction"
+      "group": "Custom reaction",
+      "appliesWhen": {
+        "reaction": [
+          "decay",
+          "elastic",
+          "collision"
+        ]
+      }
     },
     {
       "key": "mass3",
@@ -113,7 +142,12 @@
       "max": 5000,
       "step": 0.01,
       "value": 1,
-      "group": "Custom collision"
+      "group": "Custom collision",
+      "appliesWhen": {
+        "reaction": [
+          "collision"
+        ]
+      }
     },
     {
       "key": "mass4",
@@ -124,7 +158,12 @@
       "max": 5000,
       "step": 0.01,
       "value": 1,
-      "group": "Custom collision"
+      "group": "Custom collision",
+      "appliesWhen": {
+        "reaction": [
+          "collision"
+        ]
+      }
     },
     {
       "key": "kinetic",
@@ -135,7 +174,19 @@
       "max": 10000,
       "step": 0.01,
       "value": 400,
-      "group": "Beam"
+      "group": "Beam",
+      "appliesWhen": {
+        "reaction": [
+          "elastic",
+          "collision",
+          "pp-pion",
+          "compton",
+          "pion-proton"
+        ],
+        "inputMode": [
+          "kinetic"
+        ]
+      }
     },
     {
       "key": "inputMode",
@@ -163,7 +214,12 @@
       "max": 100000,
       "step": 0.01,
       "value": 100,
-      "group": "Beam"
+      "group": "Beam",
+      "appliesWhen": {
+        "inputMode": [
+          "momentum"
+        ]
+      }
     },
     {
       "key": "angle",
@@ -185,7 +241,13 @@
       "max": 0.99,
       "step": 0.01,
       "value": 0.5,
-      "group": "Three-body kinematics"
+      "group": "Three-body kinematics",
+      "appliesWhen": {
+        "reaction": [
+          "muon",
+          "pp-pion"
+        ]
+      }
     },
     {
       "key": "secondaryAngle",
@@ -196,7 +258,13 @@
       "max": 180,
       "step": 1,
       "value": 90,
-      "group": "Three-body kinematics"
+      "group": "Three-body kinematics",
+      "appliesWhen": {
+        "reaction": [
+          "muon",
+          "pp-pion"
+        ]
+      }
     },
     {
       "key": "distribution",
@@ -233,7 +301,12 @@
       "max": 4294967295,
       "step": 1,
       "value": 1,
-      "group": "Plots"
+      "group": "Plots",
+      "appliesWhen": {
+        "distribution": [
+          "isotropic"
+        ]
+      }
     },
     {
       "key": "xVariable",
@@ -334,7 +407,12 @@
       "max": 10000000000,
       "step": 0.01,
       "value": 0,
-      "group": "Plots"
+      "group": "Plots",
+      "appliesWhen": {
+        "plotRange": [
+          "manual"
+        ]
+      }
     },
     {
       "key": "xMax",
@@ -344,7 +422,12 @@
       "max": 10000000000,
       "step": 0.01,
       "value": 180,
-      "group": "Plots"
+      "group": "Plots",
+      "appliesWhen": {
+        "plotRange": [
+          "manual"
+        ]
+      }
     },
     {
       "key": "yVariable",
@@ -445,7 +528,12 @@
       "max": 10000000000,
       "step": 0.01,
       "value": 0,
-      "group": "Plots"
+      "group": "Plots",
+      "appliesWhen": {
+        "plotRange": [
+          "manual"
+        ]
+      }
     },
     {
       "key": "yMax",
@@ -455,7 +543,12 @@
       "max": 10000000000,
       "step": 0.01,
       "value": 180,
-      "group": "Plots"
+      "group": "Plots",
+      "appliesWhen": {
+        "plotRange": [
+          "manual"
+        ]
+      }
     },
     {
       "key": "plotRange",
