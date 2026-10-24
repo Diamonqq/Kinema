@@ -1,0 +1,445 @@
+{
+  "id": "projectile-air",
+  "title": "Projectile in air",
+  "group": "Mechanics",
+  "description": "Launch into air. Compare drag, wind and spin with a vacuum flight.",
+  "params": [
+    {
+      "key": "mass",
+      "label": "Mass",
+      "symbol": "m",
+      "unit": "kg",
+      "min": 0.001,
+      "max": 50,
+      "step": 0.001,
+      "value": 0.145,
+      "group": "Object"
+    },
+    {
+      "key": "diameter",
+      "label": "Diameter",
+      "symbol": "d",
+      "unit": "m",
+      "min": 0.002,
+      "max": 0.5,
+      "step": 0.001,
+      "value": 0.074,
+      "group": "Object"
+    },
+    {
+      "key": "speed",
+      "label": "Launch speed",
+      "symbol": "v_0",
+      "unit": "m/s",
+      "min": 0,
+      "max": 200,
+      "step": 0.1,
+      "value": 40,
+      "group": "Launch"
+    },
+    {
+      "key": "angle",
+      "label": "Launch angle",
+      "symbol": "α",
+      "unit": "°",
+      "min": 0,
+      "max": 90,
+      "step": 0.1,
+      "value": 40,
+      "group": "Launch"
+    },
+    {
+      "key": "height",
+      "label": "Release height",
+      "symbol": "h",
+      "unit": "m",
+      "min": 0,
+      "max": 10000,
+      "step": 0.1,
+      "value": 0,
+      "group": "Launch"
+    },
+    {
+      "key": "gravity",
+      "label": "Gravity",
+      "symbol": "g",
+      "unit": "m/s²",
+      "min": 0.1,
+      "max": 25,
+      "step": 0.01,
+      "value": 9.81,
+      "group": "World"
+    },
+    {
+      "key": "drag",
+      "label": "Drag law",
+      "symbol": "drag",
+      "unit": "",
+      "value": "quadratic",
+      "group": "Air",
+      "options": [
+        {
+          "value": "vacuum",
+          "label": "vacuum"
+        },
+        {
+          "value": "linear",
+          "label": "linear"
+        },
+        {
+          "value": "quadratic",
+          "label": "quadratic"
+        },
+        {
+          "value": "combined",
+          "label": "combined"
+        },
+        {
+          "value": "sphere",
+          "label": "sphere"
+        }
+      ]
+    },
+    {
+      "key": "linear",
+      "label": "Linear coefficient",
+      "symbol": "b",
+      "unit": "kg/s",
+      "min": 0,
+      "max": 10,
+      "step": 0.001,
+      "value": 0.05,
+      "group": "Air"
+    },
+    {
+      "key": "cd",
+      "label": "Drag coefficient",
+      "symbol": "C_D",
+      "unit": "1",
+      "min": 0.01,
+      "max": 2,
+      "step": 0.01,
+      "value": 0.47,
+      "group": "Air"
+    },
+    {
+      "key": "density",
+      "label": "Sea-level density",
+      "symbol": "ρ_0",
+      "unit": "kg/m³",
+      "min": 0.01,
+      "max": 2,
+      "step": 0.001,
+      "value": 1.225,
+      "group": "Air"
+    },
+    {
+      "key": "atmosphere",
+      "label": "Density profile",
+      "symbol": "atmosphere",
+      "unit": "",
+      "value": "constant",
+      "group": "Air",
+      "options": [
+        {
+          "value": "constant",
+          "label": "constant"
+        },
+        {
+          "value": "exponential",
+          "label": "exponential"
+        }
+      ]
+    },
+    {
+      "key": "altitude",
+      "label": "Ground altitude",
+      "symbol": "z_0",
+      "unit": "m",
+      "min": 0,
+      "max": 10000,
+      "step": 10,
+      "value": 0,
+      "group": "Air"
+    },
+    {
+      "key": "scaleHeight",
+      "label": "Density scale height",
+      "symbol": "H",
+      "unit": "m",
+      "min": 1000,
+      "max": 20000,
+      "step": 10,
+      "value": 8500,
+      "group": "Air"
+    },
+    {
+      "key": "viscosity",
+      "label": "Dynamic viscosity",
+      "symbol": "η",
+      "unit": "Pa·s",
+      "min": 0.000001,
+      "max": 0.0001,
+      "step": 0.000001,
+      "value": 0.000018,
+      "group": "Air"
+    },
+    {
+      "key": "wind",
+      "label": "Horizontal wind",
+      "symbol": "w",
+      "unit": "m/s",
+      "min": -50,
+      "max": 50,
+      "step": 0.1,
+      "value": 0,
+      "group": "Air"
+    },
+    {
+      "key": "spin",
+      "label": "Backspin",
+      "symbol": "ω",
+      "unit": "rad/s",
+      "min": -1000,
+      "max": 1000,
+      "step": 1,
+      "value": 0,
+      "group": "Object"
+    }
+  ],
+  "presets": [
+    {
+      "id": "vacuum",
+      "label": "Vacuum parabola",
+      "values": {
+        "mass": 0.145,
+        "diameter": 0.074,
+        "speed": 40,
+        "angle": 45,
+        "height": 0,
+        "gravity": 9.81,
+        "drag": "vacuum",
+        "linear": 0.05,
+        "cd": 0.47,
+        "density": 1.225,
+        "atmosphere": "constant",
+        "altitude": 0,
+        "scaleHeight": 8500,
+        "viscosity": 0.000018,
+        "wind": 0,
+        "spin": 0
+      },
+      "note": "Equal launch and landing height: maximum range at 45°."
+    },
+    {
+      "id": "baseball",
+      "label": "Baseball",
+      "values": {
+        "mass": 0.145,
+        "diameter": 0.074,
+        "speed": 40,
+        "angle": 40,
+        "height": 0,
+        "gravity": 9.81,
+        "drag": "quadratic",
+        "linear": 0.05,
+        "cd": 0.47,
+        "density": 1.225,
+        "atmosphere": "constant",
+        "altitude": 0,
+        "scaleHeight": 8500,
+        "viscosity": 0.000018,
+        "wind": 0,
+        "spin": 0
+      },
+      "note": "Compare the drag trajectory with its vacuum ghost."
+    },
+    {
+      "id": "golf",
+      "label": "Golf ball",
+      "values": {
+        "mass": 0.046,
+        "diameter": 0.043,
+        "speed": 65,
+        "angle": 25,
+        "height": 0,
+        "gravity": 9.81,
+        "drag": "quadratic",
+        "linear": 0.05,
+        "cd": 0.25,
+        "density": 1.225,
+        "atmosphere": "constant",
+        "altitude": 0,
+        "scaleHeight": 8500,
+        "viscosity": 0.000018,
+        "wind": 0,
+        "spin": 300
+      },
+      "note": "Backspin adds lift; constant Cd is an illustrative dimpled-ball approximation."
+    },
+    {
+      "id": "shot",
+      "label": "Shot put",
+      "values": {
+        "mass": 7.26,
+        "diameter": 0.12,
+        "speed": 14,
+        "angle": 40,
+        "height": 2,
+        "gravity": 9.81,
+        "drag": "quadratic",
+        "linear": 0.05,
+        "cd": 0.47,
+        "density": 1.225,
+        "atmosphere": "constant",
+        "altitude": 0,
+        "scaleHeight": 8500,
+        "viscosity": 0.000018,
+        "wind": 0,
+        "spin": 0
+      },
+      "note": "Large mass makes air resistance a small correction."
+    },
+    {
+      "id": "pingpong",
+      "label": "Ping-pong ball",
+      "values": {
+        "mass": 0.003,
+        "diameter": 0.04,
+        "speed": 15,
+        "angle": 40,
+        "height": 0,
+        "gravity": 9.81,
+        "drag": "quadratic",
+        "linear": 0.05,
+        "cd": 0.47,
+        "density": 1.225,
+        "atmosphere": "constant",
+        "altitude": 0,
+        "scaleHeight": 8500,
+        "viscosity": 0.000018,
+        "wind": 0,
+        "spin": 0
+      },
+      "note": "Low mass and large area cause rapid slowing."
+    },
+    {
+      "id": "cannonball",
+      "label": "Cannonball",
+      "values": {
+        "mass": 5,
+        "diameter": 0.1,
+        "speed": 150,
+        "angle": 40,
+        "height": 0,
+        "gravity": 9.81,
+        "drag": "quadratic",
+        "linear": 0.05,
+        "cd": 0.47,
+        "density": 1.225,
+        "atmosphere": "exponential",
+        "altitude": 0,
+        "scaleHeight": 8500,
+        "viscosity": 0.000018,
+        "wind": 0,
+        "spin": 0
+      },
+      "note": "Density decreases as altitude increases."
+    },
+    {
+      "id": "linear",
+      "label": "Linear drag",
+      "values": {
+        "mass": 0.145,
+        "diameter": 0.074,
+        "speed": 25,
+        "angle": 50,
+        "height": 0,
+        "gravity": 9.81,
+        "drag": "linear",
+        "linear": 0.05,
+        "cd": 0.47,
+        "density": 1.225,
+        "atmosphere": "constant",
+        "altitude": 0,
+        "scaleHeight": 8500,
+        "viscosity": 0.000018,
+        "wind": 0,
+        "spin": 0
+      },
+      "note": "Horizontal speed decays exponentially."
+    }
+  ],
+  "graphs": [
+    {
+      "id": "motion",
+      "label": "Position",
+      "unit": "m",
+      "series": [
+        {
+          "key": "x",
+          "label": "x",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "y",
+          "label": "y",
+          "color": "#b0c9ad"
+        }
+      ]
+    },
+    {
+      "id": "velocity",
+      "label": "Velocity",
+      "unit": "m/s",
+      "series": [
+        {
+          "key": "vx",
+          "label": "vx",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "vy",
+          "label": "vy",
+          "color": "#b0c9ad"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy ledger",
+      "unit": "J",
+      "series": [
+        {
+          "key": "energy",
+          "label": "E",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "dissipatedWork",
+          "label": "heat",
+          "color": "#e9bb88"
+        },
+        {
+          "key": "windWork",
+          "label": "wind",
+          "color": "#bcabef"
+        }
+      ]
+    }
+  ],
+  "closeups": [
+    {
+      "id": "angle",
+      "label": "Zoom · launch"
+    },
+    {
+      "id": "air-force",
+      "label": "Zoom · ball & air"
+    },
+    {
+      "id": "apex",
+      "label": "Zoom · apex"
+    }
+  ]
+}

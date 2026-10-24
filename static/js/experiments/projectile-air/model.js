@@ -60,8 +60,8 @@ export function terminalVelocity(values={},height=0){
   for(let i=0;i<70;i++){let mid=(lo+hi)/2;if(air(q,[0,height,0,-mid]).fy<p.mass*p.gravity)lo=mid;else hi=mid;}return (lo+hi)/2;
 }
 function create(values={}){
-  const p=resolve(values);let t,s,flightTime,landed,apex,initialEnergy;
-  function reset(){t=0;s=[0,p.height,p.speed*Math.cos(p.angle*rad),p.speed*Math.sin(p.angle*rad),0,0];flightTime=0;landed=p.height===0&&s[3]<=0;apex=p.height;initialEnergy=.5*p.mass*p.speed**2+p.mass*p.gravity*p.height;}
+  const p=resolve(values);let t,s,flightTime,landed,apex,apexX,apexVx,apexTime,initialEnergy;
+  function reset(){t=0;s=[0,p.height,p.speed*Math.cos(p.angle*rad),p.speed*Math.sin(p.angle*rad),0,0];flightTime=0;landed=p.height===0&&s[3]<=0;apex=p.height;apexX=0;apexVx=s[2];apexTime=0;initialEnergy=.5*p.mass*p.speed**2+p.mass*p.gravity*p.height;}
   reset();
   function step(dt){
     if(!Number.isFinite(dt)||dt<0||dt>600)throw new RangeError('dt must be 0..600 s');
@@ -72,12 +72,12 @@ function create(values={}){
       let next=rk4(p,s,h),used=h;
       if(next[1]<0){let lo=0,hi=h;for(let i=0;i<38;i++){let mid=(lo+hi)/2;if(rk4(p,s,mid)[1]>=0)lo=mid;else hi=mid;}used=(lo+hi)/2;next=rk4(p,s,used);next[1]=0;landed=true;}
       // Resolve the actual apex inside a substep rather than sampling frame peaks.
-      if(s[3]>0&&next[3]<=0){let lo=0,hi=used;for(let i=0;i<32;i++){let mid=(lo+hi)/2;if(rk4(p,s,mid)[3]>0)lo=mid;else hi=mid;}apex=Math.max(apex,rk4(p,s,(lo+hi)/2)[1]);}
-      s=next;apex=Math.max(apex,s[1]);flightTime+=used;remaining-=used;
+      if(s[3]>0&&next[3]<=0){let lo=0,hi=used;for(let i=0;i<32;i++){let mid=(lo+hi)/2;if(rk4(p,s,mid)[3]>0)lo=mid;else hi=mid;}const local=rk4(p,s,(lo+hi)/2);if(local[1]>=apex){apex=local[1];apexX=local[0];apexVx=local[2];apexTime=flightTime+(lo+hi)/2;}}
+      s=next;if(s[1]>apex){apex=s[1];apexX=s[0];apexVx=s[2];apexTime=flightTime+used;}flightTime+=used;remaining-=used;
     }t=target;
   }
   function invariants(){const kinetic=.5*p.mass*(s[2]**2+s[3]**2),potential=p.mass*p.gravity*s[1],energy=kinetic+potential;return {kinetic,potential,energy,dissipatedWork:s[4],windWork:s[5],accountedEnergy:energy+s[4]-s[5],initialEnergy,energyError:energy+s[4]-s[5]-initialEnergy};}
-  function sample(){const f=air(p,s);return {t,x:s[0],y:s[1],vx:s[2],vy:s[3],speed:Math.hypot(s[2],s[3]),ax:f.fx/p.mass,ay:-p.gravity+f.fy/p.mass,flightTime,range:s[0],apex,landed,airSpeed:Math.hypot(s[2]-p.wind,s[3]),density:f.rho,reynolds:f.reynolds,cd:f.cd,terminalSpeed:terminalVelocity(p,s[1]),hasTerminal:p.drag!=='vacuum'&&(p.drag!=='linear'||p.linear>0),...invariants()};}
+  function sample(){const f=air(p,s);return {t,x:s[0],y:s[1],vx:s[2],vy:s[3],speed:Math.hypot(s[2],s[3]),ax:f.fx/p.mass,ay:-p.gravity+f.fy/p.mass,flightTime,range:s[0],apex,apexX,apexVx,apexTime,landed,airSpeed:Math.hypot(s[2]-p.wind,s[3]),density:f.rho,reynolds:f.reynolds,cd:f.cd,terminalSpeed:terminalVelocity(p,s[1]),hasTerminal:p.drag!=='vacuum'&&(p.drag!=='linear'||p.linear>0),...invariants()};}
   function geometry(){const f=air(p,s),vy=p.speed*Math.sin(p.angle*rad),ghostFlight=(vy+Math.sqrt(vy*vy+2*p.gravity*p.height))/p.gravity,gt=Math.min(t,ghostFlight);return {position:{x:s[0],y:s[1]},velocity:{x:s[2],y:s[3]},radius:p.diameter/2,ground:0,ghost:{x:p.speed*Math.cos(p.angle*rad)*gt,y:Math.max(0,p.height+vy*gt-.5*p.gravity*gt*gt),landed:t>=ghostFlight},forces:{gravity:{x:0,y:-p.mass*p.gravity},drag:{x:f.dragX,y:f.dragY},lift:{x:f.liftX,y:f.liftY}},wind:{x:p.wind,y:0},landed};}
   return {get t(){return t;},step,reset,sample,invariants,geometry};
 }

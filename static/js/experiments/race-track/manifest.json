@@ -1,0 +1,312 @@
+{
+  "id": "race-track",
+  "title": "Race track",
+  "group": "Mechanics",
+  "description": "Explore the forces that keep a car on a flat or banked corner.",
+  "params": [
+    {
+      "key": "mass",
+      "label": "Car mass",
+      "symbol": "m",
+      "unit": "kg",
+      "min": 100,
+      "max": 3000,
+      "step": 10,
+      "value": 1000,
+      "group": "Car"
+    },
+    {
+      "key": "speed",
+      "label": "Initial speed",
+      "symbol": "v_0",
+      "unit": "m/s",
+      "min": 0,
+      "max": 80,
+      "step": 0.1,
+      "value": 15,
+      "group": "Car"
+    },
+    {
+      "key": "drive",
+      "label": "Drive / braking force",
+      "symbol": "F_t",
+      "unit": "N",
+      "min": -15000,
+      "max": 15000,
+      "step": 10,
+      "value": 0,
+      "group": "Car"
+    },
+    {
+      "key": "drag",
+      "label": "Air resistance coefficient",
+      "symbol": "c",
+      "unit": "kg/m",
+      "min": 0,
+      "max": 5,
+      "step": 0.01,
+      "value": 0,
+      "group": "Car"
+    },
+    {
+      "key": "rolling",
+      "label": "Rolling coefficient",
+      "symbol": "c_r",
+      "unit": "1",
+      "min": 0,
+      "max": 0.05,
+      "step": 0.001,
+      "value": 0,
+      "group": "Car"
+    },
+    {
+      "key": "radius",
+      "label": "Corner radius",
+      "symbol": "r",
+      "unit": "m",
+      "min": 5,
+      "max": 300,
+      "step": 1,
+      "value": 50,
+      "group": "Track"
+    },
+    {
+      "key": "halfStraight",
+      "label": "Half straight length",
+      "symbol": "L",
+      "unit": "m",
+      "min": 0,
+      "max": 300,
+      "step": 1,
+      "value": 50,
+      "group": "Track"
+    },
+    {
+      "key": "bank",
+      "label": "Corner bank angle",
+      "symbol": "θ",
+      "unit": "°",
+      "min": 0,
+      "max": 35,
+      "step": 1,
+      "value": 0,
+      "group": "Track"
+    },
+    {
+      "key": "mu",
+      "label": "Tyre friction coefficient",
+      "symbol": "μ",
+      "unit": "1",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "value": 0.8,
+      "group": "Track"
+    },
+    {
+      "key": "gravity",
+      "label": "Gravity",
+      "symbol": "g",
+      "unit": "m/s²",
+      "min": 1,
+      "max": 25,
+      "step": 0.01,
+      "value": 9.81,
+      "group": "World"
+    }
+  ],
+  "presets": [
+    {
+      "id": "flat",
+      "label": "Flat corner",
+      "values": {
+        "mass": 1000,
+        "speed": 15,
+        "drive": 0,
+        "drag": 0,
+        "rolling": 0,
+        "radius": 50,
+        "halfStraight": 50,
+        "bank": 0,
+        "mu": 0.8,
+        "gravity": 9.81
+      },
+      "note": "Static tyre friction supplies the inward acceleration."
+    },
+    {
+      "id": "banked",
+      "label": "Banked corner",
+      "values": {
+        "mass": 1000,
+        "speed": 13.4,
+        "drive": 0,
+        "drag": 0,
+        "rolling": 0,
+        "radius": 50,
+        "halfStraight": 0,
+        "bank": 20,
+        "mu": 0.8,
+        "gravity": 9.81
+      },
+      "note": "Near the design speed, banking supplies almost all the inward force."
+    },
+    {
+      "id": "ice",
+      "label": "Ice loses grip",
+      "values": {
+        "mass": 1000,
+        "speed": 15,
+        "drive": 0,
+        "drag": 0,
+        "rolling": 0,
+        "radius": 50,
+        "halfStraight": 0,
+        "bank": 0,
+        "mu": 0.1,
+        "gravity": 9.81
+      },
+      "note": "The demanded turn exceeds the tyre limit; the valid lap ends."
+    },
+    {
+      "id": "brake",
+      "label": "Brake while turning",
+      "values": {
+        "mass": 1000,
+        "speed": 15,
+        "drive": -5000,
+        "drag": 0,
+        "rolling": 0,
+        "radius": 50,
+        "halfStraight": 0,
+        "bank": 0,
+        "mu": 0.8,
+        "gravity": 9.81
+      },
+      "note": "Braking and turning share the same friction circle."
+    },
+    {
+      "id": "tight",
+      "label": "Tighter curve",
+      "values": {
+        "mass": 1000,
+        "speed": 10,
+        "drive": 0,
+        "drag": 0,
+        "rolling": 0,
+        "radius": 20,
+        "halfStraight": 50,
+        "bank": 0,
+        "mu": 0.8,
+        "gravity": 9.81
+      },
+      "note": "The same speed needs more inward acceleration at smaller radius."
+    },
+    {
+      "id": "coast",
+      "label": "Coast to a stop",
+      "values": {
+        "mass": 1000,
+        "speed": 15,
+        "drive": 0,
+        "drag": 0.5,
+        "rolling": 0.01,
+        "radius": 50,
+        "halfStraight": 50,
+        "bank": 0,
+        "mu": 0.8,
+        "gravity": 9.81
+      },
+      "note": "Lost mechanical energy appears in dissipated work."
+    }
+  ],
+  "graphs": [
+    {
+      "id": "speed",
+      "label": "Speed · next corner limits",
+      "unit": "m/s",
+      "series": [
+        {
+          "key": "speed",
+          "label": "v",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "cornerMaxSpeed",
+          "label": "max",
+          "color": "#e9bb88"
+        },
+        {
+          "key": "cornerMinSpeed",
+          "label": "min",
+          "color": "#bcabef"
+        }
+      ]
+    },
+    {
+      "id": "grip",
+      "label": "Tyre forces",
+      "unit": "N",
+      "series": [
+        {
+          "key": "lateralFriction",
+          "label": "side",
+          "color": "#b0c9ad"
+        },
+        {
+          "key": "longitudinalFriction",
+          "label": "drive",
+          "color": "#bcabef"
+        },
+        {
+          "key": "frictionCapacity",
+          "label": "μN",
+          "color": "#e9bb88"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy ledger",
+      "unit": "J",
+      "series": [
+        {
+          "key": "energy",
+          "label": "K",
+          "color": "#8ab9ff"
+        },
+        {
+          "key": "dissipatedWork",
+          "label": "heat",
+          "color": "#e9bb88"
+        },
+        {
+          "key": "driveWork",
+          "label": "work",
+          "color": "#b0c9ad"
+        }
+      ]
+    },
+    {
+      "id": "distance",
+      "label": "Distance travelled",
+      "unit": "m",
+      "series": [
+        {
+          "key": "distance",
+          "label": "s",
+          "color": "#8ab9ff"
+        }
+      ]
+    }
+  ],
+  "closeups": [
+    {
+      "id": "corner",
+      "label": "Zoom · bank forces"
+    },
+    {
+      "id": "grip",
+      "label": "Zoom · tyre grip"
+    }
+  ]
+}

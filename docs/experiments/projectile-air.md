@@ -32,7 +32,7 @@ copies were read, including generic configuration and graph help.
 | General restoring forces, ramp/periodic drive | omitted | Separate general-force/oscillator experiments, not a projectile force law |
 | Continue after changing force parameters | omitted | Deterministic reset on setup change for clean comparisons |
 | Multiple retained trajectories | improved / omitted | Analytic vacuum ghost implemented; arbitrary saved overlays deferred to kit |
-| Arbitrary graph windows/scales/variable choice | omitted | Curated linked graph design below; no renderer in this pass |
+| Arbitrary graph windows/scales/variable choice | omitted | Curated linked position, velocity and energy graphs replace arbitrary graph windows |
 | Save/load parameters, window layout and custom help | omitted | Shared app persistence/UI responsibility; no core file I/O |
 | Export last 500 numerical time steps with parameters | omitted | Snapshot API supplies data; export UI/file format deferred to shared kit |
 | Wind, spin, altitude-dependent density, Reynolds drag | improved | New independently implemented physics, absent from inspected original force laws |
@@ -69,53 +69,49 @@ throw; descriptors supply the UI/server step validation.
   a teaching close-up should refine to 1° near the best angle. Every row carries
   `landed`; omit/mark unfinished runs, never treat a capped flight as a range.
 
-## Views to wire to the shared kit
+## Implemented shared-kit views
 
-First view: a grounded side view with the real projectile diameter, quiet blue
-trajectory, faint vacuum ghost, and fixed bottom key “air / vacuum”. Keep full
-trajectory bounds fixed from a cached headless preview, including wind-driven
-negative x; do not track/recenter the flying object. Use genuine world scaling,
-with a halo hit target for tiny objects instead of inflating their radius. Ground
-occupies a small stable band. No force arrows, grids or floating labels initially.
-Ghost uses its own analytic ground-impact time and stays at its landing point.
+`manifest.json` mirrors every model parameter/preset and every view graph/close-up.
+All controls use model descriptors, including named enum options. First view is a
+quiet side elevation: actual diameter plus a locator halo, air trajectory, dashed
+vacuum ghost and one key. Fixed bounds include the entire cached 60 s forecast
+and ghost; every shipped preset lands within that horizon. No following camera.
+Setup changes and Reset re-center. Forecast is cached across animation frames.
 
-Setup chips (model.preset ids): **Vacuum parabola**, **Baseball**, **Golf ball**,
-**Shot put**, **Ping-pong ball**, **Cannonball**, **Linear drag**. Each resets the
-experiment, and each model note names the single comparison. Object masses and
-Cd values are illustrative rounded presets (ping-pong mass 3 g); golf uses a
-constant effective Cd and does not model dimples. Do not label them measured.
+Preset chips: Vacuum parabola, Baseball, Golf ball, Shot put, Ping-pong ball,
+Cannonball, Linear drag (labels in the model are authoritative).
+Each changes one object or physical lesson; sports properties are illustrative,
+not measured predictions. Smooth-sphere drag has no drag crisis; effective golf
+Cd does not model dimples.
 
-Graphs behind Graphs; share scene time cursor:
+Close-ups sit on separate rows under their launch, early-flight and apex targets:
 
-| id | axes / series | teaches |
-|---|---|---|
-| motion | t (s): x,y (m), separate velocity pane vx,vy (m/s) | vx is not constant in air |
-| energy | t (s): energy,dissipatedWork,windWork,accountedEnergy (J) | air heating vs wind energy |
-| range-angle | angle (degrees): range (m), air and vacuum | optimum below 45° for this still-air drag case |
-| descent | t (s): -vy, terminalSpeed (m/s) | local terminal speed under stated assumptions |
+| id | view and signed equation |
+|---|---|
+| angle | Magnified launch triangle, angle from horizontal; v0x=v0 cos(theta), v0y=v0 sin(theta), both symbolic and substituted in m/s |
+| air-force | Magnified ball, air-relative velocity u=v-wind, drag opposite u, gravity downward, optional lift; selected drag law plus signed FDx, FDy and mg in N |
+| apex | Magnified actual integrated apex, horizontal vx, downward mg; vy=0, ymax in m, vx generally nonzero |
 
-The angle curve is a separate parameter-sweep graph, not a time-series pretending
-to share a time cursor; display current launch angle as its linked cursor.
+Breakdown adds launch and live velocity components, gravity, drag and optional
+lift at their physical origins. Colors remain blue velocity, green vertical
+velocity/drag, amber gravity, violet lift. Arrows label their tips. Equations show
+v0 cos(theta), v0 sin(theta), vx=v cos(phi), vy=v sin(phi),
+max=FDx+FLx and may=-mg+FDy+FLy with live substitutions.
 
-Close-ups, obvious scene chips; all return with Back:
+Graphs are behind Graphs and share the scene's live time cursor:
 
-- `air-force` / “Zoom · air”: magnified projectile, fixed caption bands; arrows
-  u, drag and lift, plus small wind inset. Equation **F_D = -b u** or
-  **F_D = -(rho Cd A/2)|u|u**, or their sum in combined mode, with current signed
-  components and units.
-- `apex` / “Zoom · apex”: local trajectory tangent, horizontal vx and zero vy
-  at stored apex. **v_y = 0; a_y generally != 0**. Use actual integrated apex;
-  do not imply the speed vanishes.
-- `angle` / “Zoom · launch”: vx0 = v0 cos(alpha), vy0 = v0 sin(alpha), alpha
-  visibly between launch vector and horizontal. **R_vac = v0² sin(2alpha)/g**
-  only when release/landing heights match.
+| id | time-series, units |
+|---|---|
+| motion | x,y in m |
+| velocity | vx,vy in m/s |
+| energy | E, dissipated work, wind work in J |
 
-Breakdown adds gravity/drag/lift at the projectile, fixed color key and
-**m ax = F_Dx + F_Lx; m ay = -mg + F_Dy + F_Ly**, then relative velocity,
-rho profile, Re = rho |u| d / eta and energy accounting. Keep the applicable law
-only, use actual SI values, and flag the approximate lift/sphere assumptions.
-At 320 px, preserve the whole arc; one close-up/graph at a time, with captions
-outside the moving world and controls above the composer.
+At 320 px the scene keeps a 360 px minimum height so the gravity-tip label and
+caption bands stay separated even with graphs open. Equation content scrolls
+above opaque transport controls. No live physics labels follow the camera.
+Range-angle sweeps and terminal speed remain tested headless diagnostics; their
+extra parameter-sweep/descent graph UI is deferred, not claimed by this manifest.
+The range sweep would require an angle cursor rather than the time cursor.
 
 ## Verification and integration limits
 
@@ -123,11 +119,20 @@ outside the moving world and controls above the composer.
 tests vacuum range/apex/time, wind+linear closed form, three terminal laws,
 quadratic optimum, Reynolds/density/zero-speed behavior, wind/lift energy,
 impact frame independence, ghost, finite presets and bad inputs. Each analytic
-test states its tolerance. This pass has no view.js/manifest and no rendered UI
-claim. Lead owns shared version bump/registration when integrating views.
+test states its tolerance. The companion projectile-air-view suite checks exact
+manifest parity, fixed preview bounds and literal symbolic/numeric equations.
+Rendered evidence is in round-156/proj-views/browser.json and its PNG captures.
+Lead owns shared version bump/registration and final merged-build review.
 
 Workflow friction: ordinary `node --test` cannot spawn test workers in this
 restricted Windows runtime (EPERM); single-process Node test isolation runs the
 same suites. Shared public stage omits ARCHITECTURE/HANDOFF; installed copies
 were read for boundaries only. Record these in existing project work_records
 at coordination integration, without changing shared files from this lane.
+
+View-lane workflow friction: headless Edge launch is also EPERM in this sandbox.
+The coordinator ran the unchanged lane harness against the identity-checked
+isolated port-8843 fixture. Browser checks now wait for asynchronous seek, clear
+restored panels before opening scenes and toggle graph chips through user clicks.
+Text rectangles alone missed two adjacent labels touching at their boundary;
+manual inspection of the 320 px Breakdown capture caught it. Keep both checks.

@@ -16,7 +16,7 @@ it contains no dedicated Race Track section. No code or prose is copied.
 ## CUPS coverage
 
 Full supplied local HLP/GMGENER/GMRACE copies were read. “Improved” refers to
-implemented headless physics; rendering remains the brief below.
+implemented physics and the shared-kit views described below.
 
 | Capability | Kinema | Evidence / reason |
 |---|---|---|
@@ -26,7 +26,7 @@ implemented headless physics; rendering remains the brief below.
 | Free off-course trajectory / broad boundary stop | omitted | Valid rolling model ends at grip failure; no post-slip simulation claimed |
 | Linear velocity damping | omitted | Replaced by explicit quadratic air resistance and rolling loss, not the original damping law |
 | Kinetic energy | improved | Signed drive/brake work and dissipated-energy bookkeeping |
-| Applied-force vector display | improved | Model supplies signed normal/friction/weight components; view to follow |
+| Applied-force vector display | improved | Live signed normal/friction/weight arrows and a bank cross-section |
 | Finish-line crossing | improved | Route-distance validated lap count and first lap time, not any x crossing |
 | Banking, corner speed limits and shared tyre budget | improved | New tested force decomposition and friction-circle model |
 | Editable state/forces while continuing | omitted | Setup resets deterministically; in-run steering and recovery not authored |
@@ -73,52 +73,48 @@ continuous at joins; curvature changes instantly (an idealized track).
   Ideal no-friction speed: **v_ideal²=rg tan(theta)**. UI parameter limits keep
   denominators positive. Static coefficients, no downforce/tyre heating/load transfer.
 
-## Exact shared-kit view brief
+## Implemented shared-kit views
 
-Quiet first view: fixed, proportional top-down stadium and car with a subtle
-velocity trail, a small speed caption and one compact key. Physical car 4.5 x 1.8 m;
-use a halo for hit target on large tracks. No force arrows or scene-following
-labels. Fixed bounds x=[-L-r,L+r], y=[-r,r] plus road/caption padding.
-One unobtrusive “Zoom · corner” chip beside the next curve. At loss of grip,
-freeze at the actual limit position and show the short status above transport.
+`manifest.json` mirrors every model parameter/preset and all view graphs/close-ups.
+Quiet first view: fixed proportional stadium centerline, car heading and one
+compact key. Physical car dimensions are 4.5 x 1.8 m, with an explicit minimum
+14 x 6 px locator glyph on large tracks to remain visible. World scale stays
+fixed while running; Reset and setup changes re-center. Speed/lap caption is
+fixed at the top. At grip failure motion freezes at the actual limit and the
+caption says ?Grip exceeded ? change setup?.
 
-Preset chips: **Flat corner** (friction supplies inward force), **Banked corner**
-(nearly friction-free design speed), **Ice loses grip** (insufficient lateral
-grip), **Brake while turning** (shared friction circle), **Tighter curve**
-(radius changes acceleration), **Coast to a stop** (energy becomes heat).
-No lap score, points, streak or celebratory completion UI.
+Preset chips: Flat corner, Banked corner, Ice loses grip, Brake while turning,
+Tighter curve, Coast to a stop. Each demonstrates a physical change; no scoring.
+The bank-force chip is beside the curve; the tyre-grip chip is beside the car,
+on a separate row clear of the key.
 
-Close-ups:
+| close-up id | exact view and equations |
+|---|---|
+| corner | Looking forward across the configured next corner: road angle theta from horizontal, N toward center/up, mg down, signed f down/up slope; separate N sin(theta), N cos(theta), f cos(theta), -f sin(theta) projections. N=m(g cos(theta)+(v?/r)sin(theta)), f=m((v?/r)cos(theta)-g sin(theta)), signed values and vmax |
+| grip | Friction circle radius mu N, lateral/longitudinal axes, actual force as solid dot and requested drive hollow; fparallel?+fperp? <= (mu N)? with signed forces and capacity in N |
 
-- `corner` / “Zoom · corner”: cross-section looking along the velocity; car on
-  bank with theta visibly between road and horizontal. Vertical mg, road-normal
-  N, signed slope-tangent f; horizontal inward axis points to center. Reveal
-  projections only in Breakdown: **N sin(theta)+f cos(theta)=mv²/r** above
-  **N cos(theta)-f sin(theta)=mg**. Fixed caption bands show force values in N.
-  The normal tilts **toward** the curve center; friction arrow reverses below
-  ideal speed. In a straight, explicitly label that cross-section “flat straight”.
-- `grip` / “Zoom · tyre grip”: circle of radius mu N, horizontal longitudinal
-  force and vertical lateral force, resultant dot inside/on/outside. Equation
-  **f_parallel²+f_perp² <= (mu N)²**. Show requested drive as a hollow dot and
-  actual clipped drive as solid; red only for impossible lateral demand.
-- `radius` / “Zoom · radius”: car, radius vector to center and perpendicular
-  velocity; **a_in=v²/r** with live values. No fake centripetal force arrow in
-  addition to N and friction; their resultant is the net inward force.
+Breakdown combines the bank cross-section and friction circle, stacked at narrow
+width. The label ?Corner cross-section? explicitly previews the configured next
+curve even when the top-down car is on a flat straight. Blue N, amber mg, green f
+stay consistent. Equations show N sin(theta)+f cos(theta)=mv?/r and
+N cos(theta)-f sin(theta)=mg, both symbolic and substituted, then the circle law.
+Negligible arrows are omitted rather than printing coincident tip labels.
 
-Graphs behind Graphs, time cursor shared with scene:
+Graphs share the scene time cursor:
 
-| id | series (units) | purpose |
-|---|---|---|
-| speed | speed, cornerMaxSpeed, cornerMinSpeed (m/s) | available corner window |
-| grip | lateralFriction, longitudinalFriction, frictionCapacity (N) | shared tyre budget |
-| energy | energy, dissipatedWork, driveWork, accountedEnergy (J) | energy ledger |
-| lap | distance (m), activeTime (s) in separate unit panes | distance and valid lap timing |
+| id | series, units |
+|---|---|
+| speed | speed, next-corner maximum/minimum limits, m/s |
+| grip | lateral friction, actual longitudinal friction, capacity, N |
+| energy | K, dissipated work, drive work, J |
+| distance | route distance, m |
 
-On straights, label the graphed bounds **next corner limits**, never current
-straight-line speed limits. Breakdown includes geometry (inward vs forward),
-the two force balances, signed friction, grip circle, instantaneous acceleration,
-and energy ledger. Show only the opened idea. At 320 px prioritize cross-section
-and equation; graph and close-up are one pane at a time, controls above composer.
+The bank and grip diagrams are quiet until opened. At 320 px, a 440 px minimum
+scene keeps separate projection rows and grip diagram clear of controls. All
+long equations remain reachable above opaque transport. A dedicated radius
+magnifier and active-time plot are deferred; this manifest advertises only the
+two authored close-ups and four implemented graphs. Lap time remains in model
+samples, not a claim of an additional UI panel.
 
 ## Verification and integration limits
 
@@ -126,8 +122,10 @@ and equation; graph and close-up are one pane at a time, controls above composer
 checks speed-limit equations, both force balances, friction circle clipping,
 oval continuity, exact coasting lap, initial/entry loss of grip, quadratic drag
 closed form, energy ledgers, braking stop, finite presets/reset and rejection.
-Numeric checks state tolerances. No view.js/manifest or rendered-screen claim in
-this pass. Lead owns shared registration/version when integrating views.
+Numeric checks state tolerances. The companion race-track-view suite checks exact
+manifest parity, next-corner force balance and positive gallery-thumbnail scale.
+Rendered evidence is in round-156/proj-views/browser.json and its PNG captures.
+Lead owns shared registration/version and final merged-build review.
 
 Workflow suggestions for coordinator: preserve explicit source-vs-new-model
 distinction (the referenced HLP has no named projectile/race chapters), and use
