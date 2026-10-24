@@ -45,17 +45,28 @@ export class ExperimentShell {
  resetModel(){this.cancelSeek();this.instance=prepareCandidate(this.model,{},this.params).instance;this.startForecast();this.stage.snap=true;this.q('.exp-note').textContent='';}
  startForecast(){
   const generation=this.forecastGeneration=(this.forecastGeneration||0)+1;clearTimeout(this.forecastTimer);cancelAnimationFrame(this.forecastFrame);
+  this.duration=60;this.endTime=null;this.q('.exp-time').max=this.duration;
   this.samples=[this.instance.sample()];this.forecastComplete=false;this.forecastError='';
+  this.observeEnd(this.samples[0]);
   const iterator=timelineBatches(this.model,{...this.params},{duration:this.duration,batchSize:8});
   const batch=()=>{
    if(this.destroyed||generation!==this.forecastGeneration)return;
    try{const result=iterator.next();if(result.done){this.forecastComplete=true;this.graphStatus();return;}
-    for(const sample of result.value){if(this.samples.at(-1)?.t===sample.t)continue;if(this.samples.length<3601)this.samples.push(sample);}
+    for(const sample of result.value){if(this.samples.at(-1)?.t!==sample.t&&this.samples.length<3601)this.samples.push(sample);if(sample.ended===true){this.observeEnd(sample);this.forecastComplete=true;this.graphStatus();return;}}
     this.graphStatus();this.forecastTimer=setTimeout(batch,0);
    }catch(error){this.forecastError=error.message||'The trajectory stopped.';this.graphStatus();}
   };
   // A first paint is guaranteed before any forecast integration starts.
   this.forecastFrame=requestAnimationFrame(()=>{this.forecastTimer=setTimeout(batch,0);});this.graphStatus();
+ }
+ observeEnd(sample){
+  if(sample?.ended!==true||!Number.isFinite(sample.t)||sample.t<0||sample.t>60||this.endTime!==null&&sample.t>=this.endTime)return;
+  this.endTime=sample.t;this.duration=sample.t;this.q('.exp-time').max=this.duration;
+  // An event has a single terminal state; later frames never extend it again.
+  if(this.instance.sample().ended===true||this.instance.t>=this.duration-1e-8){
+   if(this.playing)this.setPlaying(false);
+   if(this.instance.t>this.duration+1e-8&&!this.seeker.pending)this.seek(this.duration);
+  }
  }
  graphStatus(){const end=this.samples.at(-1)?.t||0;this.q('.exp-graph-status').textContent=this.forecastError?'Graph available through '+end.toFixed(2)+' s · '+this.forecastError:this.forecastComplete?'':'Computing graphs · '+end.toFixed(1)+' / '+this.duration+' s';}
 
@@ -84,22 +95,22 @@ export class ExperimentShell {
   this.setPlaying(false);this.seekTarget=Math.max(0,Math.min(this.duration,t));
   const immediate=this.model.id==='coupled-oscillators'&&this.params.method==='modes';
   if(!immediate&&this.seekTarget)this.q('.exp-note').textContent='Seeking '+this.seekTarget.toFixed(2)+' s…';
-  return this.seeker.run(this.model,this.params,this.seekTarget,{immediate,onComplete:candidate=>{if(this.destroyed)return;this.instance=candidate;this.q('.exp-note').textContent='';this.draw();this.changed();},onError:error=>{this.q('.exp-note').textContent=error.message||'This time could not be reached.';this.draw();}});
+  return this.seeker.run(this.model,this.params,this.seekTarget,{immediate,onComplete:candidate=>{if(this.destroyed)return;this.instance=candidate;this.observeEnd(candidate.sample());this.q('.exp-note').textContent='';this.draw();this.changed();},onError:error=>{this.q('.exp-note').textContent=error.message||'This time could not be reached.';this.draw();}});
  }
 
- setPlaying(value){if(value){this.cancelSeek();if(this.instance.t>=this.duration)this.instance.reset();}this.playing=!!value;const b=this.q('[data-exp=play]');b.innerHTML=controlIcon(this.playing?'pause':'play');b.setAttribute('aria-label',this.playing?'Pause':'Play');b.title=this.playing?'Pause':'Play';this.changed();}
+ setPlaying(value){if(value){this.cancelSeek();if(this.instance.t>=this.duration-1e-8||this.instance.sample().ended===true)this.instance.reset();}this.playing=!!value;const b=this.q('[data-exp=play]');b.innerHTML=controlIcon(this.playing?'pause':'play');b.setAttribute('aria-label',this.playing?'Pause':'Play');b.title=this.playing?'Pause':'Play';this.changed();}
  reset(){this.cancelSeek();this.setPlaying(false);this.instance.reset();this.closeup='';this.scene.classList.remove('is-closeup');this.stage.snap=true;this.q('.exp-zoom-back').hidden=true;this.draw();this.changed();}
  setCloseup(id){if(id&&!(this.view.closeups||this.manifest.closeups||[]).some(c=>c.id===id))return;this.closeup=id;this.q('.exp-zoom-back').hidden=!id;this.scene.classList.toggle('is-closeup',!!id);this.draw();this.changed();}
  setBreakdown(value){this.breakdown=!!value;this.q('[data-exp=breakdown]').setAttribute('aria-pressed',String(this.breakdown));this.equations.hidden=!this.breakdown;this.draw();this.changed();}
  equation(el,lines){const signature=JSON.stringify(lines);if(el.dataset.signature===signature)return;el.dataset.signature=signature;el.innerHTML=lines.map(s=>`<div class="exp-equation">\\[${esc(s)}\\]</div>`).join('');math(el);}
- draw(){if(this.destroyed||!this.instance)return;const frame=this.frame();this.stage.resize();this.stage.begin();if(this.custom)this.custom.draw(frame);else this.view.draw(this.stage,frame);this.q('.exp-clock').textContent=frame.t.toFixed(2)+' s';this.q('.exp-time').value=this.seeker.pending?this.seekTarget:frame.t;
+ draw(){if(this.destroyed||!this.instance)return;const frame=this.frame();this.stage.resize();this.stage.begin();if(this.custom)this.custom.draw(frame);else this.view.draw(this.stage,frame);this.q('.exp-clock').textContent=frame.t.toFixed(2)+' s';this.q('.exp-time').value=this.seeker.pending?Math.min(this.duration,this.seekTarget):frame.t;
   this.equations.hidden=!this.breakdown;if(this.breakdown)this.equation(this.equations,this.view.equations?.(frame)||[]);
   const zoom=this.q('.exp-closeup-equation');zoom.hidden=!this.closeup;if(this.closeup){const lines=this.view.closeupEquation?.(frame)||'';this.equation(zoom,Array.isArray(lines)?lines:[lines]);}
   const anchors=this.view.closeupAnchors?.(this.stage,frame);this.q('.exp-closeups').classList.toggle('has-anchors',!!anchors);if(anchors)for(const button of this.q('.exp-closeups').children){const a=anchors[button.dataset.id];if(a){button.style.left=Math.max(button.offsetWidth/2+8,Math.min(this.stage.w-button.offsetWidth/2-8,a.x))+'px';button.style.top=Math.min(this.stage.h-40,a.y)+'px';}}
   if(this.view.key)this.q('.exp-key').textContent=this.view.key(frame);
   if(!this.q('.exp-graph-panel').hidden)for(const g of this.graphs)if(!g.host.hidden)g.plot.draw(this.samples,this.instance.t,frame);
  }
- tick(now){if(this.destroyed)return;const elapsed=this.last?Math.min(.06,(now-this.last)/1000):0;this.last=now;if(this.playing&&this.host.isConnected&&this.host.getClientRects().length){try{this.instance.step(Math.min(elapsed*this.speed,this.duration-this.instance.t));if(this.instance.t>=this.duration-1e-8)this.setPlaying(false);}catch(error){this.setPlaying(false);this.q('.exp-note').textContent=error.message||'Motion stopped at this state.';}}this.draw();this.raf=requestAnimationFrame(this.tick);}
+ tick(now){if(this.destroyed)return;const elapsed=this.last?Math.min(.06,(now-this.last)/1000):0;this.last=now;if(this.playing&&this.host.isConnected&&this.host.getClientRects().length){try{this.instance.step(Math.max(0,Math.min(elapsed*this.speed,this.duration-this.instance.t)));this.observeEnd(this.instance.sample());if(this.playing&&this.instance.t>=this.duration-1e-8)this.setPlaying(false);}catch(error){this.setPlaying(false);this.q('.exp-note').textContent=error.message||'Motion stopped at this state.';}}this.draw();this.raf=requestAnimationFrame(this.tick);}
  snapshot(){return {params:{...this.params},t:this.instance.t,observables:this.instance.sample(),playing:this.playing,closeup:this.closeup,breakdown:this.breakdown,graphs:[...this.enabledGraphs]};}
  changed(){this.onChange(this.snapshot());}
  apply(a){if(!a)return;if(a.type==='set_params')return this.setParams(a.values);if(a.type==='preset'){const p=this.model.presets.find(p=>p.id===a.id);return p?this.setParams(p.values):false;}if(a.type==='play')this.setPlaying(true);if(a.type==='pause')this.setPlaying(false);if(a.type==='reset')this.reset();if(a.type==='closeup')this.setCloseup(a.id);if(a.type==='breakdown')this.setBreakdown(a.enabled);if(a.type==='graph'){a.enabled?this.enabledGraphs.add(a.id):this.enabledGraphs.delete(a.id);this.setGraphsOpen(true);this.changed();}}

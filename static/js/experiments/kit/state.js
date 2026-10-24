@@ -10,11 +10,16 @@ export function prepareCandidate(model,current,patch){
 
 // No model work until the first next(). The caller yields between small batches.
 export function* timelineBatches(model,values,{duration=60,interval=1/60,batchSize=8}={}){
- if(model.sampleBatches){yield* model.sampleBatches(values,{duration,interval,batchSize});return;}
- const probe=model.create(values);let batch=[probe.sample()];
+ if(model.sampleBatches){
+  for(const batch of model.sampleBatches(values,{duration,interval,batchSize})){
+   const end=batch.findIndex(sample=>sample.ended===true);yield end<0?batch:batch.slice(0,end+1);if(end>=0)return;
+  }return;
+ }
+ const probe=model.create(values);let batch=[probe.sample()];if(batch[0].ended===true){yield batch;return;}
  const count=Math.ceil(duration/interval);
  for(let i=1;i<=count;i++){
-  const target=Math.min(duration,i*interval);probe.step(target-probe.t);batch.push(probe.sample());
+  const target=Math.min(duration,i*interval);probe.step(target-probe.t);const sample=probe.sample();batch.push(sample);
+  if(sample.ended===true){yield batch;return;}
   if(batch.length>=batchSize){yield batch;batch=[];}
  }
  if(batch.length)yield batch;
@@ -31,11 +36,11 @@ export class SeekController {
    if(!Number.isFinite(target)||target<0||target>60)throw RangeError('Choose a time from 0 to 60 seconds.');
    const candidate=model.create({...values});
    if(immediate)candidate.step(target);
-   else while(candidate.t<target-1e-12){
+   else while(candidate.t<target-1e-12&&candidate.sample?.().ended!==true){
     await yieldTurn();if(!current())return {cancelled:true};
     const deadline=performance.now()+6;let steps=0;
-    do{const before=candidate.t,next=Math.min(target,before+1/60);candidate.step(next-before);if(!Number.isFinite(candidate.t)||candidate.t<=before)throw Error('This model could not advance to the requested time.');steps++;}
-    while(candidate.t<target-1e-12&&steps<8&&performance.now()<deadline);
+    do{const before=candidate.t,next=Math.min(target,before+1/60);candidate.step(next-before);if(!Number.isFinite(candidate.t)||candidate.t<=before&&candidate.sample?.().ended!==true)throw Error('This model could not advance to the requested time.');steps++;}
+    while(candidate.t<target-1e-12&&candidate.sample?.().ended!==true&&steps<8&&performance.now()<deadline);
    }
    if(!current())return {cancelled:true};
    this.pending=false;onComplete(candidate);return {ok:true,instance:candidate};

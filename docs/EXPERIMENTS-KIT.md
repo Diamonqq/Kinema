@@ -136,6 +136,28 @@ are unchanged. Without it, Setup preserves its current behavior.
 
 ## Numerical seeking and narrow graphs
 
+### Time windows and terminal events
+
+Ordinary time-series descriptors may add `window: 8` (seconds). When the computed
+forecast exceeds that length, the x range is
+`[clamp(t - window/2, 0, end - window), start + window]`. The cursor, endpoint labels
+and `plot.timeAt(canvasX)` all use that range. The y range always uses **all**
+forecast samples, never only the visible slice, so moving the cursor cannot rescale
+it. During background forecasting that range may grow as new samples arrive; once
+the forecast completes it stays fixed. Omit `window` for the entire timeline.
+Phase, spectrum and custom graphs ignore this option. Choose about five periods
+or one beat period in `view.graphDescriptors(values)`.
+
+A model may return `sample().ended === true` at its terminal event, with `t` at
+the event itself (e.g. interpolate a landing). Its `step` must stop at that event
+and report the same terminal sample on later calls. The kit stops either generic
+or optimized `sampleBatches` at the first such sample. Graphs end there; the known
+duration, range input and seeks clamp there, and playback pauses once. Reset and
+Play at the end restart the model at zero while keeping the known end. Parameter
+changes start a new forecast with the default 60 s ceiling until its event is
+known. Numerical seeks also stop if they discover an event before the requested
+time. Models without `ended` retain the 60 s timeline. A time-zero end is valid.
+
 `shell.seek(seconds)` returns a Promise. Numerical replay uses a private candidate
 and yields between batches (at most eight 1/60-second steps or roughly 6 ms per
 turn). The current scene stays intact until the newest seek finishes, then commits
